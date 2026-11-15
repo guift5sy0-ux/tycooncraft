@@ -11,6 +11,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 /** 경적/기적: 운전 중 스페이스 → 서버가 주변 모두에게 소리를 들려준다 */
 public record HornPayload() implements CustomPacketPayload {
@@ -24,7 +25,9 @@ public record HornPayload() implements CustomPacketPayload {
     }
 
     public static void register(RegisterPayloadHandlersEvent event) {
-        event.registrar("1").playToServer(TYPE, STREAM_CODEC, HornPayload::handle);
+        PayloadRegistrar registrar = event.registrar("1");
+        registrar.playToServer(TYPE, STREAM_CODEC, HornPayload::handle);
+        DronePayloads.register(registrar);
     }
 
     private static void handle(HornPayload payload, IPayloadContext ctx) {

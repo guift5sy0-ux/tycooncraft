@@ -7,6 +7,7 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -56,6 +57,42 @@ public class GunItem extends Item {
         stack.set(ModComponents.AMMO.get(), n);
     }
 
+    public static boolean silenced(ItemStack stack) {
+        return stack.getOrDefault(ModComponents.SILENCED.get(), false);
+    }
+
+    // ── 인챈트 반영 수치 ──
+    public int magazine(ItemStack stack) {
+        return Math.round(stats.magazine() * (1 + 0.25f * GunEnchants.level(stack, GunEnchants.EXTENDED_MAG)));
+    }
+
+    public int fireDelay(ItemStack stack) {
+        return Math.max(1, Math.round(stats.fireDelay() * (1 - 0.15f * GunEnchants.level(stack, GunEnchants.RAPID_FIRE))));
+    }
+
+    public int reloadTicks(ItemStack stack) {
+        return Math.max(5, Math.round(stats.reloadTicks() * (1 - 0.2f * GunEnchants.level(stack, GunEnchants.QUICK_RELOAD))));
+    }
+
+    public float damage(ItemStack stack) {
+        return stats.damage() * (1 + 0.15f * GunEnchants.level(stack, GunEnchants.FIREPOWER)) * (silenced(stack) ? 0.9f : 1f);
+    }
+
+    private float precision(ItemStack stack) {
+        return 1 - 0.25f * GunEnchants.level(stack, GunEnchants.PRECISION);
+    }
+
+    // ── 인챈트 가능 ──
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public int getEnchantmentValue() {
+        return 14;
+    }
+
     // ── 사용 ──
 
     @Override
@@ -81,7 +118,7 @@ public class GunItem extends Item {
             return InteractionResultHolder.consume(stack);
         }
         shoot(level, player, stack);
-        player.getCooldowns().addCooldown(this, stats.fireDelay());
+        player.getCooldowns().addCooldown(this, fireDelay(stack));
         return InteractionResultHolder.consume(stack);
     }
 
@@ -89,7 +126,7 @@ public class GunItem extends Item {
     public void onUseTick(Level level, LivingEntity entity, ItemStack stack, int remaining) {
         if (!stats.auto() || !(entity instanceof Player player)) return;
         int elapsed = USE_DURATION - remaining;
-        if (elapsed > 0 && elapsed % stats.fireDelay() == 0) {
+        if (elapsed > 0 && elapsed % fireDelay(stack) == 0) {
             if (ammo(stack) <= 0) {
                 player.stopUsingItem();
                 return;
@@ -103,7 +140,7 @@ public class GunItem extends Item {
         if (!stats.scoped() || !(entity instanceof Player player)) return;
         if (USE_DURATION - timeLeft >= 6 && ammo(stack) > 0) {
             shoot(level, player, stack);
-            player.getCooldowns().addCooldown(this, stats.fireDelay());
+            player.getCooldowns().addCooldown(this, fireDelay(stack));
         }
     }
 
@@ -120,29 +157,36 @@ public class GunItem extends Item {
     // ── 발사 ──
 
     private void shoot(Level level, Player player, ItemStack stack) {
+        float recoil = stats.recoil() * (1 - 0.2f * GunEnchants.level(stack, GunEnchants.PRECISION)) * (silenced(stack) ? 0.85f : 1f);
         if (level.isClientSide) {
             // 반동: 화면이 살짝 위로
-            player.setXRot(player.getXRot() - stats.recoil());
-            player.setYRot(player.getYRot() + (player.getRandom().nextFloat() - 0.5f) * stats.recoil() * 0.5f);
+            player.setXRot(player.getXRot() - recoil);
+            player.setYRot(player.getYRot() + (player.getRandom().nextFloat() - 0.5f) * recoil * 0.5f);
             return;
         }
         ServerLevel server = (ServerLevel) level;
-        if (!player.getAbilities().instabuild) setAmmo(stack, ammo(stack) - 1);
-        for (int i = 0; i < stats.pellets(); i++) fireRay(server, player);
+        int saver = GunEnchants.level(stack, GunEnchants.AMMO_SAVER);
+        if (!player.getAbilities().instabuild && player.getRandom().nextFloat() >= 0.15f * saver) setAmmo(stack, ammo(stack) - 1);
+        boolean quiet = silenced(stack);
+        for (int i = 0; i < stats.pellets(); i++) fireRay(server, player, stack, quiet);
         float pitch = 0.96f + player.getRandom().nextFloat() * 0.08f;
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), stats.fireSound().get(), SoundSource.PLAYERS, 4.0f, pitch);
-        // 총구 화염 + 연기
+        if (quiet) {
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.SILENCED_FIRE.get(), SoundSource.PLAYERS, 1.0f, pitch);
+        } else {
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), stats.fireSound().get(), SoundSource.PLAYERS, 4.0f, pitch);
+        }
+        // 총구 화염 + 연기 (소음기면 화염 없음, 연기 조금)
         Vec3 look = player.getViewVector(1f);
         Vec3 right = look.cross(new Vec3(0, 1, 0)).normalize();
-        Vec3 muzzle = player.getEyePosition().add(look.scale(1.3)).add(right.scale(0.25)).add(0, -0.18, 0);
-        server.sendParticles(ParticleTypes.FLAME, muzzle.x, muzzle.y, muzzle.z, 2, 0.02, 0.02, 0.02, 0.005);
-        server.sendParticles(ParticleTypes.SMOKE, muzzle.x, muzzle.y, muzzle.z, 4, 0.04, 0.04, 0.04, 0.012);
+        Vec3 muzzle = player.getEyePosition().add(look.scale(quiet ? 1.7 : 1.3)).add(right.scale(0.25)).add(0, -0.18, 0);
+        if (!quiet) server.sendParticles(ParticleTypes.FLAME, muzzle.x, muzzle.y, muzzle.z, 2, 0.02, 0.02, 0.02, 0.005);
+        server.sendParticles(ParticleTypes.SMOKE, muzzle.x, muzzle.y, muzzle.z, quiet ? 1 : 4, 0.04, 0.04, 0.04, 0.012);
     }
 
-    private void fireRay(ServerLevel level, Player player) {
+    private void fireRay(ServerLevel level, Player player, ItemStack stack, boolean quiet) {
         RandomSource r = player.getRandom();
         Vec3 eye = player.getEyePosition();
-        float spread = stats.spread() * (player.isUsingItem() && stats.scoped() ? 0.1f : 1f);
+        float spread = stats.spread() * precision(stack) * (player.isUsingItem() && stats.scoped() ? 0.1f : 1f);
         Vec3 dir = player.getViewVector(1f)
                 .add(r.nextGaussian() * spread, r.nextGaussian() * spread, r.nextGaussian() * spread).normalize();
         Vec3 end = eye.add(dir.scale(stats.range()));
@@ -150,27 +194,53 @@ public class GunItem extends Item {
         BlockHitResult blockHit = level.clip(new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
         if (blockHit.getType() != HitResult.Type.MISS) end = blockHit.getLocation();
 
+        // 탄 경로에 걸린 대상들 (가까운 순). 관통탄 레벨만큼 더 뚫고 지나감
+        final Vec3 rayEnd = end;
         AABB box = player.getBoundingBox().expandTowards(end.subtract(eye)).inflate(1.0);
-        EntityHitResult entityHit = ProjectileUtil.getEntityHitResult(level, player, eye, end, box,
-                e -> e.isAlive() && e.isPickable() && !e.isSpectator() && e != player && !player.isPassengerOfSameVehicle(e) && e != player.getVehicle());
+        List<EntityHitResult> hits = new java.util.ArrayList<>();
+        for (Entity e : level.getEntities(player, box, e -> e.isAlive() && e.isPickable() && !e.isSpectator()
+                && !player.isPassengerOfSameVehicle(e) && e != player.getVehicle())) {
+            e.getBoundingBox().inflate(e.getPickRadius() + 0.1).clip(eye, rayEnd).ifPresent(p -> hits.add(new EntityHitResult(e, p)));
+        }
+        hits.sort(java.util.Comparator.comparingDouble(h -> h.getLocation().distanceToSqr(eye)));
+        int maxHits = 1 + GunEnchants.level(stack, GunEnchants.PIERCING);
+        float dmg = damage(stack);
+        int fire = GunEnchants.level(stack, GunEnchants.INCENDIARY);
+        int hunter = GunEnchants.level(stack, GunEnchants.HEADHUNTER);
 
         Vec3 impact = end;
-        if (entityHit != null) {
-            Entity target = entityHit.getEntity();
-            impact = entityHit.getLocation();
+        int n = 0;
+        for (EntityHitResult hit : hits) {
+            if (n >= maxHits) break;
+            Entity target = hit.getEntity();
+            impact = hit.getLocation();
+            float d = dmg * (n == 0 ? 1f : 0.7f);
+            boolean head = target instanceof LivingEntity le && le.getBbHeight() > 0.9f && impact.y >= le.getEyeY() - 0.28;
+            if (head) d *= 1.5f + 0.5f * hunter;
             target.invulnerableTime = 0; // 연사가 무적 시간에 막히지 않게
-            target.hurt(level.damageSources().playerAttack(player), stats.damage());
-            level.sendParticles(ParticleTypes.CRIT, impact.x, impact.y, impact.z, 6, 0.1, 0.1, 0.1, 0.2);
-        } else if (blockHit.getType() == HitResult.Type.BLOCK) {
+            if (target.hurt(level.damageSources().playerAttack(player), d)) {
+                if (fire > 0) target.igniteForSeconds(4);
+                if (head) {
+                    level.sendParticles(ParticleTypes.ENCHANTED_HIT, impact.x, impact.y, impact.z, 10, 0.15, 0.15, 0.15, 0.3);
+                    level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5f, 1.6f);
+                    player.displayClientMessage(Component.translatable("message.tycooncraft.gun.headshot").withStyle(ChatFormatting.GOLD), true);
+                }
+            }
+            level.sendParticles(fire > 0 ? ParticleTypes.FLAME : ParticleTypes.CRIT, impact.x, impact.y, impact.z, 6, 0.1, 0.1, 0.1, 0.2);
+            n++;
+        }
+        if (n == 0 && blockHit.getType() == HitResult.Type.BLOCK) {
             var state = level.getBlockState(blockHit.getBlockPos());
             level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), impact.x, impact.y, impact.z, 6, 0.05, 0.05, 0.05, 0.1);
         }
+        if (n >= maxHits) impact = hits.get(maxHits - 1).getLocation();
 
-        // 탄도 궤적
+        // 탄도 궤적 (소음기면 안 보이게)
+        if (quiet) return;
         double dist = impact.distanceTo(eye);
         for (double d = 2; d < dist; d += 2.5) {
             Vec3 p = eye.add(dir.scale(d));
-            level.sendParticles(ParticleTypes.ELECTRIC_SPARK, p.x, p.y - 0.1, p.z, 1, 0, 0, 0, 0);
+            level.sendParticles(fire > 0 ? ParticleTypes.SMALL_FLAME : ParticleTypes.ELECTRIC_SPARK, p.x, p.y - 0.1, p.z, 1, 0, 0, 0, 0);
         }
     }
 
@@ -178,7 +248,7 @@ public class GunItem extends Item {
 
     private void reload(Level level, Player player, ItemStack stack) {
         int current = ammo(stack);
-        int need = stats.magazine() - current;
+        int need = magazine(stack) - current;
         if (need <= 0) return;
         if (level.isClientSide) return;
 
@@ -195,9 +265,9 @@ public class GunItem extends Item {
             return;
         }
         setAmmo(stack, current + loaded);
-        player.getCooldowns().addCooldown(this, stats.reloadTicks());
+        player.getCooldowns().addCooldown(this, reloadTicks(stack));
         level.playSound(null, player.getX(), player.getY(), player.getZ(), stats.reloadSound().get(), SoundSource.PLAYERS, 1.0f, 1.0f);
-        player.displayClientMessage(Component.translatable("message.tycooncraft.gun.reloaded", current + loaded, stats.magazine()), true);
+        player.displayClientMessage(Component.translatable("message.tycooncraft.gun.reloaded", current + loaded, magazine(stack)), true);
     }
 
     private static int takeAmmo(Inventory inv, Item ammo, int need) {
@@ -222,22 +292,24 @@ public class GunItem extends Item {
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round(13f * ammo(stack) / stats.magazine());
+        return Math.round(13f * ammo(stack) / magazine(stack));
     }
 
     @Override
     public int getBarColor(ItemStack stack) {
-        float f = (float) ammo(stack) / stats.magazine();
+        float f = (float) ammo(stack) / magazine(stack);
         return Mth.hsvToRgb(f / 3f, 1f, 1f);
     }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        tooltip.add(Component.translatable("tooltip.tycooncraft.gun.ammo", ammo(stack), stats.magazine()).withStyle(ChatFormatting.YELLOW));
-        String dmg = stats.pellets() > 1 ? (int) stats.damage() + " x" + stats.pellets() : String.valueOf((int) stats.damage());
+        tooltip.add(Component.translatable("tooltip.tycooncraft.gun.ammo", ammo(stack), magazine(stack)).withStyle(ChatFormatting.YELLOW));
+        String one = String.format(java.util.Locale.ROOT, "%.1f", damage(stack)).replace(".0", "");
+        String dmg = stats.pellets() > 1 ? one + " x" + stats.pellets() : one;
         tooltip.add(Component.translatable("tooltip.tycooncraft.gun.stats", dmg, (int) stats.range()).withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("tooltip.tycooncraft.gun.uses", stats.ammo().get().getDescription()).withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable(stats.scoped() ? "tooltip.tycooncraft.gun.how_scoped"
                 : stats.auto() ? "tooltip.tycooncraft.gun.how_auto" : "tooltip.tycooncraft.gun.how_semi").withStyle(ChatFormatting.DARK_GRAY));
+        if (silenced(stack)) tooltip.add(Component.translatable("tooltip.tycooncraft.gun.silenced").withStyle(ChatFormatting.AQUA));
     }
 }

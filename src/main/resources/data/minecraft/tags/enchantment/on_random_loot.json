@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "tycooncraft:firepower",
+    "tycooncraft:rapid_fire",
+    "tycooncraft:extended_mag",
+    "tycooncraft:quick_reload",
+    "tycooncraft:piercing_rounds",
+    "tycooncraft:precision",
+    "tycooncraft:incendiary",
+    "tycooncraft:ammo_saver",
+    "tycooncraft:headhunter"
+  ]
+}

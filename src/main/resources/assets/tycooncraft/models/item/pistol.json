@@ -2047,5 +2047,13 @@
     0.6
    ]
   }
- }
+ },
+ "overrides": [
+  {
+   "predicate": {
+    "tycooncraft:silenced": 1
+   },
+   "model": "tycooncraft:item/pistol_silenced"
+  }
+ ]
 }

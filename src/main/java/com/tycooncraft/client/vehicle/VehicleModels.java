@@ -25,7 +25,9 @@ public final class VehicleModels {
     public static final ModelResourceLocation HELI_BODY = id("heli_body");
     public static final ModelResourceLocation HELI_ROTOR = id("heli_rotor");
     public static final ModelResourceLocation HELI_TAIL_ROTOR = id("heli_tail_rotor");
-    public static final ModelResourceLocation[] ALL = {CAR_BODY, CAR_WHEEL, LOCO_BODY, LOCO_WHEELS, HELI_BODY, HELI_ROTOR, HELI_TAIL_ROTOR};
+    public static final ModelResourceLocation DRONE_BODY = id("drone_body");
+    public static final ModelResourceLocation DRONE_PROP = id("drone_prop");
+    public static final ModelResourceLocation[] ALL = {CAR_BODY, CAR_WHEEL, LOCO_BODY, LOCO_WHEELS, HELI_BODY, HELI_ROTOR, HELI_TAIL_ROTOR, DRONE_BODY, DRONE_PROP};
 
     private static ModelResourceLocation id(String name) {
         return ModelResourceLocation.standalone(TycoonCraft.id("vehicle/" + name));

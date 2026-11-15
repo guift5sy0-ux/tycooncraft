@@ -30,6 +30,7 @@ public final class ModCreativeTabs {
                         out.accept(ModItems.HELICOPTER.get());
                         out.accept(ModItems.LOCOMOTIVE.get());
                         out.accept(ModItems.FUEL_CANISTER.get());
+                        out.accept(ModItems.DRONE.get());
                         out.accept(ModItems.PISTOL.get());
                         out.accept(ModItems.SMG.get());
                         out.accept(ModItems.RIFLE.get());
@@ -38,6 +39,7 @@ public final class ModCreativeTabs {
                         out.accept(ModItems.LIGHT_AMMO.get());
                         out.accept(ModItems.HEAVY_AMMO.get());
                         out.accept(ModItems.SHOTGUN_SHELL.get());
+                        out.accept(ModItems.SILENCER.get());
                     })
                     .build());
 

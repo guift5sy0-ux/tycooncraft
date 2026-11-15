@@ -6,6 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.CalculatePlayerTurnEvent;
 import net.neoforged.neoforge.client.event.ComputeFovModifierEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
 
@@ -26,6 +27,22 @@ public final class ClientGameEvents {
     public static void onRenderHand(RenderHandEvent event) {
         if (GunClient.isScoping()) event.setCanceled(true);
     }
+
+    /**
+     * 스코프 조준 중 마우스 감도를 줌 배율만큼 낮춤.
+     * 마크 실제 감도 = (설정값*0.6+0.2)^3 → 원하는 배율이 되도록 설정값을 역산
+     */
+    @SubscribeEvent
+    public static void onTurn(CalculatePlayerTurnEvent event) {
+        if (!GunClient.isScoping()) return;
+        double s = event.getMouseSensitivity();
+        double eff = Math.pow(s * 0.6 + 0.2, 3) * SCOPE_SENS;
+        double scaled = (Math.cbrt(eff) - 0.2) / 0.6;
+        event.setMouseSensitivity(Math.max(-0.33, scaled));
+        event.setCinematicCameraEnabled(false);
+    }
+
+    private static final double SCOPE_SENS = 0.22;
 
     private ClientGameEvents() {}
 }

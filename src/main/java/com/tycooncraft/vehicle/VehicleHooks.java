@@ -18,6 +18,10 @@ public final class VehicleHooks {
 
         /** 매 틱(클라이언트): 엔진 소리, 배기·손상 연기 */
         void tick(Entity vehicle);
+
+        /** 서버가 드론 조종 시작을 알림 */
+        default void startPilot(int entityId) {
+        }
     }
 
     public static Client client = new Client() {

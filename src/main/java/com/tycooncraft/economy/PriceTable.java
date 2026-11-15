@@ -80,6 +80,8 @@ public final class PriceTable {
             p.put(ModItems.RIFLE.get(), 1200.0);
             p.put(ModItems.SNIPER.get(), 1600.0);
             p.put(ModItems.FUEL_CANISTER.get(), 12.0);
+            p.put(ModItems.SILENCER.get(), 120.0);
+            p.put(ModItems.DRONE.get(), 450.0);
             p.put(ModItems.CAR.get(), 2000.0);
             p.put(ModItems.LOCOMOTIVE.get(), 4000.0);
             p.put(ModItems.HELICOPTER.get(), 5500.0);

@@ -108,7 +108,34 @@ public final class AutoTestClient {
                 mc.player.setXRot(10);
             }
             case 1030 -> shot(mc, "12_loco_cab");
-            case 1060 -> {
+            // ── 소음기 총 & 드론 ──
+            case 1075 -> o.setCameraType(CameraType.FIRST_PERSON);
+            case 1085 -> shot(mc, "13_silenced_pistol");
+            case 1090 -> KeyMapping.click(o.keyUse.getKey());
+            case 1110 -> KeyMapping.click(o.keyUse.getKey());
+            case 1125 -> {
+                mc.player.setXRot(-8);
+                key(o.keyUp, true);
+                key(o.keyJump, true);
+            }
+            case 1150 -> key(o.keyJump, false);
+            case 1175 -> {
+                shot(mc, "14_drone_cam");
+                System.out.println("[AUTOTEST] camera=" + mc.getCameraEntity().getType().toShortString());
+            }
+            case 1185 -> {
+                key(o.keyUp, false);
+                mc.player.setXRot(35);
+                key(o.keyUp, true);
+            }
+            case 1200 -> shot(mc, "15_drone_dive");
+            case 1205 -> KeyMapping.click(o.keyAttack.getKey());
+            case 1208 -> key(o.keyUp, false);
+            case 1212 -> {
+                shot(mc, "16_after_boom");
+                System.out.println("[AUTOTEST] camera after=" + mc.getCameraEntity().getType().toShortString());
+            }
+            case 1240 -> {
                 System.out.println("[AUTOTEST] finished");
                 mc.stop();
             }

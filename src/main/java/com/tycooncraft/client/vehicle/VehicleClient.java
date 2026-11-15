@@ -2,6 +2,10 @@ package com.tycooncraft.client.vehicle;
 
 import com.tycooncraft.TycoonCraft;
 import com.tycooncraft.registry.ModEntities;
+import com.tycooncraft.registry.ModItems;
+import com.tycooncraft.gun.GunItem;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.world.item.Item;
 import com.tycooncraft.vehicle.FueledVehicle;
 import com.tycooncraft.vehicle.VehicleHooks;
 import net.minecraft.client.Minecraft;
@@ -26,6 +30,12 @@ public final class VehicleClient {
     @SubscribeEvent
     public static void setup(FMLClientSetupEvent event) {
         VehicleHooks.client = new VehicleClientHooks();
+        // 소음기 단 총은 소음기 모델로
+        event.enqueueWork(() -> {
+            for (Item gun : new Item[]{ModItems.PISTOL.get(), ModItems.SMG.get(), ModItems.RIFLE.get(), ModItems.SHOTGUN.get(), ModItems.SNIPER.get()}) {
+                ItemProperties.register(gun, TycoonCraft.id("silenced"), (stack, level, entity, seed) -> GunItem.silenced(stack) ? 1f : 0f);
+            }
+        });
     }
 
     @SubscribeEvent
@@ -33,6 +43,7 @@ public final class VehicleClient {
         event.registerEntityRenderer(ModEntities.CAR.get(), CarRenderer::new);
         event.registerEntityRenderer(ModEntities.HELICOPTER.get(), HelicopterRenderer::new);
         event.registerEntityRenderer(ModEntities.LOCOMOTIVE.get(), LocomotiveRenderer::new);
+        event.registerEntityRenderer(ModEntities.DRONE.get(), DroneRenderer::new);
     }
 
     @SubscribeEvent
@@ -43,6 +54,7 @@ public final class VehicleClient {
     @SubscribeEvent
     public static void layers(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.HOTBAR, TycoonCraft.id("vehicle_hud"), (g, delta) -> renderHud(g));
+        event.registerAbove(VanillaGuiLayers.CROSSHAIR, TycoonCraft.id("drone_hud"), (g, delta) -> DroneClient.renderHud(g));
     }
 
     /** 계기판: 핫바 오른쪽 — 속도, 연료, 내구도 (헬기는 고도) */

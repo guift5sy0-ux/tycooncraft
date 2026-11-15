@@ -2,6 +2,7 @@ package com.tycooncraft.client.vehicle;
 
 import com.tycooncraft.registry.ModSounds;
 import com.tycooncraft.vehicle.CarEntity;
+import com.tycooncraft.vehicle.DroneEntity;
 import com.tycooncraft.vehicle.FueledVehicle;
 import com.tycooncraft.vehicle.HelicopterEntity;
 import com.tycooncraft.vehicle.LocomotiveEntity;
@@ -34,6 +35,11 @@ public final class VehicleClientHooks implements VehicleHooks.Client {
         if (p == null || mc.screen != null) return VehicleHooks.Input.NONE;
         Input in = p.input;
         return new VehicleHooks.Input(in.forwardImpulse, in.leftImpulse, in.jumping, mc.options.keySprint.isDown());
+    }
+
+    @Override
+    public void startPilot(int entityId) {
+        DroneClient.start(entityId);
     }
 
     @Override
@@ -127,8 +133,9 @@ public final class VehicleClientHooks implements VehicleHooks.Client {
         Minecraft mc = Minecraft.getInstance();
         if (s == null || s.isStopped()) {
             SoundEvent ev = v instanceof CarEntity ? ModSounds.CAR_ENGINE.get()
-                    : v instanceof HelicopterEntity ? ModSounds.HELI_ROTOR.get() : ModSounds.TRAIN_ENGINE.get();
-            if (!(v instanceof HelicopterEntity)) {
+                    : v instanceof HelicopterEntity ? ModSounds.HELI_ROTOR.get()
+                    : v instanceof DroneEntity ? ModSounds.DRONE_BUZZ.get() : ModSounds.TRAIN_ENGINE.get();
+            if (!(v instanceof HelicopterEntity) && !(v instanceof DroneEntity)) {
                 v.level().playLocalSound(v.getX(), v.getY(), v.getZ(), ModSounds.ENGINE_START.get(), SoundSource.NEUTRAL, 1.0f, 1.0f, false);
             }
             s = new VehicleSound(v, ev);

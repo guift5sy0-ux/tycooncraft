@@ -1,0 +1,21 @@
+{
+  "description": {
+    "translate": "enchantment.tycooncraft.extended_mag"
+  },
+  "supported_items": "#tycooncraft:enchantable/gun",
+  "primary_items": "#tycooncraft:enchantable/gun",
+  "weight": 5,
+  "max_level": 3,
+  "min_cost": {
+    "base": 5,
+    "per_level_above_first": 12
+  },
+  "max_cost": {
+    "base": 35,
+    "per_level_above_first": 12
+  },
+  "anvil_cost": 2,
+  "slots": [
+    "mainhand"
+  ]
+}

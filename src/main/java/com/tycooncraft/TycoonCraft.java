@@ -7,6 +7,7 @@ import com.tycooncraft.registry.ModBlockEntities;
 import com.tycooncraft.registry.ModBlocks;
 import com.tycooncraft.registry.ModComponents;
 import com.tycooncraft.registry.ModEntities;
+import com.tycooncraft.registry.ModRecipes;
 import com.tycooncraft.network.HornPayload;
 import com.tycooncraft.registry.ModCreativeTabs;
 import com.tycooncraft.registry.ModItems;
@@ -35,6 +36,7 @@ public class TycoonCraft {
         ModComponents.COMPONENTS.register(modBus);
         ModSounds.SOUNDS.register(modBus);
         ModEntities.ENTITIES.register(modBus);
+        ModRecipes.SERIALIZERS.register(modBus);
 
         modBus.addListener(this::registerCapabilities);
         modBus.addListener(HornPayload::register);

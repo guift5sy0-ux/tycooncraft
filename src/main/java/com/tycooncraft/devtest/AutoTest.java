@@ -1,6 +1,12 @@
 package com.tycooncraft.devtest;
 
+import com.tycooncraft.gun.GunEnchants;
+import com.tycooncraft.gun.GunItem;
+import com.tycooncraft.registry.ModComponents;
 import com.tycooncraft.registry.ModEntities;
+import com.tycooncraft.registry.ModItems;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.ItemStack;
 import com.tycooncraft.vehicle.CarEntity;
 import com.tycooncraft.vehicle.HelicopterEntity;
 import com.tycooncraft.vehicle.LocomotiveEntity;
@@ -63,6 +69,20 @@ public final class AutoTest {
                     player.teleportTo(level, loco.getX(), loco.getY() + 1, loco.getZ() - 2, 0, 0);
                 }
                 case 905 -> player.startRiding(loco, true);
+                case 1060 -> {
+                    player.stopRiding();
+                    look(level, new Vec3(-20, gy + 1.62, -24), new Vec3(-20, gy + 2.5, -60));
+                    ItemStack gun = new ItemStack(ModItems.PISTOL.get());
+                    gun.set(ModComponents.SILENCED.get(), true);
+                    gun.set(ModComponents.AMMO.get(), 12);
+                    var reg = level.registryAccess().registryOrThrow(Registries.ENCHANTMENT);
+                    gun.enchant(reg.getHolderOrThrow(GunEnchants.FIREPOWER), 3);
+                    gun.enchant(reg.getHolderOrThrow(GunEnchants.PIERCING), 2);
+                    player.getInventory().selected = 0;
+                    player.getInventory().setItem(0, gun);
+                    System.out.println("[AUTOTEST] silenced gun dmg=" + ((GunItem) gun.getItem()).damage(gun) + " mag=" + ((GunItem) gun.getItem()).magazine(gun));
+                }
+                case 1100 -> player.getInventory().setItem(0, new ItemStack(ModItems.DRONE.get()));
                 default -> {
                 }
             }
@@ -70,7 +90,11 @@ public final class AutoTest {
             System.out.println("[AUTOTEST] server step " + t + " failed: " + e);
             e.printStackTrace();
         }
-        if (t % 40 == 0 && t >= 380) {
+        if (t >= 1100 && t % 20 == 0) {
+            long drones = level.getEntities(ModEntities.DRONE.get(), e -> true).size();
+            System.out.println("[AUTOTEST] t=" + t + " drones=" + drones);
+        }
+        if (t % 40 == 0 && t >= 380 && t < 1100) {
             Entity v = player.getVehicle();
             System.out.println("[AUTOTEST] t=" + t + " vehicle=" + (v == null ? "none" : v.getType().toShortString())
                     + (v == null ? "" : String.format(" pos=%.2f,%.2f,%.2f", v.getX(), v.getY(), v.getZ()))

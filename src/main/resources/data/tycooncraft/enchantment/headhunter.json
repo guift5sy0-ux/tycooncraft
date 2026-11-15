@@ -1,0 +1,21 @@
+{
+  "description": {
+    "translate": "enchantment.tycooncraft.headhunter"
+  },
+  "supported_items": "#tycooncraft:enchantable/gun",
+  "primary_items": "#tycooncraft:enchantable/gun",
+  "weight": 2,
+  "max_level": 2,
+  "min_cost": {
+    "base": 15,
+    "per_level_above_first": 15
+  },
+  "max_cost": {
+    "base": 45,
+    "per_level_above_first": 15
+  },
+  "anvil_cost": 4,
+  "slots": [
+    "mainhand"
+  ]
+}

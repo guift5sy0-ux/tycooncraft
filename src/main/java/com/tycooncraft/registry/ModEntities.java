@@ -2,6 +2,7 @@ package com.tycooncraft.registry;
 
 import com.tycooncraft.TycoonCraft;
 import com.tycooncraft.vehicle.CarEntity;
+import com.tycooncraft.vehicle.DroneEntity;
 import com.tycooncraft.vehicle.HelicopterEntity;
 import com.tycooncraft.vehicle.LocomotiveEntity;
 import net.minecraft.core.registries.Registries;
@@ -25,6 +26,10 @@ public final class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<LocomotiveEntity>> LOCOMOTIVE = ENTITIES.register("locomotive",
             () -> EntityType.Builder.<LocomotiveEntity>of(LocomotiveEntity::new, MobCategory.MISC)
                     .sized(0.98f, 2.6f).passengerAttachments(0.94f).clientTrackingRange(10).build("locomotive"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<DroneEntity>> DRONE = ENTITIES.register("drone",
+            () -> EntityType.Builder.<DroneEntity>of(DroneEntity::new, MobCategory.MISC)
+                    .sized(0.8f, 0.45f).clientTrackingRange(10).updateInterval(1).build("drone"));
 
     private ModEntities() {}
 }

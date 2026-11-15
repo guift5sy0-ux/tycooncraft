@@ -1,6 +1,7 @@
 package com.tycooncraft.client.vehicle;
 
 import com.tycooncraft.vehicle.CarEntity;
+import com.tycooncraft.vehicle.DroneEntity;
 import com.tycooncraft.vehicle.HelicopterEntity;
 import com.tycooncraft.vehicle.LocomotiveEntity;
 import com.tycooncraft.vehicle.VehicleEntity;
@@ -31,6 +32,7 @@ public class VehicleSound extends AbstractTickableSoundInstance {
     public static boolean engineOn(Entity v) {
         if (v instanceof VehicleEntity ve) return ve.engineRunning() || (v instanceof HelicopterEntity h && h.rotor > 0.02f);
         if (v instanceof LocomotiveEntity loco) return loco.engineRunning();
+        if (v instanceof DroneEntity d) return d.battery() > 0 && (d.isPiloted() || !d.onGround());
         return false;
     }
 
@@ -53,6 +55,10 @@ public class VehicleSound extends AbstractTickableSoundInstance {
         if (vehicle instanceof CarEntity) {
             pitch = (float) Mth.clamp(0.75 + speed * 1.35, 0.6, 2.0);
             volume = level * (float) (0.55 + Math.min(0.45, speed));
+        } else if (vehicle instanceof DroneEntity) {
+            double sp3 = Math.sqrt(Math.pow(vehicle.getX() - vehicle.xo, 2) + Math.pow(vehicle.getY() - vehicle.yo, 2) + Math.pow(vehicle.getZ() - vehicle.zo, 2));
+            pitch = (float) Mth.clamp(0.9 + sp3 * 0.9, 0.8, 1.9);
+            volume = level * 0.7f;
         } else if (vehicle instanceof HelicopterEntity h) {
             pitch = 0.45f + 0.6f * h.rotor;
             volume = level * (0.25f + 1.6f * h.rotor);

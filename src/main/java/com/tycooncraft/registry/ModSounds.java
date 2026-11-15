@@ -29,6 +29,9 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> HELI_ROTOR = sound("vehicle.heli.rotor");
     public static final DeferredHolder<SoundEvent, SoundEvent> TRAIN_ENGINE = sound("vehicle.train.engine");
     public static final DeferredHolder<SoundEvent, SoundEvent> TRAIN_HORN = sound("vehicle.train.horn");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SILENCED_FIRE = sound("gun.silenced.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> DRONE_BUZZ = sound("vehicle.drone.buzz");
+    public static final DeferredHolder<SoundEvent, SoundEvent> DRONE_ARM = sound("vehicle.drone.arm");
 
     private static DeferredHolder<SoundEvent, SoundEvent> sound(String name) {
         return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(TycoonCraft.id(name)));
