@@ -110,6 +110,19 @@ public final class AutoTestClient {
         }
     }
 
+    /** 통합 서버 스레드에서 플레이어를 직접 다룸 (클라이언트 setPos는 먼 거리에서 무시될 수 있음) */
+    private static void serverDo(Minecraft mc, java.util.function.Consumer<net.minecraft.server.level.ServerPlayer> f) {
+        var srv = mc.getSingleplayerServer();
+        var id = mc.player.getUUID();
+        if (srv != null) srv.execute(() -> {
+            var sp = srv.getPlayerList().getPlayer(id);
+            if (sp != null) {
+                sp.stopRiding();
+                f.accept(sp);
+            }
+        });
+    }
+
     private static void lookAt(Minecraft mc, double x, double y, double z) {
         var p = mc.player;
         double dx = x - p.getX(), dy = y - p.getEyeY(), dz = z - p.getZ();
@@ -224,37 +237,36 @@ public final class AutoTestClient {
             case 705 -> shot(mc, "28_rpg");
             case 708 -> KeyMapping.click(o.keyUse.getKey());
             case 713 -> shot(mc, "29_rpg_fire");
-            // ── v0.12: 자동 굴착기, 연막탄, 섬광탄 ──
-            case 740 -> {
-                mc.player.setPos(-13, g + 4, 16);
-                lookAt(mc, -16, g + 1, 22.5);
-            }
-            case 752 -> shot(mc, "30_miner");
-            case 756 -> {
-                mc.gameMode.handleCreativeModeItemAdd(new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.SMOKE_GRENADE.get(), 4), 36 + 4);
-                mc.gameMode.handleCreativeModeItemAdd(new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.FLASH_GRENADE.get(), 4), 36 + 5);
-            }
-            case 760 -> {
-                mc.player.getInventory().selected = 4;
-                mc.player.setPos(0, g, 40);
-                mc.player.setYRot(0);
-                mc.player.setXRot(-10);
-            }
-            case 764 -> shot(mc, "30b_grenade_held");
-            case 766 -> KeyMapping.click(o.keyUse.getKey());
-            case 840 -> {
+            // ── v0.12: 자동 굴착기, 연막탄, 섬광탄 (통합 서버에서 직접 순간이동·지급) ──
+            case 740 -> serverDo(mc, sp -> {
+                var m = AutoTest.miner;
+                double mx = m != null ? m.getX() : -12, mz = m != null ? m.getZ() : 22.5;
+                System.out.println("[AUTOTEST] miner final" + (m == null ? " none" : String.format(" x=%.1f running=%s mined=%d", m.getX(), m.isRunning(), m.minedBlocks)));
+                sp.teleportTo(sp.serverLevel(), mx - 3.5, g + 3.2, mz - 5.5, -30f, 22f);
+            })
+            case 775 -> shot(mc, "30_miner");
+            case 780 -> serverDo(mc, sp -> {
+                sp.getInventory().setItem(4, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.SMOKE_GRENADE.get(), 4));
+                sp.getInventory().setItem(5, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.FLASH_GRENADE.get(), 4));
+                sp.getInventory().selected = 4;
+                sp.teleportTo(sp.serverLevel(), 0.5, g, 40.5, 0f, -10f);
+            })
+            case 790 -> mc.player.getInventory().selected = 4;
+            case 805 -> shot(mc, "30b_grenade_held");
+            case 808 -> KeyMapping.click(o.keyUse.getKey());
+            case 880 -> {
                 mc.player.setXRot(5);
                 shot(mc, "31_smoke");
             }
-            case 846 -> {
-                mc.player.getInventory().selected = 5;
-                mc.player.setPos(0, g, 60);
-                mc.player.setXRot(20);
-            }
-            case 850 -> KeyMapping.click(o.keyUse.getKey());
-            case 903 -> shot(mc, "32_flash");
-            case 912 -> System.out.println("[AUTOTEST] client flashed=" + mc.player.hasEffect(com.tycooncraft.registry.ModEffects.FLASHED));
-            case 960 -> next(11);
+            case 884 -> serverDo(mc, sp -> {
+                sp.getInventory().selected = 5;
+                sp.teleportTo(sp.serverLevel(), 0.5, g, 70.5, 0f, 20f);
+            })
+            case 892 -> mc.player.getInventory().selected = 5;
+            case 900 -> KeyMapping.click(o.keyUse.getKey());
+            case 953 -> shot(mc, "32_flash");
+            case 958 -> System.out.println("[AUTOTEST] client flashed=" + mc.player.hasEffect(com.tycooncraft.registry.ModEffects.FLASHED));
+            case 975 -> next(11);
             default -> {
             }
         }

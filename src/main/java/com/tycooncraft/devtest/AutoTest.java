@@ -41,7 +41,7 @@ public final class AutoTest {
     private static LocomotiveEntity loco;
     private static boolean droneGiven;
 
-    private static com.tycooncraft.miner.AutoMinerEntity miner;
+    static com.tycooncraft.miner.AutoMinerEntity miner;
     private static net.minecraft.world.entity.LivingEntity fragHusk, flashHusk, villager;
     private static com.tycooncraft.entity.GrenadeEntity smoke;
     private static com.tycooncraft.mob.MutantSpider queen;
@@ -57,7 +57,7 @@ public final class AutoTest {
 
     private static void v12Setup(ServerLevel level) {
         // 굴착기: 동쪽으로 돌벽 3×3×18 (중간에 광석들, 끝에 흑요석)
-        for (int x = -24; x <= -6; x++) for (int z = 21; z <= 23; z++) for (int y = 0; y < 3; y++)
+        for (int x = -24; x <= -6; x++) for (int z = 20; z <= 24; z++) for (int y = 0; y < 4; y++)
             level.setBlockAndUpdate(new BlockPos(x, gy + y, z), (x > -14 ? Blocks.DEEPSLATE : Blocks.STONE).defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(-20, gy + 1, 22), Blocks.DIAMOND_ORE.defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(-18, gy + 2, 21), Blocks.IRON_ORE.defaultBlockState());

@@ -111,7 +111,7 @@ public class AutoMinerEntity extends Entity {
                         stop("message.tycooncraft.miner.too_hard", s.getBlock().getName());
                         digPos = null;
                     } else {
-                        digNeeded = 3 + (int) Math.ceil(Math.max(0, s.getDestroySpeed(level(), digPos)) * 3);
+                        digNeeded = columnTime(digPos);
                     }
                 }
             }
@@ -121,7 +121,18 @@ public class AutoMinerEntity extends Entity {
                 level().destroyBlockProgress(getId(), digPos, Math.min(9, digProgress * 10 / Math.max(1, digNeeded)));
                 if (digProgress % 4 == 0 && level() instanceof ServerLevel sl)
                     sl.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, level().getBlockState(digPos)), digPos.getX() + 0.5, digPos.getY() + 0.5, digPos.getZ() + 0.5, 6, 0.4, 0.4, 0.4, 0.1);
-                if (digProgress >= digNeeded) harvest(digPos);
+                if (digProgress >= digNeeded) {
+                    // 드릴 높이(3칸) 세로 한 줄을 한꺼번에 깎아냄
+                    BlockPos base = BlockPos.containing(getX(), getY() + 0.2, getZ());
+                    BlockPos col = new BlockPos(digPos.getX(), base.getY(), digPos.getZ());
+                    for (int y = 2; y >= 0; y--) {
+                        BlockPos p = col.above(y);
+                        BlockState bs = level().getBlockState(p);
+                        if (isTarget(bs) && !tooHard(bs) && !p.equals(digPos)) harvest(p);
+                    }
+                    if (digPos != null && isTarget(level().getBlockState(digPos))) harvest(digPos);
+                    digPos = null;
+                }
             } else if (isRunning()) {
                 // 앞이 비었으면 전진
                 working = true;
@@ -139,6 +150,18 @@ public class AutoMinerEntity extends Entity {
             level().playSound(null, getX(), getY(), getZ(), ModSounds.MINER_DRILL.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
         }
         if (getY() < level().getMinBuildHeight() - 32) discard();
+    }
+
+    /** 세로 한 줄(3칸) 중 가장 단단한 블록 기준 작업 시간 (흙 2틱, 돌 5틱, 심층암·다이아 광석 7틱) */
+    private int columnTime(BlockPos p) {
+        BlockPos base = BlockPos.containing(getX(), getY() + 0.2, getZ());
+        float h = 0;
+        for (int y = 0; y <= 2; y++) {
+            BlockPos q = new BlockPos(p.getX(), base.getY() + y, p.getZ());
+            BlockState bs = level().getBlockState(q);
+            if (isTarget(bs) && !tooHard(bs)) h = Math.max(h, bs.getDestroySpeed(level(), q));
+        }
+        return 2 + (int) Math.ceil(h * 1.6);
     }
 
     private boolean isTarget(BlockState s) {
