@@ -1,7 +1,19 @@
 {
   "variants": {
-    "": {
+    "facing=north": {
       "model": "tycooncraft:block/sell_station"
+    },
+    "facing=east": {
+      "model": "tycooncraft:block/sell_station",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "tycooncraft:block/sell_station",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "tycooncraft:block/sell_station",
+      "y": 270
     }
   }
 }

@@ -92,5 +92,11 @@
   "tooltip.tycooncraft.gun.how_scoped": "Hold to aim, release to fire / Sneak + right-click: reload",
   "subtitles.tycooncraft.gun.fire": "Gunshot",
   "subtitles.tycooncraft.gun.reload": "Reloading",
-  "subtitles.tycooncraft.gun.dry_fire": "Dry fire"
+  "subtitles.tycooncraft.gun.dry_fire": "Dry fire",
+  "gui.tycooncraft.sell.balance": "Balance",
+  "gui.tycooncraft.sell.pending": "To sell",
+  "gui.tycooncraft.sell.sell": "Sell",
+  "gui.tycooncraft.sell.withdraw": "Withdraw",
+  "gui.tycooncraft.sell.hint": "Put items to sell on the left",
+  "message.tycooncraft.sold_gui": "Sold %s items → ₩%s"
 }

@@ -10,7 +10,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import com.tycooncraft.economy.SellMenu;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -20,7 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.neoforge.items.IItemHandler;
 
-public class SellStationBlockEntity extends BlockEntity {
+public class SellStationBlockEntity extends BlockEntity implements MenuProvider {
     private static final int ABSORB_INTERVAL = 10;
 
     /** 판매 대금 (소수점 이하는 다음 판매에 누적) */
@@ -95,6 +100,37 @@ public class SellStationBlockEntity extends BlockEntity {
         Coins.give(player, whole);
         player.displayClientMessage(Component.translatable("message.tycooncraft.withdraw", Coins.format(whole)), true);
         level.playSound(null, worldPosition, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 0.6f, 1.0f);
+    }
+
+    public long balance() {
+        return (long) Math.floor(balance + 1e-9);
+    }
+
+    /** 판매소 창의 판매 칸을 모두 판매 */
+    public void sellContainer(Container container, Player player) {
+        double earned = 0;
+        int count = 0;
+        for (int i = 0; i < container.getContainerSize(); i++) {
+            ItemStack stack = container.getItem(i);
+            if (stack.isEmpty() || !MarketData.canSell(stack)) continue;
+            count += stack.getCount();
+            earned += accept(stack.copy());
+            container.setItem(i, ItemStack.EMPTY);
+        }
+        if (count > 0) {
+            player.displayClientMessage(Component.translatable("message.tycooncraft.sold_gui", count, Coins.format(earned)), true);
+            level.playSound(null, worldPosition, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 0.5f, 1.2f);
+        }
+    }
+
+    @Override
+    public Component getDisplayName() {
+        return Component.translatable("block.tycooncraft.sell_station");
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
+        return new SellMenu(id, inventory, this);
     }
 
     public void showBalance(Player player) {

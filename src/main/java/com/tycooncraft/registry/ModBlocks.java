@@ -22,7 +22,7 @@ public final class ModBlocks {
 
     // ── 판매 & 화폐 ──
     public static final DeferredBlock<SellStationBlock> SELL_STATION = BLOCKS.register("sell_station",
-            () -> new SellStationBlock(machineProps().strength(3.0f, 6.0f).requiresCorrectToolForDrops()));
+            () -> new SellStationBlock(machineProps().strength(3.0f, 6.0f).requiresCorrectToolForDrops().noOcclusion()));
     public static final DeferredBlock<ExchangeBlock> EXCHANGE = BLOCKS.register("exchange",
             () -> new ExchangeBlock(machineProps().strength(3.0f, 6.0f).requiresCorrectToolForDrops()));
 

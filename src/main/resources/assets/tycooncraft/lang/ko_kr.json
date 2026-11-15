@@ -92,5 +92,11 @@
   "tooltip.tycooncraft.gun.how_scoped": "우클릭 유지: 조준, 떼면 발사 / 웅크리고 우클릭: 재장전",
   "subtitles.tycooncraft.gun.fire": "총소리",
   "subtitles.tycooncraft.gun.reload": "재장전",
-  "subtitles.tycooncraft.gun.dry_fire": "딸깍 (탄 없음)"
+  "subtitles.tycooncraft.gun.dry_fire": "딸깍 (탄 없음)",
+  "gui.tycooncraft.sell.balance": "잔액",
+  "gui.tycooncraft.sell.pending": "판매 예정",
+  "gui.tycooncraft.sell.sell": "판매",
+  "gui.tycooncraft.sell.withdraw": "인출",
+  "gui.tycooncraft.sell.hint": "팔 물건을 왼쪽 칸에 넣으세요",
+  "message.tycooncraft.sold_gui": "%s개 판매 → ₩%s"
 }
