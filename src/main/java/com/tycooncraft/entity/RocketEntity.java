@@ -57,8 +57,8 @@ public class RocketEntity extends Projectile {
             return;
         }
         setPos(getX() + v.x, getY() + v.y, getZ() + v.z);
-        double grav = kind() == SHELL ? 0.012 : kind() == MISSILE ? 0.0 : 0.006;
-        setDeltaMovement(v.scale(kind() == ROCKET ? 1.015 : 0.998).add(0, -grav, 0));
+        double grav = kind() == SHELL ? 0.002 : kind() == MISSILE ? 0.0 : 0.006;
+        setDeltaMovement(v.scale(kind() == ROCKET ? 1.015 : kind() == SHELL ? 1.0 : 0.998).add(0, -grav, 0));
         if (getDeltaMovement().length() > 4.0) setDeltaMovement(getDeltaMovement().normalize().scale(4.0));
         ProjectileUtil.rotateTowardsMovement(this, 0.5f);
         if (level().isClientSide) {

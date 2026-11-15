@@ -82,6 +82,7 @@ public class GunItem extends Item {
     }
 
     public int fireDelay(ItemStack stack) {
+        if (stack.is(ModItems.VSS.get()) && fireMode(stack) == 1) return 3;
         return Math.max(1, Math.round(stats.fireDelay() * (1 - 0.15f * GunEnchants.level(stack, GunEnchants.RAPID_FIRE))));
     }
 
@@ -128,9 +129,9 @@ public class GunItem extends Item {
             }
             return InteractionResultHolder.fail(stack);
         }
-        if (stats.auto() || stats.scoped()) {
+        if (isAuto(stack) || isScoped(stack)) {
             player.startUsingItem(hand);
-            if (stats.auto()) shoot(level, player, stack); // 첫 발은 바로
+            if (isAuto(stack)) shoot(level, player, stack); // 첫 발은 바로
             return InteractionResultHolder.consume(stack);
         }
         shoot(level, player, stack);
@@ -140,7 +141,7 @@ public class GunItem extends Item {
 
     @Override
     public void onUseTick(Level level, LivingEntity entity, ItemStack stack, int remaining) {
-        if (!stats.auto() || !(entity instanceof Player player)) return;
+        if (!isAuto(stack) || !(entity instanceof Player player)) return;
         int elapsed = USE_DURATION - remaining;
         if (elapsed > 0 && elapsed % fireDelay(stack) == 0) {
             if (ammo(stack) <= 0) {
@@ -153,7 +154,7 @@ public class GunItem extends Item {
 
     @Override
     public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeLeft) {
-        if (!stats.scoped() || !(entity instanceof Player player)) return;
+        if (!isScoped(stack) || !(entity instanceof Player player)) return;
         if (USE_DURATION - timeLeft >= 6 && ammo(stack) > 0) {
             shoot(level, player, stack);
             player.getCooldowns().addCooldown(this, fireDelay(stack));
@@ -186,6 +187,8 @@ public class GunItem extends Item {
         int before = ammo(stack);
         if (!player.getAbilities().instabuild && player.getRandom().nextFloat() >= 0.15f * saver) setAmmo(stack, before - 1);
         fire(server, player, stack, tier);
+        // 쌍권총: 다음 발은 반대쪽 총
+        if (isDual()) player.getPersistentData().putBoolean("tycooncraft_dual_left", !player.getPersistentData().getBoolean("tycooncraft_dual_left"));
         float pitch = 0.96f + player.getRandom().nextFloat() * 0.08f;
         if (tier == 2) {
             level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.SILENCED_FIRE.get(), SoundSource.PLAYERS, 0.75f, pitch);
@@ -198,10 +201,25 @@ public class GunItem extends Item {
         // 총구 화염 + 연기 (소음기면 화염 없음). 쌍권총은 좌우 번갈아
         Vec3 look = player.getViewVector(1f);
         Vec3 right = look.cross(new Vec3(0, 1, 0)).normalize();
-        double side = isDual() ? ((before % 2 == 0) ? 0.3 : -0.3) : 0.25;
+        double side = isDual() ? (player.getPersistentData().getBoolean("tycooncraft_dual_left") ? 0.32 : -0.32) : 0.25;
         Vec3 muzzle = player.getEyePosition().add(look.scale(tier > 0 ? 1.7 : 1.3)).add(right.scale(side)).add(0, -0.18, 0);
         if (tier == 0) server.sendParticles(ParticleTypes.FLAME, muzzle.x, muzzle.y, muzzle.z, 2, 0.02, 0.02, 0.02, 0.005);
         server.sendParticles(ParticleTypes.SMOKE, muzzle.x, muzzle.y, muzzle.z, tier > 0 ? 1 : 4, 0.04, 0.04, 0.04, 0.012);
+    }
+
+    /** VSS: F 로 바꾸는 사격 모드 (0 = 단발·조준, 1 = 연사·조준 없음) */
+    public static int fireMode(ItemStack stack) {
+        return stack.getOrDefault(ModComponents.FIRE_MODE.get(), 0);
+    }
+
+    public boolean isAuto(ItemStack stack) {
+        if (stack.is(ModItems.VSS.get())) return fireMode(stack) == 1;
+        return stats.auto();
+    }
+
+    public boolean isScoped(ItemStack stack) {
+        if (stack.is(ModItems.VSS.get())) return fireMode(stack) == 0;
+        return stats.scoped();
     }
 
     public boolean isDual() {
@@ -215,11 +233,18 @@ public class GunItem extends Item {
 
     private void fireRay(ServerLevel level, Player player, ItemStack stack, boolean quiet) {
         RandomSource r = player.getRandom();
-        float spread = stats.spread() * precision(stack) * (player.isUsingItem() && stats.scoped() ? 0.1f : 1f);
+        float spread = stats.spread() * precision(stack) * (player.isUsingItem() && isScoped(stack) ? 0.1f : 1f);
         Vec3 dir = player.getViewVector(1f)
                 .add(r.nextGaussian() * spread, r.nextGaussian() * spread, r.nextGaussian() * spread).normalize();
         int hunter = GunEnchants.level(stack, GunEnchants.HEADHUNTER);
-        Ballistics.shoot(level, player, player.getEyePosition(), dir, stats.range(), damage(stack),
+        Vec3 origin = player.getEyePosition();
+        if (isDual()) {
+            // 오른쪽·왼쪽 총구에서 번갈아 (탄도 궤적도 그 총에서 나감)
+            boolean left = player.getPersistentData().getBoolean("tycooncraft_dual_left");
+            Vec3 right = player.getViewVector(1f).cross(new Vec3(0, 1, 0)).normalize();
+            origin = origin.add(right.scale(left ? -0.32 : 0.32)).add(0, -0.2, 0).add(player.getViewVector(1f).scale(0.6));
+        }
+        Ballistics.shoot(level, player, origin, dir, stats.range(), damage(stack),
                 GunEnchants.level(stack, GunEnchants.PIERCING), 1.5f + 0.5f * hunter,
                 GunEnchants.level(stack, GunEnchants.INCENDIARY) > 0, !quiet, level.damageSources().playerAttack(player),
                 e -> !player.isPassengerOfSameVehicle(e) && e != player.getVehicle());
@@ -292,7 +317,10 @@ public class GunItem extends Item {
         tooltip.add(Component.translatable(stats.scoped() ? "tooltip.tycooncraft.gun.how_scoped"
                 : stats.auto() ? "tooltip.tycooncraft.gun.how_auto" : "tooltip.tycooncraft.gun.how_semi").withStyle(ChatFormatting.DARK_GRAY));
         int st = silencerTier(stack);
-        if (stack.is(ModItems.VSS.get())) tooltip.add(Component.translatable("tooltip.tycooncraft.gun.integral").withStyle(ChatFormatting.AQUA));
+        if (stack.is(ModItems.VSS.get())) {
+            tooltip.add(Component.translatable("tooltip.tycooncraft.gun.integral").withStyle(ChatFormatting.AQUA));
+            tooltip.add(Component.translatable(fireMode(stack) == 1 ? "tooltip.tycooncraft.gun.mode_auto" : "tooltip.tycooncraft.gun.mode_semi").withStyle(ChatFormatting.YELLOW));
+        }
         else if (st > 0) tooltip.add(Component.translatable(st == 2 ? "tooltip.tycooncraft.gun.silenced2" : "tooltip.tycooncraft.gun.silenced").withStyle(ChatFormatting.AQUA));
     }
 }

@@ -39,9 +39,31 @@ public class JetEntity extends VehicleEntity {
         return 1;
     }
 
+    /** 조종석: 눈높이가 캐노피 안에 오도록 (몸은 렌더링하지 않음) */
     @Override
     protected Vec3 seatLocal(int index) {
-        return new Vec3(0, 31 / 32.0, -62 / 32.0 * 6 / 6.0);
+        return new Vec3(0, 9 / 32.0, -60 / 32.0);
+    }
+
+    /** 배럴 롤 (클라이언트 표시): 남은 틱 */
+    public int rollTicks;
+    public static final int ROLL_TIME = 22;
+
+    public void startRoll() {
+        if (!onGround() && !level().isClientSide) level().broadcastEntityEvent(this, (byte) 61);
+    }
+
+    @Override
+    public void handleEntityEvent(byte id) {
+        if (id == 61) rollTicks = ROLL_TIME;
+        else super.handleEntityEvent(id);
+    }
+
+    /** 0~1 진행도 → 롤 각도 */
+    public float barrelRoll(float pt) {
+        if (rollTicks <= 0) return 0;
+        float prog = 1f - (rollTicks - pt) / ROLL_TIME;
+        return Mth.clamp(prog, 0f, 1f) * 360f;
     }
 
     @Override
@@ -134,6 +156,7 @@ public class JetEntity extends VehicleEntity {
         if (gunCooldown > 0) gunCooldown--;
         if (missileCooldown > 0) missileCooldown--;
         if (level().isClientSide) {
+            if (rollTicks > 0) rollTicks--;
             rollO = roll;
             roll += (Mth.clamp(-yawRate * 9f, -60f, 60f) - roll) * 0.15f;
         }

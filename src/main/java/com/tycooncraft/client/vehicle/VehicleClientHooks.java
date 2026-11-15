@@ -95,7 +95,7 @@ public final class VehicleClientHooks implements VehicleHooks.Client {
                 t.turretYaw = t.turretYawO = t.getYRot();
                 t.turretInit = true;
             }
-            t.turretYaw += Mth.clamp(Mth.wrapDegrees(target - t.turretYaw), -5f, 5f);
+            t.turretYaw += Mth.clamp(Mth.wrapDegrees(target - t.turretYaw), -18f, 18f);
             if (t.engineRunning() && r.nextInt(3) == 0) {
                 for (int s = -1; s <= 1; s += 2) {
                     Vec3 p = v.position().add(t.toWorld(new Vec3(s * 30 / 32.0, 42 / 32.0, 96 / 32.0)));

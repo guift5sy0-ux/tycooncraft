@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.wrapper.InvWrapper;
 
@@ -114,7 +115,7 @@ public class TurretBlockEntity extends BlockEntity implements MenuProvider {
         t.ammo.getItem(slot).shrink(1);
         t.ammo.setChanged();
         t.cooldown = 3;
-        Vec3 from = t.muzzle();
+        Vec3 from = t.muzzle().add(0, 0.45, 0);
         Vec3 aim = target.getBoundingBox().getCenter().add(0, target.getBbHeight() * 0.15, 0);
         Vec3 dir = aim.subtract(from).normalize().add(sl.random.nextGaussian() * 0.02, sl.random.nextGaussian() * 0.02, sl.random.nextGaussian() * 0.02).normalize();
         Ballistics.shoot(sl, null, from.add(dir.scale(0.9)), dir, RANGE + 4, heavy ? 7f : 5f, 0, 1.5f, false, true,
@@ -126,8 +127,12 @@ public class TurretBlockEntity extends BlockEntity implements MenuProvider {
 
     private boolean valid(Entity e) {
         if (!e.isAlive() || !(e instanceof Enemy) || e.distanceToSqr(muzzle()) > RANGE * RANGE) return false;
-        Vec3 eye = e instanceof LivingEntity le ? le.getEyePosition() : e.position();
-        return level.clip(new ClipContext(muzzle(), eye, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, e)).getType() == HitResult.Type.MISS;
+        Vec3 eye = e instanceof LivingEntity le ? le.getBoundingBox().getCenter().add(0, le.getBbHeight() * 0.25, 0) : e.position();
+        // 포탑 블록 자체에 막히지 않게 블록 바깥(위쪽·목표 방향)에서 시야 검사
+        Vec3 from = muzzle().add(0, 0.45, 0);
+        Vec3 dir = eye.subtract(from).normalize();
+        from = from.add(dir.scale(0.8));
+        return level.clip(new ClipContext(from, eye, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty())).getType() == HitResult.Type.MISS;
     }
 
     private Entity findTarget(ServerLevel level) {

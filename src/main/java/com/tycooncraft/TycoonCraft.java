@@ -48,6 +48,7 @@ public class TycoonCraft {
         NeoForge.EVENT_BUS.register(TycoonEvents.class);
         NeoForge.EVENT_BUS.register(TycoonCommands.class);
         NeoForge.EVENT_BUS.register(com.tycooncraft.gear.Parachute.class);
+        NeoForge.EVENT_BUS.register(com.tycooncraft.gun.GunEvents.class);
         if (AutoTest.ENABLED) NeoForge.EVENT_BUS.register(AutoTest.class);
     }
 

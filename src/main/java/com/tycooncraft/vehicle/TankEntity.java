@@ -25,7 +25,8 @@ import net.minecraft.world.phys.Vec3;
  * 좌클릭 = 주포 (전차 포탄 소모, 2.5초 재장전). 총알엔 거의 안 다치고 폭발에 약함.
  */
 public class TankEntity extends VehicleEntity {
-    private static final Vec3[] SEATS = {new Vec3(0, 38 / 32.0, 4 / 32.0), new Vec3(0, 46 / 32.0, 30 / 32.0)};
+    /** 몸은 렌더링하지 않고, 시점만 포탑 위(지휘관 해치 높이)에 둔다 */
+    private static final Vec3[] SEATS = {new Vec3(0, 44 / 32.0, 8 / 32.0), new Vec3(0, 40 / 32.0, 40 / 32.0)};
     public static final Vec3 TURRET = new Vec3(0, 46 / 32.0, 8 / 32.0);
     private int reload;
     /** 클라이언트: 포탑 각도, 포신 반동, 바퀴 */
@@ -140,10 +141,18 @@ public class TankEntity extends VehicleEntity {
             player.getInventory().getItem(slot).shrink(1);
         }
         reload = 50;
+        // 화면 가운데(조준점)가 가리키는 곳을 찾아, 포신 끝에서 그곳을 향해 쏜다
+        Vec3 look = player.getViewVector(1f);
+        Vec3 eye = player.getEyePosition();
+        var hit = level().clip(new net.minecraft.world.level.ClipContext(eye, eye.add(look.scale(250)),
+                net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, player));
+        Vec3 target = hit.getLocation();
+        Vec3 pivot = position().add(toWorld(new Vec3(0, 0, TURRET.z))).add(0, TURRET.y + 12 / 32.0, 0);
         Vec3 dir = aimDir(player);
-        Vec3 pivot = position().add(TURRET).add(0, 12 / 32.0, 0);
-        Vec3 muzzle = pivot.add(dir.scale(5.6));
-        level().addFreshEntity(RocketEntity.create(ModEntities.ROCKET.get(), level(), player, muzzle, dir.scale(3.2), RocketEntity.SHELL, 4.0f));
+        Vec3 muzzle = pivot.add(dir.scale(5.4));
+        Vec3 shot = target.subtract(muzzle);
+        if (shot.lengthSqr() > 4 && shot.normalize().dot(dir) > 0.8) dir = shot.normalize();
+        level().addFreshEntity(RocketEntity.create(ModEntities.ROCKET.get(), level(), player, muzzle, dir.scale(4.0), RocketEntity.SHELL, 4.0f));
         level().playSound(null, muzzle.x, muzzle.y, muzzle.z, ModSounds.TANK_FIRE.get(), SoundSource.NEUTRAL, 6.0f, 0.95f + random.nextFloat() * 0.1f);
         if (level() instanceof ServerLevel sl) {
             sl.sendParticles(ParticleTypes.EXPLOSION, muzzle.x, muzzle.y, muzzle.z, 2, 0.2, 0.2, 0.2, 0);

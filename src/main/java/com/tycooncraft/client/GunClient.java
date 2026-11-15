@@ -46,7 +46,7 @@ public final class GunClient {
     public static boolean isScoping() {
         Player player = Minecraft.getInstance().player;
         return player != null && player.isUsingItem()
-                && player.getUseItem().getItem() instanceof GunItem gun && gun.stats().scoped()
+                && player.getUseItem().getItem() instanceof GunItem gun && gun.isScoped(player.getUseItem())
                 && Minecraft.getInstance().options.getCameraType().isFirstPerson();
     }
 

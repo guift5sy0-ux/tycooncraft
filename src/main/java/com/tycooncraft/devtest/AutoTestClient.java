@@ -185,33 +185,46 @@ public final class AutoTestClient {
                 ride(mc);
             }
             case 470 -> mc.player.setXRot(-4);
-            case 500 -> {
-                shot(mc, "24_jet_flying");
+            case 480 -> KeyMapping.click(o.keySwapOffhand.getKey());
+            case 487 -> shot(mc, "24_jet_roll");
+            case 510 -> {
+                shot(mc, "24b_jet_flying");
                 ride(mc);
             }
-            case 505 -> KeyMapping.click(o.keyUse.getKey());
-            case 509 -> shot(mc, "25_jet_missile");
-            case 515 -> key(o.keyUp, false);
-            case 520 -> key(o.keyShift, true);
-            case 524 -> {
+            case 515 -> KeyMapping.click(o.keyUse.getKey());
+            case 519 -> shot(mc, "25_jet_missile");
+            case 525 -> key(o.keyUp, false);
+            case 530 -> key(o.keyShift, true);
+            case 534 -> {
                 key(o.keyShift, false);
                 ride(mc);
             }
-            case 545 -> {
+            case 555 -> {
                 o.setCameraType(CameraType.FIRST_PERSON);
                 mc.player.getInventory().selected = 2;
                 mc.player.setXRot(5);
             }
-            case 570 -> shot(mc, "26_dual_pistols");
-            case 575 -> mc.player.getInventory().selected = 1;
-            case 590 -> key(o.keyUse, true);
-            case 612 -> shot(mc, "27_vss_scope");
-            case 614 -> key(o.keyUse, false);
-            case 625 -> mc.player.getInventory().selected = 3;
-            case 645 -> shot(mc, "28_rpg");
-            case 648 -> KeyMapping.click(o.keyUse.getKey());
-            case 653 -> shot(mc, "29_rpg_fire");
-            case 680 -> next(11);
+            case 580 -> shot(mc, "26_dual_pistols");
+            case 585 -> key(o.keyUse, true);
+            case 590 -> shot(mc, "26b_dual_fire_a");
+            case 591 -> shot(mc, "26c_dual_fire_b");
+            case 600 -> key(o.keyUse, false);
+            case 610 -> mc.player.getInventory().selected = 1;
+            case 622 -> key(o.keyUse, true);
+            case 644 -> shot(mc, "27_vss_scope");
+            case 646 -> key(o.keyUse, false);
+            case 655 -> KeyMapping.click(o.keySwapOffhand.getKey());
+            case 665 -> key(o.keyUse, true);
+            case 672 -> {
+                shot(mc, "27b_vss_auto");
+                System.out.println("[AUTOTEST] vss mode=" + com.tycooncraft.gun.GunItem.fireMode(mc.player.getMainHandItem()));
+            }
+            case 680 -> key(o.keyUse, false);
+            case 690 -> mc.player.getInventory().selected = 3;
+            case 705 -> shot(mc, "28_rpg");
+            case 708 -> KeyMapping.click(o.keyUse.getKey());
+            case 713 -> shot(mc, "29_rpg_fire");
+            case 740 -> next(11);
             default -> {
             }
         }

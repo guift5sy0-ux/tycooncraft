@@ -33,5 +33,12 @@ public final class ModComponents {
                     .networkSynchronized(ByteBufCodecs.VAR_INT)
                     .build());
 
+    /** 사격 모드 (VSS: 0 단발·조준, 1 연사) */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> FIRE_MODE =
+            COMPONENTS.register("fire_mode", () -> DataComponentType.<Integer>builder()
+                    .persistent(Codec.INT)
+                    .networkSynchronized(ByteBufCodecs.VAR_INT)
+                    .build());
+
     private ModComponents() {}
 }

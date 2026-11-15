@@ -34,7 +34,7 @@ public class JetRenderer extends EntityRenderer<JetEntity> {
         ps.translate(0, 1.0f, 0);
         ps.mulPose(Axis.YP.rotationDegrees(180f - yaw));
         ps.mulPose(Axis.XP.rotationDegrees(-pitch));
-        ps.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(pt, j.rollO, j.roll)));
+        ps.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(pt, j.rollO, j.roll) - j.barrelRoll(pt)));
         ps.translate(0, -1.0f, 0);
         VehicleModels.hurtWobble(ps, j.getHurtTime(), pt);
         VehicleModels.body(ps, VehicleModels.buffer(buffers), VehicleModels.JET_BODY, K, light);

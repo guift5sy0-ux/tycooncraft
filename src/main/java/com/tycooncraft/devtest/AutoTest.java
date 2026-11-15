@@ -113,6 +113,10 @@ public final class AutoTest {
             long drones = level.getEntities(ModEntities.DRONE.get(), e -> true).size();
             System.out.println("[AUTOTEST] t=" + t + " drones=" + drones);
         }
+        if (t >= 40 && t <= 400 && t % 20 == 0) {
+            System.out.println("[AUTOTEST] turret t=" + t + " gunners=" + (level.getEntities(ModEntities.GANGSTER.get(), e -> true).size()
+                    + level.getEntities(ModEntities.MERCENARY.get(), e -> true).size() + level.getEntities(ModEntities.OUTLAW.get(), e -> true).size()));
+        }
         if (t % 40 == 0 && t >= 380 && t < 1100) {
             Entity v = player.getVehicle();
             System.out.println("[AUTOTEST] t=" + t + " vehicle=" + (v == null ? "none" : v.getType().toShortString())
@@ -160,9 +164,6 @@ public final class AutoTest {
         if (level.getBlockEntity(tp) instanceof com.tycooncraft.turret.TurretBlockEntity te) {
             te.ammo().setItem(0, new ItemStack(ModItems.HEAVY_AMMO.get(), 64));
         }
-        var golem = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
-        golem.moveTo(40, gy, -48, 0, 0);
-        level.addFreshEntity(golem);
         int k = 0;
         for (var type : java.util.List.of(ModEntities.GANGSTER.get(), ModEntities.MERCENARY.get(), ModEntities.OUTLAW.get())) {
             var g = type.create(level);

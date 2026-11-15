@@ -30,10 +30,10 @@ import java.util.function.Predicate;
  */
 public final class Ballistics {
     /** 방탄조끼 등급별 몸통 총알 피해 감소 */
-    private static final float[] VEST_CUT = {0f, 0.25f, 0.45f, 0.65f};
+    private static final float[] VEST_CUT = {0f, 0.15f, 0.25f, 0.35f};
     /** 방탄모 등급별 헤드샷 '추가' 피해 감소 + 머리 피해 자체 감소 */
-    private static final float[] HELMET_BONUS_CUT = {0f, 0.4f, 0.65f, 0.9f};
-    private static final float[] HELMET_CUT = {0f, 0.1f, 0.15f, 0.2f};
+    private static final float[] HELMET_BONUS_CUT = {0f, 0.2f, 0.35f, 0.5f};
+    private static final float[] HELMET_CUT = {0f, 0.05f, 0.08f, 0.1f};
 
     public static int vestTier(LivingEntity e) {
         ItemStack s = e.getItemBySlot(EquipmentSlot.CHEST);

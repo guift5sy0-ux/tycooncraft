@@ -94,12 +94,12 @@ public final class ModItems {
     public static final DeferredItem<Item> TANK_SHELL = ITEMS.register("tank_shell", () -> new Item(new Item.Properties().stacksTo(16)));
 
     // ── 방탄 장비 & 낙하산 ──
-    public static final DeferredItem<GearItem> VEST_1 = gear("vest_1", ModArmorMaterials.TACTICAL_LIGHT, ArmorItem.Type.CHESTPLATE, 15, "tooltip.tycooncraft.vest", 25);
-    public static final DeferredItem<GearItem> VEST_2 = gear("vest_2", ModArmorMaterials.TACTICAL_MEDIUM, ArmorItem.Type.CHESTPLATE, 25, "tooltip.tycooncraft.vest", 45);
-    public static final DeferredItem<GearItem> VEST_3 = gear("vest_3", ModArmorMaterials.TACTICAL_HEAVY, ArmorItem.Type.CHESTPLATE, 35, "tooltip.tycooncraft.vest", 65);
-    public static final DeferredItem<GearItem> HELMET_1 = gear("helmet_1", ModArmorMaterials.TACTICAL_LIGHT, ArmorItem.Type.HELMET, 15, "tooltip.tycooncraft.helmet", 40);
-    public static final DeferredItem<GearItem> HELMET_2 = gear("helmet_2", ModArmorMaterials.TACTICAL_MEDIUM, ArmorItem.Type.HELMET, 25, "tooltip.tycooncraft.helmet", 65);
-    public static final DeferredItem<GearItem> HELMET_3 = gear("helmet_3", ModArmorMaterials.TACTICAL_HEAVY, ArmorItem.Type.HELMET, 35, "tooltip.tycooncraft.helmet", 90);
+    public static final DeferredItem<GearItem> VEST_1 = gear("vest_1", ModArmorMaterials.TACTICAL_LIGHT, ArmorItem.Type.CHESTPLATE, 15, "tooltip.tycooncraft.vest", 15);
+    public static final DeferredItem<GearItem> VEST_2 = gear("vest_2", ModArmorMaterials.TACTICAL_MEDIUM, ArmorItem.Type.CHESTPLATE, 25, "tooltip.tycooncraft.vest", 25);
+    public static final DeferredItem<GearItem> VEST_3 = gear("vest_3", ModArmorMaterials.TACTICAL_HEAVY, ArmorItem.Type.CHESTPLATE, 35, "tooltip.tycooncraft.vest", 35);
+    public static final DeferredItem<GearItem> HELMET_1 = gear("helmet_1", ModArmorMaterials.TACTICAL_LIGHT, ArmorItem.Type.HELMET, 15, "tooltip.tycooncraft.helmet", 20);
+    public static final DeferredItem<GearItem> HELMET_2 = gear("helmet_2", ModArmorMaterials.TACTICAL_MEDIUM, ArmorItem.Type.HELMET, 25, "tooltip.tycooncraft.helmet", 35);
+    public static final DeferredItem<GearItem> HELMET_3 = gear("helmet_3", ModArmorMaterials.TACTICAL_HEAVY, ArmorItem.Type.HELMET, 35, "tooltip.tycooncraft.helmet", 50);
     public static final DeferredItem<GearItem> PARACHUTE = ITEMS.register("parachute", () -> new GearItem(ModArmorMaterials.PARACHUTE, ArmorItem.Type.LEGGINGS,
             new Item.Properties().stacksTo(1), "tooltip.tycooncraft.parachute"));
 
