@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "tycooncraft:gun_receiver"
+    },
+    {
+      "item": "tycooncraft:gun_barrel"
+    },
+    {
+      "item": "tycooncraft:gun_barrel"
+    },
+    {
+      "item": "tycooncraft:gun_stock"
+    },
+    {
+      "item": "tycooncraft:steel_plate"
+    }
+  ],
+  "result": {
+    "id": "tycooncraft:shotgun",
+    "count": 1
+  }
+}

@@ -2,8 +2,11 @@ package com.tycooncraft.registry;
 
 import com.tycooncraft.TycoonCraft;
 import com.tycooncraft.economy.CoinItem;
+import com.tycooncraft.gun.GunItem;
+import com.tycooncraft.gun.GunStats;
 import com.tycooncraft.machine.MachineType;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -47,6 +50,26 @@ public final class ModItems {
     public static final DeferredItem<Item> MECHANISM = ITEMS.registerSimpleItem("mechanism");
     public static final DeferredItem<Item> ENGINE = ITEMS.registerSimpleItem("engine");
     public static final DeferredItem<Item> WOODEN_CRATE = ITEMS.registerSimpleItem("wooden_crate");
+
+    // ── 총기 부품 & 탄약 ──
+    public static final DeferredItem<Item> GUN_BARREL = ITEMS.registerSimpleItem("gun_barrel");
+    public static final DeferredItem<Item> GUN_RECEIVER = ITEMS.registerSimpleItem("gun_receiver");
+    public static final DeferredItem<Item> GUN_STOCK = ITEMS.registerSimpleItem("gun_stock");
+    public static final DeferredItem<Item> LIGHT_AMMO = ITEMS.registerSimpleItem("light_ammo");
+    public static final DeferredItem<Item> HEAVY_AMMO = ITEMS.registerSimpleItem("heavy_ammo");
+    public static final DeferredItem<Item> SHOTGUN_SHELL = ITEMS.registerSimpleItem("shotgun_shell");
+
+    // ── 총 ── (피해, 탄 수, 퍼짐, 사거리, 탄창, 발사 간격, 재장전, 연사, 조준, 반동, 탄약, 소리, 음높이)
+    public static final DeferredItem<GunItem> PISTOL = ITEMS.register("pistol", () -> new GunItem(new Item.Properties(),
+            new GunStats(6f, 1, 0.012f, 48, 12, 6, 30, false, false, 2.5f, LIGHT_AMMO, SoundEvents.FIREWORK_ROCKET_BLAST, 1.6f)));
+    public static final DeferredItem<GunItem> SMG = ITEMS.register("smg", () -> new GunItem(new Item.Properties(),
+            new GunStats(4f, 1, 0.03f, 40, 30, 3, 40, true, false, 1.2f, LIGHT_AMMO, SoundEvents.FIREWORK_ROCKET_BLAST, 1.9f)));
+    public static final DeferredItem<GunItem> RIFLE = ITEMS.register("rifle", () -> new GunItem(new Item.Properties(),
+            new GunStats(7f, 1, 0.015f, 80, 30, 4, 50, true, false, 1.8f, HEAVY_AMMO, SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, 1.3f)));
+    public static final DeferredItem<GunItem> SHOTGUN = ITEMS.register("shotgun", () -> new GunItem(new Item.Properties(),
+            new GunStats(3.5f, 8, 0.09f, 20, 6, 18, 50, false, false, 6f, SHOTGUN_SHELL, SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, 0.8f)));
+    public static final DeferredItem<GunItem> SNIPER = ITEMS.register("sniper", () -> new GunItem(new Item.Properties(),
+            new GunStats(24f, 1, 0.05f, 160, 5, 30, 60, false, true, 8f, HEAVY_AMMO, SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, 0.6f)));
 
     // ── 블록 아이템 ──
     public static final DeferredItem<BlockItem> SELL_STATION = ITEMS.registerSimpleBlockItem(ModBlocks.SELL_STATION);

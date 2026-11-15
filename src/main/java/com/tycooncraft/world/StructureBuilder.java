@@ -343,7 +343,9 @@ public final class StructureBuilder {
         b.trader(12, 0, 20, "trader.tycooncraft.gear", VillagerProfession.ARMORER, List.of(
                 offer(ir, 5, Items.IRON_PICKAXE, 1), offer(ir, 5, Items.IRON_SWORD, 1), offer(ir, 4, Items.IRON_HELMET, 1),
                 offer(ir, 8, Items.IRON_CHESTPLATE, 1), offer(ir, 7, Items.IRON_LEGGINGS, 1), offer(ir, 4, Items.IRON_BOOTS, 1),
-                offer(ir, 3, Items.SHIELD, 1), offer(go, 3, Items.DIAMOND_PICKAXE, 1)));
+                offer(ir, 3, Items.SHIELD, 1), offer(go, 3, Items.DIAMOND_PICKAXE, 1),
+                offer(ir, 3, ModItems.LIGHT_AMMO.get(), 16), offer(ir, 4, ModItems.HEAVY_AMMO.get(), 8),
+                offer(ir, 3, ModItems.SHOTGUN_SHELL.get(), 8), offer(go, 6, ModItems.PISTOL.get(), 1)));
         b.trader(20, 0, 20, "trader.tycooncraft.machines", VillagerProfession.TOOLSMITH, List.of(
                 offer(ir, 2, ModItems.CONVEYOR.get(), 8), offer(ir, 3, ModItems.LIFT_UP.get(), 2), offer(ir, 3, ModItems.LIFT_DOWN.get(), 2),
                 offer(ir, 6, ModItems.SELL_STATION.get(), 1), offer(ir, 6, ModItems.machineItem(MachineType.CRUSHER), 1),

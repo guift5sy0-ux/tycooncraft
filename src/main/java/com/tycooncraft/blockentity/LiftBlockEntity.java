@@ -43,7 +43,7 @@ public class LiftBlockEntity extends BlockEntity {
             double dx = entity.getX() - (worldPosition.getX() + 0.5);
             double dz = entity.getZ() - (worldPosition.getZ() + 0.5);
             if (dx * dir.getStepX() + dz * dir.getStepZ() > 0.45) continue;
-            ItemTransfer.moveEntity(level, end, dir, entity);
+            ItemTransfer.moveEntity(level, end, dir, entity, true);
         }
     }
 }

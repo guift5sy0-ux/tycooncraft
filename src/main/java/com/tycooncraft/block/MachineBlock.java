@@ -7,11 +7,8 @@ import com.tycooncraft.machine.MachineType;
 import com.tycooncraft.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -29,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * 기계 블록 (7종 공용). 동력·연료 필요 없음.
- * 옆·위로 들어온 재료를 가공해 FACING(화살표) 방향으로 내보낸다.
+ * 옆·위로 들어온 재료를 가공해 FACING(화살표) 방향으로 내보낸다. 우클릭하면 기계 창.
  */
 public class MachineBlock extends BaseEntityBlock {
     public static final MapCodec<MachineBlock> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
@@ -83,20 +80,11 @@ public class MachineBlock extends BaseEntityBlock {
         return createTickerHelper(beType, ModBlockEntities.MACHINE.get(), (lvl, pos, st, be) -> be.serverTick());
     }
 
-    @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
-                                              Player player, InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide) return ItemInteractionResult.SUCCESS;
-        if (level.getBlockEntity(pos) instanceof MachineBlockEntity machine) {
-            machine.insertFromHand(player, hand);
-        }
-        return ItemInteractionResult.CONSUME;
-    }
-
+    /** 우클릭: 기계 창 열기 */
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide && level.getBlockEntity(pos) instanceof MachineBlockEntity machine) {
-            machine.showInfo(player);
+            player.openMenu(machine, buf -> buf.writeBlockPos(pos));
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
     }

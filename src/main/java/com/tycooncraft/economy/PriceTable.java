@@ -67,6 +67,18 @@ public final class PriceTable {
             p.put(ModItems.ADVANCED_CIRCUIT.get(), 230.0);
             p.put(ModItems.ENGINE.get(), 700.0);
             p.put(ModItems.WOODEN_CRATE.get(), 15.0);
+            // 총기 부품·탄약·총
+            p.put(ModItems.GUN_BARREL.get(), 40.0);
+            p.put(ModItems.GUN_RECEIVER.get(), 300.0);
+            p.put(ModItems.GUN_STOCK.get(), 10.0);
+            p.put(ModItems.LIGHT_AMMO.get(), 1.0);
+            p.put(ModItems.HEAVY_AMMO.get(), 3.0);
+            p.put(ModItems.SHOTGUN_SHELL.get(), 2.0);
+            p.put(ModItems.PISTOL.get(), 400.0);
+            p.put(ModItems.SMG.get(), 600.0);
+            p.put(ModItems.SHOTGUN.get(), 900.0);
+            p.put(ModItems.RIFLE.get(), 1200.0);
+            p.put(ModItems.SNIPER.get(), 1600.0);
             // 농산물·식품
             p.put(Items.WHEAT, 1.0);
             p.put(Items.POTATO, 0.8);

@@ -30,6 +30,7 @@ public final class MachineRecipes {
                 r.add(MachineRecipe.of(ModItems.COAL_DUST.get(), 2).in(Items.COAL).build());
                 r.add(MachineRecipe.of(ModItems.FLOUR.get(), 2).in(Items.WHEAT).build());
                 r.add(MachineRecipe.of(Items.BONE_MEAL, 6).in(Items.BONE).build());
+                r.add(MachineRecipe.of(Items.GUNPOWDER, 1).in(Items.FLINT).build());
                 r.add(MachineRecipe.of(Items.GRAVEL, 1).in(Items.COBBLESTONE).build());
                 r.add(MachineRecipe.of(Items.SAND, 1).in(Items.GRAVEL).build());
             }
@@ -63,6 +64,7 @@ public final class MachineRecipes {
             case LATHE -> {
                 r.add(MachineRecipe.of(ModItems.IRON_GEAR.get(), 1).in(ModItems.IRON_PLATE.get()).build());
                 r.add(MachineRecipe.of(ModItems.STEEL_GEAR.get(), 1).in(ModItems.STEEL_PLATE.get()).build());
+                r.add(MachineRecipe.of(ModItems.GUN_BARREL.get(), 1).in(ModItems.STEEL_ROD.get()).build());
                 Item[][] wood = {
                         {Items.OAK_LOG, Items.OAK_PLANKS}, {Items.SPRUCE_LOG, Items.SPRUCE_PLANKS},
                         {Items.BIRCH_LOG, Items.BIRCH_PLANKS}, {Items.JUNGLE_LOG, Items.JUNGLE_PLANKS},
@@ -80,6 +82,18 @@ public final class MachineRecipes {
                         .in(ModItems.IRON_GEAR.get(), 2).in(ModItems.STEEL_ROD.get()).in(ModItems.CIRCUIT.get()).build());
                 r.add(MachineRecipe.of(ModItems.CIRCUIT.get(), 1)
                         .in(ModItems.COPPER_WIRE.get(), 3).in(ModItems.IRON_PLATE.get()).in(Items.REDSTONE).build());
+                // 총기 부품 & 탄약
+                r.add(MachineRecipe.of(ModItems.GUN_RECEIVER.get(), 1)
+                        .in(ModItems.STEEL_PLATE.get(), 2).in(ModItems.MECHANISM.get()).in(ModItems.IRON_GEAR.get()).build());
+                r.add(MachineRecipe.of(ModItems.HEAVY_AMMO.get(), 8)
+                        .in(ModItems.COPPER_PLATE.get()).in(Items.GUNPOWDER, 2).in(ModItems.STEEL_ROD.get()).build());
+                r.add(MachineRecipe.of(ModItems.LIGHT_AMMO.get(), 16)
+                        .in(ModItems.COPPER_PLATE.get()).in(Items.GUNPOWDER).in(ModItems.IRON_ROD.get()).build());
+                r.add(MachineRecipe.of(ModItems.SHOTGUN_SHELL.get(), 8)
+                        .in(ModItems.COPPER_PLATE.get()).in(Items.GUNPOWDER).in(ModItems.IRON_DUST.get(), 2).build());
+                for (Item planks : new Item[]{Items.OAK_PLANKS, Items.SPRUCE_PLANKS, Items.BIRCH_PLANKS}) {
+                    r.add(MachineRecipe.of(ModItems.GUN_STOCK.get(), 1).in(planks, 3).in(Items.LEATHER).build());
+                }
                 r.add(MachineRecipe.of(Items.CAKE, 1).in(ModItems.FLOUR.get(), 3).in(Items.SUGAR, 2).in(Items.EGG).build());
                 r.add(MachineRecipe.of(Items.COOKIE, 8).in(ModItems.FLOUR.get(), 2).in(Items.COCOA_BEANS).build());
                 for (Item planks : new Item[]{Items.OAK_PLANKS, Items.SPRUCE_PLANKS, Items.BIRCH_PLANKS}) {

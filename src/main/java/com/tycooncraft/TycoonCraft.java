@@ -4,8 +4,10 @@ import com.tycooncraft.event.TycoonCommands;
 import com.tycooncraft.event.TycoonEvents;
 import com.tycooncraft.registry.ModBlockEntities;
 import com.tycooncraft.registry.ModBlocks;
+import com.tycooncraft.registry.ModComponents;
 import com.tycooncraft.registry.ModCreativeTabs;
 import com.tycooncraft.registry.ModItems;
+import com.tycooncraft.registry.ModMenus;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -25,6 +27,8 @@ public class TycoonCraft {
         ModItems.ITEMS.register(modBus);
         ModBlockEntities.BLOCK_ENTITY_TYPES.register(modBus);
         ModCreativeTabs.TABS.register(modBus);
+        ModMenus.MENUS.register(modBus);
+        ModComponents.COMPONENTS.register(modBus);
 
         modBus.addListener(this::registerCapabilities);
 
