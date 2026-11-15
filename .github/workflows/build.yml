@@ -63,13 +63,33 @@ jobs:
           grep -E "ERROR|Exception|Couldn't|Failed to|Caused by|tycooncraft" server-latest.log server-log.txt > smoke-errors.txt || true
           grep -q "Done (" server-log.txt
 
+      # 게임 클라이언트를 가상 화면에서 켜서 텍스처·모델·화면 등록 오류 확인
+      - name: Client smoke test
+        if: success()
+        continue-on-error: true
+        run: |
+          sudo apt-get install -y -qq xvfb > /dev/null
+          xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClient --no-configuration-cache > client-log.txt 2>&1 &
+          PID=$!
+          for i in $(seq 1 60); do
+            if grep -q "Sound engine started" client-log.txt; then echo "CLIENT LOADED"; break; fi
+            if grep -q "Crash Report" client-log.txt; then echo "CLIENT CRASHED"; break; fi
+            if ! kill -0 $PID 2>/dev/null; then echo "CLIENT EXITED"; break; fi
+            sleep 5
+          done
+          sleep 30
+          pkill -f "net.neoforged" || true
+          kill $PID 2>/dev/null || true
+          grep -E "Crash Report|Exception|Missing|Unable to|Failed to|tycooncraft:" client-log.txt | grep -vE "DEBUG" > client-errors.txt || true
+          grep -q "Sound engine started" client-log.txt
+
       - name: Save logs
         if: always()
         run: |
           git config user.name "build-bot"
           git config user.email "build-bot@users.noreply.github.com"
           mkdir -p /tmp/logs
-          cp build-log.txt server-log.txt server-latest.log smoke-errors.txt /tmp/logs/ 2>/dev/null || true
+          cp build-log.txt server-log.txt server-latest.log smoke-errors.txt client-log.txt client-errors.txt /tmp/logs/ 2>/dev/null || true
           grep -E "error:|warning:|FAILURE|What went wrong|\.java:[0-9]+" build-log.txt > /tmp/logs/build-errors.txt || true
           git checkout --orphan ci-log
           git rm -rf --cached . > /dev/null
