@@ -60,6 +60,11 @@ public class VehicleItem extends Item {
                 if (player != null) player.displayClientMessage(Component.translatable("message.tycooncraft.vehicle.no_space"), true);
                 return InteractionResult.FAIL;
             }
+            // 크리에이티브에서 놓으면 연료 가득
+            if (player != null && player.getAbilities().instabuild) {
+                if (e instanceof VehicleEntity ve) ve.setFuel(ve.maxFuel());
+                else if (e instanceof LocomotiveEntity loco) loco.setFuel(loco.maxFuel());
+            }
             level.addFreshEntity(e);
             ctx.getItemInHand().consume(1, player);
         }

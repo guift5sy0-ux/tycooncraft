@@ -126,5 +126,6 @@
   "subtitles.tycooncraft.vehicle.train_horn": "Train horn",
   "hud.tycooncraft.name.car": "Tycoon GT",
   "hud.tycooncraft.name.helicopter": "TC AIR",
-  "hud.tycooncraft.name.locomotive": "TC-01"
+  "hud.tycooncraft.name.locomotive": "TC-01",
+  "itemGroup.tycooncraft.vehicles": "TycoonCraft: Vehicles & Guns"
 }

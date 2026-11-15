@@ -126,5 +126,6 @@
   "subtitles.tycooncraft.vehicle.train_horn": "기적 소리",
   "hud.tycooncraft.name.car": "타이쿤 GT",
   "hud.tycooncraft.name.helicopter": "TC AIR",
-  "hud.tycooncraft.name.locomotive": "TC-01"
+  "hud.tycooncraft.name.locomotive": "TC-01",
+  "itemGroup.tycooncraft.vehicles": "타이쿤크래프트: 탈것·총기"
 }
