@@ -69,6 +69,8 @@ public class GunnerEntity extends Monster implements RangedAttackMob {
         super(type, level);
         this.kind = kind;
         this.xpReward = kind == Kind.BOSS ? 200 : 8;
+        // registerGoals() 는 부모 생성자에서 먼저 불리므로(kind 가 아직 null) 사격 목표는 여기서 추가
+        goalSelector.addGoal(2, new RangedAttackGoal(this, 1.0, kind.interval, kind.interval + 10, kind.range));
     }
 
     public Kind kind() {
@@ -88,7 +90,6 @@ public class GunnerEntity extends Monster implements RangedAttackMob {
     @Override
     protected void registerGoals() {
         goalSelector.addGoal(0, new FloatGoal(this));
-        goalSelector.addGoal(2, new RangedAttackGoal(this, 1.0, kind.interval, kind.interval + 10, kind.range));
         goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.9));
         goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 12f));
         goalSelector.addGoal(7, new RandomLookAroundGoal(this));
