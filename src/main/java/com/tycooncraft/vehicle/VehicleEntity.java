@@ -156,7 +156,48 @@ public abstract class VehicleEntity extends Entity implements FueledVehicle {
         } else {
             if (getControllingPassenger() != null && getFuel() > 0 && burning(moved)) setFuel(getFuel() - fuelPerTick());
             serverTick(moved);
+            waterTick();
         }
+    }
+
+    // ── 침수 고장: 물에 잠기면 3초 카운트다운 후 고장 ─────────────────
+    private int floodTicks;
+    public static final int FLOOD_TIME = 60;
+
+    private void waterTick() {
+        boolean flooded = getFluidHeight(net.minecraft.tags.FluidTags.WATER) > 0.45;
+        if (!flooded) {
+            if (floodTicks > 0) {
+                floodTicks = 0;
+                for (Entity p : getPassengers()) if (p instanceof Player pl)
+                    pl.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.tycooncraft.vehicle.flood_safe").withStyle(net.minecraft.ChatFormatting.GREEN), true);
+            }
+            return;
+        }
+        if (floodTicks % 20 == 0) {
+            int left = 3 - floodTicks / 20;
+            for (Entity p : getPassengers()) if (p instanceof Player pl)
+                pl.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.tycooncraft.vehicle.flood", left).withStyle(net.minecraft.ChatFormatting.RED), true);
+            level().playSound(null, getX(), getY(), getZ(), SoundEvents.NOTE_BLOCK_BIT.value(), SoundSource.NEUTRAL, 1.0f, 0.7f);
+        }
+        if (level() instanceof net.minecraft.server.level.ServerLevel sl)
+            sl.sendParticles(net.minecraft.core.particles.ParticleTypes.BUBBLE, getX(), getY() + 0.8, getZ(), 6, getBbWidth() * 0.3, 0.3, getBbWidth() * 0.3, 0.05);
+        if (++floodTicks >= FLOOD_TIME) floodWreck();
+    }
+
+    /** 침수로 엔진 고장: 탑승자를 내리고 연기와 함께 차량이 망가진다 (폭발 없음) */
+    protected void floodWreck() {
+        if (isRemoved()) return;
+        for (Entity p : getPassengers()) if (p instanceof Player pl)
+            pl.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.tycooncraft.vehicle.flood_dead").withStyle(net.minecraft.ChatFormatting.DARK_RED), true);
+        ejectPassengers();
+        level().playSound(null, getX(), getY(), getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.NEUTRAL, 1.5f, 0.6f);
+        level().playSound(null, getX(), getY(), getZ(), SoundEvents.ANVIL_LAND, SoundSource.NEUTRAL, 0.7f, 0.5f);
+        if (level() instanceof net.minecraft.server.level.ServerLevel sl)
+            sl.sendParticles(net.minecraft.core.particles.ParticleTypes.LARGE_SMOKE, getX(), getY() + 1, getZ(), 40, getBbWidth() * 0.4, 0.6, getBbWidth() * 0.4, 0.02);
+        // 고철 몇 장은 건진다
+        spawnAtLocation(new ItemStack(ModItems.STEEL_PLATE.get(), 2));
+        discard();
     }
 
     // ── 충돌·행동 ─────────────────────────────────────────────────
@@ -206,6 +247,21 @@ public abstract class VehicleEntity extends Entity implements FueledVehicle {
             }
         }
         return null;
+    }
+
+    /** 공중이면 기체 바로 아래(약 3칸)에 내려준다. 땅이 가까우면 옆 지면에. */
+    protected Vec3 airDismount(LivingEntity passenger) {
+        for (double dy : new double[]{3.0, 3.5, 4.0}) {
+            Vec3 at = position().add(0, -dy, 0);
+            boolean clear = true;
+            // 기체와 내릴 곳 사이에 땅이 있으면 (착륙 상태) 지면 하차
+            for (int i = 0; i <= (int) dy + 1; i++) {
+                BlockPos bp = BlockPos.containing(at.x, getY() - i, at.z);
+                if (!level().getBlockState(bp).getCollisionShape(level(), bp).isEmpty()) { clear = false; break; }
+            }
+            if (clear && level().noCollision(passenger, passenger.getDimensions(Pose.STANDING).makeBoundingBox(at))) return at;
+        }
+        return groundDismount(passenger);
     }
 
     /** 모든 쪽에서 운전 계산 전에 (헬기 로터 회전 등) */

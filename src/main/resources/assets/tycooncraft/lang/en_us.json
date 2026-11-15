@@ -215,5 +215,8 @@
   "tooltip.tycooncraft.gun.mode_semi": "Mode: semi-auto (hold to aim) — F to switch",
   "tooltip.tycooncraft.gun.mode_auto": "Mode: full-auto (no scope) — F to switch",
   "message.tycooncraft.gun.mode_semi": "Semi-auto (scoped)",
-  "message.tycooncraft.gun.mode_auto": "Full-auto"
+  "message.tycooncraft.gun.mode_auto": "Full-auto",
+  "message.tycooncraft.vehicle.flood": "⚠ Flooding! Engine fails in %s s — get out of the water!",
+  "message.tycooncraft.vehicle.flood_safe": "Out of the water",
+  "message.tycooncraft.vehicle.flood_dead": "The engine was destroyed by water!"
 }

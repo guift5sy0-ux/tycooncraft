@@ -90,7 +90,7 @@ public class HelicopterEntity extends VehicleEntity {
 
     @Override
     public Vec3 getDismountLocationForPassenger(net.minecraft.world.entity.LivingEntity passenger) {
-        Vec3 g = groundDismount(passenger);
+        Vec3 g = airDismount(passenger);
         return g != null ? g : super.getDismountLocationForPassenger(passenger);
     }
 

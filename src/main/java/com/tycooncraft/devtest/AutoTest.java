@@ -113,6 +113,16 @@ public final class AutoTest {
             long drones = level.getEntities(ModEntities.DRONE.get(), e -> true).size();
             System.out.println("[AUTOTEST] t=" + t + " drones=" + drones);
         }
+        // 침수 테스트: 물웅덩이에 자동차 → 3초 뒤 고장
+        if (t == 30) {
+            for (int x = -2; x <= 2; x++) for (int z = -2; z <= 2; z++) for (int y = 0; y < 2; y++)
+                level.setBlockAndUpdate(new net.minecraft.core.BlockPos(70 + x, gy + y, 70 + z), net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+            var car = ModEntities.CAR.get().create(level);
+            car.moveTo(70, gy, 70, 0, 0);
+            level.addFreshEntity(car);
+        }
+        if (t == 50 || t == 110) System.out.println("[AUTOTEST] flood t=" + t + " cars_in_pool="
+                + level.getEntities(ModEntities.CAR.get(), new net.minecraft.world.phys.AABB(65, gy - 3, 65, 75, gy + 5, 75), e -> true).size());
         if (t >= 40 && t <= 400 && t % 20 == 0) {
             System.out.println("[AUTOTEST] turret t=" + t + " gunners=" + (level.getEntities(ModEntities.GANGSTER.get(), e -> true).size()
                     + level.getEntities(ModEntities.MERCENARY.get(), e -> true).size() + level.getEntities(ModEntities.OUTLAW.get(), e -> true).size()));

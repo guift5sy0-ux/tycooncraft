@@ -24,7 +24,9 @@ import net.minecraft.world.phys.Vec3;
  */
 public class JetEntity extends VehicleEntity {
     private static final Vec3 SEAT = new Vec3(0, 31 / 32.0 * 1.0, -62 / 32.0);
-    public static final double MAX_SPEED = 2.4, LIFT_SPEED = 0.9;
+    /** 최고 속도 130 km/h (= 130 / 72 블록/틱) */
+    public static final double MAX_SPEED = 130.0 / 72.0, LIFT_SPEED = 0.85;
+    private float yawVel, pitchVel;
     /** 조종자 클라이언트의 스로틀 (0~1) */
     public float throttle;
     public float roll, rollO;
@@ -114,21 +116,27 @@ public class JetEntity extends VehicleEntity {
     @Override
     protected void drive(VehicleHooks.Input in, boolean hasFuel) {
         boolean manned = getControllingPassenger() != null;
-        if (hasFuel && manned) throttle = Mth.clamp(throttle + in.forward() * 0.012f, 0f, 1f);
+        if (hasFuel && manned) throttle = Mth.clamp(throttle + in.forward() * 0.01f, 0f, 1f);
         else throttle = Math.max(0, throttle - 0.01f);
         Vec3 dm = getDeltaMovement();
         double speed = dm.length();
         double target = throttle * MAX_SPEED;
-        speed += (target - speed) * (target > speed ? 0.012 : 0.006);
+        speed += (target - speed) * (target > speed ? 0.02 : 0.012);
         // 기수 방향: 조종자가 보는 쪽으로 천천히
         float yaw = getYRot(), pitch = getXRot();
         if (manned) {
             float dy = Mth.wrapDegrees(in.lookYaw() - yaw);
             float dp = in.lookPitch() - pitch;
             float agility = (float) Mth.clamp(speed / LIFT_SPEED, 0.25, 1.0);
-            yaw += Mth.clamp(dy * 0.12f, -3.8f, 3.8f) * agility;
-            pitch += Mth.clamp(dp * 0.12f, -3.2f, 3.2f) * agility;
+            // 회전 속도 자체를 부드럽게 보간 → 급격한 꺾임 없이 미끄러지듯
+            yawVel += (Mth.clamp(dy * 0.09f, -4.0f, 4.0f) * agility - yawVel) * 0.18f;
+            pitchVel += (Mth.clamp(dp * 0.09f, -3.2f, 3.2f) * agility - pitchVel) * 0.18f;
+        } else {
+            yawVel *= 0.8f;
+            pitchVel *= 0.8f;
         }
+        yaw += yawVel;
+        pitch += pitchVel;
         boolean flying = speed > LIFT_SPEED * 0.8;
         if (onGround() && !flying) pitch = Math.min(0, pitch) * 0.5f + Math.max(0, pitch) * 0f;
         pitch = Mth.clamp(pitch, -70f, 70f);
@@ -137,7 +145,9 @@ public class JetEntity extends VehicleEntity {
         setXRot(pitch);
         Vec3 dir = Vec3.directionFromRotation(pitch, yaw);
         double lift = Mth.clamp(speed / LIFT_SPEED, 0, 1);
-        Vec3 v = dir.scale(speed);
+        // 속도 방향은 기수 방향을 살짝 늦게 따라감 (관성)
+        Vec3 cur = dm.lengthSqr() > 1e-4 ? dm.normalize() : dir;
+        Vec3 v = cur.scale(0.25).add(dir.scale(0.75)).normalize().scale(speed);
         double sink = (1 - lift) * 0.5;
         if (onGround() && !flying) v = new Vec3(v.x, Math.min(v.y, 0), v.z);
         setDeltaMovement(v.x, v.y - sink * (onGround() ? 0 : 1) - (onGround() ? 0.04 : 0), v.z);
@@ -206,7 +216,7 @@ public class JetEntity extends VehicleEntity {
 
     @Override
     public Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
-        Vec3 g = groundDismount(passenger);
+        Vec3 g = airDismount(passenger);
         return g != null ? g : super.getDismountLocationForPassenger(passenger);
     }
 }

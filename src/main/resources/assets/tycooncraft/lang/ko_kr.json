@@ -215,5 +215,8 @@
   "tooltip.tycooncraft.gun.mode_semi": "모드: 단발 (꾹 눌러 조준) — F 로 전환",
   "tooltip.tycooncraft.gun.mode_auto": "모드: 연사 (조준 없음) — F 로 전환",
   "message.tycooncraft.gun.mode_semi": "단발 모드 (조준)",
-  "message.tycooncraft.gun.mode_auto": "연사 모드"
+  "message.tycooncraft.gun.mode_auto": "연사 모드",
+  "message.tycooncraft.vehicle.flood": "⚠ 침수! %s초 뒤 엔진 고장 — 물 밖으로!",
+  "message.tycooncraft.vehicle.flood_safe": "물에서 빠져나왔습니다",
+  "message.tycooncraft.vehicle.flood_dead": "침수로 엔진이 고장났습니다!"
 }
