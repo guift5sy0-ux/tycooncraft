@@ -242,7 +242,7 @@ public final class AutoTestClient {
                 var m = AutoTest.miner;
                 double mx = m != null ? m.getX() : -12, mz = m != null ? m.getZ() : 22.5;
                 System.out.println("[AUTOTEST] miner final" + (m == null ? " none" : String.format(" x=%.1f running=%s mined=%d", m.getX(), m.isRunning(), m.minedBlocks)));
-                sp.teleportTo(sp.serverLevel(), mx - 3.5, g + 3.2, mz - 5.5, -30f, 22f);
+                sp.teleportTo(sp.serverLevel(), mx + 3, g + 3.0, mz - 5, 31f, 26f);
             });
             case 775 -> shot(mc, "30_miner");
             case 780 -> serverDo(mc, sp -> {

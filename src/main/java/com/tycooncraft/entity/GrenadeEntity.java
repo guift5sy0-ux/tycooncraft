@@ -103,10 +103,10 @@ public class GrenadeEntity extends ThrowableItemProjectile {
     }
 
     private void smokeParticles(int st) {
-        float grow = Math.min(1f, st / 60f);
+        float grow = Math.min(1f, st / 30f);
         float fade = st > SMOKE_TIME - 80 ? (SMOKE_TIME - st) / 80f : 1f;
         double r = 1.2 + 3.3 * grow;
-        int n = (int) (10 * fade) + 1;
+        int n = (int) (18 * fade) + 1;
         for (int i = 0; i < n; i++) {
             double a = random.nextDouble() * Math.PI * 2, d = Math.sqrt(random.nextDouble()) * r;
             double y = random.nextDouble() * (1.2 + 2.2 * grow);
@@ -117,7 +117,7 @@ public class GrenadeEntity extends ThrowableItemProjectile {
     }
 
     private void blindMobsInSmoke(int st) {
-        double r = 1.5 + 3.0 * Math.min(1f, st / 60f);
+        double r = 1.5 + 3.0 * Math.min(1f, st / 30f);
         for (LivingEntity e : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(r, 3, r))) {
             if (e instanceof Mob m) {
                 m.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 30, 0, false, false));
