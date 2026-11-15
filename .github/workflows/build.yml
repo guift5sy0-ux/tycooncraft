@@ -83,19 +83,46 @@ jobs:
           grep -E "Crash Report|Exception|Missing|Unable to|Failed to|tycooncraft:" client-log.txt | grep -vE "DEBUG" > client-errors.txt || true
           grep -q "Sound engine started" client-log.txt
 
+      # 실제 월드에서 자동차·헬기·기관차를 꺼내 타고 움직이며 스크린샷 (CI 전용 자동 시험)
+      - name: Vehicle in-game test
+        if: success()
+        continue-on-error: true
+        run: |
+          mkdir -p run/saves
+          rm -rf run/saves/autotest
+          cp -r run/world run/saves/autotest
+          rm -f run/saves/autotest/session.lock
+          printf "pauseOnLostFocus:false\nonboardAccessibility:false\ntutorialStep:none\nskipMultiplayerWarning:true\nrenderDistance:8\nguiScale:2\n" > run/options.txt
+          xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runAutoClient --no-configuration-cache > vehicle-log.txt 2>&1 &
+          PID=$!
+          for i in $(seq 1 120); do
+            if grep -q "AUTOTEST\] finished" vehicle-log.txt; then echo "AUTOTEST FINISHED"; break; fi
+            if grep -q "Crash Report" vehicle-log.txt; then echo "CLIENT CRASHED"; break; fi
+            if ! kill -0 $PID 2>/dev/null; then echo "CLIENT EXITED"; break; fi
+            sleep 5
+          done
+          sleep 10
+          pkill -f "net.neoforged" || true
+          kill $PID 2>/dev/null || true
+          mkdir -p /tmp/shots
+          cp run/screenshots/*.png /tmp/shots/ 2>/dev/null || true
+          ls -la /tmp/shots
+          grep -E "AUTOTEST|Exception|Crash|ERROR" vehicle-log.txt | grep -v DEBUG | head -200 > vehicle-errors.txt || true
+
       - name: Save logs
         if: always()
         run: |
           git config user.name "build-bot"
           git config user.email "build-bot@users.noreply.github.com"
           mkdir -p /tmp/logs
-          cp build-log.txt server-log.txt server-latest.log smoke-errors.txt client-log.txt client-errors.txt /tmp/logs/ 2>/dev/null || true
+          cp build-log.txt server-log.txt server-latest.log smoke-errors.txt client-log.txt client-errors.txt vehicle-log.txt vehicle-errors.txt /tmp/logs/ 2>/dev/null || true
           grep -E "error:|warning:|FAILURE|What went wrong|\.java:[0-9]+" build-log.txt > /tmp/logs/build-errors.txt || true
           git checkout --orphan ci-log
           git rm -rf --cached . > /dev/null
           git clean -fdq -e build -e run || true
           cp /tmp/logs/* .
-          git add -f *.txt *.log 2>/dev/null || true
+          mkdir -p shots && cp /tmp/shots/*.png shots/ 2>/dev/null || true
+          git add -f *.txt *.log shots 2>/dev/null || true
           git commit -qm "logs ${{ github.sha }}" || true
           git push -qf origin ci-log
 

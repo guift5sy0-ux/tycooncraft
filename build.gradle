@@ -58,6 +58,13 @@ neoForge {
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
 
+        // CI 전용: 미리 만든 월드에 바로 들어가 탈것을 자동으로 시험하고 스크린샷을 찍는다
+        autoClient {
+            client()
+            programArguments.addAll '--quickPlaySingleplayer', 'autotest'
+            systemProperty 'tycooncraft.autotest', 'true'
+        }
+
         server {
             server()
             programArgument '--nogui'

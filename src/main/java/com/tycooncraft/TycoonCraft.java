@@ -1,5 +1,6 @@
 package com.tycooncraft;
 
+import com.tycooncraft.devtest.AutoTest;
 import com.tycooncraft.event.TycoonCommands;
 import com.tycooncraft.event.TycoonEvents;
 import com.tycooncraft.registry.ModBlockEntities;
@@ -40,6 +41,7 @@ public class TycoonCraft {
 
         NeoForge.EVENT_BUS.register(TycoonEvents.class);
         NeoForge.EVENT_BUS.register(TycoonCommands.class);
+        if (AutoTest.ENABLED) NeoForge.EVENT_BUS.register(AutoTest.class);
     }
 
     public static ResourceLocation id(String path) {
