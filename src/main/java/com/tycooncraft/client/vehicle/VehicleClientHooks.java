@@ -78,7 +78,7 @@ public final class VehicleClientHooks implements VehicleHooks.Client {
             loco.wheelAngleO = loco.wheelAngle;
             double sp = Math.sqrt(Math.pow(v.getX() - v.xo, 2) + Math.pow(v.getZ() - v.zo, 2));
             loco.wheelAngle += (float) (sp / (8.5 / 32.0));
-            if (loco.engineRunning() && r.nextInt(sp > 0.05 ? 1 : 3) == 0) {
+            if (loco.engineRunning() && r.nextInt(sp > 0.05 ? 2 : 4) == 0) {
                 double a = Math.toRadians(v.getYRot());
                 Vec3 dir = new Vec3(Math.cos(a), 0, Math.sin(a));
                 for (int s = -1; s <= 1; s += 2) {

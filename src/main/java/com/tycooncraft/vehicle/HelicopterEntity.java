@@ -53,7 +53,7 @@ public class HelicopterEntity extends VehicleEntity {
 
     @Override
     public String hudName() {
-        return "entity.tycooncraft.helicopter";
+        return "hud.tycooncraft.name.helicopter";
     }
 
     @Override

@@ -123,5 +123,8 @@
   "subtitles.tycooncraft.vehicle.horn": "Horn honks",
   "subtitles.tycooncraft.vehicle.start": "Engine starts",
   "subtitles.tycooncraft.vehicle.rotor": "Rotor thumps",
-  "subtitles.tycooncraft.vehicle.train_horn": "Train horn"
+  "subtitles.tycooncraft.vehicle.train_horn": "Train horn",
+  "hud.tycooncraft.name.car": "Tycoon GT",
+  "hud.tycooncraft.name.helicopter": "TC AIR",
+  "hud.tycooncraft.name.locomotive": "TC-01"
 }

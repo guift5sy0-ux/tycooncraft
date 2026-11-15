@@ -38,6 +38,7 @@ public abstract class VehicleEntity extends Entity implements FueledVehicle {
     private static final EntityDataAccessor<Integer> HURT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
 
     protected float deltaRotation;
+    private Vec3 lastServerPos;
     private int lerpSteps;
     private double lerpX, lerpY, lerpZ;
     private float lerpYRot, lerpXRot;
@@ -135,7 +136,15 @@ public abstract class VehicleEntity extends Entity implements FueledVehicle {
         } else {
             deltaRotation = 0;
         }
-        Vec3 moved = new Vec3(getX() - xo, getY() - yo, getZ() - zo);
+        // 서버는 운전자 클라이언트가 보낸 위치로 순간 이동하므로(xo도 같이 바뀜) 직접 기억한 위치와 비교
+        Vec3 moved;
+        if (level().isClientSide) {
+            moved = new Vec3(getX() - xo, getY() - yo, getZ() - zo);
+        } else {
+            Vec3 now = position();
+            moved = lastServerPos == null ? Vec3.ZERO : now.subtract(lastServerPos);
+            lastServerPos = now;
+        }
         Vec3 fwd = forward();
         forwardSpeedO = forwardSpeed;
         forwardSpeed = (float) (moved.x * fwd.x + moved.z * fwd.z);

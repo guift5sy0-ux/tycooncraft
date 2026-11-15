@@ -52,7 +52,7 @@ public final class VehicleClient {
         Entity v = mc.player.getVehicle();
         if (!(v instanceof FueledVehicle fv)) return;
         Font font = mc.font;
-        int w = 112, h = fv.showAltitude() ? 50 : 40;
+        int w = 124, h = fv.showAltitude() ? 50 : 40;
         int x = g.guiWidth() / 2 + 96, y = g.guiHeight() - h - 3;
         if (x + w > g.guiWidth() - 2) {
             x = g.guiWidth() - w - 2;

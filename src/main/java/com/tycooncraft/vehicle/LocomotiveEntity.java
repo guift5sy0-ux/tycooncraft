@@ -80,7 +80,7 @@ public class LocomotiveEntity extends AbstractMinecart implements FueledVehicle 
 
     @Override
     public String hudName() {
-        return "entity.tycooncraft.locomotive";
+        return "hud.tycooncraft.name.locomotive";
     }
 
     public boolean engineRunning() {
