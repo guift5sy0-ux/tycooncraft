@@ -38,17 +38,43 @@ jobs:
           name: tycooncraft-jar
           path: build/libs/*.jar
 
-      - name: Save build log on failure
-        if: failure()
+      # 실제 마인크래프트 서버를 켜서 모드가 오류 없이 로드되는지 확인
+      - name: Server smoke test
+        if: success()
+        run: |
+          mkdir -p run
+          echo "eula=true" > run/eula.txt
+          printf "level-type=minecraft\\:flat\nspawn-protection=0\nonline-mode=false\n" > run/server.properties
+          ./gradlew runServer --no-configuration-cache > server-log.txt 2>&1 &
+          PID=$!
+          for i in $(seq 1 120); do
+            if grep -q "Done (" server-log.txt; then echo "SERVER STARTED"; break; fi
+            if ! kill -0 $PID 2>/dev/null; then echo "SERVER EXITED"; break; fi
+            sleep 5
+          done
+          sleep 15
+          pkill -f "net.neoforged" || true
+          kill $PID 2>/dev/null || true
+          sleep 5
+          cp run/logs/latest.log server-latest.log 2>/dev/null || true
+          grep -E "ERROR|Exception|Couldn't|Failed to|Caused by|tycooncraft" server-latest.log server-log.txt > smoke-errors.txt || true
+          grep -q "Done (" server-log.txt
+
+      - name: Save logs
+        if: always()
         run: |
           git config user.name "build-bot"
           git config user.email "build-bot@users.noreply.github.com"
+          mkdir -p /tmp/logs
+          cp build-log.txt server-log.txt server-latest.log smoke-errors.txt /tmp/logs/ 2>/dev/null || true
+          grep -E "error:|warning:|FAILURE|What went wrong|\.java:[0-9]+" build-log.txt > /tmp/logs/build-errors.txt || true
           git checkout --orphan ci-log
           git rm -rf --cached . > /dev/null
-          grep -E "error:|warning:|FAILURE|What went wrong|\.java:[0-9]+" build-log.txt > build-errors.txt || true
-          git add -f build-log.txt build-errors.txt
-          git commit -m "build log ${{ github.sha }}"
-          git push -f origin ci-log
+          git clean -fdq -e build -e run || true
+          cp /tmp/logs/* .
+          git add -f *.txt *.log 2>/dev/null || true
+          git commit -qm "logs ${{ github.sha }}" || true
+          git push -qf origin ci-log
 
       - name: Release
         if: success() && startsWith(github.ref, 'refs/tags/')
