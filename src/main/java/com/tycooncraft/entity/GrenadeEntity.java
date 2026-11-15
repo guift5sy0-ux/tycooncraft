@@ -178,14 +178,14 @@ public class GrenadeEntity extends ThrowableItemProjectile {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putInt("Fuse", fuse);
         tag.putInt("Smoke", smokeTicks());
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         fuse = tag.getInt("Fuse");
         entityData.set(SMOKE_T, tag.getInt("Smoke"));
