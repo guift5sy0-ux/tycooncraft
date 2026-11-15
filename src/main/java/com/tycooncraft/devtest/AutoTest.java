@@ -82,7 +82,7 @@ public final class AutoTest {
                     player.getInventory().setItem(0, gun);
                     System.out.println("[AUTOTEST] silenced gun dmg=" + ((GunItem) gun.getItem()).damage(gun) + " mag=" + ((GunItem) gun.getItem()).magazine(gun));
                 }
-                case 1100 -> player.getInventory().setItem(0, new ItemStack(ModItems.DRONE.get()));
+                case 1140 -> player.getInventory().setItem(0, new ItemStack(ModItems.DRONE.get()));
                 default -> {
                 }
             }
@@ -90,7 +90,7 @@ public final class AutoTest {
             System.out.println("[AUTOTEST] server step " + t + " failed: " + e);
             e.printStackTrace();
         }
-        if (t >= 1100 && t % 20 == 0) {
+        if (t >= 1100 && t % 10 == 0) {
             long drones = level.getEntities(ModEntities.DRONE.get(), e -> true).size();
             System.out.println("[AUTOTEST] t=" + t + " drones=" + drones);
         }

@@ -111,31 +111,29 @@ public final class AutoTestClient {
             // ── 소음기 총 & 드론 ──
             case 1075 -> o.setCameraType(CameraType.FIRST_PERSON);
             case 1085 -> shot(mc, "13_silenced_pistol");
-            case 1090 -> KeyMapping.click(o.keyUse.getKey());
-            case 1110 -> KeyMapping.click(o.keyUse.getKey());
-            case 1125 -> {
-                mc.player.setXRot(-8);
+            case 1095 -> KeyMapping.click(o.keyUse.getKey());
+            case 1097 -> shot(mc, "14_silenced_fire");
+            case 1175 -> KeyMapping.click(o.keyUse.getKey());      // 드론 띄우기 (서버가 1140에 줌)
+            case 1185 -> {
+                mc.player.setXRot(-6);
                 key(o.keyUp, true);
                 key(o.keyJump, true);
             }
-            case 1150 -> key(o.keyJump, false);
-            case 1175 -> {
-                shot(mc, "14_drone_cam");
+            case 1205 -> key(o.keyJump, false);
+            case 1215 -> {
+                shot(mc, "15_drone_cam");
                 System.out.println("[AUTOTEST] camera=" + mc.getCameraEntity().getType().toShortString());
             }
-            case 1185 -> {
-                key(o.keyUp, false);
-                mc.player.setXRot(35);
-                key(o.keyUp, true);
-            }
-            case 1200 -> shot(mc, "15_drone_dive");
-            case 1205 -> KeyMapping.click(o.keyAttack.getKey());
-            case 1208 -> key(o.keyUp, false);
-            case 1212 -> {
-                shot(mc, "16_after_boom");
+            case 1220 -> mc.player.setXRot(40);
+            case 1232 -> shot(mc, "16_drone_dive");
+            case 1236 -> KeyMapping.click(o.keyAttack.getKey());
+            case 1238 -> key(o.keyUp, false);
+            case 1250 -> {
+                o.setCameraType(CameraType.THIRD_PERSON_BACK);
                 System.out.println("[AUTOTEST] camera after=" + mc.getCameraEntity().getType().toShortString());
             }
-            case 1240 -> {
+            case 1256 -> shot(mc, "17_after_boom");
+            case 1280 -> {
                 System.out.println("[AUTOTEST] finished");
                 mc.stop();
             }
