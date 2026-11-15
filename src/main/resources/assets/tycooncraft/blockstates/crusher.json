@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=south": {
+      "model": "tycooncraft:block/crusher"
+    },
+    "facing=west": {
+      "model": "tycooncraft:block/crusher",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "tycooncraft:block/crusher",
+      "y": 180
+    },
+    "facing=east": {
+      "model": "tycooncraft:block/crusher",
+      "y": 270
+    }
+  }
+}

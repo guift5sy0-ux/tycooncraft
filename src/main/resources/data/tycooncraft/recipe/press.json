@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III",
+    "CPC",
+    "CMC"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "C": {
+      "item": "minecraft:cobblestone"
+    },
+    "P": {
+      "item": "minecraft:piston"
+    },
+    "M": {
+      "item": "tycooncraft:coin_iron"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:press",
+    "count": 1
+  }
+}

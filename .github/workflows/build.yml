@@ -1,0 +1,57 @@
+# 코드가 올라올 때마다 GitHub 서버에서 모드 jar를 빌드합니다.
+# 결과: Actions 탭 → 해당 실행 → Artifacts 의 "tycooncraft-jar"
+# 태그(v*)를 올리면 Releases 에도 jar가 올라갑니다.
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build --no-configuration-cache 2>&1 | tee build-log.txt
+          exit ${PIPESTATUS[0]}
+
+      - name: Upload jar
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tycooncraft-jar
+          path: build/libs/*.jar
+
+      - name: Save build log on failure
+        if: failure()
+        run: |
+          git config user.name "build-bot"
+          git config user.email "build-bot@users.noreply.github.com"
+          git checkout --orphan ci-log
+          git rm -rf --cached . > /dev/null
+          grep -E "error:|warning:|FAILURE|What went wrong|\.java:[0-9]+" build-log.txt > build-errors.txt || true
+          git add -f build-log.txt build-errors.txt
+          git commit -m "build log ${{ github.sha }}"
+          git push -f origin ci-log
+
+      - name: Release
+        if: success() && startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/libs/*.jar

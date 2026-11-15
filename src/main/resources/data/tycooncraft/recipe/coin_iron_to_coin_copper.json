@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "tycooncraft:coin_iron"
+    }
+  ],
+  "result": {
+    "id": "tycooncraft:coin_copper",
+    "count": 10
+  }
+}

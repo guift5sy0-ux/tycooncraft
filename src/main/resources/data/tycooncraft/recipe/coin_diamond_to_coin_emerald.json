@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "tycooncraft:coin_diamond"
+    }
+  ],
+  "result": {
+    "id": "tycooncraft:coin_emerald",
+    "count": 10
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "C",
+    "P",
+    "C"
+  ],
+  "key": {
+    "C": {
+      "item": "tycooncraft:conveyor"
+    },
+    "P": {
+      "item": "minecraft:piston"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:lift_up",
+    "count": 2
+  }
+}

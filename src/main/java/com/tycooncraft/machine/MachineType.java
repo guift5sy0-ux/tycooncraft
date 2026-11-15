@@ -1,0 +1,60 @@
+package com.tycooncraft.machine;
+
+import com.mojang.serialization.Codec;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.item.Item;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+/** 기계 종류. 레시피는 MachineRecipes 에 정의 */
+public enum MachineType implements StringRepresentable {
+    CRUSHER("crusher", 20),
+    SMELTER("smelter", 20),
+    ALLOY_FURNACE("alloy_furnace", 40),
+    PRESS("press", 20),
+    WIRE_DRAWER("wire_drawer", 20),
+    LATHE("lathe", 30),
+    ASSEMBLER("assembler", 40);
+
+    public static final Codec<MachineType> CODEC = StringRepresentable.fromEnum(MachineType::values);
+
+    private final String name;
+    private final int processTime;
+    private List<MachineRecipe> recipes;
+    private Set<Item> accepted;
+
+    MachineType(String name, int processTime) {
+        this.name = name;
+        this.processTime = processTime;
+    }
+
+    @Override
+    public String getSerializedName() {
+        return name;
+    }
+
+    /** 1개 가공 시간 (틱) */
+    public int processTime() {
+        return processTime;
+    }
+
+    public List<MachineRecipe> recipes() {
+        if (recipes == null) recipes = MachineRecipes.build(this);
+        return recipes;
+    }
+
+    public boolean accepts(Item item) {
+        if (accepted == null) {
+            Set<Item> set = new HashSet<>();
+            for (MachineRecipe r : recipes()) set.addAll(r.inputs().keySet());
+            accepted = set;
+        }
+        return accepted.contains(item);
+    }
+
+    public String translationKey() {
+        return "block.tycooncraft." + name;
+    }
+}

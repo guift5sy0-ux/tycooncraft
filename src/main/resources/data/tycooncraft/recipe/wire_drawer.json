@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PIP",
+    "RXR",
+    "PMP"
+  ],
+  "key": {
+    "P": {
+      "item": "tycooncraft:iron_plate"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "R": {
+      "item": "tycooncraft:copper_plate"
+    },
+    "X": {
+      "item": "minecraft:piston"
+    },
+    "M": {
+      "item": "tycooncraft:coin_gold"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:wire_drawer",
+    "count": 1
+  }
+}

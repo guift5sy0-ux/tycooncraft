@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "tycooncraft:block/assembler_side",
+    "up": "tycooncraft:block/assembler_top",
+    "down": "tycooncraft:block/assembler_side",
+    "north": "tycooncraft:block/assembler_side",
+    "south": "tycooncraft:block/assembler_side",
+    "east": "tycooncraft:block/assembler_side",
+    "west": "tycooncraft:block/assembler_side"
+  }
+}

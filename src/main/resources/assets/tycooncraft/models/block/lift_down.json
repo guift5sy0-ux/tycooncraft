@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "tycooncraft:block/lift_down_side",
+    "up": "tycooncraft:block/lift_down_top",
+    "down": "tycooncraft:block/lift_down_side",
+    "north": "tycooncraft:block/lift_down_side",
+    "south": "tycooncraft:block/lift_down_side",
+    "east": "tycooncraft:block/lift_down_side",
+    "west": "tycooncraft:block/lift_down_side"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "tycooncraft:block/crusher_side",
+    "up": "tycooncraft:block/crusher_top",
+    "down": "tycooncraft:block/crusher_side",
+    "north": "tycooncraft:block/crusher_side",
+    "south": "tycooncraft:block/crusher_side",
+    "east": "tycooncraft:block/crusher_side",
+    "west": "tycooncraft:block/crusher_side"
+  }
+}

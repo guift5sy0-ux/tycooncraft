@@ -1,0 +1,17 @@
+{
+  "values": [
+    "tycooncraft:crusher",
+    "tycooncraft:smelter",
+    "tycooncraft:alloy_furnace",
+    "tycooncraft:press",
+    "tycooncraft:wire_drawer",
+    "tycooncraft:lathe",
+    "tycooncraft:assembler",
+    "tycooncraft:lift_up",
+    "tycooncraft:lift_down",
+    "tycooncraft:conveyor",
+    "tycooncraft:sell_station",
+    "tycooncraft:exchange",
+    "tycooncraft:broken_machine"
+  ]
+}

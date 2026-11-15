@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PBP",
+    "BSB",
+    "PMP"
+  ],
+  "key": {
+    "P": {
+      "item": "tycooncraft:iron_plate"
+    },
+    "B": {
+      "item": "minecraft:bricks"
+    },
+    "S": {
+      "item": "tycooncraft:smelter"
+    },
+    "M": {
+      "item": "tycooncraft:coin_gold"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:alloy_furnace",
+    "count": 1
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=south": {
+      "model": "tycooncraft:block/conveyor"
+    },
+    "facing=west": {
+      "model": "tycooncraft:block/conveyor",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "tycooncraft:block/conveyor",
+      "y": 180
+    },
+    "facing=east": {
+      "model": "tycooncraft:block/conveyor",
+      "y": 270
+    }
+  }
+}

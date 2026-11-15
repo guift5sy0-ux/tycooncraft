@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "tycooncraft:block/wire_drawer_side",
+    "up": "tycooncraft:block/wire_drawer_top",
+    "down": "tycooncraft:block/wire_drawer_side",
+    "north": "tycooncraft:block/wire_drawer_side",
+    "south": "tycooncraft:block/wire_drawer_side",
+    "east": "tycooncraft:block/wire_drawer_side",
+    "west": "tycooncraft:block/wire_drawer_side"
+  }
+}

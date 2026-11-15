@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PCP",
+    "GXG",
+    "PMP"
+  ],
+  "key": {
+    "P": {
+      "item": "tycooncraft:steel_plate"
+    },
+    "C": {
+      "item": "minecraft:crafting_table"
+    },
+    "G": {
+      "item": "tycooncraft:iron_gear"
+    },
+    "X": {
+      "item": "minecraft:piston"
+    },
+    "M": {
+      "item": "tycooncraft:coin_emerald"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:assembler",
+    "count": 1
+  }
+}

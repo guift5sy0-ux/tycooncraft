@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GCG",
+    "RSR",
+    "GCG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "C": {
+      "item": "tycooncraft:circuit"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "S": {
+      "item": "tycooncraft:steel_plate"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:advanced_circuit",
+    "count": 1
+  }
+}

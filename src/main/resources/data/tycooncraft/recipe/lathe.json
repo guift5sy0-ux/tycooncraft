@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PSP",
+    "IXI",
+    "PMP"
+  ],
+  "key": {
+    "P": {
+      "item": "tycooncraft:iron_plate"
+    },
+    "S": {
+      "item": "minecraft:stonecutter"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "X": {
+      "item": "minecraft:piston"
+    },
+    "M": {
+      "item": "tycooncraft:coin_gold"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:lathe",
+    "count": 1
+  }
+}
