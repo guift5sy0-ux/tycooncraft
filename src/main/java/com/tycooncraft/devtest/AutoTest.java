@@ -38,6 +38,7 @@ public final class AutoTest {
     private static CarEntity car;
     private static HelicopterEntity heli;
     private static LocomotiveEntity loco;
+    private static boolean droneGiven;
 
     @SubscribeEvent
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
@@ -82,13 +83,21 @@ public final class AutoTest {
                     player.getInventory().setItem(0, gun);
                     System.out.println("[AUTOTEST] silenced gun dmg=" + ((GunItem) gun.getItem()).damage(gun) + " mag=" + ((GunItem) gun.getItem()).magazine(gun));
                 }
-                case 1140 -> player.getInventory().setItem(0, new ItemStack(ModItems.DRONE.get()));
                 default -> {
                 }
             }
         } catch (Exception e) {
             System.out.println("[AUTOTEST] server step " + t + " failed: " + e);
             e.printStackTrace();
+        }
+        // 소음기 총을 한 발 쏘면(탄 12 → 11) 드론을 손에 쥐여줌
+        if (t > 1060 && !droneGiven) {
+            ItemStack held = player.getMainHandItem();
+            if ((held.getItem() instanceof GunItem && GunItem.ammo(held) < 12) || t > 1700) {
+                player.getInventory().setItem(0, new ItemStack(ModItems.DRONE.get()));
+                droneGiven = true;
+                System.out.println("[AUTOTEST] drone given at t=" + t);
+            }
         }
         if (t >= 1100 && t % 10 == 0) {
             long drones = level.getEntities(ModEntities.DRONE.get(), e -> true).size();
