@@ -236,5 +236,69 @@
       }
     ],
     "subtitle": "subtitles.tycooncraft.jet"
+  },
+  "gun.grenade.explode": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/grenade_explode",
+        "attenuation_distance": 96
+      }
+    ]
+  },
+  "gun.grenade.pin": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/grenade_pin",
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "gun.grenade.flash": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/flashbang",
+        "attenuation_distance": 64
+      }
+    ]
+  },
+  "gun.grenade.tinnitus": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/tinnitus",
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "gun.grenade.smoke": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/smoke_hiss",
+        "attenuation_distance": 24
+      }
+    ]
+  },
+  "vehicle.miner.drill": {
+    "sounds": [
+      {
+        "name": "tycooncraft:vehicle/miner_drill",
+        "attenuation_distance": 24
+      }
+    ]
+  },
+  "mob.queen_spider.web": {
+    "sounds": [
+      {
+        "name": "tycooncraft:mob/spider_web",
+        "attenuation_distance": 32
+      }
+    ]
+  },
+  "mob.queen_spider.venom": {
+    "sounds": [
+      {
+        "name": "tycooncraft:mob/spider_venom",
+        "attenuation_distance": 32
+      }
+    ]
   }
 }

@@ -47,6 +47,18 @@ public final class ModEntities {
             () -> EntityType.Builder.<RocketEntity>of(RocketEntity::new, MobCategory.MISC)
                     .sized(0.4f, 0.4f).clientTrackingRange(10).updateInterval(1).build("rocket"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.miner.AutoMinerEntity>> AUTO_MINER = ENTITIES.register("auto_miner",
+            () -> EntityType.Builder.<com.tycooncraft.miner.AutoMinerEntity>of(com.tycooncraft.miner.AutoMinerEntity::new, MobCategory.MISC)
+                    .sized(1.9f, 1.9f).fireImmune().clientTrackingRange(10).build("auto_miner"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.entity.GrenadeEntity>> GRENADE = ENTITIES.register("grenade",
+            () -> EntityType.Builder.<com.tycooncraft.entity.GrenadeEntity>of(com.tycooncraft.entity.GrenadeEntity::new, MobCategory.MISC)
+                    .sized(0.25f, 0.25f).clientTrackingRange(8).updateInterval(2).build("grenade"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.entity.SpiderShot>> SPIDER_SHOT = ENTITIES.register("spider_shot",
+            () -> EntityType.Builder.<com.tycooncraft.entity.SpiderShot>of(com.tycooncraft.entity.SpiderShot::new, MobCategory.MISC)
+                    .sized(0.4f, 0.4f).clientTrackingRange(8).updateInterval(1).build("spider_shot"));
+
     // 몹
     public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> GANGSTER = mob("gangster", GunnerEntity::gangster);
     public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> MERCENARY = mob("mercenary", GunnerEntity::mercenary);

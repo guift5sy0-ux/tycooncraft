@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " K ",
+    "KRK",
+    " K "
+  ],
+  "key": {
+    "K": {
+      "item": "minecraft:dried_kelp_block"
+    },
+    "R": {
+      "item": "tycooncraft:steel_rod"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:wheel",
+    "count": 2
+  }
+}

@@ -104,6 +104,22 @@ public final class ModItems {
             new Item.Properties().stacksTo(1), "tooltip.tycooncraft.parachute"));
 
     // ── 보스 소환 & 스폰알 ──
+    // v0.12: 유황, 수류탄, 자동 굴착기
+    public static final DeferredItem<Item> SULFUR = ITEMS.registerSimpleItem("sulfur");
+    public static final DeferredItem<BlockItem> SULFUR_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.SULFUR_ORE);
+    public static final DeferredItem<BlockItem> DEEPSLATE_SULFUR_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.DEEPSLATE_SULFUR_ORE);
+    public static final DeferredItem<com.tycooncraft.gun.GrenadeItem> FRAG_GRENADE = ITEMS.register("frag_grenade",
+            () -> new com.tycooncraft.gun.GrenadeItem(new Item.Properties(), "tooltip.tycooncraft.frag_grenade"));
+    public static final DeferredItem<com.tycooncraft.gun.GrenadeItem> FLASH_GRENADE = ITEMS.register("flash_grenade",
+            () -> new com.tycooncraft.gun.GrenadeItem(new Item.Properties(), "tooltip.tycooncraft.flash_grenade"));
+    public static final DeferredItem<com.tycooncraft.gun.GrenadeItem> SMOKE_GRENADE = ITEMS.register("smoke_grenade",
+            () -> new com.tycooncraft.gun.GrenadeItem(new Item.Properties(), "tooltip.tycooncraft.smoke_grenade"));
+    public static final DeferredItem<Item> VENOM_SPIT = ITEMS.registerSimpleItem("venom_spit");
+    public static final DeferredItem<Item> DRILL_HEAD = ITEMS.registerSimpleItem("drill_head");
+    public static final DeferredItem<Item> WHEEL = ITEMS.registerSimpleItem("wheel");
+    public static final DeferredItem<com.tycooncraft.miner.AutoMinerItem> AUTO_MINER = ITEMS.register("auto_miner",
+            () -> new com.tycooncraft.miner.AutoMinerItem(new Item.Properties()));
+
     public static final DeferredItem<FlareItem> CARTEL_FLARE = ITEMS.register("cartel_flare", () -> new FlareItem(new Item.Properties()));
     public static final DeferredItem<DeferredSpawnEggItem> GANGSTER_EGG = ITEMS.register("gangster_spawn_egg",
             () -> new DeferredSpawnEggItem(ModEntities.GANGSTER, 0x1C1C20, 0xB01E22, new Item.Properties()));

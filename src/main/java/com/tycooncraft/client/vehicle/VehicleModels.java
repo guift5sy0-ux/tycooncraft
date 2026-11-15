@@ -40,7 +40,10 @@ public final class VehicleModels {
     public static final ModelResourceLocation TURRET_GUN = id("turret_gun");
     public static final ModelResourceLocation CHUTE_CANOPY = id("parachute_canopy");
     public static final ModelResourceLocation CHUTE_PACK = id("parachute_pack");
-    public static final ModelResourceLocation[] ALL = {CAR_BODY, CAR_WHEEL, LOCO_BODY, LOCO_WHEELS, HELI_BODY, HELI_ROTOR, HELI_TAIL_ROTOR, DRONE_BODY, DRONE_PROP,
+    public static final ModelResourceLocation MINER_BODY = id("miner_body");
+    public static final ModelResourceLocation MINER_WHEEL = id("miner_wheel");
+    public static final ModelResourceLocation MINER_DRILL = id("miner_drill");
+    public static final ModelResourceLocation[] ALL = {MINER_BODY, MINER_WHEEL, MINER_DRILL, CAR_BODY, CAR_WHEEL, LOCO_BODY, LOCO_WHEELS, HELI_BODY, HELI_ROTOR, HELI_TAIL_ROTOR, DRONE_BODY, DRONE_PROP,
             DRONE2_BODY, DRONE_PROP2, TANK_HULL, TANK_WHEEL, TANK_TURRET, TANK_BARREL, JET_BODY, ROCKET, SHELL, TURRET_HEAD, TURRET_GUN, CHUTE_CANOPY, CHUTE_PACK};
 
     private static ModelResourceLocation id(String name) {

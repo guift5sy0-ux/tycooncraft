@@ -46,6 +46,13 @@ public final class ModBlocks {
     // ── 폐공장 장식 ──
     public static final DeferredBlock<com.tycooncraft.turret.TurretBlock> TURRET = BLOCKS.register("turret",
             () -> new com.tycooncraft.turret.TurretBlock(machineProps().strength(4.0f, 12.0f).requiresCorrectToolForDrops().noOcclusion()));
+    public static final DeferredBlock<net.minecraft.world.level.block.DropExperienceBlock> SULFUR_ORE = BLOCKS.register("sulfur_ore",
+            () -> new net.minecraft.world.level.block.DropExperienceBlock(net.minecraft.util.valueproviders.UniformInt.of(1, 3),
+                    net.minecraft.world.level.block.state.BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.COAL_ORE)));
+    public static final DeferredBlock<net.minecraft.world.level.block.DropExperienceBlock> DEEPSLATE_SULFUR_ORE = BLOCKS.register("deepslate_sulfur_ore",
+            () -> new net.minecraft.world.level.block.DropExperienceBlock(net.minecraft.util.valueproviders.UniformInt.of(1, 3),
+                    net.minecraft.world.level.block.state.BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.DEEPSLATE_COAL_ORE)));
+
     public static final DeferredBlock<Block> BROKEN_MACHINE = BLOCKS.registerSimpleBlock("broken_machine",
             machineProps().strength(3.0f, 6.0f).requiresCorrectToolForDrops());
 

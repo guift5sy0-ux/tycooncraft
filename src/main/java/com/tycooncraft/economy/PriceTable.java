@@ -38,6 +38,7 @@ public final class PriceTable {
             p.put(Items.DIAMOND, 150.0);
             // 1차: 가루
             p.put(ModItems.COAL_DUST.get(), 1.5);
+            p.put(ModItems.SULFUR.get(), 3.0);
             p.put(ModItems.COPPER_DUST.get(), 1.5);
             p.put(ModItems.IRON_DUST.get(), 3.5);
             p.put(ModItems.GOLD_DUST.get(), 8.0);

@@ -224,7 +224,37 @@ public final class AutoTestClient {
             case 705 -> shot(mc, "28_rpg");
             case 708 -> KeyMapping.click(o.keyUse.getKey());
             case 713 -> shot(mc, "29_rpg_fire");
-            case 740 -> next(11);
+            // ── v0.12: 자동 굴착기, 연막탄, 섬광탄 ──
+            case 740 -> {
+                mc.player.setPos(-13, g + 4, 16);
+                lookAt(mc, -16, g + 1, 22.5);
+            }
+            case 752 -> shot(mc, "30_miner");
+            case 756 -> {
+                mc.gameMode.handleCreativeModeItemAdd(new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.SMOKE_GRENADE.get(), 4), 36 + 4);
+                mc.gameMode.handleCreativeModeItemAdd(new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.FLASH_GRENADE.get(), 4), 36 + 5);
+            }
+            case 760 -> {
+                mc.player.getInventory().selected = 4;
+                mc.player.setPos(0, g, 40);
+                mc.player.setYRot(0);
+                mc.player.setXRot(-10);
+            }
+            case 764 -> shot(mc, "30b_grenade_held");
+            case 766 -> KeyMapping.click(o.keyUse.getKey());
+            case 840 -> {
+                mc.player.setXRot(5);
+                shot(mc, "31_smoke");
+            }
+            case 846 -> {
+                mc.player.getInventory().selected = 5;
+                mc.player.setPos(0, g, 60);
+                mc.player.setXRot(20);
+            }
+            case 850 -> KeyMapping.click(o.keyUse.getKey());
+            case 903 -> shot(mc, "32_flash");
+            case 912 -> System.out.println("[AUTOTEST] client flashed=" + mc.player.hasEffect(com.tycooncraft.registry.ModEffects.FLASHED));
+            case 960 -> next(11);
             default -> {
             }
         }

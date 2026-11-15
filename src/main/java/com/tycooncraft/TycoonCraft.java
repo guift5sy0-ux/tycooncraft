@@ -39,6 +39,7 @@ public class TycoonCraft {
         ModEntities.ENTITIES.register(modBus);
         ModRecipes.SERIALIZERS.register(modBus);
         com.tycooncraft.registry.ModArmorMaterials.MATERIALS.register(modBus);
+        com.tycooncraft.registry.ModEffects.EFFECTS.register(modBus);
 
         modBus.addListener(this::registerCapabilities);
         modBus.addListener(HornPayload::register);

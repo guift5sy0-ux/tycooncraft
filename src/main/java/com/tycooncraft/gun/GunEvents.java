@@ -35,5 +35,10 @@ public final class GunEvents {
         }
     }
 
+    @SubscribeEvent
+    public static void onServerTick(net.neoforged.neoforge.event.tick.ServerTickEvent.Post event) {
+        if (!com.tycooncraft.entity.SpiderShot.WEBS.isEmpty()) com.tycooncraft.entity.SpiderShot.cleanup();
+    }
+
     private GunEvents() {}
 }

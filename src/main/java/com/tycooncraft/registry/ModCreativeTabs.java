@@ -35,6 +35,10 @@ public final class ModCreativeTabs {
                         out.accept(ModItems.TANK.get());
                         out.accept(ModItems.FIGHTER_JET.get());
                         out.accept(ModItems.TURRET.get());
+                        out.accept(ModItems.AUTO_MINER.get());
+                        out.accept(ModItems.DRILL_HEAD.get());
+                        out.accept(ModItems.WHEEL.get());
+                        out.accept(ModItems.ENGINE.get());
                         out.accept(ModItems.PARACHUTE.get());
                         out.accept(ModItems.PISTOL.get());
                         out.accept(ModItems.SMG.get());
@@ -49,6 +53,12 @@ public final class ModCreativeTabs {
                         out.accept(ModItems.LIGHT_AMMO.get());
                         out.accept(ModItems.HEAVY_AMMO.get());
                         out.accept(ModItems.SHOTGUN_SHELL.get());
+                        out.accept(ModItems.FRAG_GRENADE.get());
+                        out.accept(ModItems.FLASH_GRENADE.get());
+                        out.accept(ModItems.SMOKE_GRENADE.get());
+                        out.accept(ModItems.SULFUR.get());
+                        out.accept(ModItems.SULFUR_ORE.get());
+                        out.accept(ModItems.DEEPSLATE_SULFUR_ORE.get());
                         out.accept(ModItems.SILENCER.get());
                         out.accept(ModItems.SILENCER_ADVANCED.get());
                         for (var v : java.util.List.of(ModItems.VEST_1, ModItems.VEST_2, ModItems.VEST_3, ModItems.HELMET_1, ModItems.HELMET_2, ModItems.HELMET_3)) out.accept(v.get());

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "tycooncraft:iron_plate"
+    },
+    {
+      "item": "tycooncraft:sulfur"
+    },
+    {
+      "item": "tycooncraft:coal_dust"
+    },
+    {
+      "item": "minecraft:paper"
+    }
+  ],
+  "result": {
+    "id": "tycooncraft:smoke_grenade",
+    "count": 2
+  }
+}

@@ -52,6 +52,9 @@ public final class VehicleClient {
         event.registerEntityRenderer(ModEntities.TANK.get(), TankRenderer::new);
         event.registerEntityRenderer(ModEntities.FIGHTER_JET.get(), JetRenderer::new);
         event.registerEntityRenderer(ModEntities.ROCKET.get(), RocketRenderer::new);
+        event.registerEntityRenderer(ModEntities.AUTO_MINER.get(), AutoMinerRenderer::new);
+        event.registerEntityRenderer(ModEntities.GRENADE.get(), ctx -> new net.minecraft.client.renderer.entity.ThrownItemRenderer<>(ctx, 0.75f, false));
+        event.registerEntityRenderer(ModEntities.SPIDER_SHOT.get(), ctx -> new net.minecraft.client.renderer.entity.ThrownItemRenderer<>(ctx, 1.3f, true));
         event.registerEntityRenderer(ModEntities.GANGSTER.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
         event.registerEntityRenderer(ModEntities.MERCENARY.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
         event.registerEntityRenderer(ModEntities.OUTLAW.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
@@ -69,6 +72,7 @@ public final class VehicleClient {
     public static void layers(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.HOTBAR, TycoonCraft.id("vehicle_hud"), (g, delta) -> renderHud(g));
         event.registerAbove(VanillaGuiLayers.CROSSHAIR, TycoonCraft.id("drone_hud"), (g, delta) -> DroneClient.renderHud(g));
+        event.registerAboveAll(TycoonCraft.id("flash_overlay"), (g, delta) -> renderFlash(g));
     }
 
     /** 계기판: 핫바 오른쪽 — 속도, 연료, 내구도 (헬기는 고도) */
@@ -120,6 +124,18 @@ public final class VehicleClient {
         g.fill(bx, y + 1, bx + bw, y + 7, 0xFF2A2E36);
         g.fill(bx, y + 1, bx + Math.max(0, Math.round(bw * frac)), y + 7, color);
         g.fill(bx, y + 1, bx + Math.max(0, Math.round(bw * frac)), y + 2, 0x40FFFFFF);
+    }
+
+    /** 섬광탄: 화면 전체가 하얗게, 마지막 2초 동안 서서히 걷힘 */
+    private static void renderFlash(net.minecraft.client.gui.GuiGraphics g) {
+        var mc = net.minecraft.client.Minecraft.getInstance();
+        if (mc.player == null) return;
+        var eff = mc.player.getEffect(com.tycooncraft.registry.ModEffects.FLASHED);
+        if (eff == null) return;
+        float a = Math.min(1f, eff.getDuration() / 40f);
+        int alpha = (int) (255 * a);
+        if (alpha <= 2) return;
+        g.fill(0, 0, g.guiWidth(), g.guiHeight(), (alpha << 24) | 0xFFFFFF);
     }
 
     private VehicleClient() {}

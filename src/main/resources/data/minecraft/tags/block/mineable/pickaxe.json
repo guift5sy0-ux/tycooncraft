@@ -13,6 +13,8 @@
     "tycooncraft:sell_station",
     "tycooncraft:exchange",
     "tycooncraft:broken_machine",
-    "tycooncraft:turret"
+    "tycooncraft:turret",
+    "tycooncraft:sulfur_ore",
+    "tycooncraft:deepslate_sulfur_ore"
   ]
 }

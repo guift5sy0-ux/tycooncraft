@@ -41,6 +41,63 @@ public final class AutoTest {
     private static LocomotiveEntity loco;
     private static boolean droneGiven;
 
+    private static com.tycooncraft.miner.AutoMinerEntity miner;
+    private static net.minecraft.world.entity.LivingEntity fragHusk, flashHusk, villager;
+    private static com.tycooncraft.entity.GrenadeEntity smoke;
+    private static com.tycooncraft.mob.MutantSpider queen;
+
+    private static String storageSummary() {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < miner.storage.getContainerSize(); i++) {
+            var st = miner.storage.getItem(i);
+            if (!st.isEmpty()) b.append(st.getItem().toString().replace("minecraft:", "").replace("tycooncraft:", "")).append('x').append(st.getCount()).append(',');
+        }
+        return b.toString();
+    }
+
+    private static void v12Setup(ServerLevel level) {
+        // 굴착기: 동쪽으로 돌벽 3×3×18 (중간에 광석들, 끝에 흑요석)
+        for (int x = -24; x <= -6; x++) for (int z = 21; z <= 23; z++) for (int y = 0; y < 3; y++)
+            level.setBlockAndUpdate(new BlockPos(x, gy + y, z), (x > -14 ? Blocks.DEEPSLATE : Blocks.STONE).defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(-20, gy + 1, 22), Blocks.DIAMOND_ORE.defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(-18, gy + 2, 21), Blocks.IRON_ORE.defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(-16, gy, 23), ModBlocks.SULFUR_ORE.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(-10, gy + 1, 22), ModBlocks.DEEPSLATE_SULFUR_ORE.get().defaultBlockState());
+        level.setBlockAndUpdate(new BlockPos(-5, gy + 1, 22), Blocks.OBSIDIAN.defaultBlockState());
+        miner = ModEntities.AUTO_MINER.get().create(level);
+        miner.moveTo(-26.5, gy, 22.5, -90, 0);
+        miner.setFuel(8000);
+        miner.setRunning(true);
+        level.addFreshEntity(miner);
+        // 수류탄: 파편(허스크 옆), 섬광(허스크를 향해), 연막
+        fragHusk = net.minecraft.world.entity.EntityType.HUSK.create(level);
+        fragHusk.moveTo(-10, gy, -30, 0, 0);
+        level.addFreshEntity(fragHusk);
+        flashHusk = net.minecraft.world.entity.EntityType.HUSK.create(level);
+        flashHusk.moveTo(-18, gy, -30, 0, 0);   // 남쪽(+Z)을 봄
+        level.addFreshEntity(flashHusk);
+        var frag = new com.tycooncraft.entity.GrenadeEntity(ModEntities.GRENADE.get(), level);
+        frag.setItem(new ItemStack(ModItems.FRAG_GRENADE.get()));
+        frag.setPos(-10.5, gy + 1, -29);
+        level.addFreshEntity(frag);
+        var fl = new com.tycooncraft.entity.GrenadeEntity(ModEntities.GRENADE.get(), level);
+        fl.setItem(new ItemStack(ModItems.FLASH_GRENADE.get()));
+        fl.setPos(-18, gy + 1, -26);
+        level.addFreshEntity(fl);
+        smoke = new com.tycooncraft.entity.GrenadeEntity(ModEntities.GRENADE.get(), level);
+        smoke.setItem(new ItemStack(ModItems.SMOKE_GRENADE.get()));
+        smoke.setPos(-4, gy + 1, -30);
+        smoke.setDeltaMovement(0.15, 0.2, 0);
+        level.addFreshEntity(smoke);
+        // 여왕거미 vs 주민
+        queen = ModEntities.MUTANT_SPIDER.get().create(level);
+        queen.moveTo(-20, gy, 44, 0, 0);
+        level.addFreshEntity(queen);
+        villager = net.minecraft.world.entity.EntityType.VILLAGER.create(level);
+        villager.moveTo(-20, gy, 56, 180, 0);
+        level.addFreshEntity(villager);
+    }
+
     @SubscribeEvent
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer sp) {
@@ -113,16 +170,29 @@ public final class AutoTest {
             long drones = level.getEntities(ModEntities.DRONE.get(), e -> true).size();
             System.out.println("[AUTOTEST] t=" + t + " drones=" + drones);
         }
+        // v0.12: 자동 굴착기 · 수류탄 · 여왕거미
+        if (t == 32) v12Setup(level);
+        if (t >= 40 && t <= 600 && t % 20 == 0 && queen != null && villager != null && villager.isAlive()) queen.setTarget(villager);
+        if (t == 100 || t == 300 || t == 700 || t == 1400) {
+            System.out.println("[AUTOTEST] miner t=" + t + (miner == null ? " none" : String.format(" x=%.1f fuel=%d running=%s mined=%d items=%s",
+                    miner.getX(), miner.getFuel(), miner.isRunning(), miner.minedBlocks, storageSummary())));
+        }
+        if (t == 100) System.out.println("[AUTOTEST] grenades t=100 det=" + com.tycooncraft.entity.GrenadeEntity.detonations
+                + " fragHusk=" + (fragHusk.isAlive() ? fragHusk.getHealth() : -1f) + " flashHusk=" + flashHusk.hasEffect(com.tycooncraft.registry.ModEffects.FLASHED)
+                + " smoke=" + (smoke.isAlive() ? smoke.smokeTicks() : -1));
+        if (t == 520) System.out.println("[AUTOTEST] grenades t=520 smokeGone=" + smoke.isRemoved());
+        if (t == 600) System.out.println("[AUTOTEST] queen web=" + com.tycooncraft.mob.MutantSpider.webShots + " venom=" + com.tycooncraft.mob.MutantSpider.venomShots
+                + " webs=" + com.tycooncraft.entity.SpiderShot.WEBS.size());
         // 침수 테스트: 물웅덩이에 자동차 → 3초 뒤 고장
         if (t == 30) {
             for (int x = -2; x <= 2; x++) for (int z = -2; z <= 2; z++) for (int y = 0; y < 2; y++)
-                level.setBlockAndUpdate(new net.minecraft.core.BlockPos(70 + x, gy + y, 70 + z), net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+                level.setBlockAndUpdate(new net.minecraft.core.BlockPos(20 + x, gy + y, 26 + z), net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
             var car = ModEntities.CAR.get().create(level);
-            car.moveTo(70, gy, 70, 0, 0);
+            car.moveTo(20, gy, 26, 0, 0);
             level.addFreshEntity(car);
         }
         if (t == 50 || t == 110) System.out.println("[AUTOTEST] flood t=" + t + " cars_in_pool="
-                + level.getEntities(ModEntities.CAR.get(), new net.minecraft.world.phys.AABB(65, gy - 3, 65, 75, gy + 5, 75), e -> true).size());
+                + level.getEntities(ModEntities.CAR.get(), new net.minecraft.world.phys.AABB(15, gy - 3, 21, 25, gy + 5, 31), e -> true).size());
         if (t >= 40 && t <= 400 && t % 20 == 0) {
             System.out.println("[AUTOTEST] turret t=" + t + " gunners=" + (level.getEntities(ModEntities.GANGSTER.get(), e -> true).size()
                     + level.getEntities(ModEntities.MERCENARY.get(), e -> true).size() + level.getEntities(ModEntities.OUTLAW.get(), e -> true).size()));

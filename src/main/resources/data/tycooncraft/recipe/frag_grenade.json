@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "tycooncraft:iron_plate"
+    },
+    {
+      "item": "tycooncraft:sulfur"
+    },
+    {
+      "item": "tycooncraft:sulfur"
+    },
+    {
+      "item": "minecraft:gunpowder"
+    }
+  ],
+  "result": {
+    "id": "tycooncraft:frag_grenade",
+    "count": 2
+  }
+}
