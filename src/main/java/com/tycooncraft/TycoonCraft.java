@@ -5,6 +5,8 @@ import com.tycooncraft.event.TycoonEvents;
 import com.tycooncraft.registry.ModBlockEntities;
 import com.tycooncraft.registry.ModBlocks;
 import com.tycooncraft.registry.ModComponents;
+import com.tycooncraft.registry.ModEntities;
+import com.tycooncraft.network.HornPayload;
 import com.tycooncraft.registry.ModCreativeTabs;
 import com.tycooncraft.registry.ModItems;
 import com.tycooncraft.registry.ModMenus;
@@ -31,8 +33,10 @@ public class TycoonCraft {
         ModMenus.MENUS.register(modBus);
         ModComponents.COMPONENTS.register(modBus);
         ModSounds.SOUNDS.register(modBus);
+        ModEntities.ENTITIES.register(modBus);
 
         modBus.addListener(this::registerCapabilities);
+        modBus.addListener(HornPayload::register);
 
         NeoForge.EVENT_BUS.register(TycoonEvents.class);
         NeoForge.EVENT_BUS.register(TycoonCommands.class);

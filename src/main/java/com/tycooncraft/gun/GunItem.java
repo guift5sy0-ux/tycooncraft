@@ -152,7 +152,7 @@ public class GunItem extends Item {
 
         AABB box = player.getBoundingBox().expandTowards(end.subtract(eye)).inflate(1.0);
         EntityHitResult entityHit = ProjectileUtil.getEntityHitResult(level, player, eye, end, box,
-                e -> e.isAlive() && e.isPickable() && !e.isSpectator() && e != player);
+                e -> e.isAlive() && e.isPickable() && !e.isSpectator() && e != player && !player.isPassengerOfSameVehicle(e) && e != player.getVehicle());
 
         Vec3 impact = end;
         if (entityHit != null) {

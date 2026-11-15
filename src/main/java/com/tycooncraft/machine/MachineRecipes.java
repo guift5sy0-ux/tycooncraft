@@ -73,7 +73,19 @@ public final class MachineRecipes {
                 for (Item[] w : wood) r.add(MachineRecipe.of(w[1], 6).in(w[0]).build());
             }
             case ASSEMBLER -> {
-                // 순서 = 우선순위 (상위 부품 먼저)
+                // 순서 = 우선순위 (상위 부품 먼저) — 탈것이 맨 앞이어야 엔진 레시피가 재료를 가로채지 않음
+                // 탈것 (부품 6종까지)
+                r.add(MachineRecipe.of(ModItems.HELICOPTER.get(), 1)
+                        .in(ModItems.ENGINE.get(), 2).in(ModItems.STEEL_PLATE.get(), 10).in(ModItems.ADVANCED_CIRCUIT.get(), 3)
+                        .in(ModItems.MECHANISM.get(), 3).in(ModItems.STEEL_ROD.get(), 8).in(Items.GLASS, 6).build());
+                r.add(MachineRecipe.of(ModItems.LOCOMOTIVE.get(), 1)
+                        .in(ModItems.ENGINE.get(), 2).in(ModItems.STEEL_PLATE.get(), 12).in(ModItems.STEEL_GEAR.get(), 8)
+                        .in(ModItems.MECHANISM.get(), 2).in(ModItems.CIRCUIT.get(), 2).in(Items.GLASS, 4).build());
+                r.add(MachineRecipe.of(ModItems.CAR.get(), 1)
+                        .in(ModItems.ENGINE.get()).in(ModItems.STEEL_PLATE.get(), 6).in(ModItems.STEEL_GEAR.get(), 4)
+                        .in(ModItems.CIRCUIT.get(), 2).in(Items.GLASS, 4).in(Items.BLACK_DYE, 4).build());
+                r.add(MachineRecipe.of(ModItems.FUEL_CANISTER.get(), 2)
+                        .in(ModItems.IRON_PLATE.get()).in(ModItems.COAL_DUST.get(), 4).build());
                 r.add(MachineRecipe.of(ModItems.ENGINE.get(), 1)
                         .in(ModItems.STEEL_PLATE.get(), 4).in(ModItems.STEEL_GEAR.get(), 2).in(ModItems.MECHANISM.get()).build());
                 r.add(MachineRecipe.of(ModItems.ADVANCED_CIRCUIT.get(), 1)

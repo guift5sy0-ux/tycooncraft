@@ -6,7 +6,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-/** 총 효과음 (assets/tycooncraft/sounds.json, 직접 합성한 ogg) */
+/** 총·탈것 효과음 (assets/tycooncraft/sounds.json, 직접 합성한 ogg) */
 public final class ModSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, TycoonCraft.MODID);
 
@@ -21,6 +21,14 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> SNIPER_FIRE = sound("gun.sniper.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> SNIPER_RELOAD = sound("gun.sniper.reload");
     public static final DeferredHolder<SoundEvent, SoundEvent> DRY_FIRE = sound("gun.dry_fire");
+
+    // 탈것
+    public static final DeferredHolder<SoundEvent, SoundEvent> CAR_ENGINE = sound("vehicle.car.engine");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CAR_HORN = sound("vehicle.car.horn");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ENGINE_START = sound("vehicle.engine_start");
+    public static final DeferredHolder<SoundEvent, SoundEvent> HELI_ROTOR = sound("vehicle.heli.rotor");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TRAIN_ENGINE = sound("vehicle.train.engine");
+    public static final DeferredHolder<SoundEvent, SoundEvent> TRAIN_HORN = sound("vehicle.train.horn");
 
     private static DeferredHolder<SoundEvent, SoundEvent> sound(String name) {
         return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(TycoonCraft.id(name)));

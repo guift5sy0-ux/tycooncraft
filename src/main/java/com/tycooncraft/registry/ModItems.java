@@ -3,6 +3,7 @@ package com.tycooncraft.registry;
 import com.tycooncraft.TycoonCraft;
 import com.tycooncraft.economy.CoinItem;
 import com.tycooncraft.gun.GunItem;
+import com.tycooncraft.vehicle.VehicleItem;
 import com.tycooncraft.gun.GunStats;
 import com.tycooncraft.machine.MachineType;
 import net.minecraft.world.item.BlockItem;
@@ -69,6 +70,15 @@ public final class ModItems {
             new GunStats(3.5f, 8, 0.09f, 20, 6, 18, 50, false, false, 6f, SHOTGUN_SHELL, ModSounds.SHOTGUN_FIRE, ModSounds.SHOTGUN_RELOAD)));
     public static final DeferredItem<GunItem> SNIPER = ITEMS.register("sniper", () -> new GunItem(new Item.Properties(),
             new GunStats(24f, 1, 0.05f, 160, 5, 30, 60, false, true, 8f, HEAVY_AMMO, ModSounds.SNIPER_FIRE, ModSounds.SNIPER_RELOAD)));
+
+    // ── 탈것 & 연료 ──
+    public static final DeferredItem<Item> FUEL_CANISTER = ITEMS.registerSimpleItem("fuel_canister");
+    public static final DeferredItem<VehicleItem> CAR = ITEMS.register("car",
+            () -> new VehicleItem(new Item.Properties(), ModEntities.CAR, false, "tooltip.tycooncraft.car"));
+    public static final DeferredItem<VehicleItem> LOCOMOTIVE = ITEMS.register("locomotive",
+            () -> new VehicleItem(new Item.Properties(), ModEntities.LOCOMOTIVE, true, "tooltip.tycooncraft.locomotive"));
+    public static final DeferredItem<VehicleItem> HELICOPTER = ITEMS.register("helicopter",
+            () -> new VehicleItem(new Item.Properties(), ModEntities.HELICOPTER, false, "tooltip.tycooncraft.helicopter"));
 
     // ── 블록 아이템 ──
     public static final DeferredItem<BlockItem> SELL_STATION = ITEMS.registerSimpleBlockItem(ModBlocks.SELL_STATION);

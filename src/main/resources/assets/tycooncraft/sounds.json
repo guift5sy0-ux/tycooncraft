@@ -120,5 +120,59 @@
       "tycooncraft:gun/dry_fire_2"
     ],
     "subtitle": "subtitles.tycooncraft.gun.dry_fire"
+  },
+  "vehicle.car.engine": {
+    "sounds": [
+      {
+        "name": "tycooncraft:vehicle/car_engine",
+        "attenuation_distance": 32
+      }
+    ],
+    "subtitle": "subtitles.tycooncraft.vehicle.engine"
+  },
+  "vehicle.car.horn": {
+    "sounds": [
+      {
+        "name": "tycooncraft:vehicle/car_horn",
+        "attenuation_distance": 64
+      }
+    ],
+    "subtitle": "subtitles.tycooncraft.vehicle.horn"
+  },
+  "vehicle.engine_start": {
+    "sounds": [
+      {
+        "name": "tycooncraft:vehicle/engine_start",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.tycooncraft.vehicle.start"
+  },
+  "vehicle.heli.rotor": {
+    "sounds": [
+      {
+        "name": "tycooncraft:vehicle/heli_rotor",
+        "attenuation_distance": 128
+      }
+    ],
+    "subtitle": "subtitles.tycooncraft.vehicle.rotor"
+  },
+  "vehicle.train.engine": {
+    "sounds": [
+      {
+        "name": "tycooncraft:vehicle/train_engine",
+        "attenuation_distance": 48
+      }
+    ],
+    "subtitle": "subtitles.tycooncraft.vehicle.engine"
+  },
+  "vehicle.train.horn": {
+    "sounds": [
+      {
+        "name": "tycooncraft:vehicle/train_horn",
+        "attenuation_distance": 160
+      }
+    ],
+    "subtitle": "subtitles.tycooncraft.vehicle.train_horn"
   }
 }

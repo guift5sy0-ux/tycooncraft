@@ -1,0 +1,100 @@
+package com.tycooncraft.client.vehicle;
+
+import com.tycooncraft.TycoonCraft;
+import com.tycooncraft.registry.ModEntities;
+import com.tycooncraft.vehicle.FueledVehicle;
+import com.tycooncraft.vehicle.VehicleHooks;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+
+/** 탈것 클라이언트 등록: 렌더러, 부품 모델, 계기판, 입력·소리 연결 */
+@EventBusSubscriber(modid = TycoonCraft.MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+public final class VehicleClient {
+
+    @SubscribeEvent
+    public static void setup(FMLClientSetupEvent event) {
+        VehicleHooks.client = new VehicleClientHooks();
+    }
+
+    @SubscribeEvent
+    public static void renderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(ModEntities.CAR.get(), CarRenderer::new);
+        event.registerEntityRenderer(ModEntities.HELICOPTER.get(), HelicopterRenderer::new);
+        event.registerEntityRenderer(ModEntities.LOCOMOTIVE.get(), LocomotiveRenderer::new);
+    }
+
+    @SubscribeEvent
+    public static void models(ModelEvent.RegisterAdditional event) {
+        for (ModelResourceLocation id : VehicleModels.ALL) event.register(id);
+    }
+
+    @SubscribeEvent
+    public static void layers(RegisterGuiLayersEvent event) {
+        event.registerAbove(VanillaGuiLayers.HOTBAR, TycoonCraft.id("vehicle_hud"), (g, delta) -> renderHud(g));
+    }
+
+    /** 계기판: 핫바 오른쪽 — 속도, 연료, 내구도 (헬기는 고도) */
+    private static void renderHud(GuiGraphics g) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.options.hideGui) return;
+        Entity v = mc.player.getVehicle();
+        if (!(v instanceof FueledVehicle fv)) return;
+        Font font = mc.font;
+        int w = 112, h = fv.showAltitude() ? 50 : 40;
+        int x = g.guiWidth() / 2 + 96, y = g.guiHeight() - h - 3;
+        if (x + w > g.guiWidth() - 2) {
+            x = g.guiWidth() - w - 2;
+            y = g.guiHeight() - h - 26;
+        }
+        g.fill(x, y, x + w, y + h, 0xB0101418);
+        g.fill(x, y, x + w, y + 1, 0xFFD4A63A);
+        g.fill(x, y + h - 1, x + w, y + h, 0x80D4A63A);
+
+        g.drawString(font, Component.translatable(fv.hudName()), x + 4, y + 4, 0xFFD4A63A, false);
+        int kmh = (int) Math.round(VehicleClientHooks.speedKmh(v));
+        String sp = kmh + " km/h";
+        g.drawString(font, sp, x + w - 4 - font.width(sp), y + 4, 0xFFFFFFFF, false);
+
+        float fuel = fv.maxFuel() > 0 ? (float) fv.getFuel() / fv.maxFuel() : 0;
+        bar(g, font, x + 4, y + 16, w - 8, Component.translatable("hud.tycooncraft.fuel"), fuel,
+                fuel < 0.15f ? 0xFFE04030 : 0xFFE0B030);
+        float hp = fv.healthFraction();
+        bar(g, font, x + 4, y + 27, w - 8, Component.translatable("hud.tycooncraft.hull"), hp,
+                hp < 0.3f ? 0xFFE04030 : 0xFF50C878);
+        if (fv.showAltitude()) {
+            String alt = Component.translatable("hud.tycooncraft.altitude", (int) Math.floor(v.getY())).getString();
+            g.drawString(font, alt, x + 4, y + 39, 0xFF9FD8FF, false);
+            if (v instanceof com.tycooncraft.vehicle.HelicopterEntity heli && !heli.hasLift()) {
+                String sp2 = Component.translatable("hud.tycooncraft.spool", (int) (heli.rotor * 100)).getString();
+                g.drawString(font, sp2, x + w - 4 - font.width(sp2), y + 39, 0xFFFFC060, false);
+            }
+        }
+        if (fv.getFuel() <= 0) {
+            Component warn = Component.translatable("hud.tycooncraft.no_fuel");
+            g.drawString(font, warn, x + (w - font.width(warn)) / 2, y - 11, 0xFFFF5040, true);
+        }
+    }
+
+    private static void bar(GuiGraphics g, Font font, int x, int y, int w, Component label, float frac, int color) {
+        int lw = 30;
+        g.drawString(font, label, x, y, 0xFFB0B4BC, false);
+        int bx = x + lw, bw = w - lw;
+        g.fill(bx, y + 1, bx + bw, y + 7, 0xFF2A2E36);
+        g.fill(bx, y + 1, bx + Math.max(0, Math.round(bw * frac)), y + 7, color);
+        g.fill(bx, y + 1, bx + Math.max(0, Math.round(bw * frac)), y + 2, 0x40FFFFFF);
+    }
+
+    private VehicleClient() {}
+}

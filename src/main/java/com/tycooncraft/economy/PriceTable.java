@@ -79,6 +79,10 @@ public final class PriceTable {
             p.put(ModItems.SHOTGUN.get(), 900.0);
             p.put(ModItems.RIFLE.get(), 1200.0);
             p.put(ModItems.SNIPER.get(), 1600.0);
+            p.put(ModItems.FUEL_CANISTER.get(), 12.0);
+            p.put(ModItems.CAR.get(), 2000.0);
+            p.put(ModItems.LOCOMOTIVE.get(), 4000.0);
+            p.put(ModItems.HELICOPTER.get(), 5500.0);
             // 농산물·식품
             p.put(Items.WHEAT, 1.0);
             p.put(Items.POTATO, 0.8);
