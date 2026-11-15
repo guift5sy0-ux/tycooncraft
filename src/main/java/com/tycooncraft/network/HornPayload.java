@@ -28,6 +28,7 @@ public record HornPayload() implements CustomPacketPayload {
         PayloadRegistrar registrar = event.registrar("1");
         registrar.playToServer(TYPE, STREAM_CODEC, HornPayload::handle);
         DronePayloads.register(registrar);
+        registrar.playToServer(VehicleActionPayload.TYPE, VehicleActionPayload.CODEC, VehicleActionPayload::handle);
     }
 
     private static void handle(HornPayload payload, IPayloadContext ctx) {

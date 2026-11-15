@@ -12,6 +12,7 @@
     "tycooncraft:conveyor",
     "tycooncraft:sell_station",
     "tycooncraft:exchange",
-    "tycooncraft:broken_machine"
+    "tycooncraft:broken_machine",
+    "tycooncraft:turret"
   ]
 }

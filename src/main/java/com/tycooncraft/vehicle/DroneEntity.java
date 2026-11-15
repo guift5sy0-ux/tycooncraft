@@ -38,9 +38,33 @@ public class DroneEntity extends Entity {
     private static final EntityDataAccessor<Optional<UUID>> OWNER = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Boolean> PILOTED = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> BATTERY = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
-    public static final int MAX_BATTERY = 900;
-    public static final double MAX_RANGE = 100;
-    public static final float POWER = 3.2f;
+    private static final EntityDataAccessor<Integer> TIER = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
+
+    /** 1 = 자폭 드론, 2 = 고성능 (MK2): 더 빠르고, 오래 날고, 멀리 가고, 더 크게 터짐 */
+    public int tier() {
+        return entityData.get(TIER);
+    }
+
+    public void setTier(int t) {
+        entityData.set(TIER, t);
+        entityData.set(BATTERY, maxBattery());
+    }
+
+    public int maxBattery() {
+        return tier() >= 2 ? 1800 : 900;
+    }
+
+    public double maxRange() {
+        return tier() >= 2 ? 180 : 100;
+    }
+
+    public float power() {
+        return tier() >= 2 ? 5.5f : 3.2f;
+    }
+
+    private double speedMul() {
+        return tier() >= 2 ? 1.6 : 1.0;
+    }
 
     /** 조종 중인 내 클라이언트에서만 true: 서버 위치로 덮어쓰지 않는다 */
     public boolean localPilot;
@@ -55,7 +79,8 @@ public class DroneEntity extends Entity {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(OWNER, Optional.empty());
         builder.define(PILOTED, false);
-        builder.define(BATTERY, MAX_BATTERY);
+        builder.define(BATTERY, 900);
+        builder.define(TIER, 1);
     }
 
     public void setOwner(Player p) {
@@ -96,10 +121,11 @@ public class DroneEntity extends Entity {
             Vec3 look = Vec3.directionFromRotation(pitch, yaw);
             Vec3 flat = Vec3.directionFromRotation(0, yaw);
             Vec3 right = new Vec3(-flat.z, 0, flat.x);
-            Vec3 target = look.scale(in.forward() * 1.05)
-                    .add(right.scale(-in.strafe() * 0.6))
-                    .add(0, (in.up() ? 0.55 : 0) - (in.down() ? 0.55 : 0), 0);
-            v = v.add(target.subtract(v).scale(0.14));
+            double m = speedMul();
+            Vec3 target = look.scale(in.forward() * 1.05 * m)
+                    .add(right.scale(-in.strafe() * 0.6 * m))
+                    .add(0, ((in.up() ? 0.55 : 0) - (in.down() ? 0.55 : 0)) * Math.sqrt(m), 0);
+            v = v.add(target.subtract(v).scale(0.14 * Math.sqrt(m)));
         } else {
             v = v.add(0, -0.06, 0).scale(0.98);
         }
@@ -108,6 +134,10 @@ public class DroneEntity extends Entity {
         move(MoverType.SELF, v);
         tickVisuals(in);
         return (horizontalCollision || verticalCollision) && speed > 0.38;
+    }
+
+    public boolean isMk2() {
+        return tier() >= 2;
     }
 
     private void tickVisuals(VehicleHooks.Input in) {
@@ -148,7 +178,7 @@ public class DroneEntity extends Entity {
         if (battery() > 0 && (isPiloted() || !onGround())) entityData.set(BATTERY, battery() - 1);
         Player owner = owner();
         if (isPiloted()) {
-            if (owner == null || !owner.isAlive() || owner.level() != level() || distanceTo(owner) > MAX_RANGE + 20) {
+            if (owner == null || !owner.isAlive() || owner.level() != level() || distanceTo(owner) > maxRange() + 20) {
                 setPiloted(false);
                 if (owner != null) owner.displayClientMessage(Component.translatable("message.tycooncraft.drone.lost"), true);
             }
@@ -183,7 +213,7 @@ public class DroneEntity extends Entity {
         setDeltaMovement(to.subtract(from0));
         setYRot(yaw);
         setXRot(pitch);
-        if (from.distanceTo(this) > MAX_RANGE) {
+        if (from.distanceTo(this) > maxRange()) {
             setPiloted(false);
             from.displayClientMessage(Component.translatable("message.tycooncraft.drone.lost"), true);
         }
@@ -193,7 +223,7 @@ public class DroneEntity extends Entity {
         if (level().isClientSide || isRemoved()) return;
         Player owner = owner();
         DamageSource src = damageSources().explosion(this, owner);
-        level().explode(this, src, null, getX(), getY() + 0.2, getZ(), POWER, false, Level.ExplosionInteraction.MOB);
+        level().explode(this, src, null, getX(), getY() + 0.2, getZ(), power(), false, Level.ExplosionInteraction.MOB);
         if (level() instanceof ServerLevel sl) {
             sl.sendParticles(ParticleTypes.EXPLOSION_EMITTER, getX(), getY(), getZ(), 1, 0, 0, 0, 0);
         }
@@ -215,7 +245,7 @@ public class DroneEntity extends Entity {
         Entity attacker = source.getEntity();
         // 주인이 맨손으로 치면 회수, 그 외 피해는 폭발
         if (attacker instanceof Player p && p.getUUID().equals(ownerId()) && source.getDirectEntity() == p && !isPiloted()) {
-            if (!p.getAbilities().instabuild && battery() > 0) spawnAtLocation(new ItemStack(ModItems.DRONE.get()));
+            if (!p.getAbilities().instabuild && battery() > 0) spawnAtLocation(new ItemStack(isMk2() ? ModItems.DRONE_MK2.get() : ModItems.DRONE.get()));
             discard();
             return true;
         }
@@ -242,18 +272,19 @@ public class DroneEntity extends Entity {
     }
 
     public float batteryFraction() {
-        return Mth.clamp(battery() / (float) MAX_BATTERY, 0f, 1f);
+        return Mth.clamp(battery() / (float) maxBattery(), 0f, 1f);
     }
 
     @Nullable
     @Override
     public ItemStack getPickResult() {
-        return new ItemStack(ModItems.DRONE.get());
+        return new ItemStack(isMk2() ? ModItems.DRONE_MK2.get() : ModItems.DRONE.get());
     }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
         if (tag.hasUUID("Owner")) entityData.set(OWNER, Optional.of(tag.getUUID("Owner")));
+        entityData.set(TIER, Math.max(1, tag.getInt("Tier")));
         entityData.set(BATTERY, tag.getInt("Battery"));
     }
 
@@ -262,5 +293,6 @@ public class DroneEntity extends Entity {
         UUID id = ownerId();
         if (id != null) tag.putUUID("Owner", id);
         tag.putInt("Battery", battery());
+        tag.putInt("Tier", tier());
     }
 }

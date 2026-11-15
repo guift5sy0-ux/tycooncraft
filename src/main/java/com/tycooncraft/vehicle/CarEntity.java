@@ -71,8 +71,8 @@ public class CarEntity extends VehicleEntity {
         if (isInWater()) speed *= 0.85;
         if (Math.abs(speed) < 0.003) speed = 0;
 
-        float grip = (float) Math.min(1.0, Math.abs(speed) / 0.12);
-        float turnRate = 4.2f - 1.8f * (float) Math.min(1.0, Math.abs(speed) / MAX_SPEED);
+        float grip = (float) Math.min(1.0, Math.abs(speed) / 0.05);
+        float turnRate = 6.8f - 2.6f * (float) Math.min(1.0, Math.abs(speed) / MAX_SPEED);
         float turn = onGround() ? -in.strafe() * turnRate * grip * (speed >= 0 ? 1 : -1) : 0;
         deltaRotation = turn;
         setYRot(getYRot() + turn);

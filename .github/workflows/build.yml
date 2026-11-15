@@ -95,7 +95,7 @@ jobs:
           printf "pauseOnLostFocus:false\nonboardAccessibility:false\ntutorialStep:none\nskipMultiplayerWarning:true\nrenderDistance:8\nguiScale:2\n" > run/options.txt
           xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runAutoClient --no-configuration-cache > vehicle-log.txt 2>&1 &
           PID=$!
-          for i in $(seq 1 120); do
+          for i in $(seq 1 200); do
             if grep -q "AUTOTEST\] finished" vehicle-log.txt; then echo "AUTOTEST FINISHED"; break; fi
             if grep -q "Crash Report" vehicle-log.txt; then echo "CLIENT CRASHED"; break; fi
             if ! kill -0 $PID 2>/dev/null; then echo "CLIENT EXITED"; break; fi

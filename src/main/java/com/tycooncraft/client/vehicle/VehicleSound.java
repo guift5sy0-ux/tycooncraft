@@ -55,6 +55,10 @@ public class VehicleSound extends AbstractTickableSoundInstance {
         if (vehicle instanceof CarEntity) {
             pitch = (float) Mth.clamp(0.75 + speed * 1.35, 0.6, 2.0);
             volume = level * (float) (0.55 + Math.min(0.45, speed));
+        } else if (vehicle instanceof com.tycooncraft.vehicle.JetEntity) {
+            double sp3 = Math.sqrt(Math.pow(vehicle.getX() - vehicle.xo, 2) + Math.pow(vehicle.getY() - vehicle.yo, 2) + Math.pow(vehicle.getZ() - vehicle.zo, 2));
+            pitch = (float) Mth.clamp(0.6 + sp3 * 0.45, 0.6, 1.8);
+            volume = level * (float) (1.2 + sp3);
         } else if (vehicle instanceof DroneEntity) {
             double sp3 = Math.sqrt(Math.pow(vehicle.getX() - vehicle.xo, 2) + Math.pow(vehicle.getY() - vehicle.yo, 2) + Math.pow(vehicle.getZ() - vehicle.zo, 2));
             pitch = (float) Mth.clamp(0.9 + sp3 * 0.9, 0.8, 1.9);

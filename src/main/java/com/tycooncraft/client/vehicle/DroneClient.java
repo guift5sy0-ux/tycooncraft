@@ -63,7 +63,7 @@ public final class DroneClient {
         if (!piloting()) return;
         Input in = event.getInput();
         Minecraft mc = Minecraft.getInstance();
-        input = new VehicleHooks.Input(in.forwardImpulse, in.leftImpulse, in.jumping, mc.options.keySprint.isDown());
+        input = new VehicleHooks.Input(in.forwardImpulse, in.leftImpulse, in.jumping, mc.options.keySprint.isDown() || VehicleKeyBinds.DESCEND.isDown());
         if (in.shiftKeyDown) release = true;
         in.forwardImpulse = 0;
         in.leftImpulse = 0;
@@ -162,7 +162,7 @@ public final class DroneClient {
         // 녹화 표시
         boolean blink = (mc.level.getGameTime() / 10) % 2 == 0;
         if (blink) g.fill(m + 6, m + 8, m + 11, m + 13, red);
-        g.drawString(font, "REC  TC-DRONE", m + 15, m + 7, c, false);
+        g.drawString(font, d.isMk2() ? "REC  TC-DRONE MK2" : "REC  TC-DRONE", m + 15, m + 7, c, false);
         // 배터리
         float bat = d.batteryFraction();
         int bx = w - m - 70, by = m + 6;
@@ -173,9 +173,10 @@ public final class DroneClient {
         // 거리, 고도, 속도, 신호
         double dist = mc.player.distanceTo(d);
         double sp = Math.sqrt(Math.pow(d.getX() - d.xo, 2) + Math.pow(d.getY() - d.yo, 2) + Math.pow(d.getZ() - d.zo, 2)) * 20 * 3.6;
-        int bars = dist < 40 ? 4 : dist < 65 ? 3 : dist < 85 ? 2 : 1;
+        double range = d.maxRange();
+        int bars = dist < range * 0.4 ? 4 : dist < range * 0.65 ? 3 : dist < range * 0.85 ? 2 : 1;
         int y0 = h - m - 44;
-        g.drawString(font, Component.translatable("hud.tycooncraft.drone.dist", (int) dist, (int) DroneEntity.MAX_RANGE), m + 8, y0, dist > 85 ? red : c, false);
+        g.drawString(font, Component.translatable("hud.tycooncraft.drone.dist", (int) dist, (int) range), m + 8, y0, dist > range * 0.85 ? red : c, false);
         g.drawString(font, Component.translatable("hud.tycooncraft.drone.alt", (int) Math.floor(d.getY())), m + 8, y0 + 11, c, false);
         g.drawString(font, (int) sp + " km/h", m + 8, y0 + 22, c, false);
         for (int i = 0; i < 4; i++) {

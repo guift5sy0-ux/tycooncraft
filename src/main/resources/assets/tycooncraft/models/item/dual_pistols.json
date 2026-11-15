@@ -1,0 +1,17 @@
+{
+ "loader": "neoforge:separate_transforms",
+ "base": {
+  "parent": "tycooncraft:item/pistol"
+ },
+ "perspectives": {
+  "gui": {
+   "parent": "tycooncraft:item/dual_pistols_gui"
+  },
+  "fixed": {
+   "parent": "tycooncraft:item/dual_pistols_gui"
+  },
+  "ground": {
+   "parent": "tycooncraft:item/dual_pistols_gui"
+  }
+ }
+}

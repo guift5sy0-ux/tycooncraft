@@ -1,0 +1,195 @@
+package com.tycooncraft.mob;
+
+import com.tycooncraft.gun.Ballistics;
+import com.tycooncraft.registry.ModEntities;
+import com.tycooncraft.registry.ModItems;
+import com.tycooncraft.registry.ModSounds;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.RangedAttackGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.RangedAttackMob;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * 총잡이 몹 3종: 갱단원(권총), 용병(소총·방탄장비), 무법자(산탄총). 총알 판정은 플레이어 총과 같음(방탄조끼로 막힘).
+ * 쓰러뜨리면 동전·탄약, 가끔 총.
+ */
+public class GunnerEntity extends Monster implements RangedAttackMob {
+    public enum Kind {
+        GANGSTER(26, 0.28, 5.0f, 1, 0.045f, 34, 22, 32),
+        MERCENARY(32, 0.27, 6.5f, 1, 0.03f, 18, 26, 40),
+        OUTLAW(30, 0.29, 3.2f, 6, 0.10f, 40, 12, 18),
+        BOSS(420, 0.27, 7.0f, 1, 0.035f, 7, 30, 44);
+
+        final double health, speed;
+        final float damage, spread;
+        final int pellets, interval, range, follow;
+
+        Kind(double health, double speed, float damage, int pellets, float spread, int interval, int range, int follow) {
+            this.health = health;
+            this.speed = speed;
+            this.damage = damage;
+            this.pellets = pellets;
+            this.spread = spread;
+            this.interval = interval;
+            this.range = range;
+            this.follow = follow;
+        }
+    }
+
+    protected final Kind kind;
+
+    public GunnerEntity(EntityType<? extends Monster> type, Level level, Kind kind) {
+        super(type, level);
+        this.kind = kind;
+        this.xpReward = kind == Kind.BOSS ? 200 : 8;
+    }
+
+    public Kind kind() {
+        return kind;
+    }
+
+    public static AttributeSupplier.Builder attributes(Kind k) {
+        return Monster.createMonsterAttributes()
+                .add(Attributes.MAX_HEALTH, k.health)
+                .add(Attributes.MOVEMENT_SPEED, k.speed)
+                .add(Attributes.FOLLOW_RANGE, k.follow)
+                .add(Attributes.ARMOR, k == Kind.BOSS ? 14 : k == Kind.MERCENARY ? 4 : 2)
+                .add(Attributes.KNOCKBACK_RESISTANCE, k == Kind.BOSS ? 1.0 : 0.1)
+                .add(Attributes.ATTACK_DAMAGE, 4);
+    }
+
+    @Override
+    protected void registerGoals() {
+        goalSelector.addGoal(0, new FloatGoal(this));
+        goalSelector.addGoal(2, new RangedAttackGoal(this, 1.0, kind.interval, kind.interval + 10, kind.range));
+        goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.9));
+        goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 12f));
+        goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+        targetSelector.addGoal(1, new HurtByTargetGoal(this, GunnerEntity.class));
+        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+        targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
+    }
+
+    protected Item weapon() {
+        return switch (kind) {
+            case GANGSTER -> ModItems.PISTOL.get();
+            case MERCENARY, BOSS -> ModItems.RIFLE.get();
+            case OUTLAW -> ModItems.SHOTGUN.get();
+        };
+    }
+
+    protected SoundEvent fireSound() {
+        return switch (kind) {
+            case GANGSTER -> ModSounds.PISTOL_FIRE.get();
+            case MERCENARY, BOSS -> ModSounds.RIFLE_FIRE.get();
+            case OUTLAW -> ModSounds.SHOTGUN_FIRE.get();
+        };
+    }
+
+    @Nullable
+    @Override
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData data) {
+        SpawnGroupData d = super.finalizeSpawn(level, difficulty, reason, data);
+        setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(weapon()));
+        setDropChance(EquipmentSlot.MAINHAND, kind == Kind.BOSS ? 1.0f : 0.06f);
+        if (kind == Kind.MERCENARY) {
+            setItemSlot(EquipmentSlot.CHEST, new ItemStack(random.nextFloat() < 0.3f ? ModItems.VEST_2.get() : ModItems.VEST_1.get()));
+            setItemSlot(EquipmentSlot.HEAD, new ItemStack(ModItems.HELMET_1.get()));
+            setDropChance(EquipmentSlot.CHEST, 0.08f);
+            setDropChance(EquipmentSlot.HEAD, 0.08f);
+        }
+        return d;
+    }
+
+    @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        setAggressive(getTarget() != null);
+    }
+
+    @Override
+    public void performRangedAttack(LivingEntity target, float pull) {
+        if (!(level() instanceof ServerLevel sl)) return;
+        Vec3 from = getEyePosition();
+        Vec3 aim = target.getBoundingBox().getCenter().add(0, target.getBbHeight() * (random.nextFloat() < 0.15f ? 0.35 : 0.05), 0);
+        Vec3 base = aim.subtract(from).normalize();
+        float spread = kind.spread * (level().getDifficulty().getId() >= 3 ? 0.8f : 1f);
+        for (int i = 0; i < kind.pellets; i++) {
+            Vec3 dir = base.add(random.nextGaussian() * spread, random.nextGaussian() * spread, random.nextGaussian() * spread).normalize();
+            Ballistics.shoot(sl, this, from.add(dir.scale(0.6)), dir, kind.range + 8, kind.damage, 0, 1.5f, false, true,
+                    damageSources().mobAttack(this), e -> !(e instanceof GunnerEntity));
+        }
+        sl.playSound(null, getX(), getY(), getZ(), fireSound(), SoundSource.HOSTILE, 3.0f, 0.95f + random.nextFloat() * 0.1f);
+        Vec3 m = from.add(base.scale(1.0)).add(0, -0.25, 0);
+        sl.sendParticles(ParticleTypes.FLAME, m.x, m.y, m.z, 1, 0.02, 0.02, 0.02, 0.005);
+        sl.sendParticles(ParticleTypes.SMOKE, m.x, m.y, m.z, 3, 0.04, 0.04, 0.04, 0.01);
+    }
+
+    @Override
+    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
+        super.dropCustomDeathLoot(level, source, recentlyHit);
+        spawnAtLocation(new ItemStack(ModItems.COIN_IRON.get(), 1 + random.nextInt(kind == Kind.MERCENARY ? 4 : 3)));
+        if (random.nextFloat() < 0.5f) spawnAtLocation(new ItemStack(ModItems.COIN_COPPER.get(), 2 + random.nextInt(8)));
+        Item ammo = kind == Kind.OUTLAW ? ModItems.SHOTGUN_SHELL.get() : kind == Kind.GANGSTER ? ModItems.LIGHT_AMMO.get() : ModItems.HEAVY_AMMO.get();
+        spawnAtLocation(new ItemStack(ammo, 2 + random.nextInt(6)));
+    }
+
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return SoundEvents.PILLAGER_AMBIENT;
+    }
+
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return SoundEvents.PILLAGER_HURT;
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return SoundEvents.PILLAGER_DEATH;
+    }
+
+    // 엔티티 타입별 생성자
+    public static GunnerEntity gangster(EntityType<? extends Monster> t, Level l) {
+        return new GunnerEntity(t, l, Kind.GANGSTER);
+    }
+
+    public static GunnerEntity mercenary(EntityType<? extends Monster> t, Level l) {
+        return new GunnerEntity(t, l, Kind.MERCENARY);
+    }
+
+    public static GunnerEntity outlaw(EntityType<? extends Monster> t, Level l) {
+        return new GunnerEntity(t, l, Kind.OUTLAW);
+    }
+
+    static EntityType<? extends GunnerEntity> minionType() {
+        return ModEntities.GANGSTER.get();
+    }
+}

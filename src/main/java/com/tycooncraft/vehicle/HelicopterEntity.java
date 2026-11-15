@@ -81,6 +81,19 @@ public class HelicopterEntity extends VehicleEntity {
         rotor = Mth.clamp(rotor + (engineRunning() ? 0.011f : -0.006f), 0f, 1f);
     }
 
+    /** 벽에 빠르게 부딪히거나 바닥에 세게 떨어지면 폭발 (충전 크리퍼급) */
+    @Override
+    protected void afterMove(Vec3 v) {
+        double h = Math.sqrt(v.x * v.x + v.z * v.z);
+        if ((horizontalCollision && h > 0.5) || (verticalCollision && v.y < -0.6)) crash();
+    }
+
+    @Override
+    public Vec3 getDismountLocationForPassenger(net.minecraft.world.entity.LivingEntity passenger) {
+        Vec3 g = groundDismount(passenger);
+        return g != null ? g : super.getDismountLocationForPassenger(passenger);
+    }
+
     public boolean hasLift() {
         return rotor > 0.85f;
     }
@@ -90,18 +103,23 @@ public class HelicopterEntity extends VehicleEntity {
         Vec3 dm = getDeltaMovement();
         double vx = dm.x, vy = dm.y, vz = dm.z;
         if (hasLift() && hasFuel) {
-            float yawIn = -in.strafe() * 3.2f;
-            deltaRotation = yawIn;
+            // 기수는 조종자가 보는 방향으로 (마우스로 방향 전환), A/D = 옆으로 이동
+            boolean manned = getControllingPassenger() != null;
+            float dy = manned ? Mth.wrapDegrees(in.lookYaw() - getYRot()) : 0;
+            float yawIn = Mth.clamp(dy * 0.16f, -5.5f, 5.5f);
+            deltaRotation = 0;
             setYRot(getYRot() + yawIn);
             Vec3 f = forward();
-            double target = in.forward() > 0 ? 1.15 : in.forward() < 0 ? -0.45 : 0;
+            Vec3 right = toWorld(new Vec3(1, 0, 0));
+            double target = in.forward() > 0 ? 1.2 : in.forward() < 0 ? -0.5 : 0;
             double cur = vx * f.x + vz * f.z;
-            double ns = cur + (target - cur) * 0.035;
-            double latX = (vx - f.x * cur) * 0.9, latZ = (vz - f.z * cur) * 0.9;
-            vx = f.x * ns + latX;
-            vz = f.z * ns + latZ;
-            double ty = in.up() ? 0.34 : in.down() ? -0.34 : 0.0;
-            vy += (ty - vy) * 0.12;
+            double ns = cur + (target - cur) * 0.04;
+            double lat = vx * right.x + vz * right.z;
+            double nl = lat + (-in.strafe() * 0.5 - lat) * 0.06;
+            vx = f.x * ns + right.x * nl;
+            vz = f.z * ns + right.z * nl;
+            double ty = in.up() ? 0.36 : in.down() ? -0.42 : 0.0;
+            vy += (ty - vy) * 0.14;
         } else {
             deltaRotation = 0;
             vy = (vy - 0.04 * (1 - rotor * 0.75)) * 0.98;

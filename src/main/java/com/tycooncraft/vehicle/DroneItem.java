@@ -20,8 +20,11 @@ import java.util.List;
 /** 자폭 드론: 우클릭하면 앞에 띄우고 바로 드론 카메라로 조종 */
 public class DroneItem extends Item {
 
-    public DroneItem(Properties properties) {
+    private final int tier;
+
+    public DroneItem(Properties properties, int tier) {
         super(properties.stacksTo(8));
+        this.tier = tier;
     }
 
     @Override
@@ -34,6 +37,7 @@ public class DroneItem extends Item {
             Vec3 at = player.getEyePosition().add(look.scale(1.2)).add(0, -0.3, 0);
             drone.moveTo(at.x, at.y, at.z, player.getYRot(), 0);
             drone.setOwner(player);
+            drone.setTier(tier);
             if (!level.noCollision(drone, drone.getBoundingBox())) {
                 drone.moveTo(player.getX(), player.getY() + 2.1, player.getZ(), player.getYRot(), 0);
             }
@@ -52,6 +56,7 @@ public class DroneItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> lines, TooltipFlag flag) {
+        if (tier >= 2) lines.add(Component.translatable("tooltip.tycooncraft.drone_mk2").withStyle(ChatFormatting.GOLD));
         lines.add(Component.translatable("tooltip.tycooncraft.drone").withStyle(ChatFormatting.GRAY));
         lines.add(Component.translatable("tooltip.tycooncraft.drone2").withStyle(ChatFormatting.DARK_GRAY));
     }

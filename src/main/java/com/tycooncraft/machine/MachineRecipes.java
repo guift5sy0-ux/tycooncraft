@@ -74,6 +74,40 @@ public final class MachineRecipes {
             }
             case ASSEMBLER -> {
                 // 순서 = 우선순위 (상위 부품 먼저) — 탈것이 맨 앞이어야 엔진 레시피가 재료를 가로채지 않음
+                // 대형 병기 (엔진 레시피보다 먼저)
+                r.add(MachineRecipe.of(ModItems.FIGHTER_JET.get(), 1)
+                        .in(ModItems.ENGINE.get(), 4).in(ModItems.STEEL_PLATE.get(), 16).in(ModItems.ADVANCED_CIRCUIT.get(), 4)
+                        .in(ModItems.MECHANISM.get(), 4).in(Items.GLASS, 6).in(ModItems.GUN_BARREL.get(), 2).build());
+                r.add(MachineRecipe.of(ModItems.TANK.get(), 1)
+                        .in(ModItems.ENGINE.get(), 3).in(ModItems.STEEL_PLATE.get(), 24).in(ModItems.STEEL_GEAR.get(), 12)
+                        .in(ModItems.GUN_BARREL.get(), 2).in(ModItems.MECHANISM.get(), 3).in(ModItems.ADVANCED_CIRCUIT.get(), 2).build());
+                r.add(MachineRecipe.of(ModItems.TURRET.get(), 1)
+                        .in(ModItems.MECHANISM.get(), 2).in(ModItems.CIRCUIT.get(), 2).in(ModItems.STEEL_PLATE.get(), 4)
+                        .in(ModItems.GUN_RECEIVER.get()).in(ModItems.GUN_BARREL.get(), 2).build());
+                r.add(MachineRecipe.of(ModItems.DRONE_MK2.get(), 1)
+                        .in(ModItems.DRONE.get()).in(ModItems.ADVANCED_CIRCUIT.get(), 2).in(Items.TNT, 2).in(ModItems.STEEL_PLATE.get(), 2).in(ModItems.MECHANISM.get()).build());
+                // 신형 총기·탄
+                r.add(MachineRecipe.of(ModItems.VSS.get(), 1)
+                        .in(ModItems.GUN_RECEIVER.get()).in(ModItems.GUN_BARREL.get()).in(ModItems.SILENCER.get()).in(ModItems.GUN_STOCK.get())
+                        .in(Items.SPYGLASS).in(ModItems.STEEL_PLATE.get(), 2).build());
+                r.add(MachineRecipe.of(ModItems.RPG.get(), 1)
+                        .in(ModItems.GUN_RECEIVER.get()).in(ModItems.STEEL_PLATE.get(), 4).in(ModItems.STEEL_ROD.get(), 2).in(ModItems.GUN_STOCK.get()).in(Items.SPYGLASS).build());
+                r.add(MachineRecipe.of(ModItems.DUAL_PISTOLS.get(), 1).in(ModItems.PISTOL.get(), 2).in(ModItems.MECHANISM.get()).build());
+                r.add(MachineRecipe.of(ModItems.ROCKET.get(), 2)
+                        .in(ModItems.IRON_PLATE.get(), 2).in(Items.GUNPOWDER, 4).in(Items.TNT).in(ModItems.COPPER_WIRE.get()).build());
+                r.add(MachineRecipe.of(ModItems.TANK_SHELL.get(), 2)
+                        .in(ModItems.STEEL_PLATE.get()).in(Items.GUNPOWDER, 3).in(Items.TNT).in(ModItems.COPPER_PLATE.get()).build());
+                r.add(MachineRecipe.of(ModItems.SILENCER_ADVANCED.get(), 1)
+                        .in(ModItems.SILENCER.get()).in(ModItems.STEEL_PLATE.get(), 2).in(Items.BLACK_WOOL, 2).in(ModItems.GOLD_PLATE.get()).build());
+                // 방탄 장비 & 낙하산 & 신호탄
+                r.add(MachineRecipe.of(ModItems.VEST_3.get(), 1).in(ModItems.VEST_2.get()).in(ModItems.STEEL_PLATE.get(), 8).in(Items.DIAMOND, 2).build());
+                r.add(MachineRecipe.of(ModItems.VEST_2.get(), 1).in(ModItems.VEST_1.get()).in(ModItems.STEEL_PLATE.get(), 4).in(Items.LEATHER, 2).build());
+                r.add(MachineRecipe.of(ModItems.VEST_1.get(), 1).in(ModItems.IRON_PLATE.get(), 4).in(Items.LEATHER, 4).in(Items.STRING, 2).build());
+                r.add(MachineRecipe.of(ModItems.HELMET_3.get(), 1).in(ModItems.HELMET_2.get()).in(ModItems.STEEL_PLATE.get(), 5).in(Items.GLASS_PANE, 2).in(Items.DIAMOND).build());
+                r.add(MachineRecipe.of(ModItems.HELMET_2.get(), 1).in(ModItems.HELMET_1.get()).in(ModItems.STEEL_PLATE.get(), 3).build());
+                r.add(MachineRecipe.of(ModItems.HELMET_1.get(), 1).in(ModItems.IRON_PLATE.get(), 3).in(Items.LEATHER, 2).build());
+                r.add(MachineRecipe.of(ModItems.PARACHUTE.get(), 1).in(Items.STRING, 8).in(Items.WHITE_WOOL, 4).in(Items.RED_WOOL, 2).in(Items.LEATHER, 2).build());
+                r.add(MachineRecipe.of(ModItems.CARTEL_FLARE.get(), 1).in(ModItems.GOLD_PLATE.get(), 2).in(Items.GUNPOWDER, 4).in(Items.REDSTONE, 2).in(ModItems.COIN_GOLD.get(), 5).build());
                 // 탈것 (부품 6종까지)
                 r.add(MachineRecipe.of(ModItems.HELICOPTER.get(), 1)
                         .in(ModItems.ENGINE.get(), 2).in(ModItems.STEEL_PLATE.get(), 10).in(ModItems.ADVANCED_CIRCUIT.get(), 3)

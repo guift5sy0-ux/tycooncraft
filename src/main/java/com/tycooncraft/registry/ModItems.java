@@ -4,6 +4,11 @@ import com.tycooncraft.TycoonCraft;
 import com.tycooncraft.economy.CoinItem;
 import com.tycooncraft.gun.GunItem;
 import com.tycooncraft.vehicle.VehicleItem;
+import com.tycooncraft.gun.RpgItem;
+import com.tycooncraft.gear.GearItem;
+import com.tycooncraft.mob.FlareItem;
+import net.minecraft.world.item.ArmorItem;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import com.tycooncraft.vehicle.DroneItem;
 import com.tycooncraft.gun.GunStats;
 import com.tycooncraft.machine.MachineType;
@@ -74,7 +79,42 @@ public final class ModItems {
 
     // ── 총기 부착물 & 드론 ──
     public static final DeferredItem<Item> SILENCER = ITEMS.register("silencer", () -> new Item(new Item.Properties().stacksTo(16)));
-    public static final DeferredItem<DroneItem> DRONE = ITEMS.register("drone", () -> new DroneItem(new Item.Properties()));
+    public static final DeferredItem<DroneItem> DRONE = ITEMS.register("drone", () -> new DroneItem(new Item.Properties(), 1));
+    public static final DeferredItem<DroneItem> DRONE_MK2 = ITEMS.register("drone_mk2", () -> new DroneItem(new Item.Properties(), 2));
+    public static final DeferredItem<Item> SILENCER_ADVANCED = ITEMS.register("silencer_advanced", () -> new Item(new Item.Properties().stacksTo(16)));
+
+    // ── 신형 총기 ──
+    public static final DeferredItem<GunItem> VSS = ITEMS.register("vss", () -> new GunItem(new Item.Properties(),
+            new GunStats(11f, 1, 0.008f, 100, 10, 6, 40, false, true, 2.0f, LIGHT_AMMO, ModSounds.SILENCED_FIRE, ModSounds.RIFLE_RELOAD)));
+    public static final DeferredItem<GunItem> DUAL_PISTOLS = ITEMS.register("dual_pistols", () -> new GunItem(new Item.Properties(),
+            new GunStats(7f, 1, 0.032f, 40, 24, 2, 22, true, false, 1.3f, LIGHT_AMMO, ModSounds.PISTOL_FIRE, ModSounds.PISTOL_RELOAD)));
+    public static final DeferredItem<RpgItem> RPG = ITEMS.register("rpg", () -> new RpgItem(new Item.Properties(),
+            new GunStats(0f, 1, 0f, 0, 1, 20, 50, false, false, 5f, ModItems.ROCKET, ModSounds.RPG_FIRE, ModSounds.RIFLE_RELOAD)));
+    public static final DeferredItem<Item> ROCKET = ITEMS.register("rocket", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final DeferredItem<Item> TANK_SHELL = ITEMS.register("tank_shell", () -> new Item(new Item.Properties().stacksTo(16)));
+
+    // ── 방탄 장비 & 낙하산 ──
+    public static final DeferredItem<GearItem> VEST_1 = gear("vest_1", ModArmorMaterials.TACTICAL_LIGHT, ArmorItem.Type.CHESTPLATE, 15, "tooltip.tycooncraft.vest", 25);
+    public static final DeferredItem<GearItem> VEST_2 = gear("vest_2", ModArmorMaterials.TACTICAL_MEDIUM, ArmorItem.Type.CHESTPLATE, 25, "tooltip.tycooncraft.vest", 45);
+    public static final DeferredItem<GearItem> VEST_3 = gear("vest_3", ModArmorMaterials.TACTICAL_HEAVY, ArmorItem.Type.CHESTPLATE, 35, "tooltip.tycooncraft.vest", 65);
+    public static final DeferredItem<GearItem> HELMET_1 = gear("helmet_1", ModArmorMaterials.TACTICAL_LIGHT, ArmorItem.Type.HELMET, 15, "tooltip.tycooncraft.helmet", 40);
+    public static final DeferredItem<GearItem> HELMET_2 = gear("helmet_2", ModArmorMaterials.TACTICAL_MEDIUM, ArmorItem.Type.HELMET, 25, "tooltip.tycooncraft.helmet", 65);
+    public static final DeferredItem<GearItem> HELMET_3 = gear("helmet_3", ModArmorMaterials.TACTICAL_HEAVY, ArmorItem.Type.HELMET, 35, "tooltip.tycooncraft.helmet", 90);
+    public static final DeferredItem<GearItem> PARACHUTE = ITEMS.register("parachute", () -> new GearItem(ModArmorMaterials.PARACHUTE, ArmorItem.Type.LEGGINGS,
+            new Item.Properties().stacksTo(1), "tooltip.tycooncraft.parachute"));
+
+    // ── 보스 소환 & 스폰알 ──
+    public static final DeferredItem<FlareItem> CARTEL_FLARE = ITEMS.register("cartel_flare", () -> new FlareItem(new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> GANGSTER_EGG = ITEMS.register("gangster_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.GANGSTER, 0x1C1C20, 0xB01E22, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> MERCENARY_EGG = ITEMS.register("mercenary_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.MERCENARY, 0x56603E, 0x2A2C26, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> OUTLAW_EGG = ITEMS.register("outlaw_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.OUTLAW, 0xA0221E, 0x6E4A28, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> SPIDER_EGG = ITEMS.register("mutant_spider_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.MUTANT_SPIDER, 0x361214, 0x5ADC46, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> BOSS_EGG = ITEMS.register("cartel_boss_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.CARTEL_BOSS, 0xE8E6DE, 0xAA1A1E, new Item.Properties()));
 
     // ── 탈것 & 연료 ──
     public static final DeferredItem<Item> FUEL_CANISTER = ITEMS.registerSimpleItem("fuel_canister");
@@ -82,6 +122,10 @@ public final class ModItems {
             () -> new VehicleItem(new Item.Properties(), ModEntities.CAR, false, "tooltip.tycooncraft.car"));
     public static final DeferredItem<VehicleItem> LOCOMOTIVE = ITEMS.register("locomotive",
             () -> new VehicleItem(new Item.Properties(), ModEntities.LOCOMOTIVE, true, "tooltip.tycooncraft.locomotive"));
+    public static final DeferredItem<VehicleItem> TANK = ITEMS.register("tank",
+            () -> new VehicleItem(new Item.Properties(), ModEntities.TANK, false, "tooltip.tycooncraft.tank"));
+    public static final DeferredItem<VehicleItem> FIGHTER_JET = ITEMS.register("fighter_jet",
+            () -> new VehicleItem(new Item.Properties(), ModEntities.FIGHTER_JET, false, "tooltip.tycooncraft.fighter_jet"));
     public static final DeferredItem<VehicleItem> HELICOPTER = ITEMS.register("helicopter",
             () -> new VehicleItem(new Item.Properties(), ModEntities.HELICOPTER, false, "tooltip.tycooncraft.helicopter"));
 
@@ -92,6 +136,7 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> LIFT_UP = ITEMS.registerSimpleBlockItem(ModBlocks.LIFT_UP);
     public static final DeferredItem<BlockItem> LIFT_DOWN = ITEMS.registerSimpleBlockItem(ModBlocks.LIFT_DOWN);
     public static final DeferredItem<BlockItem> BROKEN_MACHINE = ITEMS.registerSimpleBlockItem(ModBlocks.BROKEN_MACHINE);
+    public static final DeferredItem<BlockItem> TURRET = ITEMS.registerSimpleBlockItem(ModBlocks.TURRET);
     public static final List<DeferredItem<BlockItem>> MACHINE_ITEMS = new ArrayList<>();
     static {
         for (MachineType type : MachineType.values()) {
@@ -101,6 +146,11 @@ public final class ModItems {
 
     public static Item machineItem(MachineType type) {
         return ModBlocks.machine(type).asItem();
+    }
+
+    private static DeferredItem<GearItem> gear(String name, net.minecraft.core.Holder<net.minecraft.world.item.ArmorMaterial> mat, ArmorItem.Type type,
+                                               int durability, String tip, int pct) {
+        return ITEMS.register(name, () -> new GearItem(mat, type, new Item.Properties().durability(type.getDurability(durability)), tip, pct));
     }
 
     private static DeferredItem<CoinItem> coin(String name, long value) {

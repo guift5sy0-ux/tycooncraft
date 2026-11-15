@@ -4,6 +4,7 @@ import com.tycooncraft.gun.GunEnchants;
 import com.tycooncraft.gun.GunItem;
 import com.tycooncraft.registry.ModComponents;
 import com.tycooncraft.registry.ModEntities;
+import com.tycooncraft.registry.ModBlocks;
 import com.tycooncraft.registry.ModItems;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.ItemStack;
@@ -99,7 +100,16 @@ public final class AutoTest {
                 System.out.println("[AUTOTEST] drone given at t=" + t);
             }
         }
-        if (t >= 1100 && t % 10 == 0) {
+        if (t >= 1100 && t % 40 == 0) {
+            var v = player.getVehicle();
+            System.out.println("[AUTOTEST] t=" + t + " ride=" + (v == null ? "none" : v.getType().toShortString())
+                    + String.format(" pos=%.1f,%.1f,%.1f", player.getX(), player.getY(), player.getZ())
+                    + " mobs=" + level.getEntities(ModEntities.GANGSTER.get(), e -> true).size() + "/" + level.getEntities(ModEntities.MERCENARY.get(), e -> true).size()
+                    + "/" + level.getEntities(ModEntities.OUTLAW.get(), e -> true).size() + " boss=" + level.getEntities(ModEntities.CARTEL_BOSS.get(), e -> true).size()
+                    + " rockets=" + level.getEntities(ModEntities.ROCKET.get(), e -> true).size()
+                    + " chute=" + com.tycooncraft.gear.Parachute.open(player));
+        }
+        if (t >= 1100 && t % 10 == 0 && false) {
             long drones = level.getEntities(ModEntities.DRONE.get(), e -> true).size();
             System.out.println("[AUTOTEST] t=" + t + " drones=" + drones);
         }
@@ -136,6 +146,50 @@ public final class AutoTest {
         loco.moveTo(6.5, gy + 0.0625, 10.5, 0, 0);
         loco.setFuel(loco.maxFuel());
         level.addFreshEntity(loco);
+        // 신규: 전차·전투기·포탑·몹·장비
+        var tank = ModEntities.TANK.get().create(level);
+        tank.moveTo(10, gy, -20, 0, 0);
+        tank.setFuel(tank.maxFuel());
+        level.addFreshEntity(tank);
+        var jet = ModEntities.FIGHTER_JET.get().create(level);
+        jet.moveTo(-30, gy, 30, 180, 0);
+        jet.setFuel(jet.maxFuel());
+        level.addFreshEntity(jet);
+        BlockPos tp = new BlockPos(40, gy, -36);
+        level.setBlockAndUpdate(tp, ModBlocks.TURRET.get().defaultBlockState());
+        if (level.getBlockEntity(tp) instanceof com.tycooncraft.turret.TurretBlockEntity te) {
+            te.ammo().setItem(0, new ItemStack(ModItems.HEAVY_AMMO.get(), 64));
+        }
+        var golem = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        golem.moveTo(40, gy, -48, 0, 0);
+        level.addFreshEntity(golem);
+        int k = 0;
+        for (var type : java.util.List.of(ModEntities.GANGSTER.get(), ModEntities.MERCENARY.get(), ModEntities.OUTLAW.get())) {
+            var g = type.create(level);
+            g.moveTo(44 + k * 3, gy, -44, 90, 0);
+            g.finalizeSpawn(level, level.getCurrentDifficultyAt(g.blockPosition()), net.minecraft.world.entity.MobSpawnType.COMMAND, null);
+            level.addFreshEntity(g);
+            k++;
+        }
+        var boss = ModEntities.CARTEL_BOSS.get().create(level);
+        boss.moveTo(26, gy, -58, 0, 0);
+        boss.finalizeSpawn(level, level.getCurrentDifficultyAt(boss.blockPosition()), net.minecraft.world.entity.MobSpawnType.COMMAND, null);
+        level.addFreshEntity(boss);
+        var spider = ModEntities.MUTANT_SPIDER.get().create(level);
+        spider.moveTo(14, gy, -60, 0, 0);
+        level.addFreshEntity(spider);
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.LEGS, new ItemStack(ModItems.PARACHUTE.get()));
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, new ItemStack(ModItems.VEST_3.get()));
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(ModItems.HELMET_2.get()));
+        ItemStack vss = new ItemStack(ModItems.VSS.get());
+        vss.set(ModComponents.AMMO.get(), 10);
+        player.getInventory().setItem(1, vss);
+        ItemStack dual = new ItemStack(ModItems.DUAL_PISTOLS.get());
+        dual.set(ModComponents.AMMO.get(), 24);
+        player.getInventory().setItem(2, dual);
+        ItemStack rpg = new ItemStack(ModItems.RPG.get());
+        rpg.set(ModComponents.AMMO.get(), 1);
+        player.getInventory().setItem(3, rpg);
         System.out.println("[AUTOTEST] setup done ground=" + gy);
     }
 

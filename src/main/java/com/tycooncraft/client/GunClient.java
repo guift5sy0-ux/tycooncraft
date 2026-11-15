@@ -35,7 +35,7 @@ public final class GunClient {
             }
         };
         event.registerItem(aim, ModItems.PISTOL.get(), ModItems.SMG.get(), ModItems.RIFLE.get(),
-                ModItems.SHOTGUN.get(), ModItems.SNIPER.get());
+                ModItems.SHOTGUN.get(), ModItems.SNIPER.get(), ModItems.VSS.get(), ModItems.DUAL_PISTOLS.get(), ModItems.RPG.get());
     }
 
     @SubscribeEvent

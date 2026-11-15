@@ -26,5 +26,12 @@ public final class ModComponents {
                     .networkSynchronized(ByteBufCodecs.BOOL)
                     .build());
 
+    /** 소음기 등급 (0 없음, 1 소음기, 2 상위 소음기) */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> SILENCER_TIER =
+            COMPONENTS.register("silencer_tier", () -> DataComponentType.<Integer>builder()
+                    .persistent(Codec.INT)
+                    .networkSynchronized(ByteBufCodecs.VAR_INT)
+                    .build());
+
     private ModComponents() {}
 }

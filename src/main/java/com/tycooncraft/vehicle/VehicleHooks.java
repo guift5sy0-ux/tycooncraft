@@ -8,9 +8,13 @@ import net.minecraft.world.entity.Entity;
  */
 public final class VehicleHooks {
 
-    /** 조종 입력: forward(W=+1,S=-1), strafe(A=+1,D=-1), up(스페이스), down(Ctrl) */
-    public record Input(float forward, float strafe, boolean up, boolean down) {
-        public static final Input NONE = new Input(0, 0, false, false);
+    /** 조종 입력: forward(W=+1,S=-1), strafe(A=+1,D=-1), up(스페이스), down(Ctrl/Z), 조종자가 보는 방향 */
+    public record Input(float forward, float strafe, boolean up, boolean down, float lookYaw, float lookPitch) {
+        public static final Input NONE = new Input(0, 0, false, false, 0, 0);
+
+        public Input(float forward, float strafe, boolean up, boolean down) {
+            this(forward, strafe, up, down, 0, 0);
+        }
     }
 
     public interface Client {
@@ -21,6 +25,10 @@ public final class VehicleHooks {
 
         /** 서버가 드론 조종 시작을 알림 */
         default void startPilot(int entityId) {
+        }
+
+        /** 운전자 클라이언트 → 서버: 충돌·발사 등 */
+        default void sendAction(Entity vehicle, int action) {
         }
     }
 

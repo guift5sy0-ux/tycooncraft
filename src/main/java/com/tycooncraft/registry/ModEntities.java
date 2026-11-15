@@ -2,6 +2,12 @@ package com.tycooncraft.registry;
 
 import com.tycooncraft.TycoonCraft;
 import com.tycooncraft.vehicle.CarEntity;
+import com.tycooncraft.vehicle.TankEntity;
+import com.tycooncraft.vehicle.JetEntity;
+import com.tycooncraft.entity.RocketEntity;
+import com.tycooncraft.mob.GunnerEntity;
+import com.tycooncraft.mob.CartelBoss;
+import com.tycooncraft.mob.MutantSpider;
 import com.tycooncraft.vehicle.DroneEntity;
 import com.tycooncraft.vehicle.HelicopterEntity;
 import com.tycooncraft.vehicle.LocomotiveEntity;
@@ -29,7 +35,32 @@ public final class ModEntities {
 
     public static final DeferredHolder<EntityType<?>, EntityType<DroneEntity>> DRONE = ENTITIES.register("drone",
             () -> EntityType.Builder.<DroneEntity>of(DroneEntity::new, MobCategory.MISC)
-                    .sized(0.8f, 0.45f).clientTrackingRange(10).updateInterval(1).build("drone"));
+                    .sized(0.8f, 0.45f).clientTrackingRange(12).updateInterval(1).build("drone"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<TankEntity>> TANK = ENTITIES.register("tank",
+            () -> EntityType.Builder.<TankEntity>of(TankEntity::new, MobCategory.MISC)
+                    .sized(3.4f, 2.4f).clientTrackingRange(10).updateInterval(1).build("tank"));
+    public static final DeferredHolder<EntityType<?>, EntityType<JetEntity>> FIGHTER_JET = ENTITIES.register("fighter_jet",
+            () -> EntityType.Builder.<JetEntity>of(JetEntity::new, MobCategory.MISC)
+                    .sized(3.4f, 2.0f).clientTrackingRange(16).updateInterval(1).build("fighter_jet"));
+    public static final DeferredHolder<EntityType<?>, EntityType<RocketEntity>> ROCKET = ENTITIES.register("rocket",
+            () -> EntityType.Builder.<RocketEntity>of(RocketEntity::new, MobCategory.MISC)
+                    .sized(0.4f, 0.4f).clientTrackingRange(10).updateInterval(1).build("rocket"));
+
+    // 몹
+    public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> GANGSTER = mob("gangster", GunnerEntity::gangster);
+    public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> MERCENARY = mob("mercenary", GunnerEntity::mercenary);
+    public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> OUTLAW = mob("outlaw", GunnerEntity::outlaw);
+    public static final DeferredHolder<EntityType<?>, EntityType<CartelBoss>> CARTEL_BOSS = ENTITIES.register("cartel_boss",
+            () -> EntityType.Builder.<CartelBoss>of(CartelBoss::new, MobCategory.MONSTER)
+                    .sized(0.84f, 2.7f).eyeHeight(2.3f).clientTrackingRange(10).fireImmune().build("cartel_boss"));
+    public static final DeferredHolder<EntityType<?>, EntityType<MutantSpider>> MUTANT_SPIDER = ENTITIES.register("mutant_spider",
+            () -> EntityType.Builder.<MutantSpider>of(MutantSpider::new, MobCategory.MONSTER)
+                    .sized(4.2f, 2.7f).clientTrackingRange(10).build("mutant_spider"));
+
+    private static DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> mob(String name, EntityType.EntityFactory<GunnerEntity> f) {
+        return ENTITIES.register(name, () -> EntityType.Builder.of(f, MobCategory.MONSTER).sized(0.6f, 1.95f).clientTrackingRange(8).build(name));
+    }
 
     private ModEntities() {}
 }

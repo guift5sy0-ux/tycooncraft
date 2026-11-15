@@ -34,7 +34,13 @@ public final class VehicleClientHooks implements VehicleHooks.Client {
         LocalPlayer p = mc.player;
         if (p == null || mc.screen != null) return VehicleHooks.Input.NONE;
         Input in = p.input;
-        return new VehicleHooks.Input(in.forwardImpulse, in.leftImpulse, in.jumping, mc.options.keySprint.isDown());
+        boolean down = mc.options.keySprint.isDown() || VehicleKeyBinds.DESCEND.isDown();
+        return new VehicleHooks.Input(in.forwardImpulse, in.leftImpulse, in.jumping, down, p.getYRot(), p.getXRot());
+    }
+
+    @Override
+    public void sendAction(Entity vehicle, int action) {
+        net.neoforged.neoforge.network.PacketDistributor.sendToServer(new com.tycooncraft.network.VehicleActionPayload(vehicle.getId(), (byte) action));
     }
 
     @Override
@@ -80,6 +86,33 @@ public final class VehicleClientHooks implements VehicleHooks.Client {
             }
             if (h.rotor > 0.7f) downwash(h, r);
             damageSmoke(h, h.toWorld(new Vec3(0, 2.6, 0.2)), r);
+        } else if (v instanceof com.tycooncraft.vehicle.TankEntity t) {
+            t.wheelAngleO = t.wheelAngle;
+            t.wheelAngle -= t.forwardSpeed / (12f / 32f) + t.yawRate * 0.02f;
+            t.turretYawO = t.turretYaw;
+            float target = t.getControllingPassenger() != null ? t.getControllingPassenger().getYHeadRot() : t.turretYaw;
+            if (!t.turretInit) {
+                t.turretYaw = t.turretYawO = t.getYRot();
+                t.turretInit = true;
+            }
+            t.turretYaw += Mth.clamp(Mth.wrapDegrees(target - t.turretYaw), -5f, 5f);
+            if (t.engineRunning() && r.nextInt(3) == 0) {
+                for (int s = -1; s <= 1; s += 2) {
+                    Vec3 p = v.position().add(t.toWorld(new Vec3(s * 30 / 32.0, 42 / 32.0, 96 / 32.0)));
+                    level.addParticle(ParticleTypes.SMOKE, p.x, p.y, p.z, 0, 0.04, 0);
+                }
+            }
+            damageSmoke(t, t.toWorld(new Vec3(0, 1.6, 2.0)), r);
+        } else if (v instanceof com.tycooncraft.vehicle.JetEntity j) {
+            if (j.engineRunning()) {
+                Vec3 back = Vec3.directionFromRotation(j.getXRot(), j.getYRot()).scale(-4.3);
+                for (int s = -1; s <= 1; s += 2) {
+                    Vec3 side = Vec3.directionFromRotation(0, j.getYRot() + 90).scale(s * 7 / 32.0);
+                    Vec3 p = v.position().add(0, 0.9, 0).add(back).add(side);
+                    level.addParticle(j.forwardSpeed > 1.2 ? ParticleTypes.FLAME : ParticleTypes.SMOKE, p.x, p.y, p.z, 0, 0, 0);
+                }
+            }
+            damageSmoke(j, new Vec3(0, 1.2, 0), r);
         } else if (v instanceof LocomotiveEntity loco) {
             loco.wheelAngleO = loco.wheelAngle;
             double sp = Math.sqrt(Math.pow(v.getX() - v.xo, 2) + Math.pow(v.getZ() - v.zo, 2));
@@ -134,8 +167,9 @@ public final class VehicleClientHooks implements VehicleHooks.Client {
         if (s == null || s.isStopped()) {
             SoundEvent ev = v instanceof CarEntity ? ModSounds.CAR_ENGINE.get()
                     : v instanceof HelicopterEntity ? ModSounds.HELI_ROTOR.get()
-                    : v instanceof DroneEntity ? ModSounds.DRONE_BUZZ.get() : ModSounds.TRAIN_ENGINE.get();
-            if (!(v instanceof HelicopterEntity) && !(v instanceof DroneEntity)) {
+                    : v instanceof DroneEntity ? ModSounds.DRONE_BUZZ.get()
+                    : v instanceof com.tycooncraft.vehicle.JetEntity ? ModSounds.JET_ENGINE.get() : ModSounds.TRAIN_ENGINE.get();
+            if (!(v instanceof HelicopterEntity) && !(v instanceof DroneEntity) && !(v instanceof com.tycooncraft.vehicle.JetEntity)) {
                 v.level().playLocalSound(v.getX(), v.getY(), v.getZ(), ModSounds.ENGINE_START.get(), SoundSource.NEUTRAL, 1.0f, 1.0f, false);
             }
             s = new VehicleSound(v, ev);

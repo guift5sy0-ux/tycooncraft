@@ -132,7 +132,9 @@ public abstract class VehicleEntity extends Entity implements FueledVehicle {
             boolean manned = getControllingPassenger() != null;
             VehicleHooks.Input in = manned && level().isClientSide ? VehicleHooks.client.input() : VehicleHooks.Input.NONE;
             drive(in, getFuel() > 0);
-            move(MoverType.SELF, getDeltaMovement());
+            Vec3 before = getDeltaMovement();
+            move(MoverType.SELF, before);
+            afterMove(before);
         } else {
             deltaRotation = 0;
         }
@@ -155,6 +157,55 @@ public abstract class VehicleEntity extends Entity implements FueledVehicle {
             if (getControllingPassenger() != null && getFuel() > 0 && burning(moved)) setFuel(getFuel() - fuelPerTick());
             serverTick(moved);
         }
+    }
+
+    // ── 충돌·행동 ─────────────────────────────────────────────────
+    public static final int ACTION_CRASH = 1, ACTION_FIRE = 2, ACTION_FIRE2 = 3;
+    private boolean crashed;
+
+    /** 이동 직후(조종하는 쪽): 충돌 판정 등 */
+    protected void afterMove(Vec3 velocityBefore) {
+    }
+
+    /** 큰 충돌: 운전자 클라이언트면 서버에 알리고, 서버면 바로 폭발 */
+    protected void crash() {
+        if (crashed) return;
+        crashed = true;
+        if (level().isClientSide) VehicleHooks.client.sendAction(this, ACTION_CRASH);
+        else explodeWreck();
+    }
+
+    public void explodeWreck() {
+        if (level().isClientSide || isRemoved()) return;
+        level().explode(this, getX(), getY() + 1.0, getZ(), crashPower(), Level.ExplosionInteraction.MOB);
+        discard();
+    }
+
+    protected float crashPower() {
+        return 6.0f;
+    }
+
+    /** 서버: 탑승자가 보낸 행동 */
+    public void handleAction(net.minecraft.server.level.ServerPlayer player, int action) {
+        if (action == ACTION_CRASH && getControllingPassenger() == player) explodeWreck();
+    }
+
+    /** 하늘에 떠 있어도 내릴 때는 옆 땅바닥으로 (아래로 내려가며 설 자리를 찾음) */
+    protected Vec3 groundDismount(LivingEntity passenger) {
+        int seat = Math.max(0, getPassengers().indexOf(passenger));
+        double side = seatLocal(seat).x <= 0 ? -1 : 1;
+        for (double s : new double[]{side, -side}) {
+            Vec3 base = position().add(toWorld(new Vec3(s * (getBbWidth() / 2 + 0.8), 0, seatLocal(seat).z)));
+            BlockPos p = BlockPos.containing(base.x, getY() + 1, base.z);
+            for (int i = 0; i < 320 && p.getY() > level().getMinBuildHeight(); i++, p = p.below()) {
+                BlockPos below = p.below();
+                if (level().getBlockState(below).getCollisionShape(level(), below).isEmpty() && level().getFluidState(below).isEmpty()) continue;
+                Vec3 at = new Vec3(base.x, p.getY(), base.z);
+                if (level().noCollision(passenger, passenger.getDimensions(Pose.STANDING).makeBoundingBox(at))) return at;
+                break;
+            }
+        }
+        return null;
     }
 
     /** 모든 쪽에서 운전 계산 전에 (헬기 로터 회전 등) */

@@ -31,15 +31,29 @@ public final class ModCreativeTabs {
                         out.accept(ModItems.LOCOMOTIVE.get());
                         out.accept(ModItems.FUEL_CANISTER.get());
                         out.accept(ModItems.DRONE.get());
+                        out.accept(ModItems.DRONE_MK2.get());
+                        out.accept(ModItems.TANK.get());
+                        out.accept(ModItems.FIGHTER_JET.get());
+                        out.accept(ModItems.TURRET.get());
+                        out.accept(ModItems.PARACHUTE.get());
                         out.accept(ModItems.PISTOL.get());
                         out.accept(ModItems.SMG.get());
                         out.accept(ModItems.RIFLE.get());
                         out.accept(ModItems.SHOTGUN.get());
                         out.accept(ModItems.SNIPER.get());
+                        out.accept(ModItems.VSS.get());
+                        out.accept(ModItems.DUAL_PISTOLS.get());
+                        out.accept(ModItems.RPG.get());
+                        out.accept(ModItems.ROCKET.get());
+                        out.accept(ModItems.TANK_SHELL.get());
                         out.accept(ModItems.LIGHT_AMMO.get());
                         out.accept(ModItems.HEAVY_AMMO.get());
                         out.accept(ModItems.SHOTGUN_SHELL.get());
                         out.accept(ModItems.SILENCER.get());
+                        out.accept(ModItems.SILENCER_ADVANCED.get());
+                        for (var v : java.util.List.of(ModItems.VEST_1, ModItems.VEST_2, ModItems.VEST_3, ModItems.HELMET_1, ModItems.HELMET_2, ModItems.HELMET_3)) out.accept(v.get());
+                        out.accept(ModItems.CARTEL_FLARE.get());
+                        for (var v : java.util.List.of(ModItems.GANGSTER_EGG, ModItems.MERCENARY_EGG, ModItems.OUTLAW_EGG, ModItems.SPIDER_EGG, ModItems.BOSS_EGG)) out.accept(v.get());
                     })
                     .build());
 

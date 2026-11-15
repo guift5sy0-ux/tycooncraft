@@ -1,6 +1,7 @@
 package com.tycooncraft.gun;
 
 import com.tycooncraft.registry.ModComponents;
+import com.tycooncraft.registry.ModItems;
 import com.tycooncraft.registry.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -57,8 +58,22 @@ public class GunItem extends Item {
         stack.set(ModComponents.AMMO.get(), n);
     }
 
+    /** 소음기 등급: 0 없음, 1 소음기, 2 상위 소음기 (VSS 는 일체형이라 항상 2) */
+    public static int silencerTier(ItemStack stack) {
+        if (stack.is(ModItems.VSS.get())) return 2;
+        int t = stack.getOrDefault(ModComponents.SILENCER_TIER.get(), 0);
+        if (t == 0 && stack.getOrDefault(ModComponents.SILENCED.get(), false)) t = 1;
+        return t;
+    }
+
     public static boolean silenced(ItemStack stack) {
-        return stack.getOrDefault(ModComponents.SILENCED.get(), false);
+        return silencerTier(stack) > 0;
+    }
+
+    /** 소음기를 달 수 있는 총 (단발 총열) */
+    public static boolean canTakeSilencer(ItemStack stack) {
+        return stack.is(ModItems.PISTOL.get()) || stack.is(ModItems.SMG.get()) || stack.is(ModItems.RIFLE.get())
+                || stack.is(ModItems.SHOTGUN.get()) || stack.is(ModItems.SNIPER.get());
     }
 
     // ── 인챈트 반영 수치 ──
@@ -75,7 +90,8 @@ public class GunItem extends Item {
     }
 
     public float damage(ItemStack stack) {
-        return stats.damage() * (1 + 0.15f * GunEnchants.level(stack, GunEnchants.FIREPOWER)) * (silenced(stack) ? 0.9f : 1f);
+        float sil = silencerTier(stack) == 1 && !stack.is(ModItems.VSS.get()) ? 0.93f : 1f;
+        return stats.damage() * (1 + 0.15f * GunEnchants.level(stack, GunEnchants.FIREPOWER)) * sil;
     }
 
     private float precision(ItemStack stack) {
@@ -157,7 +173,8 @@ public class GunItem extends Item {
     // ── 발사 ──
 
     private void shoot(Level level, Player player, ItemStack stack) {
-        float recoil = stats.recoil() * (1 - 0.2f * GunEnchants.level(stack, GunEnchants.PRECISION)) * (silenced(stack) ? 0.85f : 1f);
+        int tier = silencerTier(stack);
+        float recoil = stats.recoil() * (1 - 0.2f * GunEnchants.level(stack, GunEnchants.PRECISION)) * (tier == 2 ? 0.75f : tier == 1 ? 0.85f : 1f);
         if (level.isClientSide) {
             // 반동: 화면이 살짝 위로
             player.setXRot(player.getXRot() - recoil);
@@ -166,82 +183,46 @@ public class GunItem extends Item {
         }
         ServerLevel server = (ServerLevel) level;
         int saver = GunEnchants.level(stack, GunEnchants.AMMO_SAVER);
-        if (!player.getAbilities().instabuild && player.getRandom().nextFloat() >= 0.15f * saver) setAmmo(stack, ammo(stack) - 1);
-        boolean quiet = silenced(stack);
-        for (int i = 0; i < stats.pellets(); i++) fireRay(server, player, stack, quiet);
+        int before = ammo(stack);
+        if (!player.getAbilities().instabuild && player.getRandom().nextFloat() >= 0.15f * saver) setAmmo(stack, before - 1);
+        fire(server, player, stack, tier);
         float pitch = 0.96f + player.getRandom().nextFloat() * 0.08f;
-        if (quiet) {
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.SILENCED_FIRE.get(), SoundSource.PLAYERS, 1.0f, pitch);
+        if (tier == 2) {
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.SILENCED_FIRE.get(), SoundSource.PLAYERS, 0.75f, pitch);
+        } else if (tier == 1) {
+            // 일반 소음기: 생각보다 크게 들림 (약 32블록)
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.SILENCED_FIRE.get(), SoundSource.PLAYERS, 2.0f, pitch * 0.92f);
         } else {
             level.playSound(null, player.getX(), player.getY(), player.getZ(), stats.fireSound().get(), SoundSource.PLAYERS, 4.0f, pitch);
         }
-        // 총구 화염 + 연기 (소음기면 화염 없음, 연기 조금)
+        // 총구 화염 + 연기 (소음기면 화염 없음). 쌍권총은 좌우 번갈아
         Vec3 look = player.getViewVector(1f);
         Vec3 right = look.cross(new Vec3(0, 1, 0)).normalize();
-        Vec3 muzzle = player.getEyePosition().add(look.scale(quiet ? 1.7 : 1.3)).add(right.scale(0.25)).add(0, -0.18, 0);
-        if (!quiet) server.sendParticles(ParticleTypes.FLAME, muzzle.x, muzzle.y, muzzle.z, 2, 0.02, 0.02, 0.02, 0.005);
-        server.sendParticles(ParticleTypes.SMOKE, muzzle.x, muzzle.y, muzzle.z, quiet ? 1 : 4, 0.04, 0.04, 0.04, 0.012);
+        double side = isDual() ? ((before % 2 == 0) ? 0.3 : -0.3) : 0.25;
+        Vec3 muzzle = player.getEyePosition().add(look.scale(tier > 0 ? 1.7 : 1.3)).add(right.scale(side)).add(0, -0.18, 0);
+        if (tier == 0) server.sendParticles(ParticleTypes.FLAME, muzzle.x, muzzle.y, muzzle.z, 2, 0.02, 0.02, 0.02, 0.005);
+        server.sendParticles(ParticleTypes.SMOKE, muzzle.x, muzzle.y, muzzle.z, tier > 0 ? 1 : 4, 0.04, 0.04, 0.04, 0.012);
+    }
+
+    public boolean isDual() {
+        return this == ModItems.DUAL_PISTOLS.get();
+    }
+
+    /** 실제 발사 (RPG 는 로켓으로 덮어씀) */
+    protected void fire(ServerLevel level, Player player, ItemStack stack, int silencerTier) {
+        for (int i = 0; i < stats.pellets(); i++) fireRay(level, player, stack, silencerTier > 0);
     }
 
     private void fireRay(ServerLevel level, Player player, ItemStack stack, boolean quiet) {
         RandomSource r = player.getRandom();
-        Vec3 eye = player.getEyePosition();
         float spread = stats.spread() * precision(stack) * (player.isUsingItem() && stats.scoped() ? 0.1f : 1f);
         Vec3 dir = player.getViewVector(1f)
                 .add(r.nextGaussian() * spread, r.nextGaussian() * spread, r.nextGaussian() * spread).normalize();
-        Vec3 end = eye.add(dir.scale(stats.range()));
-
-        BlockHitResult blockHit = level.clip(new ClipContext(eye, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
-        if (blockHit.getType() != HitResult.Type.MISS) end = blockHit.getLocation();
-
-        // 탄 경로에 걸린 대상들 (가까운 순). 관통탄 레벨만큼 더 뚫고 지나감
-        final Vec3 rayEnd = end;
-        AABB box = player.getBoundingBox().expandTowards(end.subtract(eye)).inflate(1.0);
-        List<EntityHitResult> hits = new java.util.ArrayList<>();
-        for (Entity e : level.getEntities(player, box, e -> e.isAlive() && e.isPickable() && !e.isSpectator()
-                && !player.isPassengerOfSameVehicle(e) && e != player.getVehicle())) {
-            e.getBoundingBox().inflate(e.getPickRadius() + 0.1).clip(eye, rayEnd).ifPresent(p -> hits.add(new EntityHitResult(e, p)));
-        }
-        hits.sort(java.util.Comparator.comparingDouble(h -> h.getLocation().distanceToSqr(eye)));
-        int maxHits = 1 + GunEnchants.level(stack, GunEnchants.PIERCING);
-        float dmg = damage(stack);
-        int fire = GunEnchants.level(stack, GunEnchants.INCENDIARY);
         int hunter = GunEnchants.level(stack, GunEnchants.HEADHUNTER);
-
-        Vec3 impact = end;
-        int n = 0;
-        for (EntityHitResult hit : hits) {
-            if (n >= maxHits) break;
-            Entity target = hit.getEntity();
-            impact = hit.getLocation();
-            float d = dmg * (n == 0 ? 1f : 0.7f);
-            boolean head = target instanceof LivingEntity le && le.getBbHeight() > 0.9f && impact.y >= le.getEyeY() - 0.28;
-            if (head) d *= 1.5f + 0.5f * hunter;
-            target.invulnerableTime = 0; // 연사가 무적 시간에 막히지 않게
-            if (target.hurt(level.damageSources().playerAttack(player), d)) {
-                if (fire > 0) target.igniteForSeconds(4);
-                if (head) {
-                    level.sendParticles(ParticleTypes.ENCHANTED_HIT, impact.x, impact.y, impact.z, 10, 0.15, 0.15, 0.15, 0.3);
-                    level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5f, 1.6f);
-                    player.displayClientMessage(Component.translatable("message.tycooncraft.gun.headshot").withStyle(ChatFormatting.GOLD), true);
-                }
-            }
-            level.sendParticles(fire > 0 ? ParticleTypes.FLAME : ParticleTypes.CRIT, impact.x, impact.y, impact.z, 6, 0.1, 0.1, 0.1, 0.2);
-            n++;
-        }
-        if (n == 0 && blockHit.getType() == HitResult.Type.BLOCK) {
-            var state = level.getBlockState(blockHit.getBlockPos());
-            level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), impact.x, impact.y, impact.z, 6, 0.05, 0.05, 0.05, 0.1);
-        }
-        if (n >= maxHits) impact = hits.get(maxHits - 1).getLocation();
-
-        // 탄도 궤적 (소음기면 안 보이게)
-        if (quiet) return;
-        double dist = impact.distanceTo(eye);
-        for (double d = 2; d < dist; d += 2.5) {
-            Vec3 p = eye.add(dir.scale(d));
-            level.sendParticles(fire > 0 ? ParticleTypes.SMALL_FLAME : ParticleTypes.ELECTRIC_SPARK, p.x, p.y - 0.1, p.z, 1, 0, 0, 0, 0);
-        }
+        Ballistics.shoot(level, player, player.getEyePosition(), dir, stats.range(), damage(stack),
+                GunEnchants.level(stack, GunEnchants.PIERCING), 1.5f + 0.5f * hunter,
+                GunEnchants.level(stack, GunEnchants.INCENDIARY) > 0, !quiet, level.damageSources().playerAttack(player),
+                e -> !player.isPassengerOfSameVehicle(e) && e != player.getVehicle());
     }
 
     // ── 재장전 ──
@@ -310,6 +291,8 @@ public class GunItem extends Item {
         tooltip.add(Component.translatable("tooltip.tycooncraft.gun.uses", stats.ammo().get().getDescription()).withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable(stats.scoped() ? "tooltip.tycooncraft.gun.how_scoped"
                 : stats.auto() ? "tooltip.tycooncraft.gun.how_auto" : "tooltip.tycooncraft.gun.how_semi").withStyle(ChatFormatting.DARK_GRAY));
-        if (silenced(stack)) tooltip.add(Component.translatable("tooltip.tycooncraft.gun.silenced").withStyle(ChatFormatting.AQUA));
+        int st = silencerTier(stack);
+        if (stack.is(ModItems.VSS.get())) tooltip.add(Component.translatable("tooltip.tycooncraft.gun.integral").withStyle(ChatFormatting.AQUA));
+        else if (st > 0) tooltip.add(Component.translatable(st == 2 ? "tooltip.tycooncraft.gun.silenced2" : "tooltip.tycooncraft.gun.silenced").withStyle(ChatFormatting.AQUA));
     }
 }

@@ -18,7 +18,7 @@ public final class ClientGameEvents {
     public static void onFov(ComputeFovModifierEvent event) {
         Player player = event.getPlayer();
         if (player.isUsingItem() && player.getUseItem().getItem() instanceof GunItem gun && gun.stats().scoped()) {
-            event.setNewFovModifier(0.2f);
+            event.setNewFovModifier(player.getUseItem().is(com.tycooncraft.registry.ModItems.VSS.get()) ? 0.28f : 0.2f);
         }
     }
 

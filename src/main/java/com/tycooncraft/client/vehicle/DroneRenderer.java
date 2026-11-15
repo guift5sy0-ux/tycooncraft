@@ -31,13 +31,13 @@ public class DroneRenderer extends EntityRenderer<DroneEntity> {
         ps.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(pt, d.rollO, d.roll)));
         ps.translate(0, -0.2f, 0);
         VertexConsumer vc = VehicleModels.buffer(buffers);
-        VehicleModels.body(ps, vc, VehicleModels.DRONE_BODY, K, light);
+        VehicleModels.body(ps, vc, d.isMk2() ? VehicleModels.DRONE2_BODY : VehicleModels.DRONE_BODY, K, light);
         float spin = Mth.lerp(pt, d.propAngleO, d.propAngle);
         for (float[] m : MOTORS) {
             ps.pushPose();
             VehicleModels.translateUnits(ps, m[0], m[1], m[2]);
             ps.mulPose(Axis.YP.rotation(spin * m[3] + m[0] * 0.1f));
-            VehicleModels.part(ps, vc, VehicleModels.DRONE_PROP, K, light);
+            VehicleModels.part(ps, vc, d.isMk2() ? VehicleModels.DRONE_PROP2 : VehicleModels.DRONE_PROP, K, light);
             ps.popPose();
         }
         ps.popPose();

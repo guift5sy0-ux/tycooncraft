@@ -15,6 +15,9 @@ public final class ModBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, TycoonCraft.MODID);
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.turret.TurretBlockEntity>> TURRET =
+            BLOCK_ENTITY_TYPES.register("turret",
+                    () -> BlockEntityType.Builder.of(com.tycooncraft.turret.TurretBlockEntity::new, ModBlocks.TURRET.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SellStationBlockEntity>> SELL_STATION =
             BLOCK_ENTITY_TYPES.register("sell_station",
                     () -> BlockEntityType.Builder.of(SellStationBlockEntity::new, ModBlocks.SELL_STATION.get()).build(null));

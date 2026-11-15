@@ -209,5 +209,32 @@
       }
     ],
     "subtitle": "subtitles.tycooncraft.drone.arm"
+  },
+  "gun.rpg.fire": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/rpg_fire",
+        "attenuation_distance": 96
+      }
+    ],
+    "subtitle": "subtitles.tycooncraft.rpg"
+  },
+  "vehicle.tank.fire": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/tank_fire",
+        "attenuation_distance": 160
+      }
+    ],
+    "subtitle": "subtitles.tycooncraft.tank"
+  },
+  "vehicle.jet.engine": {
+    "sounds": [
+      {
+        "name": "tycooncraft:vehicle/jet_engine",
+        "attenuation_distance": 128
+      }
+    ],
+    "subtitle": "subtitles.tycooncraft.jet"
   }
 }

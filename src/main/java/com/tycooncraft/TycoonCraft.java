@@ -7,6 +7,7 @@ import com.tycooncraft.registry.ModBlockEntities;
 import com.tycooncraft.registry.ModBlocks;
 import com.tycooncraft.registry.ModComponents;
 import com.tycooncraft.registry.ModEntities;
+import com.tycooncraft.mob.GunnerEntity;
 import com.tycooncraft.registry.ModRecipes;
 import com.tycooncraft.network.HornPayload;
 import com.tycooncraft.registry.ModCreativeTabs;
@@ -37,12 +38,16 @@ public class TycoonCraft {
         ModSounds.SOUNDS.register(modBus);
         ModEntities.ENTITIES.register(modBus);
         ModRecipes.SERIALIZERS.register(modBus);
+        com.tycooncraft.registry.ModArmorMaterials.MATERIALS.register(modBus);
 
         modBus.addListener(this::registerCapabilities);
         modBus.addListener(HornPayload::register);
+        modBus.addListener(this::attributes);
+        modBus.addListener(this::spawnPlacements);
 
         NeoForge.EVENT_BUS.register(TycoonEvents.class);
         NeoForge.EVENT_BUS.register(TycoonCommands.class);
+        NeoForge.EVENT_BUS.register(com.tycooncraft.gear.Parachute.class);
         if (AutoTest.ENABLED) NeoForge.EVENT_BUS.register(AutoTest.class);
     }
 
@@ -50,11 +55,30 @@ public class TycoonCraft {
         return ResourceLocation.fromNamespaceAndPath(MODID, path);
     }
 
+    private void attributes(net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent event) {
+        event.put(ModEntities.GANGSTER.get(), GunnerEntity.attributes(GunnerEntity.Kind.GANGSTER).build());
+        event.put(ModEntities.MERCENARY.get(), GunnerEntity.attributes(GunnerEntity.Kind.MERCENARY).build());
+        event.put(ModEntities.OUTLAW.get(), GunnerEntity.attributes(GunnerEntity.Kind.OUTLAW).build());
+        event.put(ModEntities.CARTEL_BOSS.get(), GunnerEntity.attributes(GunnerEntity.Kind.BOSS).build());
+        event.put(ModEntities.MUTANT_SPIDER.get(), com.tycooncraft.mob.MutantSpider.attributes().build());
+    }
+
+    private void spawnPlacements(net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent event) {
+        for (var type : java.util.List.of(ModEntities.GANGSTER.get(), ModEntities.MERCENARY.get(), ModEntities.OUTLAW.get())) {
+            event.register(type, net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND, net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    net.minecraft.world.entity.monster.Monster::checkMonsterSpawnRules, net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        }
+        event.register(ModEntities.MUTANT_SPIDER.get(), net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND, net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                net.minecraft.world.entity.monster.Monster::checkMonsterSpawnRules, net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.Operation.REPLACE);
+    }
+
     /** 호퍼·다른 기계가 아이템을 넣고 뺄 수 있게 */
     private void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.SELL_STATION.get(),
                 (be, side) -> be.getItemHandler());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.MACHINE.get(),
+                (be, side) -> be.getItemHandler());
+        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.TURRET.get(),
                 (be, side) -> be.getItemHandler());
     }
 }

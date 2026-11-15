@@ -27,10 +27,28 @@ public final class VehicleModels {
     public static final ModelResourceLocation HELI_TAIL_ROTOR = id("heli_tail_rotor");
     public static final ModelResourceLocation DRONE_BODY = id("drone_body");
     public static final ModelResourceLocation DRONE_PROP = id("drone_prop");
-    public static final ModelResourceLocation[] ALL = {CAR_BODY, CAR_WHEEL, LOCO_BODY, LOCO_WHEELS, HELI_BODY, HELI_ROTOR, HELI_TAIL_ROTOR, DRONE_BODY, DRONE_PROP};
+    public static final ModelResourceLocation DRONE2_BODY = id("drone2_body");
+    public static final ModelResourceLocation DRONE_PROP2 = id("drone_prop2");
+    public static final ModelResourceLocation TANK_HULL = id("tank_hull");
+    public static final ModelResourceLocation TANK_WHEEL = id("tank_wheel");
+    public static final ModelResourceLocation TANK_TURRET = id("tank_turret");
+    public static final ModelResourceLocation TANK_BARREL = id("tank_barrel");
+    public static final ModelResourceLocation JET_BODY = id("jet_body");
+    public static final ModelResourceLocation ROCKET = id("rocket");
+    public static final ModelResourceLocation SHELL = id("shell");
+    public static final ModelResourceLocation TURRET_HEAD = id("turret_head");
+    public static final ModelResourceLocation TURRET_GUN = id("turret_gun");
+    public static final ModelResourceLocation CHUTE_CANOPY = id("parachute_canopy");
+    public static final ModelResourceLocation CHUTE_PACK = id("parachute_pack");
+    public static final ModelResourceLocation[] ALL = {CAR_BODY, CAR_WHEEL, LOCO_BODY, LOCO_WHEELS, HELI_BODY, HELI_ROTOR, HELI_TAIL_ROTOR, DRONE_BODY, DRONE_PROP,
+            DRONE2_BODY, DRONE_PROP2, TANK_HULL, TANK_WHEEL, TANK_TURRET, TANK_BARREL, JET_BODY, ROCKET, SHELL, TURRET_HEAD, TURRET_GUN, CHUTE_CANOPY, CHUTE_PACK};
 
     private static ModelResourceLocation id(String name) {
         return ModelResourceLocation.standalone(TycoonCraft.id("vehicle/" + name));
+    }
+
+    public static VertexConsumer cutout(MultiBufferSource buffers) {
+        return buffers.getBuffer(RenderType.entityCutout(TextureAtlas.LOCATION_BLOCKS));
     }
 
     public static VertexConsumer buffer(MultiBufferSource buffers) {

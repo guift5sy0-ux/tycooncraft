@@ -2870,9 +2870,15 @@
  "overrides": [
   {
    "predicate": {
-    "tycooncraft:silenced": 1
+    "tycooncraft:silenced": 0.5
    },
    "model": "tycooncraft:item/rifle_silenced"
+  },
+  {
+   "predicate": {
+    "tycooncraft:silenced": 1
+   },
+   "model": "tycooncraft:item/rifle_silenced2"
   }
  ]
 }

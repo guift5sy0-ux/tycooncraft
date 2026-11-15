@@ -96,11 +96,122 @@ public final class AutoTestClient {
                 }
             }
             case 9 -> {
+                if (phaseT == 10) next(10);
+            }
+            case 10 -> later(mc);
+            case 11 -> {
                 if (phaseT == 10) {
                     System.out.println("[AUTOTEST] finished");
                     mc.stop();
                 }
             }
+            default -> {
+            }
+        }
+    }
+
+    private static void lookAt(Minecraft mc, double x, double y, double z) {
+        var p = mc.player;
+        double dx = x - p.getX(), dy = y - p.getEyeY(), dz = z - p.getZ();
+        p.setYRot((float) Math.toDegrees(Math.atan2(-dx, dz)));
+        p.setXRot((float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx * dx + dz * dz))));
+    }
+
+    private static void ride(Minecraft mc) {
+        var v = mc.player.getVehicle();
+        System.out.println("[AUTOTEST] client t=" + t + " ride=" + (v == null ? "none" : v.getType().toShortString())
+                + String.format(" pos=%.1f,%.1f,%.1f", mc.player.getX(), mc.player.getY(), mc.player.getZ()));
+    }
+
+    /** 신규 콘텐츠: 몹·포탑, 낙하산, 전차, 전투기, 쌍권총, VSS, RPG */
+    private static void later(Minecraft mc) {
+        var o = mc.options;
+        int s = phaseT;
+        double g = -60;
+        switch (s) {
+            case 1 -> {
+                o.setCameraType(CameraType.FIRST_PERSON);
+                mc.player.setPos(32, g + 3, -32);
+            }
+            case 5 -> lookAt(mc, 45, g + 1, -45);
+            case 40 -> shot(mc, "18_gunners_turret");
+            case 50 -> {
+                mc.player.setPos(20, g + 2, -44);
+                lookAt(mc, 21, g + 2, -60);
+            }
+            case 90 -> shot(mc, "19_boss_spider");
+            case 100 -> {
+                o.setCameraType(CameraType.THIRD_PERSON_BACK);
+                mc.player.setPos(0, g + 45, 0);
+                mc.player.setDeltaMovement(0, 0, 0);
+                mc.player.getAbilities().flying = false;
+                mc.player.setXRot(20);
+            }
+            case 150 -> shot(mc, "20_parachute");
+            case 175 -> {
+                mc.player.setPos(10, g, -14.6);
+                o.setCameraType(CameraType.FIRST_PERSON);
+            }
+            case 178 -> lookAt(mc, 10, g + 1.2, -20);
+            case 182 -> KeyMapping.click(o.keyUse.getKey());
+            case 195 -> {
+                ride(mc);
+                o.setCameraType(CameraType.THIRD_PERSON_BACK);
+                key(o.keyUp, true);
+                mc.player.setYRot(mc.player.getYRot() + 30);
+            }
+            case 240 -> shot(mc, "21_tank");
+            case 245 -> KeyMapping.click(o.keyAttack.getKey());
+            case 249 -> shot(mc, "22_tank_fire");
+            case 265 -> key(o.keyUp, false);
+            case 270 -> key(o.keyShift, true);
+            case 274 -> key(o.keyShift, false);
+            case 285 -> {
+                o.setCameraType(CameraType.FIRST_PERSON);
+                mc.player.setPos(-26.5, g, 32);
+            }
+            case 288 -> lookAt(mc, -30, g + 1.0, 30);
+            case 292 -> KeyMapping.click(o.keyUse.getKey());
+            case 305 -> {
+                ride(mc);
+                o.setCameraType(CameraType.THIRD_PERSON_BACK);
+                mc.player.setYRot(180);
+                mc.player.setXRot(0);
+                key(o.keyUp, true);
+            }
+            case 400 -> mc.player.setXRot(-12);
+            case 440 -> {
+                shot(mc, "23_jet_takeoff");
+                ride(mc);
+            }
+            case 470 -> mc.player.setXRot(-4);
+            case 500 -> {
+                shot(mc, "24_jet_flying");
+                ride(mc);
+            }
+            case 505 -> KeyMapping.click(o.keyUse.getKey());
+            case 509 -> shot(mc, "25_jet_missile");
+            case 515 -> key(o.keyUp, false);
+            case 520 -> key(o.keyShift, true);
+            case 524 -> {
+                key(o.keyShift, false);
+                ride(mc);
+            }
+            case 545 -> {
+                o.setCameraType(CameraType.FIRST_PERSON);
+                mc.player.getInventory().selected = 2;
+                mc.player.setXRot(5);
+            }
+            case 570 -> shot(mc, "26_dual_pistols");
+            case 575 -> mc.player.getInventory().selected = 1;
+            case 590 -> key(o.keyUse, true);
+            case 612 -> shot(mc, "27_vss_scope");
+            case 614 -> key(o.keyUse, false);
+            case 625 -> mc.player.getInventory().selected = 3;
+            case 645 -> shot(mc, "28_rpg");
+            case 648 -> KeyMapping.click(o.keyUse.getKey());
+            case 653 -> shot(mc, "29_rpg_fire");
+            case 680 -> next(11);
             default -> {
             }
         }

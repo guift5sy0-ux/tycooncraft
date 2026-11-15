@@ -22,11 +22,12 @@ public class SilencerRecipe extends CustomRecipe {
         super(category);
     }
 
-    private record Found(ItemStack gun, int gunSlot, int silencers, int others) {}
+    private record Found(ItemStack gun, int gunSlot, int silencers, int others, boolean advanced) {}
 
     private static Found scan(CraftingInput input) {
         ItemStack gun = ItemStack.EMPTY;
         int gunSlot = -1, sil = 0, others = 0, guns = 0;
+        boolean adv = false;
         for (int i = 0; i < input.size(); i++) {
             ItemStack s = input.getItem(i);
             if (s.isEmpty()) continue;
@@ -36,17 +37,20 @@ public class SilencerRecipe extends CustomRecipe {
                 guns++;
             } else if (s.is(ModItems.SILENCER.get())) {
                 sil++;
+            } else if (s.is(ModItems.SILENCER_ADVANCED.get())) {
+                sil++;
+                adv = true;
             } else {
                 others++;
             }
         }
-        return guns == 1 ? new Found(gun, gunSlot, sil, others) : new Found(ItemStack.EMPTY, -1, sil, others + guns);
+        return guns == 1 ? new Found(gun, gunSlot, sil, others, adv) : new Found(ItemStack.EMPTY, -1, sil, others + guns, adv);
     }
 
     @Override
     public boolean matches(CraftingInput input, Level level) {
         Found f = scan(input);
-        if (f.gun().isEmpty() || f.others() > 0) return false;
+        if (f.gun().isEmpty() || f.others() > 0 || !GunItem.canTakeSilencer(f.gun())) return false;
         boolean silenced = GunItem.silenced(f.gun());
         return (f.silencers() == 1 && !silenced) || (f.silencers() == 0 && silenced);
     }
@@ -55,7 +59,8 @@ public class SilencerRecipe extends CustomRecipe {
     public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
         Found f = scan(input);
         ItemStack out = f.gun().copyWithCount(1);
-        out.set(ModComponents.SILENCED.get(), f.silencers() == 1);
+        out.remove(ModComponents.SILENCED.get());
+        out.set(ModComponents.SILENCER_TIER.get(), f.silencers() == 1 ? (f.advanced() ? 2 : 1) : 0);
         return out;
     }
 
@@ -64,7 +69,7 @@ public class SilencerRecipe extends CustomRecipe {
         NonNullList<ItemStack> rem = super.getRemainingItems(input);
         Found f = scan(input);
         if (f.silencers() == 0 && f.gunSlot() >= 0 && GunItem.silenced(f.gun())) {
-            rem.set(f.gunSlot(), new ItemStack(ModItems.SILENCER.get()));
+            rem.set(f.gunSlot(), new ItemStack(GunItem.silencerTier(f.gun()) == 2 ? ModItems.SILENCER_ADVANCED.get() : ModItems.SILENCER.get()));
         }
         return rem;
     }

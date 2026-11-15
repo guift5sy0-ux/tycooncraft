@@ -33,9 +33,14 @@ public final class VehicleClient {
         // 소음기 단 총은 소음기 모델로
         event.enqueueWork(() -> {
             for (Item gun : new Item[]{ModItems.PISTOL.get(), ModItems.SMG.get(), ModItems.RIFLE.get(), ModItems.SHOTGUN.get(), ModItems.SNIPER.get()}) {
-                ItemProperties.register(gun, TycoonCraft.id("silenced"), (stack, level, entity, seed) -> GunItem.silenced(stack) ? 1f : 0f);
+                ItemProperties.register(gun, TycoonCraft.id("silenced"), (stack, level, entity, seed) -> GunItem.silencerTier(stack) / 2f);
             }
         });
+    }
+
+    @SubscribeEvent
+    public static void keys(net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent event) {
+        event.register(VehicleKeyBinds.DESCEND);
     }
 
     @SubscribeEvent
@@ -44,6 +49,15 @@ public final class VehicleClient {
         event.registerEntityRenderer(ModEntities.HELICOPTER.get(), HelicopterRenderer::new);
         event.registerEntityRenderer(ModEntities.LOCOMOTIVE.get(), LocomotiveRenderer::new);
         event.registerEntityRenderer(ModEntities.DRONE.get(), DroneRenderer::new);
+        event.registerEntityRenderer(ModEntities.TANK.get(), TankRenderer::new);
+        event.registerEntityRenderer(ModEntities.FIGHTER_JET.get(), JetRenderer::new);
+        event.registerEntityRenderer(ModEntities.ROCKET.get(), RocketRenderer::new);
+        event.registerEntityRenderer(ModEntities.GANGSTER.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
+        event.registerEntityRenderer(ModEntities.MERCENARY.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
+        event.registerEntityRenderer(ModEntities.OUTLAW.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
+        event.registerEntityRenderer(ModEntities.CARTEL_BOSS.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
+        event.registerEntityRenderer(ModEntities.MUTANT_SPIDER.get(), com.tycooncraft.client.mob.MutantSpiderRenderer::new);
+        event.registerBlockEntityRenderer(com.tycooncraft.registry.ModBlockEntities.TURRET.get(), TurretRenderer::new);
     }
 
     @SubscribeEvent
