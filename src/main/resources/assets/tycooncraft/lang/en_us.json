@@ -89,5 +89,8 @@
   "tooltip.tycooncraft.gun.uses": "Ammo: %s",
   "tooltip.tycooncraft.gun.how_semi": "Right-click: fire / Sneak + right-click: reload",
   "tooltip.tycooncraft.gun.how_auto": "Hold right-click: auto fire / Sneak + right-click: reload",
-  "tooltip.tycooncraft.gun.how_scoped": "Hold to aim, release to fire / Sneak + right-click: reload"
+  "tooltip.tycooncraft.gun.how_scoped": "Hold to aim, release to fire / Sneak + right-click: reload",
+  "subtitles.tycooncraft.gun.fire": "Gunshot",
+  "subtitles.tycooncraft.gun.reload": "Reloading",
+  "subtitles.tycooncraft.gun.dry_fire": "Dry fire"
 }

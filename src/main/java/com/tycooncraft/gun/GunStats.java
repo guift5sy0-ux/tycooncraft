@@ -20,5 +20,5 @@ import java.util.function.Supplier;
  */
 public record GunStats(float damage, int pellets, float spread, double range, int magazine, int fireDelay,
                        int reloadTicks, boolean auto, boolean scoped, float recoil,
-                       Supplier<Item> ammo, SoundEvent sound, float pitch) {
+                       Supplier<Item> ammo, Supplier<SoundEvent> fireSound, Supplier<SoundEvent> reloadSound) {
 }

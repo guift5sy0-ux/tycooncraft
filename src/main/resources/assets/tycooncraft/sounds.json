@@ -1,0 +1,124 @@
+{
+  "gun.pistol.fire": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/pistol_fire_1",
+        "attenuation_distance": 96
+      },
+      {
+        "name": "tycooncraft:gun/pistol_fire_2",
+        "attenuation_distance": 96
+      },
+      {
+        "name": "tycooncraft:gun/pistol_fire_3",
+        "attenuation_distance": 96
+      }
+    ],
+    "subtitle": "subtitles.tycooncraft.gun.fire"
+  },
+  "gun.pistol.reload": {
+    "sounds": [
+      "tycooncraft:gun/pistol_reload"
+    ],
+    "subtitle": "subtitles.tycooncraft.gun.reload"
+  },
+  "gun.smg.fire": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/smg_fire_1",
+        "attenuation_distance": 96
+      },
+      {
+        "name": "tycooncraft:gun/smg_fire_2",
+        "attenuation_distance": 96
+      },
+      {
+        "name": "tycooncraft:gun/smg_fire_3",
+        "attenuation_distance": 96
+      }
+    ],
+    "subtitle": "subtitles.tycooncraft.gun.fire"
+  },
+  "gun.smg.reload": {
+    "sounds": [
+      "tycooncraft:gun/smg_reload"
+    ],
+    "subtitle": "subtitles.tycooncraft.gun.reload"
+  },
+  "gun.rifle.fire": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/rifle_fire_1",
+        "attenuation_distance": 96
+      },
+      {
+        "name": "tycooncraft:gun/rifle_fire_2",
+        "attenuation_distance": 96
+      },
+      {
+        "name": "tycooncraft:gun/rifle_fire_3",
+        "attenuation_distance": 96
+      }
+    ],
+    "subtitle": "subtitles.tycooncraft.gun.fire"
+  },
+  "gun.rifle.reload": {
+    "sounds": [
+      "tycooncraft:gun/rifle_reload"
+    ],
+    "subtitle": "subtitles.tycooncraft.gun.reload"
+  },
+  "gun.shotgun.fire": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/shotgun_fire_1",
+        "attenuation_distance": 96
+      },
+      {
+        "name": "tycooncraft:gun/shotgun_fire_2",
+        "attenuation_distance": 96
+      },
+      {
+        "name": "tycooncraft:gun/shotgun_fire_3",
+        "attenuation_distance": 96
+      }
+    ],
+    "subtitle": "subtitles.tycooncraft.gun.fire"
+  },
+  "gun.shotgun.reload": {
+    "sounds": [
+      "tycooncraft:gun/shotgun_reload"
+    ],
+    "subtitle": "subtitles.tycooncraft.gun.reload"
+  },
+  "gun.sniper.fire": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/sniper_fire_1",
+        "attenuation_distance": 96
+      },
+      {
+        "name": "tycooncraft:gun/sniper_fire_2",
+        "attenuation_distance": 96
+      },
+      {
+        "name": "tycooncraft:gun/sniper_fire_3",
+        "attenuation_distance": 96
+      }
+    ],
+    "subtitle": "subtitles.tycooncraft.gun.fire"
+  },
+  "gun.sniper.reload": {
+    "sounds": [
+      "tycooncraft:gun/sniper_reload"
+    ],
+    "subtitle": "subtitles.tycooncraft.gun.reload"
+  },
+  "gun.dry_fire": {
+    "sounds": [
+      "tycooncraft:gun/dry_fire_1",
+      "tycooncraft:gun/dry_fire_2"
+    ],
+    "subtitle": "subtitles.tycooncraft.gun.dry_fire"
+  }
+}

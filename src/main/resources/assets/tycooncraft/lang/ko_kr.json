@@ -89,5 +89,8 @@
   "tooltip.tycooncraft.gun.uses": "탄약: %s",
   "tooltip.tycooncraft.gun.how_semi": "우클릭: 발사 / 웅크리고 우클릭: 재장전",
   "tooltip.tycooncraft.gun.how_auto": "우클릭 유지: 연사 / 웅크리고 우클릭: 재장전",
-  "tooltip.tycooncraft.gun.how_scoped": "우클릭 유지: 조준, 떼면 발사 / 웅크리고 우클릭: 재장전"
+  "tooltip.tycooncraft.gun.how_scoped": "우클릭 유지: 조준, 떼면 발사 / 웅크리고 우클릭: 재장전",
+  "subtitles.tycooncraft.gun.fire": "총소리",
+  "subtitles.tycooncraft.gun.reload": "재장전",
+  "subtitles.tycooncraft.gun.dry_fire": "딸깍 (탄 없음)"
 }

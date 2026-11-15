@@ -8,6 +8,7 @@ import com.tycooncraft.registry.ModComponents;
 import com.tycooncraft.registry.ModCreativeTabs;
 import com.tycooncraft.registry.ModItems;
 import com.tycooncraft.registry.ModMenus;
+import com.tycooncraft.registry.ModSounds;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -29,6 +30,7 @@ public class TycoonCraft {
         ModCreativeTabs.TABS.register(modBus);
         ModMenus.MENUS.register(modBus);
         ModComponents.COMPONENTS.register(modBus);
+        ModSounds.SOUNDS.register(modBus);
 
         modBus.addListener(this::registerCapabilities);
 

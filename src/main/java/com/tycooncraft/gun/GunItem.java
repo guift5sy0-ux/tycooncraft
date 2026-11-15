@@ -1,12 +1,12 @@
 package com.tycooncraft.gun;
 
 import com.tycooncraft.registry.ModComponents;
+import com.tycooncraft.registry.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -69,7 +69,8 @@ public class GunItem extends Item {
         }
         if (ammo(stack) <= 0) {
             if (!level.isClientSide) {
-                level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.DISPENSER_FAIL, SoundSource.PLAYERS, 0.6f, 1.6f);
+                level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.DRY_FIRE.get(), SoundSource.PLAYERS, 0.8f, 1.0f);
+                player.getCooldowns().addCooldown(this, 6);
                 player.displayClientMessage(Component.translatable("message.tycooncraft.gun.empty").withStyle(ChatFormatting.RED), true);
             }
             return InteractionResultHolder.fail(stack);
@@ -113,7 +114,7 @@ public class GunItem extends Item {
 
     @Override
     public UseAnim getUseAnimation(ItemStack stack) {
-        return stats.scoped() ? UseAnim.BOW : UseAnim.NONE;
+        return UseAnim.NONE;
     }
 
     // ── 발사 ──
@@ -128,9 +129,14 @@ public class GunItem extends Item {
         ServerLevel server = (ServerLevel) level;
         if (!player.getAbilities().instabuild) setAmmo(stack, ammo(stack) - 1);
         for (int i = 0; i < stats.pellets(); i++) fireRay(server, player);
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), stats.sound(), SoundSource.PLAYERS, 1.0f, stats.pitch());
-        Vec3 muzzle = player.getEyePosition().add(player.getViewVector(1f).scale(1.2));
-        server.sendParticles(ParticleTypes.SMOKE, muzzle.x, muzzle.y - 0.1, muzzle.z, 3, 0.03, 0.03, 0.03, 0.01);
+        float pitch = 0.96f + player.getRandom().nextFloat() * 0.08f;
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), stats.fireSound().get(), SoundSource.PLAYERS, 4.0f, pitch);
+        // 총구 화염 + 연기
+        Vec3 look = player.getViewVector(1f);
+        Vec3 right = look.cross(new Vec3(0, 1, 0)).normalize();
+        Vec3 muzzle = player.getEyePosition().add(look.scale(1.3)).add(right.scale(0.25)).add(0, -0.18, 0);
+        server.sendParticles(ParticleTypes.FLAME, muzzle.x, muzzle.y, muzzle.z, 2, 0.02, 0.02, 0.02, 0.005);
+        server.sendParticles(ParticleTypes.SMOKE, muzzle.x, muzzle.y, muzzle.z, 4, 0.04, 0.04, 0.04, 0.012);
     }
 
     private void fireRay(ServerLevel level, Player player) {
@@ -185,12 +191,12 @@ public class GunItem extends Item {
         if (loaded <= 0) {
             player.displayClientMessage(Component.translatable("message.tycooncraft.gun.no_ammo",
                     stats.ammo().get().getDescription()).withStyle(ChatFormatting.RED), true);
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.DISPENSER_FAIL, SoundSource.PLAYERS, 0.6f, 1.2f);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.DRY_FIRE.get(), SoundSource.PLAYERS, 0.8f, 0.9f);
             return;
         }
         setAmmo(stack, current + loaded);
         player.getCooldowns().addCooldown(this, stats.reloadTicks());
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.IRON_TRAPDOOR_CLOSE, SoundSource.PLAYERS, 0.8f, 1.8f);
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), stats.reloadSound().get(), SoundSource.PLAYERS, 1.0f, 1.0f);
         player.displayClientMessage(Component.translatable("message.tycooncraft.gun.reloaded", current + loaded, stats.magazine()), true);
     }
 
