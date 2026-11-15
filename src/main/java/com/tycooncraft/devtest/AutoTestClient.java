@@ -243,14 +243,14 @@ public final class AutoTestClient {
                 double mx = m != null ? m.getX() : -12, mz = m != null ? m.getZ() : 22.5;
                 System.out.println("[AUTOTEST] miner final" + (m == null ? " none" : String.format(" x=%.1f running=%s mined=%d", m.getX(), m.isRunning(), m.minedBlocks)));
                 sp.teleportTo(sp.serverLevel(), mx - 3.5, g + 3.2, mz - 5.5, -30f, 22f);
-            })
+            });
             case 775 -> shot(mc, "30_miner");
             case 780 -> serverDo(mc, sp -> {
                 sp.getInventory().setItem(4, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.SMOKE_GRENADE.get(), 4));
                 sp.getInventory().setItem(5, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.FLASH_GRENADE.get(), 4));
                 sp.getInventory().selected = 4;
                 sp.teleportTo(sp.serverLevel(), 0.5, g, 40.5, 0f, -10f);
-            })
+            });
             case 790 -> mc.player.getInventory().selected = 4;
             case 805 -> shot(mc, "30b_grenade_held");
             case 808 -> KeyMapping.click(o.keyUse.getKey());
@@ -261,7 +261,7 @@ public final class AutoTestClient {
             case 884 -> serverDo(mc, sp -> {
                 sp.getInventory().selected = 5;
                 sp.teleportTo(sp.serverLevel(), 0.5, g, 70.5, 0f, 20f);
-            })
+            });
             case 892 -> mc.player.getInventory().selected = 5;
             case 900 -> KeyMapping.click(o.keyUse.getKey());
             case 953 -> shot(mc, "32_flash");
