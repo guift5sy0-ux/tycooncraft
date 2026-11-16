@@ -77,6 +77,11 @@ public final class StructureBuilder {
         else b.buildRuin();
     }
 
+    /** 월드 생성된 마을: 시작 청크가 로딩되면 상인만 배치 */
+    public static void spawnVillageTraders(ServerLevel level, BlockPos origin) {
+        new StructureBuilder(level, origin).traders();
+    }
+
     private boolean inside(BlockPos p) {
         return clip == null || clip.isInside(p);
     }
@@ -346,6 +351,36 @@ public final class StructureBuilder {
         new StructureBuilder(level, origin).buildVillage();
     }
 
+    /** 상인 5명 (월드 생성 때는 청크가 실제로 로딩될 때 따로 배치) */
+    private void traders() {
+        StructureBuilder b = this;
+        Item cu = ModItems.COIN_COPPER.get(), ir = ModItems.COIN_IRON.get(), go = ModItems.COIN_GOLD.get(), em = ModItems.COIN_EMERALD.get();
+        b.trader(12, 0, 12, "trader.tycooncraft.food", VillagerProfession.FARMER, List.of(
+                offer(ir, 1, Items.BREAD, 2), offer(ir, 1, Items.APPLE, 3), offer(ir, 2, Items.COOKED_BEEF, 4),
+                offer(ir, 5, Items.GOLDEN_CARROT, 4), offer(ir, 1, Items.WHEAT_SEEDS, 16), offer(ir, 1, Items.CARROT, 8),
+                offer(ir, 2, Items.COCOA_BEANS, 8), offer(ir, 2, Items.EGG, 8)));
+        b.trader(20, 0, 12, "trader.tycooncraft.builder", VillagerProfession.MASON, List.of(
+                offer(ir, 1, Items.STONE_BRICKS, 16), offer(ir, 1, Items.BRICKS, 16), offer(ir, 1, Items.SMOOTH_STONE, 16),
+                offer(ir, 2, cu, 4, Items.GLASS, 16), offer(ir, 1, Items.OAK_PLANKS, 32), offer(ir, 1, Items.TORCH, 16),
+                offer(ir, 3, Items.LANTERN, 4), offer(ir, 2, Items.WHITE_WOOL, 8)));
+        b.trader(12, 0, 20, "trader.tycooncraft.gear", VillagerProfession.ARMORER, List.of(
+                offer(ir, 5, Items.IRON_PICKAXE, 1), offer(ir, 5, Items.IRON_SWORD, 1), offer(ir, 4, Items.IRON_HELMET, 1),
+                offer(ir, 8, Items.IRON_CHESTPLATE, 1), offer(ir, 7, Items.IRON_LEGGINGS, 1), offer(ir, 4, Items.IRON_BOOTS, 1),
+                offer(ir, 3, Items.SHIELD, 1), offer(go, 3, Items.DIAMOND_PICKAXE, 1),
+                offer(ir, 3, ModItems.LIGHT_AMMO.get(), 16), offer(ir, 4, ModItems.HEAVY_AMMO.get(), 8),
+                offer(ir, 3, ModItems.SHOTGUN_SHELL.get(), 8), offer(go, 6, ModItems.PISTOL.get(), 1)));
+        b.trader(20, 0, 20, "trader.tycooncraft.machines", VillagerProfession.TOOLSMITH, List.of(
+                offer(ir, 2, ModItems.CONVEYOR.get(), 8), offer(ir, 3, ModItems.LIFT_UP.get(), 2), offer(ir, 3, ModItems.LIFT_DOWN.get(), 2),
+                offer(ir, 6, ModItems.SELL_STATION.get(), 1), offer(ir, 6, ModItems.machineItem(MachineType.CRUSHER), 1),
+                offer(ir, 6, ModItems.machineItem(MachineType.SMELTER), 1), offer(ir, 8, ModItems.machineItem(MachineType.PRESS), 1),
+                offer(go, 2, ModItems.machineItem(MachineType.ALLOY_FURNACE), 1), offer(go, 2, ModItems.machineItem(MachineType.WIRE_DRAWER), 1),
+                offer(go, 2, ModItems.machineItem(MachineType.LATHE), 1), offer(em, 2, ModItems.machineItem(MachineType.ASSEMBLER), 1)));
+        b.trader(16, 0, 11, "trader.tycooncraft.buyer", VillagerProfession.CLERIC, List.of(
+                offer(Items.ROTTEN_FLESH, 16, cu, 4), offer(Items.BONE, 8, cu, 5), offer(Items.STRING, 8, cu, 6),
+                offer(Items.SPIDER_EYE, 4, cu, 4), offer(Items.FEATHER, 16, cu, 5), offer(Items.LEATHER, 4, ir, 1),
+                offer(Items.GUNPOWDER, 4, ir, 1), offer(Items.SLIME_BALL, 4, ir, 1), offer(Items.ENDER_PEARL, 2, ir, 3)));
+    }
+
     private void buildVillage() {
         StructureBuilder b = this;
         b.fill(0, 0, 0, 32, 12, 32, Blocks.AIR);
@@ -375,31 +410,7 @@ public final class StructureBuilder {
         b.stall(20, 20, Blocks.BLUE_WOOL);
         b.stall(16, 11, Blocks.GREEN_WOOL);
 
-        Item cu = ModItems.COIN_COPPER.get(), ir = ModItems.COIN_IRON.get(), go = ModItems.COIN_GOLD.get(), em = ModItems.COIN_EMERALD.get();
-        b.trader(12, 0, 12, "trader.tycooncraft.food", VillagerProfession.FARMER, List.of(
-                offer(ir, 1, Items.BREAD, 2), offer(ir, 1, Items.APPLE, 3), offer(ir, 2, Items.COOKED_BEEF, 4),
-                offer(ir, 5, Items.GOLDEN_CARROT, 4), offer(ir, 1, Items.WHEAT_SEEDS, 16), offer(ir, 1, Items.CARROT, 8),
-                offer(ir, 2, Items.COCOA_BEANS, 8), offer(ir, 2, Items.EGG, 8)));
-        b.trader(20, 0, 12, "trader.tycooncraft.builder", VillagerProfession.MASON, List.of(
-                offer(ir, 1, Items.STONE_BRICKS, 16), offer(ir, 1, Items.BRICKS, 16), offer(ir, 1, Items.SMOOTH_STONE, 16),
-                offer(ir, 2, cu, 4, Items.GLASS, 16), offer(ir, 1, Items.OAK_PLANKS, 32), offer(ir, 1, Items.TORCH, 16),
-                offer(ir, 3, Items.LANTERN, 4), offer(ir, 2, Items.WHITE_WOOL, 8)));
-        b.trader(12, 0, 20, "trader.tycooncraft.gear", VillagerProfession.ARMORER, List.of(
-                offer(ir, 5, Items.IRON_PICKAXE, 1), offer(ir, 5, Items.IRON_SWORD, 1), offer(ir, 4, Items.IRON_HELMET, 1),
-                offer(ir, 8, Items.IRON_CHESTPLATE, 1), offer(ir, 7, Items.IRON_LEGGINGS, 1), offer(ir, 4, Items.IRON_BOOTS, 1),
-                offer(ir, 3, Items.SHIELD, 1), offer(go, 3, Items.DIAMOND_PICKAXE, 1),
-                offer(ir, 3, ModItems.LIGHT_AMMO.get(), 16), offer(ir, 4, ModItems.HEAVY_AMMO.get(), 8),
-                offer(ir, 3, ModItems.SHOTGUN_SHELL.get(), 8), offer(go, 6, ModItems.PISTOL.get(), 1)));
-        b.trader(20, 0, 20, "trader.tycooncraft.machines", VillagerProfession.TOOLSMITH, List.of(
-                offer(ir, 2, ModItems.CONVEYOR.get(), 8), offer(ir, 3, ModItems.LIFT_UP.get(), 2), offer(ir, 3, ModItems.LIFT_DOWN.get(), 2),
-                offer(ir, 6, ModItems.SELL_STATION.get(), 1), offer(ir, 6, ModItems.machineItem(MachineType.CRUSHER), 1),
-                offer(ir, 6, ModItems.machineItem(MachineType.SMELTER), 1), offer(ir, 8, ModItems.machineItem(MachineType.PRESS), 1),
-                offer(go, 2, ModItems.machineItem(MachineType.ALLOY_FURNACE), 1), offer(go, 2, ModItems.machineItem(MachineType.WIRE_DRAWER), 1),
-                offer(go, 2, ModItems.machineItem(MachineType.LATHE), 1), offer(em, 2, ModItems.machineItem(MachineType.ASSEMBLER), 1)));
-        b.trader(16, 0, 11, "trader.tycooncraft.buyer", VillagerProfession.CLERIC, List.of(
-                offer(Items.ROTTEN_FLESH, 16, cu, 4), offer(Items.BONE, 8, cu, 5), offer(Items.STRING, 8, cu, 6),
-                offer(Items.SPIDER_EYE, 4, cu, 4), offer(Items.FEATHER, 16, cu, 5), offer(Items.LEATHER, 4, ir, 1),
-                offer(Items.GUNPOWDER, 4, ir, 1), offer(Items.SLIME_BALL, 4, ir, 1), offer(Items.ENDER_PEARL, 2, ir, 3)));
+        if (clip == null) b.traders();
 
         b.house(2, 2, true);
         b.house(24, 2, true);

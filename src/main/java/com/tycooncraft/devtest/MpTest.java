@@ -64,6 +64,7 @@ public final class MpTest {
             else if (s.is(net.minecraft.world.level.block.Blocks.LANTERN)) lanterns++;
         }
         int ground = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, at.getX(), at.getZ());
+        System.out.println("[MPTEST] tradersSpawnedOnLoad=" + com.tycooncraft.world.gen.VillageTraders.SPAWNED);
         System.out.println("[MPTEST] " + kind + " at " + at.getX() + "," + at.getZ() + " groundY=" + ground + " traders=" + traders
                 + " villagers=" + villagers + " monsters=" + mobs + " spawners=" + spawners + " chests=" + chests + " machines=" + machines
                 + " exchanges=" + exchanges + " lanterns=" + lanterns);
@@ -77,7 +78,7 @@ public final class MpTest {
         // 클라이언트 촬영용: 드론 시험이 끝난 뒤 마을·폐공장 위로 보낸다
         if (tester != null && joinTick >= 0) {
             int dt = ticks - joinTick;
-            if (dt == 1300 && village != null) view(village, 16);
+            if (dt == 1200 && village != null) view(village, 16);
             if (dt == 1440) inspect(tester.serverLevel(), "village", village, 32, 32);
             if (dt == 1500 && ruin != null) view(ruin, 11);
             if (dt == 1640) inspect(tester.serverLevel(), "ruin", ruin, 22, 14);

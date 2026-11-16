@@ -31,6 +31,10 @@ public class TycoonStructure extends Structure {
         this.kind = kind;
     }
 
+    public String kind() {
+        return kind;
+    }
+
     static int sizeX(String kind) {
         return kind.equals("village") ? 32 : 22;
     }
