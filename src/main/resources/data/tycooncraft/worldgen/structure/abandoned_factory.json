@@ -1,0 +1,8 @@
+{
+  "type": "tycooncraft:tycoon",
+  "kind": "ruin",
+  "biomes": "#tycooncraft:has_abandoned_factory",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "beard_thin"
+}

@@ -119,6 +119,8 @@ jobs:
           rm -rf /tmp/mpclient && cp -r . /tmp/mpclient
           rm -rf /tmp/mpclient/run && mkdir -p /tmp/mpclient/run
           printf "pauseOnLostFocus:false\nonboardAccessibility:false\ntutorialStep:none\nskipMultiplayerWarning:true\nrenderDistance:6\n" > /tmp/mpclient/run/options.txt
+          # 일반 지형 월드 (구조물 자연 생성 확인용)
+          printf "level-name=mpworld\nlevel-type=minecraft\\:normal\nlevel-seed=20261117\nspawn-protection=0\nonline-mode=false\nview-distance=8\n" > run/server.properties
           ./gradlew runMpServer --no-configuration-cache > mp-server-log.txt 2>&1 &
           for i in $(seq 1 120); do
             if grep -q "Done (" mp-server-log.txt; then echo "MP SERVER STARTED"; break; fi
@@ -133,6 +135,7 @@ jobs:
           sleep 5
           pkill -f "net.neoforged" || true
           sleep 3
+          mkdir -p /tmp/shots && cp /tmp/mpclient/run/screenshots/*.png /tmp/shots/ 2>/dev/null || true
           grep -aE "MPTEST|lost connection|Exception|Caused by|ERROR|kicked|Disconnect" mp-server-log.txt | grep -v DEBUG | head -150 > mp-errors.txt || true
           echo "---- client ----" >> mp-errors.txt
           grep -aE "MPTEST|Exception|Caused by|ERROR|Disconnect|Crash" mp-client-log.txt | grep -v DEBUG | head -150 >> mp-errors.txt || true

@@ -94,11 +94,19 @@ public final class MpTestClient {
             }
             return;
         }
-        if (round >= 5 && k == 180) {
+        // 서버가 1300틱·1500틱에 마을·폐공장 위로 보내 준다 → 촬영
+        if (t == 1360) shot(mc, "mp_village");
+        if (t == 1560) shot(mc, "mp_ruin");
+        if (round >= 5 && t >= 1600) {
             System.out.println("[MPTEST] client still connected, finished OK");
             System.out.println("[MPTEST] finished");
             mc.stop();
         }
+    }
+
+    static void shot(Minecraft mc, String name) {
+        net.minecraft.client.Screenshot.grab(mc.gameDirectory, name + ".png", mc.getMainRenderTarget(), msg -> {});
+        System.out.println("[MPTEST] client screenshot " + name + String.format(" at %.0f,%.0f,%.0f", mc.player.getX(), mc.player.getY(), mc.player.getZ()));
     }
 
     private MpTestClient() {}

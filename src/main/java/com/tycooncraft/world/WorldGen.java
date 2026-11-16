@@ -64,6 +64,8 @@ public final class WorldGen {
         }
         Data data = Data.get(level);
         if (!data.farEnough(level, type, cx, cz)) return;
+        BlockPos nat = level.findNearestMapStructure(tag(type), new BlockPos(cx, 64, cz), (type.equals("village") ? VILLAGE_SPACING : RUIN_SPACING) / 16, false);
+        if (nat != null && Math.hypot(nat.getX() - cx, nat.getZ() - cz) < (type.equals("village") ? VILLAGE_SPACING : RUIN_SPACING)) return;
         Integer y = groundY(level, ox, oz, sx, sz);
         if (y == null) return;
 
@@ -100,9 +102,26 @@ public final class WorldGen {
         if (level.dimension() == Level.OVERWORLD) Data.get(level).addBase(new ChunkPos(pos));
     }
 
+    public static net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> structureTag(String type) {
+        return tag(type);
+    }
+
+    /** 월드 생성 구조물 태그 */
+    static net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> tag(String type) {
+        return net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.STRUCTURE,
+                com.tycooncraft.TycoonCraft.id(type.equals("village") ? "trader_village" : "abandoned_factory"));
+    }
+
     public static BlockPos nearest(ServerLevel level, String type, BlockPos from) {
         BlockPos best = null;
         double bestDist = Double.MAX_VALUE;
+        if (level.dimension() == Level.OVERWORLD) {
+            BlockPos nat = level.findNearestMapStructure(tag(type), from, 64, false);
+            if (nat != null) {
+                best = nat;
+                bestDist = Math.hypot(nat.getX() - from.getX(), nat.getZ() - from.getZ());
+            }
+        }
         for (Data.Entry e : Data.get(level).structures) {
             if (!e.type.equals(type)) continue;
             double d = Math.hypot(e.x - from.getX(), e.z - from.getZ());

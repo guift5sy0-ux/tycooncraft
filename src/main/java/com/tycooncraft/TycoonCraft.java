@@ -29,6 +29,7 @@ public class TycoonCraft {
     public static final String MODID = "tycooncraft";
 
     public TycoonCraft(IEventBus modBus) {
+        com.tycooncraft.world.gen.ModStructures.register(modBus);
         ModBlocks.BLOCKS.register(modBus);
         ModItems.ITEMS.register(modBus);
         ModBlockEntities.BLOCK_ENTITY_TYPES.register(modBus);

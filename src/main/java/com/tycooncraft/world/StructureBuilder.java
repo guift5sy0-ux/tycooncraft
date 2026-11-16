@@ -48,14 +48,44 @@ public final class StructureBuilder {
     public static final ResourceKey<LootTable> VILLAGE_CHEST = loot("chests/tycoon_village");
     public static final ResourceKey<LootTable> RUIN_CHEST = loot("chests/abandoned_factory");
 
-    private final ServerLevel level;
+    private final net.minecraft.world.level.WorldGenLevel level;
     private final BlockPos origin;
     private final RandomSource random;
+    /** 월드 생성 중이면 지금 만드는 청크 영역 (그 밖은 건드리지 않음), 즉석 건설이면 null */
+    @org.jetbrains.annotations.Nullable
+    private final net.minecraft.world.level.levelgen.structure.BoundingBox clip;
+    /** 이번 건설에서 놓은 블록 (청크 밖 블록도 기억 → 모든 청크에서 같은 결정을 내림) */
+    private final java.util.Map<BlockPos, BlockState> placed = new java.util.HashMap<>();
 
     private StructureBuilder(ServerLevel level, BlockPos origin) {
+        this(level, origin, level.getRandom(), null);
+    }
+
+    private StructureBuilder(net.minecraft.world.level.WorldGenLevel level, BlockPos origin, RandomSource random,
+                             @org.jetbrains.annotations.Nullable net.minecraft.world.level.levelgen.structure.BoundingBox clip) {
         this.level = level;
         this.origin = origin;
-        this.random = level.getRandom();
+        this.random = random;
+        this.clip = clip;
+    }
+
+    /** 월드 생성용: 같은 seed 로 청크마다 다시 돌려도 결과가 똑같다 */
+    public static void generate(String kind, net.minecraft.world.level.WorldGenLevel level, BlockPos origin, long seed,
+                                net.minecraft.world.level.levelgen.structure.BoundingBox clip) {
+        StructureBuilder b = new StructureBuilder(level, origin, RandomSource.create(seed), clip);
+        if (kind.equals("village")) b.buildVillage();
+        else b.buildRuin();
+    }
+
+    private boolean inside(BlockPos p) {
+        return clip == null || clip.isInside(p);
+    }
+
+    private BlockState get(int x, int y, int z) {
+        BlockPos p = at(x, y, z);
+        BlockState s = placed.get(p);
+        if (s != null) return s;
+        return inside(p) ? level.getBlockState(p) : Blocks.AIR.defaultBlockState();
     }
 
     private static ResourceKey<LootTable> loot(String path) {
@@ -69,7 +99,9 @@ public final class StructureBuilder {
     }
 
     private void set(int x, int y, int z, BlockState state) {
-        level.setBlock(at(x, y, z), state, Block.UPDATE_CLIENTS);
+        BlockPos p = at(x, y, z);
+        placed.put(p, state);
+        if (inside(p)) level.setBlock(p, state, Block.UPDATE_CLIENTS);
     }
 
     private void set(int x, int y, int z, Block block) {
@@ -102,15 +134,16 @@ public final class StructureBuilder {
         for (int x = x1; x <= x2; x++)
             for (int y = y1; y <= y2; y++)
                 for (int z = z1; z <= z2; z++) {
-                    BlockState s = level.getBlockState(at(x, y, z));
+                    BlockState s = get(x, y, z);
                     if (s.isAir() || s.liquid() || s.canBeReplaced()) set(x, y, z, block);
                 }
     }
 
     private void chest(int x, int y, int z, Direction facing, ResourceKey<LootTable> table) {
         set(x, y, z, Blocks.CHEST.defaultBlockState().setValue(ChestBlock.FACING, facing));
-        if (table != null && level.getBlockEntity(at(x, y, z)) instanceof ChestBlockEntity chest) {
-            chest.setLootTable(table, random.nextLong());
+        long lootSeed = random.nextLong();
+        if (table != null && inside(at(x, y, z)) && level.getBlockEntity(at(x, y, z)) instanceof ChestBlockEntity chest) {
+            chest.setLootTable(table, lootSeed);
         }
     }
 
@@ -126,10 +159,12 @@ public final class StructureBuilder {
     }
 
     private <T extends Mob> void spawnMob(EntityType<T> type, int x, int y, int z) {
-        T mob = type.create(level);
-        if (mob == null) return;
         BlockPos p = at(x, y, z);
-        mob.moveTo(p.getX() + 0.5, p.getY(), p.getZ() + 0.5, random.nextFloat() * 360, 0);
+        float yaw = random.nextFloat() * 360;
+        if (!inside(p)) return;
+        T mob = type.create(level.getLevel());
+        if (mob == null) return;
+        mob.moveTo(p.getX() + 0.5, p.getY(), p.getZ() + 0.5, yaw, 0);
         mob.finalizeSpawn(level, level.getCurrentDifficultyAt(p), MobSpawnType.STRUCTURE, null);
         mob.setPersistenceRequired();
         level.addFreshEntity(mob);
@@ -146,9 +181,10 @@ public final class StructureBuilder {
 
     /** 무적·고정·사라지지 않는 상인 */
     private void trader(int x, int y, int z, String nameKey, VillagerProfession profession, List<MerchantOffer> offers) {
-        Villager v = EntityType.VILLAGER.create(level);
-        if (v == null) return;
         BlockPos p = at(x, y, z);
+        if (!inside(p)) return;
+        Villager v = EntityType.VILLAGER.create(level.getLevel());
+        if (v == null) return;
         v.moveTo(p.getX() + 0.5, p.getY(), p.getZ() + 0.5, 0, 0);
         v.setVillagerData(v.getVillagerData().setProfession(profession).setLevel(5));
         v.setVillagerXp(250);
@@ -209,7 +245,11 @@ public final class StructureBuilder {
 
     /** 폐공장: 무너지고 고장난 공장 + 재료 상자 + 몹·스포너 */
     public static void ruin(ServerLevel level, BlockPos origin) {
-        StructureBuilder b = new StructureBuilder(level, origin);
+        new StructureBuilder(level, origin).buildRuin();
+    }
+
+    private void buildRuin() {
+        StructureBuilder b = this;
         RandomSource r = b.random;
         b.factoryShell();
 
@@ -222,7 +262,7 @@ public final class StructureBuilder {
         }
         // 깨진 창문·벽 구멍
         for (int x = 0; x <= 22; x++) for (int y = 2; y <= 4; y++) for (int z : new int[]{0, 14})
-            if (level.getBlockState(b.at(x, y, z)).is(Blocks.GLASS)) b.set(x, y, z, r.nextFloat() < 0.3f ? Blocks.GLASS : Blocks.AIR);
+            if (b.get(x, y, z).is(Blocks.GLASS)) b.set(x, y, z, r.nextFloat() < 0.3f ? Blocks.GLASS : Blocks.AIR);
         // 무너진 지붕 + 잔해
         for (int i = 0; i < 6; i++) {
             int x = 2 + r.nextInt(17), z = 2 + r.nextInt(9), w = 1 + r.nextInt(3), d = 1 + r.nextInt(3);
@@ -270,8 +310,8 @@ public final class StructureBuilder {
 
     private void spawner(int x, int y, int z, EntityType<?> type) {
         set(x, y, z, Blocks.SPAWNER);
-        if (level.getBlockEntity(at(x, y, z)) instanceof SpawnerBlockEntity spawner) {
-            spawner.setEntityId(type, random);
+        if (inside(at(x, y, z)) && level.getBlockEntity(at(x, y, z)) instanceof SpawnerBlockEntity spawner) {
+            spawner.setEntityId(type, RandomSource.create(at(x, y, z).asLong()));
         }
     }
 
@@ -303,7 +343,11 @@ public final class StructureBuilder {
 
     /** 상인 마을: 광장·우물·노점 5개·집 4채·밭·환전기 */
     public static void village(ServerLevel level, BlockPos origin) {
-        StructureBuilder b = new StructureBuilder(level, origin);
+        new StructureBuilder(level, origin).buildVillage();
+    }
+
+    private void buildVillage() {
+        StructureBuilder b = this;
         b.fill(0, 0, 0, 32, 12, 32, Blocks.AIR);
         b.fill(0, -1, 0, 32, -1, 32, Blocks.GRASS_BLOCK);
         b.foundation(0, -4, 0, 32, -2, 32, Blocks.DIRT);

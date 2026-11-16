@@ -1,0 +1,8 @@
+{
+  "type": "tycooncraft:tycoon",
+  "kind": "village",
+  "biomes": "#tycooncraft:has_trader_village",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "beard_thin"
+}
