@@ -35,8 +35,13 @@ public final class BulletFx {
         spawned++;
     }
 
+    private static TextureAtlasSprite cached;
+
     static TextureAtlasSprite sprite() {
-        return Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_PARTICLES).apply(ResourceLocation.withDefaultNamespace("flash"));
+        // 파티클 아틀라스는 모델 아틀라스 목록(getTextureAtlas)에 없다 → 텍스처 매니저에서 직접
+        if (cached == null && Minecraft.getInstance().getTextureManager().getTexture(TextureAtlas.LOCATION_PARTICLES) instanceof TextureAtlas atlas)
+            cached = atlas.getSprite(ResourceLocation.withDefaultNamespace("flash"));
+        return cached;
     }
 
     /** kind 별 색: {심 r,g,b, 테두리 r,g,b} */

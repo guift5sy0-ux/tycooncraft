@@ -51,8 +51,8 @@ public final class V15Test {
             ore.setDeltaMovement(0, 0, 0);
             level.addFreshEntity(ore);
         }
-        if (t == 56) oreX0 = ore.getX();
-        if (t == 62) System.out.printf("[AUTOTEST] v15 belt speed5 dx/10t=%.2f (target 7.5) oreY=%.3f (belt top %.3f)%n", ore.getX() - oreX0, ore.getY(), gy + ConveyorBlock.BELT_TOP);
+        if (t == 54) oreX0 = ore.getX();
+        if (t == 58) System.out.printf("[AUTOTEST] v15 belt speed5 dx/4t=%.2f (target 3.0) oreY=%.3f (belt top %.3f)%n", ore.getX() - oreX0, ore.getY(), gy + ConveyorBlock.BELT_TOP);
         if (t == 260) {
             int dust = 0;
             double y = 0;
