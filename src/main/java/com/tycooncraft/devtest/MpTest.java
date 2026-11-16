@@ -52,17 +52,24 @@ public final class MpTest {
         var box = new net.minecraft.world.phys.AABB(at).inflate(40, 30, 40);
         int traders = level.getEntitiesOfClass(net.minecraft.world.entity.npc.Villager.class, box, v -> v.hasCustomName()).size();
         int mobs = level.getEntitiesOfClass(net.minecraft.world.entity.monster.Monster.class, box).size();
-        int spawners = 0, chests = 0, machines = 0;
+        int villagers = level.getEntitiesOfClass(net.minecraft.world.entity.npc.Villager.class, box).size();
+        int spawners = 0, chests = 0, machines = 0, exchanges = 0, lanterns = 0;
         int y0 = at.getY() - 12, y1 = at.getY() + 24;
         for (var p : net.minecraft.core.BlockPos.betweenClosed(at.getX() - 40, y0, at.getZ() - 40, at.getX() + 40, y1, at.getZ() + 40)) {
             var s = level.getBlockState(p);
             if (s.is(net.minecraft.world.level.block.Blocks.SPAWNER)) spawners++;
             else if (s.is(net.minecraft.world.level.block.Blocks.CHEST)) chests++;
             else if (s.getBlock() instanceof com.tycooncraft.block.MachineBlock || s.is(com.tycooncraft.registry.ModBlocks.BROKEN_MACHINE.get())) machines++;
+            else if (s.is(com.tycooncraft.registry.ModBlocks.EXCHANGE.get())) exchanges++;
+            else if (s.is(net.minecraft.world.level.block.Blocks.LANTERN)) lanterns++;
         }
         int ground = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, at.getX(), at.getZ());
         System.out.println("[MPTEST] " + kind + " at " + at.getX() + "," + at.getZ() + " groundY=" + ground + " traders=" + traders
-                + " monsters=" + mobs + " spawners=" + spawners + " chests=" + chests + " machines=" + machines);
+                + " villagers=" + villagers + " monsters=" + mobs + " spawners=" + spawners + " chests=" + chests + " machines=" + machines
+                + " exchanges=" + exchanges + " lanterns=" + lanterns);
+        for (var en : level.getEntities((net.minecraft.world.entity.Entity) null, box, x -> !(x instanceof net.minecraft.world.entity.player.Player)))
+            if (en instanceof net.minecraft.world.entity.npc.Villager || en.hasCustomName())
+                System.out.println("[MPTEST]   entity " + en.getType().toShortString() + " name=" + en.getName().getString() + String.format(" at %.1f,%.1f,%.1f", en.getX(), en.getY(), en.getZ()));
     }
 
     @SubscribeEvent
@@ -81,6 +88,8 @@ public final class MpTest {
 
     static void view(net.minecraft.core.BlockPos at, int half) {
         var level = tester.serverLevel();
+        level.getChunk(at.getX() >> 4, at.getZ() >> 4);      // 아직 없는 땅이면 이 청크만 먼저 생성해서 높이를 안다
+        level.getChunk((at.getX() + 22) >> 4, (at.getZ() + 26) >> 4);
         int gy = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, at.getX(), at.getZ());
         tester.setGameMode(net.minecraft.world.level.GameType.SPECTATOR);
         double x = at.getX() + 22, z = at.getZ() + 26, y = gy + 18;
