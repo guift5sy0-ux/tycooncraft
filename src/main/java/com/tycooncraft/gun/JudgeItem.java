@@ -69,6 +69,14 @@ public class JudgeItem extends GunItem {
                 bolt.moveTo(le.getX(), le.getY(), le.getZ());
                 bolt.setVisualOnly(true);
                 level.addFreshEntity(bolt);
+                // 번개 연출만: 혹시 생긴 불은 바로 끔 (기지·지형 보호)
+                var center = le.blockPosition();
+                for (int d = 2; d <= 14; d += 4) {
+                    level.getServer().tell(new net.minecraft.server.TickTask(level.getServer().getTickCount() + d, () -> {
+                        for (var bp : net.minecraft.core.BlockPos.betweenClosed(center.offset(-2, -2, -2), center.offset(2, 3, 2)))
+                            if (level.getBlockState(bp).is(net.minecraft.world.level.block.Blocks.FIRE)) level.removeBlock(bp, false);
+                    }));
+                }
             }
             le.invulnerableTime = 0;
             le.hurt(level.damageSources().indirectMagic(player, player), 14f);
