@@ -357,7 +357,11 @@ public final class AutoTestClient {
             case 1315 -> shot(mc, "40_wither");
             case 1318 -> serverDo(mc, sp -> view(sp, AutoTest.dragon, 30, 6, g));
             case 1350 -> shot(mc, "41_dragon");
-            case 1356 -> next(11);
+            case 1356 -> serverDo(mc, sp -> view(sp, AutoTest.wither, 6, 0.5, g));
+            case 1385 -> shot(mc, "40b_wither_close");
+            case 1388 -> serverDo(mc, sp -> view(sp, AutoTest.dragon, 18, 3, g));
+            case 1420 -> shot(mc, "41b_dragon_close");
+            case 1425 -> next(11);
             default -> {
             }
         }
