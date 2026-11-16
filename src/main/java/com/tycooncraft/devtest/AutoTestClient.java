@@ -430,7 +430,7 @@ public final class AutoTestClient {
                 var sl = sp.serverLevel();
                 // 수조 안 새 배 (서버 테스트가 끝난 뒤 다시 지어서 조립)
                 for (int x = 100; x <= 124; x++) for (int z = 100; z <= 124; z++) for (int y = -1; y <= 3; y++) {
-                    var p = new net.minecraft.core.BlockPos(x, g + y, z);
+                    var p = new net.minecraft.core.BlockPos(x, (int) g + y, z);
                     if (y == -1) sl.setBlock(p, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState(), 2);
                     else if (!sl.getBlockState(p).isAir() && !(sl.getBlockState(p).getBlock() instanceof net.minecraft.world.level.block.LiquidBlock)) sl.setBlock(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
                 }
@@ -455,8 +455,8 @@ public final class AutoTestClient {
             case 2054 -> serverDo(mc, sp -> {
                 sp.getAbilities().flying = true;
                 sp.onUpdateAbilities();
-                var s = V15Test.clientShip;
-                if (s != null) sp.teleportTo(sp.serverLevel(), s.getX() + 9, g + 6, s.getZ() - 7, 50f, 25f);
+                var cs = V15Test.clientShip;
+                if (cs != null) sp.teleportTo(sp.serverLevel(), cs.getX() + 9, g + 6, cs.getZ() - 7, 50f, 25f);
             });
             case 2075 -> shot(mc, "53_ship_outside");
             case 2110 -> serverDo(mc, sp -> V15Test.dockClientShip(sp));
