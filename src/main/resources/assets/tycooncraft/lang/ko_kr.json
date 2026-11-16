@@ -200,7 +200,7 @@
   "tooltip.tycooncraft.gun.integral": "🔇 일체형 소음기 · 꾹 눌러 4배 조준",
   "tooltip.tycooncraft.drone_mk2": "MK2: 1.6배 속도 · 배터리 90초 · 거리 180블록 · 대형 탄두",
   "tooltip.tycooncraft.tank": "땅에 우클릭 · W/S 이동 · A/D 회전 · 포탑은 마우스 · 좌클릭 주포(전차 포탄)",
-  "tooltip.tycooncraft.fighter_jet": "넓은 곳에 우클릭 · W/S 출력 · 마우스로 조종 · 좌클릭 기관포(중탄약) · 우클릭 미사일(로켓) · 비행 중 F 배럴 롤",
+  "tooltip.tycooncraft.fighter_jet": "넓은 곳에 우클릭 · W/S 출력 · Ctrl/Z 에어브레이크(감속) · 마우스로 조종 · 좌클릭 기관포(중탄약) · 우클릭 미사일(로켓) · 비행 중 F 배럴 롤",
   "tooltip.tycooncraft.cartel_flare": "땅에 사용하면 보스 '카르텔 두목'이 나타남! 단단히 준비하세요",
   "message.tycooncraft.tank.no_shell": "전차 포탄이 없습니다",
   "message.tycooncraft.jet.no_ammo": "중탄약이 없습니다",

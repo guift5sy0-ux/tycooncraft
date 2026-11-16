@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -45,6 +46,21 @@ public class JetEntity extends VehicleEntity {
     @Override
     protected Vec3 seatLocal(int index) {
         return new Vec3(0, 9 / 32.0, -60 / 32.0);
+    }
+
+    public boolean airbrake;
+
+    /**
+     * 조종석 위치를 기체의 피치(기수 상하)까지 반영해 계산 — 렌더러는 기체를 (0, 1, 0) 을 축으로 피치 회전시키므로
+     * 좌석(=시점)도 같이 돌려야 위아래로 기울 때 시점이 동체 밖/안으로 튀지 않는다.
+     */
+    @Override
+    protected Vec3 getPassengerAttachmentPoint(Entity passenger, net.minecraft.world.entity.EntityDimensions dims, float pt) {
+        Vec3 s = seatLocal(0);
+        double th = -getXRot() * Mth.DEG_TO_RAD;
+        double y = s.y - 1.0, z = s.z;
+        double y2 = y * Math.cos(th) - z * Math.sin(th), z2 = y * Math.sin(th) + z * Math.cos(th);
+        return toWorld(new Vec3(s.x, y2 + 1.0, z2));
     }
 
     /** 배럴 롤 (클라이언트 표시): 남은 틱 */
@@ -116,12 +132,17 @@ public class JetEntity extends VehicleEntity {
     @Override
     protected void drive(VehicleHooks.Input in, boolean hasFuel) {
         boolean manned = getControllingPassenger() != null;
-        if (hasFuel && manned) throttle = Mth.clamp(throttle + in.forward() * 0.01f, 0f, 1f);
+        if (hasFuel && manned) throttle = Mth.clamp(throttle + in.forward() * 0.012f, 0f, 1f);
         else throttle = Math.max(0, throttle - 0.01f);
+        boolean brake = manned && in.down();
+        if (brake) throttle = Math.max(0, throttle - 0.03f);
         Vec3 dm = getDeltaMovement();
         double speed = dm.length();
         double target = throttle * MAX_SPEED;
         speed += (target - speed) * (target > speed ? 0.02 : 0.012);
+        // 에어브레이크 (Ctrl / Z): 강하게 감속, 지상에선 바퀴 브레이크
+        if (brake) speed *= onGround() ? 0.88 : 0.95;
+        airbrake = brake;
         // 기수 방향: 조종자가 보는 쪽으로 천천히
         float yaw = getYRot(), pitch = getXRot();
         if (manned) {
@@ -129,8 +150,9 @@ public class JetEntity extends VehicleEntity {
             float dp = in.lookPitch() - pitch;
             float agility = (float) Mth.clamp(speed / LIFT_SPEED, 0.25, 1.0);
             // 회전 속도 자체를 부드럽게 보간 → 급격한 꺾임 없이 미끄러지듯
-            yawVel += (Mth.clamp(dy * 0.09f, -4.0f, 4.0f) * agility - yawVel) * 0.18f;
-            pitchVel += (Mth.clamp(dp * 0.09f, -3.2f, 3.2f) * agility - pitchVel) * 0.18f;
+            float agility2 = Math.max(agility, 0.45f);
+            yawVel += (Mth.clamp(dy * 0.16f, -7.5f, 7.5f) * agility2 - yawVel) * 0.32f;
+            pitchVel += (Mth.clamp(dp * 0.16f, -6.0f, 6.0f) * agility2 - pitchVel) * 0.32f;
         } else {
             yawVel *= 0.8f;
             pitchVel *= 0.8f;

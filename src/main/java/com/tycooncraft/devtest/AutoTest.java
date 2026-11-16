@@ -86,6 +86,23 @@ public final class AutoTest {
         for (double[] p : new double[][]{{0, -26}, {8, -18}}) dummyVillager(level, p[0], p[1]);
     }
 
+    /** 드래곤이 플레이어 공격(근접·총)에 실제로 피해를 받는지 확인 */
+    private static void dragonHitTest(ServerLevel level, int t) {
+        var fp = net.neoforged.neoforge.common.util.FakePlayerFactory.getMinecraft(level);
+        fp.moveTo(dragon.getX(), dragon.getY() + 12, dragon.getZ() + 0.5, 0, 90);
+        float h0 = dragon.getHealth();
+        boolean r1 = dragon.head.hurt(level.damageSources().playerAttack(fp), 20f);
+        float h1 = dragon.getHealth();
+        boolean r2 = dragon.hurt(level.damageSources().playerAttack(fp), 20f);
+        float h2 = dragon.getHealth();
+        com.tycooncraft.gun.Ballistics.shoot(level, fp, fp.getEyePosition(), dragon.position().add(0, 1, 0).subtract(fp.getEyePosition()).normalize(),
+                40, 12f, 0, 1f, false, false, level.damageSources().playerAttack(fp), e -> true);
+        float h3 = dragon.getHealth();
+        System.out.println("[AUTOTEST] dragonhit t=" + t + " phase=" + dragon.getPhaseManager().getCurrentPhase().getPhase()
+                + String.format(" hp %.1f -head(%s)-> %.1f -body(%s)-> %.1f -gun-> %.1f", h0, r1, h1, r2, h2, h3)
+                + " inv=" + dragon.isInvulnerable() + " invT=" + dragon.invulnerableTime + " max=" + dragon.getMaxHealth());
+    }
+
     private static void dummyVillager(ServerLevel level, double x, double z) {
         var v = net.minecraft.world.entity.EntityType.VILLAGER.create(level);
         v.moveTo(x, gy, z, 0, 0);
@@ -236,6 +253,7 @@ public final class AutoTest {
             if (wither != null && wither.isAlive()) wither.setHealth(wither.getMaxHealth() * 0.45f);
             if (dragon != null && dragon.isAlive()) dragon.setHealth(dragon.getMaxHealth() * 0.45f);
         }
+        if (dragon != null && (t == 1610 || t == 1720 || t == 1800 || t == 1900 || t == 2100 || t == 2300)) dragonHitTest(level, t);
         if (t == 1600 || t == 2400) System.out.println("[AUTOTEST] vanilla t=" + t + " wither=" + (wither == null ? "none" : (int) wither.getHealth() + "/" + (int) wither.getMaxHealth())
                 + " dragon=" + (dragon == null ? "none" : (int) dragon.getHealth() + "/" + (int) dragon.getMaxHealth())
                 + " stats=" + java.util.Arrays.toString(com.tycooncraft.mob.VanillaBossBuffs.STATS));

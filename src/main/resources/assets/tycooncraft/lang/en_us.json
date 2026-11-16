@@ -200,7 +200,7 @@
   "tooltip.tycooncraft.gun.integral": "🔇 Integral suppressor · hold to aim 4x",
   "tooltip.tycooncraft.drone_mk2": "MK2: 1.6x speed · 90 s battery · 180-block range · big warhead",
   "tooltip.tycooncraft.tank": "Use on the ground · W/S drive · A/D turn · turret follows mouse · left click: cannon (tank shells)",
-  "tooltip.tycooncraft.fighter_jet": "Place in open space · W/S throttle · steer with mouse · left click: cannon · right click: missile · F in flight: barrel roll",
+  "tooltip.tycooncraft.fighter_jet": "Place in open space · W/S throttle · Ctrl/Z airbrake · steer with mouse · left click: cannon · right click: missile · F in flight: barrel roll",
   "tooltip.tycooncraft.cartel_flare": "Use on the ground to summon the Cartel Boss! Come prepared",
   "message.tycooncraft.tank.no_shell": "No tank shells",
   "message.tycooncraft.jet.no_ammo": "No heavy ammo",
