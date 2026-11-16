@@ -14,7 +14,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 @EventBusSubscriber(modid = TycoonCraft.MODID, value = Dist.CLIENT)
 public final class MpTestClient {
     static int t = -1, round;
-    static boolean reported;
+    static boolean reported, advance;
 
     @SubscribeEvent
     public static void onTick(ClientTickEvent.Post e) {
@@ -35,6 +35,11 @@ public final class MpTestClient {
         t++;
         var o = mc.options;
         int k = t % 200;
+        // 라운드는 언제나 새 200틱 주기의 처음부터 시작
+        if (k == 0 && advance) {
+            advance = false;
+            round++;
+        }
         if (t > 199 && round < 3) {
             if (k == 0) System.out.println("[MPTEST] client round " + round + " start");
             if (k == 10) {
@@ -51,7 +56,7 @@ public final class MpTestClient {
                 System.out.println("[MPTEST] client round " + round + " after click piloting=" + com.tycooncraft.client.vehicle.DroneClient.piloting()
                         + " camera=" + mc.getCameraEntity().getType().toShortString() + " drones=" + mc.level.getEntitiesOfClass(
                         com.tycooncraft.vehicle.DroneEntity.class, mc.player.getBoundingBox().inflate(64)).size() + " hp=" + mc.player.getHealth());
-                round++;
+                advance = true;
             }
         }
         // 4라운드: 소환 직후 바로 클릭 / 5라운드: Shift 로 내려놓고 드론을 우클릭해 다시 조종 → 클릭
@@ -59,9 +64,9 @@ public final class MpTestClient {
             if (k == 10) mc.player.getInventory().selected = 3;
             if (k == 20) KeyMapping.click(o.keyUse.getKey());
             if (k == 40) KeyMapping.click(o.keyAttack.getKey());
-            if (k == 190) {
+            if (k == 90) {
                 System.out.println("[MPTEST] client round 3 instant-click hp=" + mc.player.getHealth() + " piloting=" + com.tycooncraft.client.vehicle.DroneClient.piloting());
-                round++;
+                advance = true;
             }
             return;
         }
@@ -85,7 +90,7 @@ public final class MpTestClient {
             }
             if (k == 150) {
                 System.out.println("[MPTEST] client round 4 after click piloting=" + com.tycooncraft.client.vehicle.DroneClient.piloting() + " hp=" + mc.player.getHealth());
-                round++;
+                advance = true;
             }
             return;
         }
