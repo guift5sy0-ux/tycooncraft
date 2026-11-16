@@ -30,13 +30,13 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public final class DroneClient {
     private static int pilotId = -1;
     private static int waitTicks;
-    private static boolean seenDrone, seenPiloted, detonate, release;
+    private static boolean seenDrone, seenPiloted, detonate;
     private static VehicleHooks.Input input = VehicleHooks.Input.NONE;
 
     public static void start(int entityId) {
         pilotId = entityId;
         waitTicks = 0;
-        seenDrone = seenPiloted = detonate = release = false;
+        seenDrone = seenPiloted = detonate = false;
     }
 
     public static boolean piloting() {
@@ -64,7 +64,6 @@ public final class DroneClient {
         Input in = event.getInput();
         Minecraft mc = Minecraft.getInstance();
         input = new VehicleHooks.Input(in.forwardImpulse, in.leftImpulse, in.jumping, mc.options.keySprint.isDown() || VehicleKeyBinds.DESCEND.isDown());
-        if (in.shiftKeyDown) release = true;
         in.forwardImpulse = 0;
         in.leftImpulse = 0;
         in.up = in.down = in.left = in.right = false;
@@ -106,7 +105,6 @@ public final class DroneClient {
         if (mc.screen == null) {
             boolean crash = d.flyLocal(input, mc.player.getYRot(), mc.player.getXRot());
             if (crash || detonate) action = 1;
-            else if (release) action = 2;
         }
         PacketDistributor.sendToServer(new DronePayloads.Control(d.getId(), d.getX(), d.getY(), d.getZ(), d.getYRot(), d.getXRot(), action));
         if (action != 0) stop(mc);

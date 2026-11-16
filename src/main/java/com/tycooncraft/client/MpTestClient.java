@@ -77,7 +77,7 @@ public final class MpTestClient {
             if (k == 54) KeyMapping.set(o.keyShift.getKey(), false);
             if (k == 70) {
                 var ds = mc.level.getEntitiesOfClass(com.tycooncraft.vehicle.DroneEntity.class, mc.player.getBoundingBox().inflate(8));
-                System.out.println("[MPTEST] client round 4 released piloting=" + com.tycooncraft.client.vehicle.DroneClient.piloting() + " nearbyDrones=" + ds.size());
+                System.out.println("[MPTEST] client round 4 after-shift (must still pilot) piloting=" + com.tycooncraft.client.vehicle.DroneClient.piloting() + " nearbyDrones=" + ds.size());
                 if (!ds.isEmpty()) {
                     var d = ds.get(0);
                     mc.player.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, d.position().add(0, 0.2, 0));

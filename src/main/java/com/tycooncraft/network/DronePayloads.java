@@ -69,8 +69,7 @@ public final class DronePayloads {
             Entity e = sp.level().getEntity(c.entityId());
             if (!(e instanceof DroneEntity drone) || !sp.getUUID().equals(drone.ownerId())) return;
             drone.applyPilotUpdate(sp, c.x(), c.y(), c.z(), c.yaw(), c.pitch());
-            if (c.action() == 1) drone.detonate();
-            else if (c.action() == 2) drone.setPiloted(false);
+            if (c.action() == 1 || c.action() == 2) drone.detonate();   // 자폭 드론은 취소 없음
         });
     }
 

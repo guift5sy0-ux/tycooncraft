@@ -185,8 +185,10 @@ public class DroneEntity extends Entity {
         Player owner = owner();
         if (isPiloted()) {
             if (owner == null || !owner.isAlive() || owner.level() != level() || distanceTo(owner) > maxRange() + 20) {
-                setPiloted(false);
+                // 한 번 띄운 자폭 드론은 무조건 터진다: 신호가 끊기면 그 자리에서 폭발
                 if (owner != null) owner.displayClientMessage(Component.translatable("message.tycooncraft.drone.lost"), true);
+                detonate();
+                return;
             }
             // 생명체와 부딪히면 폭발
             for (Entity e : level().getEntities(this, getBoundingBox().inflate(0.25), e -> e instanceof LivingEntity && e.isAlive() && e != owner)) {
@@ -220,8 +222,8 @@ public class DroneEntity extends Entity {
         setYRot(yaw);
         setXRot(pitch);
         if (from.distanceTo(this) > maxRange()) {
-            setPiloted(false);
             from.displayClientMessage(Component.translatable("message.tycooncraft.drone.lost"), true);
+            detonate();
         }
     }
 
