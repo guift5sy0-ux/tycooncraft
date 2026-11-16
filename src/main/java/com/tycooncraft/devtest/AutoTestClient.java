@@ -227,9 +227,31 @@ public final class AutoTestClient {
             }
             case 515 -> KeyMapping.click(o.keyUse.getKey());
             case 519 -> shot(mc, "25_jet_missile");
-            case 525 -> key(o.keyUp, false);
-            case 530 -> key(o.keyShift, true);
+            // 1인칭 조종석 시점: 수평 / 기수 올림 / 기수 내림
+            case 520 -> {
+                o.setCameraType(CameraType.FIRST_PERSON);
+                mc.player.setXRot(0);
+            }
+            case 523 -> {
+                shot(mc, "25b_jet_fp_level");
+                var v = mc.player.getVehicle();
+                if (v != null) System.out.printf("[AUTOTEST] jet fp eyeRel=%.2f,%.2f,%.2f xRot=%.1f%n", mc.player.getEyePosition().x - v.getX(),
+                        mc.player.getEyePosition().y - v.getY(), mc.player.getEyePosition().z - v.getZ(), v.getXRot());
+            }
+            case 524 -> mc.player.setXRot(-25);
             case 534 -> {
+                shot(mc, "25c_jet_fp_up");
+                var v = mc.player.getVehicle();
+                if (v != null) System.out.printf("[AUTOTEST] jet fp up eyeY=%.2f xRot=%.1f%n", mc.player.getEyePosition().y - v.getY(), v.getXRot());
+            }
+            case 535 -> mc.player.setXRot(20);
+            case 545 -> {
+                shot(mc, "25d_jet_fp_down");
+                o.setCameraType(CameraType.THIRD_PERSON_BACK);
+            }
+            case 548 -> key(o.keyUp, false);
+            case 549 -> key(o.keyShift, true);
+            case 552 -> {
                 key(o.keyShift, false);
                 ride(mc);
             }
