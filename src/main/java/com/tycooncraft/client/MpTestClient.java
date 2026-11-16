@@ -35,7 +35,7 @@ public final class MpTestClient {
         t++;
         var o = mc.options;
         int k = t % 200;
-        if (t > 60 && round < 3) {
+        if (t > 199 && round < 3) {
             if (k == 0) System.out.println("[MPTEST] client round " + round + " start");
             if (k == 10) {
                 mc.player.getInventory().selected = round == 2 ? 4 : round;
@@ -55,11 +55,11 @@ public final class MpTestClient {
             }
         }
         // 4라운드: 소환 직후 바로 클릭 / 5라운드: Shift 로 내려놓고 드론을 우클릭해 다시 조종 → 클릭
-        if (round == 3) {
+        if (round == 3 && t > 199) {
             if (k == 10) mc.player.getInventory().selected = 3;
             if (k == 20) KeyMapping.click(o.keyUse.getKey());
             if (k == 40) KeyMapping.click(o.keyAttack.getKey());
-            if (k == 90) {
+            if (k == 190) {
                 System.out.println("[MPTEST] client round 3 instant-click hp=" + mc.player.getHealth() + " piloting=" + com.tycooncraft.client.vehicle.DroneClient.piloting());
                 round++;
             }
