@@ -26,7 +26,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public class JetEntity extends VehicleEntity {
     // 눈이 캐노피 위로 오도록 (1인칭에서 기수·동체에 시야가 가리지 않게)
-    private static final Vec3 SEAT = new Vec3(0, 49 / 32.0, -64 / 32.0);
+    private static final Vec3 SEAT = new Vec3(0, 27 / 32.0, -62 / 32.0);
     /** 최고 속도 130 km/h (= 130 / 72 블록/틱) */
     public static final double MAX_SPEED = 130.0 / 72.0, LIFT_SPEED = 0.85;
     private float yawVel, pitchVel;
@@ -47,7 +47,7 @@ public class JetEntity extends VehicleEntity {
     /** 조종석: 눈높이가 캐노피 안에 오도록 (몸은 렌더링하지 않음) */
     @Override
     protected Vec3 seatLocal(int index) {
-        return new Vec3(0, 9 / 32.0, -60 / 32.0);
+        return SEAT;
     }
 
     public boolean airbrake;
