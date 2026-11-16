@@ -22,7 +22,36 @@ import java.util.Set;
  * 마을의 시작 청크가 실제로 로딩될 때 상인 5명을 한 번만 배치한다.
  */
 public final class VillageTraders {
-    public static int SPAWNED;
+    public static int SPAWNED, EXISTING;
+
+    record Pending(ServerLevel level, BlockPos origin, int since) {}
+
+    private static final java.util.List<Pending> PENDING = new java.util.ArrayList<>();
+
+    /** 엔티티까지 다 로딩된 뒤에만 판단 (블록과 엔티티는 따로 로딩된다 → 너무 일찍 보면 있는 상인도 없어 보임) */
+    @SubscribeEvent
+    public static void onTick(net.neoforged.neoforge.event.tick.ServerTickEvent.Post e) {
+        if (PENDING.isEmpty()) return;
+        int now = e.getServer().getTickCount();
+        for (var it = PENDING.iterator(); it.hasNext(); ) {
+            Pending p = it.next();
+            Data data = Data.get(p.level());
+            if (data.done.contains(p.origin().asLong()) || now - p.since() > 6000) {
+                it.remove();
+                continue;
+            }
+            BlockPos center = p.origin().offset(16, 0, 16);
+            if (!p.level().isLoaded(center) || !p.level().areEntitiesLoaded(new net.minecraft.world.level.ChunkPos(center).toLong())) continue;
+            AABB box = new AABB(p.origin()).expandTowards(32, 8, 32).inflate(2);
+            if (p.level().getEntitiesOfClass(Villager.class, box, Villager::hasCustomName).isEmpty()) {
+                StructureBuilder.spawnVillageTraders(p.level(), p.origin());
+                SPAWNED++;
+            } else EXISTING++;
+            data.done.add(p.origin().asLong());
+            data.setDirty();
+            it.remove();
+        }
+    }
 
     @SubscribeEvent
     public static void onChunkLoad(ChunkEvent.Load e) {
@@ -34,17 +63,7 @@ public final class VillageTraders {
                 BlockPos origin = tp.origin();
                 Data data = Data.get(level);
                 if (data.done.contains(origin.asLong())) continue;
-                // 청크 로딩 도중엔 엔티티를 넣지 않고 다음 틱에
-                level.getServer().execute(() -> {
-                    if (data.done.contains(origin.asLong()) || !level.isLoaded(origin.offset(16, 0, 16))) return;
-                    AABB box = new AABB(origin).expandTowards(32, 8, 32).inflate(2);
-                    if (level.getEntitiesOfClass(Villager.class, box, Villager::hasCustomName).isEmpty()) {
-                        StructureBuilder.spawnVillageTraders(level, origin);
-                        SPAWNED++;
-                    }
-                    data.done.add(origin.asLong());
-                    data.setDirty();
-                });
+                PENDING.add(new Pending(level, origin, level.getServer().getTickCount()));
             }
         }
     }

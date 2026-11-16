@@ -64,7 +64,8 @@ public final class MpTest {
             else if (s.is(net.minecraft.world.level.block.Blocks.LANTERN)) lanterns++;
         }
         int ground = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, at.getX(), at.getZ());
-        System.out.println("[MPTEST] tradersSpawnedOnLoad=" + com.tycooncraft.world.gen.VillageTraders.SPAWNED);
+        System.out.println("[MPTEST] tradersSpawnedOnLoad=" + com.tycooncraft.world.gen.VillageTraders.SPAWNED + " existing=" + com.tycooncraft.world.gen.VillageTraders.EXISTING
+                + " entitiesLoaded=" + level.areEntitiesLoaded(new net.minecraft.world.level.ChunkPos(at).toLong()));
         System.out.println("[MPTEST] " + kind + " at " + at.getX() + "," + at.getZ() + " groundY=" + ground + " traders=" + traders
                 + " villagers=" + villagers + " monsters=" + mobs + " spawners=" + spawners + " chests=" + chests + " machines=" + machines
                 + " exchanges=" + exchanges + " lanterns=" + lanterns);
@@ -79,7 +80,7 @@ public final class MpTest {
         if (tester != null && joinTick >= 0) {
             int dt = ticks - joinTick;
             if (dt == 1200 && village != null) view(village, 16);
-            if (dt == 1440) inspect(tester.serverLevel(), "village", village, 32, 32);
+            if (dt == 1320 || dt == 1380 || dt == 1440) inspect(tester.serverLevel(), "village", village, 32, 32);
             if (dt == 1500 && ruin != null) view(ruin, 11);
             if (dt == 1640) inspect(tester.serverLevel(), "ruin", ruin, 22, 14);
         }
