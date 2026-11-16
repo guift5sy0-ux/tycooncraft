@@ -265,5 +265,10 @@
   "item.tycooncraft.destroyer_core": "Destroyer Core",
   "item.tycooncraft.behemoth_heart": "Heart of the Behemoth",
   "item.tycooncraft.storm_scale": "Storm Scale",
-  "item.tycooncraft.storm_orb": "Storm Orb"
+  "item.tycooncraft.storm_orb": "Storm Orb",
+  "message.tycooncraft.wither.rise": "☠ The Abyssal Wither awakens…",
+  "message.tycooncraft.wither.awaken": "☠ The Wither is empowered! Soul knights have risen",
+  "message.tycooncraft.dragon.awaken": "✦ The Void Lord awakens! Watch your footing",
+  "entity.minecraft.wither": "Abyssal Wither",
+  "entity.minecraft.ender_dragon": "Void Lord Ender Dragon"
 }

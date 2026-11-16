@@ -71,6 +71,32 @@ public final class AutoTest {
         return h;
     }
 
+    static net.minecraft.world.entity.boss.wither.WitherBoss wither;
+    static net.minecraft.world.entity.boss.enderdragon.EnderDragon dragon;
+
+    private static void v14Setup(ServerLevel level) {
+        wither = net.minecraft.world.entity.EntityType.WITHER.create(level);
+        wither.moveTo(-15, gy + 4, 8, 0, 0);
+        wither.makeInvulnerable();
+        level.addFreshEntity(wither);
+        for (double[] p : new double[][]{{-15, 18}, {-6, 8}, {-22, 2}}) dummyVillager(level, p[0], p[1]);
+        dragon = net.minecraft.world.entity.EntityType.ENDER_DRAGON.create(level);
+        dragon.moveTo(0, gy + 24, -20, 0, 0);
+        level.addFreshEntity(dragon);
+        for (double[] p : new double[][]{{0, -26}, {8, -18}}) dummyVillager(level, p[0], p[1]);
+    }
+
+    private static void dummyVillager(ServerLevel level, double x, double z) {
+        var v = net.minecraft.world.entity.EntityType.VILLAGER.create(level);
+        v.moveTo(x, gy, z, 0, 0);
+        v.setNoAi(true);
+        v.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(1000);
+        v.setHealth(1000);
+        v.addTag("tc_dummy");
+        v.setPersistenceRequired();
+        level.addFreshEntity(v);
+    }
+
     private static void v13Setup(ServerLevel level) {
         golem = ModEntities.DESTROYER_GOLEM.get().create(level);
         golem.moveTo(34, gy, 40, 180, 0);
@@ -205,6 +231,14 @@ public final class AutoTest {
         // v0.12: 자동 굴착기 · 수류탄 · 여왕거미
         if (t == 32) v12Setup(level);
         if (t == 36) v13Setup(level);
+        if (t == 1500) v14Setup(level);
+        if (t == 1700) {
+            if (wither != null && wither.isAlive()) wither.setHealth(wither.getMaxHealth() * 0.45f);
+            if (dragon != null && dragon.isAlive()) dragon.setHealth(dragon.getMaxHealth() * 0.45f);
+        }
+        if (t == 1600 || t == 2400) System.out.println("[AUTOTEST] vanilla t=" + t + " wither=" + (wither == null ? "none" : (int) wither.getHealth() + "/" + (int) wither.getMaxHealth())
+                + " dragon=" + (dragon == null ? "none" : (int) dragon.getHealth() + "/" + (int) dragon.getMaxHealth())
+                + " stats=" + java.util.Arrays.toString(com.tycooncraft.mob.VanillaBossBuffs.STATS));
         if (t > 40 && t % 20 == 0) {
             if (golem != null && golem.isAlive() && golemDummy.isAlive()) golem.setTarget(golemDummy);
             if (behemoth != null && behemoth.isAlive() && beastDummy.isAlive()) behemoth.setTarget(beastDummy);

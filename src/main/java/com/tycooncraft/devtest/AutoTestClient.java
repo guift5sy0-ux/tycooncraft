@@ -353,7 +353,11 @@ public final class AutoTestClient {
             case 1264 -> key(o.keyUse, true);
             case 1268 -> shot(mc, "39c_fp_vss_fire");
             case 1274 -> key(o.keyUse, false);
-            case 1280 -> next(11);
+            case 1282 -> serverDo(mc, sp -> view(sp, AutoTest.wither, 12, 3, g));
+            case 1315 -> shot(mc, "40_wither");
+            case 1318 -> serverDo(mc, sp -> view(sp, AutoTest.dragon, 30, 6, g));
+            case 1350 -> shot(mc, "41_dragon");
+            case 1356 -> next(11);
             default -> {
             }
         }

@@ -265,5 +265,10 @@
   "item.tycooncraft.destroyer_core": "디스트로이어 코어",
   "item.tycooncraft.behemoth_heart": "베헤모스의 심장",
   "item.tycooncraft.storm_scale": "폭풍 비늘",
-  "item.tycooncraft.storm_orb": "번개 구체"
+  "item.tycooncraft.storm_orb": "번개 구체",
+  "message.tycooncraft.wither.rise": "☠ 심연의 위더가 깨어난다…",
+  "message.tycooncraft.wither.awaken": "☠ 위더 각성! 영혼 기사단이 소환되었습니다",
+  "message.tycooncraft.dragon.awaken": "✦ 공허의 군주가 각성했습니다! 발밑을 조심하세요",
+  "entity.minecraft.wither": "심연의 위더",
+  "entity.minecraft.ender_dragon": "공허의 군주 엔더 드래곤"
 }
