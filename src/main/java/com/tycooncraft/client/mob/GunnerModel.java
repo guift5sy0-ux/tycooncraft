@@ -15,8 +15,9 @@ public class GunnerModel<T extends GunnerEntity> extends HumanoidModel<T> {
     public void prepareMobModel(T entity, float limbSwing, float limbSwingAmount, float partialTick) {
         super.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTick);
         if (entity.isAggressive()) {
-            rightArmPose = ArmPose.BOW_AND_ARROW;
-            leftArmPose = ArmPose.BOW_AND_ARROW;
+            rightArmPose = entity.getMainHandItem().getItem() instanceof com.tycooncraft.gun.GunItem
+                    ? com.tycooncraft.client.GunPoses.poseFor(entity.getMainHandItem()) : ArmPose.BOW_AND_ARROW;
+            leftArmPose = ArmPose.EMPTY;
         } else {
             rightArmPose = entity.getMainHandItem().isEmpty() ? ArmPose.EMPTY : ArmPose.ITEM;
             leftArmPose = ArmPose.EMPTY;

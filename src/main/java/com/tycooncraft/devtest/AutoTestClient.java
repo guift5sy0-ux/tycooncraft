@@ -320,7 +320,34 @@ public final class AutoTestClient {
             case 1100 -> shot(mc, "35_behemoth");
             case 1104 -> serverDo(mc, sp -> view(sp, AutoTest.wyvern, 14, 2, g));
             case 1140 -> shot(mc, "36_wyvern");
-            case 1145 -> next(11);
+            // ── 총 쥐는 자세: 1인칭 팔 + 3인칭 ──
+            case 1146 -> serverDo(mc, sp -> {
+                sp.getAbilities().flying = false;
+                sp.onUpdateAbilities();
+                sp.teleportTo(sp.serverLevel(), 0.5, g, -60.5, 180f, 0f);
+                sp.getInventory().setItem(7, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.RIFLE.get()));
+                sp.getInventory().setItem(8, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.PISTOL.get()));
+            });
+            case 1160 -> {
+                mc.player.getInventory().selected = 7;
+                o.setCameraType(CameraType.FIRST_PERSON);
+            }
+            case 1180 -> shot(mc, "37_fp_rifle");
+            case 1182 -> o.setCameraType(CameraType.THIRD_PERSON_FRONT);
+            case 1192 -> shot(mc, "37b_tp_rifle");
+            case 1194 -> {
+                o.setCameraType(CameraType.FIRST_PERSON);
+                mc.player.getInventory().selected = 8;
+            }
+            case 1214 -> shot(mc, "38_fp_pistol");
+            case 1216 -> o.setCameraType(CameraType.THIRD_PERSON_FRONT);
+            case 1226 -> shot(mc, "38b_tp_pistol");
+            case 1228 -> {
+                o.setCameraType(CameraType.FIRST_PERSON);
+                mc.player.getInventory().selected = 1;
+            }
+            case 1245 -> shot(mc, "39_fp_vss");
+            case 1250 -> next(11);
             default -> {
             }
         }

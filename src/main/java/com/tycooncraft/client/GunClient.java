@@ -31,11 +31,11 @@ public final class GunClient {
         IClientItemExtensions aim = new IClientItemExtensions() {
             @Override
             public HumanoidModel.ArmPose getArmPose(LivingEntity entity, InteractionHand hand, ItemStack stack) {
-                return HumanoidModel.ArmPose.BOW_AND_ARROW;
+                return GunPoses.poseFor(stack);
             }
         };
         event.registerItem(aim, ModItems.PISTOL.get(), ModItems.SMG.get(), ModItems.RIFLE.get(),
-                ModItems.SHOTGUN.get(), ModItems.SNIPER.get(), ModItems.VSS.get(), ModItems.DUAL_PISTOLS.get(), ModItems.RPG.get());
+                ModItems.SHOTGUN.get(), ModItems.SNIPER.get(), ModItems.VSS.get(), ModItems.DUAL_PISTOLS.get(), ModItems.RPG.get(), ModItems.JUDGE.get());
     }
 
     @SubscribeEvent
