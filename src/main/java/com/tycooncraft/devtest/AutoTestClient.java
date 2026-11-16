@@ -270,7 +270,10 @@ public final class AutoTestClient {
             case 958 -> System.out.println("[AUTOTEST] client flashed=" + mc.player.hasEffect(com.tycooncraft.registry.ModEffects.FLASHED));
             // ── 이계의 심판자: 고정된 허스크에 두 발 → 표식 → 심판 ──
             case 965 -> serverDo(mc, sp -> {
-                sp.getInventory().setItem(6, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.JUDGE.get()));
+                sp.removeAllEffects();
+                var judge = new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.JUDGE.get());
+                judge.set(com.tycooncraft.registry.ModComponents.AMMO.get(), 9);
+                sp.getInventory().setItem(6, judge);
                 sp.getInventory().selected = 6;
                 sp.teleportTo(sp.serverLevel(), 0.5, g, 100.5, 0f, 0f);
                 var h = net.minecraft.world.entity.EntityType.HUSK.create(sp.serverLevel());
