@@ -88,6 +88,8 @@ public final class GunArms {
         float pt = event.getPartialTick();
         float k = Mth.lerp(pt, kickO, kick);
         ps.pushPose();
+        // 권총류: 두 손으로 감싸 쥔 모습이 보이도록 조금 가운데·위로
+        if (stack.is(ModItems.PISTOL.get()) || stack.is(ModItems.JUDGE.get())) ps.translate(-0.08f, 0.075f, 0.02f);
         // 꺼내기(장착) 애니메이션 + 반동: 손잡이를 축으로 총구가 들리며 뒤로
         ps.translate(0, event.getEquipProgress() * -0.6f, k * 0.06f);
         ps.translate(h[0], h[1], h[2]);
