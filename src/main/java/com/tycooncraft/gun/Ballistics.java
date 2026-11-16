@@ -69,6 +69,13 @@ public final class Ballistics {
     /** 한 발: 경로상 대상(가까운 순)을 pierce+1 명까지 맞힘. 맞힌 첫 지점 반환 */
     public static Vec3 shoot(ServerLevel level, Entity shooter, Vec3 from, Vec3 dir, double range, float dmg, int pierce,
                              float headMult, boolean fire, boolean tracer, DamageSource src, Predicate<Entity> extraFilter) {
+        return shoot(level, shooter, from, dir, range, dmg, pierce, headMult, fire, tracer, src, extraFilter, null);
+    }
+
+    /** onHit: 실제로 피해를 입힌 대상마다 호출 */
+    public static Vec3 shoot(ServerLevel level, Entity shooter, Vec3 from, Vec3 dir, double range, float dmg, int pierce,
+                             float headMult, boolean fire, boolean tracer, DamageSource src, Predicate<Entity> extraFilter,
+                             java.util.function.Consumer<Entity> onHit) {
         Vec3 end = from.add(dir.scale(range));
         BlockHitResult blockHit = level.clip(new ClipContext(from, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE,
                 shooter == null ? net.minecraft.world.phys.shapes.CollisionContext.empty() : net.minecraft.world.phys.shapes.CollisionContext.of(shooter)));
@@ -90,6 +97,7 @@ public final class Ballistics {
             float d = damage(target, dmg * (n == 0 ? 1f : 0.7f), head, headMult);
             target.invulnerableTime = 0;
             if (target.hurt(src, d)) {
+                if (onHit != null) onHit.accept(target);
                 if (fire) target.igniteForSeconds(4);
                 if (head) {
                     level.sendParticles(ParticleTypes.ENCHANTED_HIT, impact.x, impact.y, impact.z, 10, 0.15, 0.15, 0.15, 0.3);

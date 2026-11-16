@@ -53,6 +53,7 @@ public final class ModCreativeTabs {
                         out.accept(ModItems.LIGHT_AMMO.get());
                         out.accept(ModItems.HEAVY_AMMO.get());
                         out.accept(ModItems.SHOTGUN_SHELL.get());
+                        out.accept(ModItems.JUDGE.get());
                         out.accept(ModItems.FRAG_GRENADE.get());
                         out.accept(ModItems.FLASH_GRENADE.get());
                         out.accept(ModItems.SMOKE_GRENADE.get());

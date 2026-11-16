@@ -90,6 +90,17 @@ public final class ModItems {
             new GunStats(7f, 1, 0.032f, 40, 24, 2, 22, true, false, 1.3f, LIGHT_AMMO, ModSounds.PISTOL_FIRE, ModSounds.PISTOL_RELOAD)));
     public static final DeferredItem<RpgItem> RPG = ITEMS.register("rpg", () -> new RpgItem(new Item.Properties(),
             new GunStats(0f, 1, 0f, 0, 1, 20, 50, false, false, 5f, ModItems.ROCKET, ModSounds.RPG_FIRE, ModSounds.RIFLE_RELOAD)));
+    /** 날카로운 반자동 "이계의 심판자": 네더라이트 5 + 권총 + 드래곤 알 + 신호기 2 */
+    public static final DeferredItem<com.tycooncraft.gun.JudgeItem> JUDGE = ITEMS.register("judge", () -> new com.tycooncraft.gun.JudgeItem(
+            new Item.Properties().fireResistant().rarity(net.minecraft.world.item.Rarity.EPIC)
+                    .attributes(net.minecraft.world.item.component.ItemAttributeModifiers.builder()
+                            .add(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE, new net.minecraft.world.entity.ai.attributes.AttributeModifier(
+                                    Item.BASE_ATTACK_DAMAGE_ID, 11, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE),
+                                    net.minecraft.world.entity.EquipmentSlotGroup.MAINHAND)
+                            .add(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_SPEED, new net.minecraft.world.entity.ai.attributes.AttributeModifier(
+                                    Item.BASE_ATTACK_SPEED_ID, -2.2, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE),
+                                    net.minecraft.world.entity.EquipmentSlotGroup.MAINHAND).build()),
+            new GunStats(24f, 1, 0.004f, 90, 9, 5, 34, false, false, 3.2f, HEAVY_AMMO, ModSounds.JUDGE_FIRE, ModSounds.PISTOL_RELOAD)));
     public static final DeferredItem<Item> ROCKET = ITEMS.register("rocket", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final DeferredItem<Item> TANK_SHELL = ITEMS.register("tank_shell", () -> new Item(new Item.Properties().stacksTo(16)));
 

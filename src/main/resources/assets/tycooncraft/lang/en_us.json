@@ -246,5 +246,10 @@
   "message.tycooncraft.miner.off": "Auto excavator stopped",
   "message.tycooncraft.miner.no_fuel": "Auto excavator: out of fuel",
   "message.tycooncraft.miner.full": "Auto excavator: storage is full",
-  "message.tycooncraft.miner.too_hard": "Auto excavator: %s is too hard, stopped"
+  "message.tycooncraft.miner.too_hard": "Auto excavator: %s is too hard, stopped",
+  "item.tycooncraft.judge": "Sharp Semi-Auto Otherworld Judge",
+  "tooltip.tycooncraft.judge.lore": "A judgment forged beyond the End",
+  "tooltip.tycooncraft.judge.mark": "Hits mark the target → hit again within 5 s for Judgment (lightning + 14 armor-piercing damage) · pierces 3",
+  "tooltip.tycooncraft.judge.blade": "Underbarrel blade: 12 melee damage",
+  "message.tycooncraft.judge.judgment": "⚡ Judgment!"
 }

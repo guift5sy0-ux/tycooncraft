@@ -110,6 +110,8 @@ public final class AutoTestClient {
         }
     }
 
+    private static net.minecraft.world.entity.LivingEntity judgeTarget;
+
     /** 통합 서버 스레드에서 플레이어를 직접 다룸 (클라이언트 setPos는 먼 거리에서 무시될 수 있음) */
     private static void serverDo(Minecraft mc, java.util.function.Consumer<net.minecraft.server.level.ServerPlayer> f) {
         var srv = mc.getSingleplayerServer();
@@ -266,7 +268,31 @@ public final class AutoTestClient {
             case 900 -> KeyMapping.click(o.keyUse.getKey());
             case 953 -> shot(mc, "32_flash");
             case 958 -> System.out.println("[AUTOTEST] client flashed=" + mc.player.hasEffect(com.tycooncraft.registry.ModEffects.FLASHED));
-            case 975 -> next(11);
+            // ── 이계의 심판자: 고정된 허스크에 두 발 → 표식 → 심판 ──
+            case 965 -> serverDo(mc, sp -> {
+                sp.getInventory().setItem(6, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.JUDGE.get()));
+                sp.getInventory().selected = 6;
+                sp.teleportTo(sp.serverLevel(), 0.5, g, 100.5, 0f, 0f);
+                var h = net.minecraft.world.entity.EntityType.HUSK.create(sp.serverLevel());
+                h.moveTo(0.5, g, 106.5, 180, 0);
+                h.setNoAi(true);
+                h.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(200);
+                h.setHealth(200);
+                sp.serverLevel().addFreshEntity(h);
+                judgeTarget = h;
+            });
+            case 975 -> mc.player.getInventory().selected = 6;
+            case 990 -> {
+                mc.player.setXRot(4);
+                shot(mc, "33_judge");
+            }
+            case 992 -> KeyMapping.click(o.keyUse.getKey());
+            case 994 -> shot(mc, "33b_judge_fire");
+            case 1002 -> KeyMapping.click(o.keyUse.getKey());
+            case 1004 -> shot(mc, "33c_judgment");
+            case 1012 -> serverDo(mc, sp -> System.out.println("[AUTOTEST] judge husk hp=" + (judgeTarget == null ? -1 : judgeTarget.getHealth())
+                    + " judgments=" + com.tycooncraft.gun.JudgeItem.judgments));
+            case 1020 -> next(11);
             default -> {
             }
         }

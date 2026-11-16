@@ -246,5 +246,10 @@
   "message.tycooncraft.miner.off": "자동 굴착기 정지",
   "message.tycooncraft.miner.no_fuel": "자동 굴착기: 연료가 떨어져 멈췄습니다",
   "message.tycooncraft.miner.full": "자동 굴착기: 저장통이 가득 찼습니다",
-  "message.tycooncraft.miner.too_hard": "자동 굴착기: %s 은(는) 너무 단단해 멈췄습니다"
+  "message.tycooncraft.miner.too_hard": "자동 굴착기: %s 은(는) 너무 단단해 멈췄습니다",
+  "item.tycooncraft.judge": "날카로운 반자동 이계의 심판자",
+  "tooltip.tycooncraft.judge.lore": "끝의 저편에서 벼려진 심판의 총",
+  "tooltip.tycooncraft.judge.mark": "맞힌 적에게 심판의 표식 → 5초 안에 다시 맞히면 심판(번개 + 방어 무시 14 피해) · 관통 3",
+  "tooltip.tycooncraft.judge.blade": "총열 아래 칼날: 근접 공격 피해 12",
+  "message.tycooncraft.judge.judgment": "⚡ 심판!"
 }
