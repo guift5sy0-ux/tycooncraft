@@ -55,6 +55,38 @@ public final class AutoTest {
         return b.toString();
     }
 
+    static com.tycooncraft.mob.DestroyerGolem golem;
+    static com.tycooncraft.mob.Behemoth behemoth;
+    static com.tycooncraft.mob.StormWyvern wyvern;
+    static net.minecraft.world.entity.LivingEntity golemDummy, beastDummy, wyvernDummy;
+
+    private static net.minecraft.world.entity.LivingEntity dummy(ServerLevel level, double x, double z) {
+        var h = net.minecraft.world.entity.EntityType.HUSK.create(level);
+        h.moveTo(x, gy, z, 0, 0);
+        h.setNoAi(true);
+        h.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(1000);
+        h.setHealth(1000);
+        h.setPersistenceRequired();
+        level.addFreshEntity(h);
+        return h;
+    }
+
+    private static void v13Setup(ServerLevel level) {
+        golem = ModEntities.DESTROYER_GOLEM.get().create(level);
+        golem.moveTo(34, gy, 40, 180, 0);
+        level.addFreshEntity(golem);
+        golemDummy = dummy(level, 34, 53);
+        behemoth = ModEntities.BEHEMOTH.get().create(level);
+        behemoth.moveTo(42, gy, -10, 0, 0);
+        level.addFreshEntity(behemoth);
+        behemoth.setHealth(320);                       // 2페이즈(운석) 확인용
+        beastDummy = dummy(level, 42, 5);
+        wyvern = ModEntities.STORM_WYVERN.get().create(level);
+        wyvern.moveTo(10, gy + 14, 30, 0, 0);
+        level.addFreshEntity(wyvern);
+        wyvernDummy = dummy(level, 12, 36);
+    }
+
     private static void v12Setup(ServerLevel level) {
         // 굴착기: 동쪽으로 돌벽 3×3×18 (중간에 광석들, 끝에 흑요석)
         for (int x = -24; x <= -6; x++) for (int z = 20; z <= 24; z++) for (int y = 0; y < 4; y++)
@@ -172,6 +204,20 @@ public final class AutoTest {
         }
         // v0.12: 자동 굴착기 · 수류탄 · 여왕거미
         if (t == 32) v12Setup(level);
+        if (t == 36) v13Setup(level);
+        if (t > 40 && t % 20 == 0) {
+            if (golem != null && golem.isAlive() && golemDummy.isAlive()) golem.setTarget(golemDummy);
+            if (behemoth != null && behemoth.isAlive() && beastDummy.isAlive()) behemoth.setTarget(beastDummy);
+            if (wyvern != null && wyvern.isAlive() && wyvernDummy.isAlive()) wyvern.setTarget(wyvernDummy);
+        }
+        if (t == 600 || t == 1400) {
+            System.out.println("[AUTOTEST] bosses t=" + t + " golem shots=" + com.tycooncraft.mob.DestroyerGolem.shots + " rockets=" + com.tycooncraft.mob.DestroyerGolem.rockets
+                    + " slams=" + com.tycooncraft.mob.DestroyerGolem.slams + " dummyHp=" + golemDummy.getHealth());
+            System.out.println("[AUTOTEST] bosses t=" + t + " behemoth charges=" + com.tycooncraft.mob.Behemoth.charges + " stomps=" + com.tycooncraft.mob.Behemoth.stomps
+                    + " breaths=" + com.tycooncraft.mob.Behemoth.breaths + " meteors=" + com.tycooncraft.mob.Behemoth.meteors + " dummyHp=" + beastDummy.getHealth());
+            System.out.println("[AUTOTEST] bosses t=" + t + " wyvern volleys=" + com.tycooncraft.mob.StormWyvern.volleys + " dives=" + com.tycooncraft.mob.StormWyvern.dives
+                    + " thunders=" + com.tycooncraft.mob.StormWyvern.thunders + " y=" + (wyvern == null ? 0 : (int) wyvern.getY()) + " dummyHp=" + wyvernDummy.getHealth());
+        }
         if (t >= 40 && t <= 600 && t % 20 == 0 && queen != null && villager != null && villager.isAlive()) queen.setTarget(villager);
         if (t == 100 || t == 300 || t == 700 || t == 1400) {
             System.out.println("[AUTOTEST] miner t=" + t + (miner == null ? " none" : String.format(" x=%.1f fuel=%d running=%s mined=%d items=%s",

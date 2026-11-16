@@ -112,6 +112,24 @@ public final class AutoTestClient {
 
     private static net.minecraft.world.entity.LivingEntity judgeTarget;
 
+    /** 대상이 화면 가운데 오도록 거리 dist, 높이 up 만큼 떨어진 곳으로 이동 */
+    private static void view(net.minecraft.server.level.ServerPlayer sp, net.minecraft.world.entity.LivingEntity e, double dist, double up, double g) {
+        sp.removeAllEffects();
+        if (e == null || !e.isAlive()) {
+            System.out.println("[AUTOTEST] view target missing");
+            return;
+        }
+        double ang = Math.toRadians(40);
+        double x = e.getX() + Math.cos(ang) * dist, z = e.getZ() + Math.sin(ang) * dist;
+        double y = Math.max(g, e.getY() - 2) + up;
+        double dx = e.getX() - x, dz = e.getZ() - z, dy = (e.getY() + e.getBbHeight() * 0.5) - (y + 1.62);
+        float yaw = (float) Math.toDegrees(Math.atan2(-dx, dz));
+        float pitch = (float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx * dx + dz * dz)));
+        sp.getAbilities().flying = true;
+        sp.onUpdateAbilities();
+        sp.teleportTo(sp.serverLevel(), x, y, z, yaw, pitch);
+    }
+
     /** 통합 서버 스레드에서 플레이어를 직접 다룸 (클라이언트 setPos는 먼 거리에서 무시될 수 있음) */
     private static void serverDo(Minecraft mc, java.util.function.Consumer<net.minecraft.server.level.ServerPlayer> f) {
         var srv = mc.getSingleplayerServer();
@@ -295,7 +313,14 @@ public final class AutoTestClient {
             case 1004 -> shot(mc, "33c_judgment");
             case 1012 -> serverDo(mc, sp -> System.out.println("[AUTOTEST] judge husk hp=" + (judgeTarget == null ? -1 : judgeTarget.getHealth())
                     + " judgments=" + com.tycooncraft.gun.JudgeItem.judgments));
-            case 1020 -> next(11);
+            // ── v0.13: 보스 3종 관찰 ──
+            case 1022 -> serverDo(mc, sp -> view(sp, AutoTest.golem, 9, 4, g));
+            case 1060 -> shot(mc, "34_golem");
+            case 1064 -> serverDo(mc, sp -> view(sp, AutoTest.behemoth, 13, 5, g));
+            case 1100 -> shot(mc, "35_behemoth");
+            case 1104 -> serverDo(mc, sp -> view(sp, AutoTest.wyvern, 14, 2, g));
+            case 1140 -> shot(mc, "36_wyvern");
+            case 1145 -> next(11);
             default -> {
             }
         }

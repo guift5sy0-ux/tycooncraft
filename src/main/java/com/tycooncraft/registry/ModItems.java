@@ -92,7 +92,7 @@ public final class ModItems {
             new GunStats(0f, 1, 0f, 0, 1, 20, 50, false, false, 5f, ModItems.ROCKET, ModSounds.RPG_FIRE, ModSounds.RIFLE_RELOAD)));
     /** 날카로운 반자동 "이계의 심판자": 네더라이트 5 + 권총 + 드래곤 알 + 신호기 2 */
     public static final DeferredItem<com.tycooncraft.gun.JudgeItem> JUDGE = ITEMS.register("judge", () -> new com.tycooncraft.gun.JudgeItem(
-            new Item.Properties().fireResistant().rarity(net.minecraft.world.item.Rarity.EPIC)
+            new Item.Properties().fireResistant().rarity(net.minecraft.world.item.Rarity.EPIC).durability(com.tycooncraft.gun.JudgeItem.DURABILITY)
                     .attributes(net.minecraft.world.item.component.ItemAttributeModifiers.builder()
                             .add(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE, new net.minecraft.world.entity.ai.attributes.AttributeModifier(
                                     Item.BASE_ATTACK_DAMAGE_ID, 11, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE),
@@ -100,7 +100,7 @@ public final class ModItems {
                             .add(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_SPEED, new net.minecraft.world.entity.ai.attributes.AttributeModifier(
                                     Item.BASE_ATTACK_SPEED_ID, -2.2, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE),
                                     net.minecraft.world.entity.EquipmentSlotGroup.MAINHAND).build()),
-            new GunStats(24f, 1, 0.004f, 90, 9, 5, 34, false, false, 3.2f, HEAVY_AMMO, ModSounds.JUDGE_FIRE, ModSounds.PISTOL_RELOAD)));
+            new GunStats(15f, 1, 0.005f, 90, 9, 5, 34, false, false, 3.2f, HEAVY_AMMO, ModSounds.JUDGE_FIRE, ModSounds.PISTOL_RELOAD)));
     public static final DeferredItem<Item> ROCKET = ITEMS.register("rocket", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final DeferredItem<Item> TANK_SHELL = ITEMS.register("tank_shell", () -> new Item(new Item.Properties().stacksTo(16)));
 
@@ -142,6 +142,18 @@ public final class ModItems {
             () -> new DeferredSpawnEggItem(ModEntities.MUTANT_SPIDER, 0x361214, 0x5ADC46, new Item.Properties()));
     public static final DeferredItem<DeferredSpawnEggItem> BOSS_EGG = ITEMS.register("cartel_boss_spawn_egg",
             () -> new DeferredSpawnEggItem(ModEntities.CARTEL_BOSS, 0xE8E6DE, 0xAA1A1E, new Item.Properties()));
+
+    public static final DeferredItem<DeferredSpawnEggItem> GOLEM_EGG = ITEMS.register("destroyer_golem_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.DESTROYER_GOLEM, 0x565C64, 0xE0B020, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> BEHEMOTH_EGG = ITEMS.register("behemoth_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.BEHEMOTH, 0x2E282A, 0xFF7A18, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> WYVERN_EGG = ITEMS.register("storm_wyvern_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.STORM_WYVERN, 0x22344A, 0x6ED8FF, new Item.Properties()));
+    // 보스 전리품 (판매용)
+    public static final DeferredItem<Item> DESTROYER_CORE = ITEMS.register("destroyer_core", () -> new Item(new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON)));
+    public static final DeferredItem<Item> BEHEMOTH_HEART = ITEMS.register("behemoth_heart", () -> new Item(new Item.Properties().rarity(net.minecraft.world.item.Rarity.EPIC).fireResistant()));
+    public static final DeferredItem<Item> STORM_SCALE = ITEMS.register("storm_scale", () -> new Item(new Item.Properties().rarity(net.minecraft.world.item.Rarity.EPIC)));
+    public static final DeferredItem<Item> STORM_ORB = ITEMS.registerSimpleItem("storm_orb");
 
     // ── 탈것 & 연료 ──
     public static final DeferredItem<Item> FUEL_CANISTER = ITEMS.registerSimpleItem("fuel_canister");

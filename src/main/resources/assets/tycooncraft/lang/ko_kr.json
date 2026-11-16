@@ -249,7 +249,21 @@
   "message.tycooncraft.miner.too_hard": "자동 굴착기: %s 은(는) 너무 단단해 멈췄습니다",
   "item.tycooncraft.judge": "날카로운 반자동 이계의 심판자",
   "tooltip.tycooncraft.judge.lore": "끝의 저편에서 벼려진 심판의 총",
-  "tooltip.tycooncraft.judge.mark": "맞힌 적에게 심판의 표식 → 5초 안에 다시 맞히면 심판(번개 + 방어 무시 14 피해) · 관통 3",
+  "tooltip.tycooncraft.judge.mark": "맞힌 적에게 심판의 표식(3초) → 다시 맞히면 심판(번개 + 방어 무시 6 피해, 대상마다 6초 재사용)",
   "tooltip.tycooncraft.judge.blade": "총열 아래 칼날: 근접 공격 피해 12",
-  "message.tycooncraft.judge.judgment": "⚡ 심판!"
+  "message.tycooncraft.judge.judgment": "⚡ 심판!",
+  "tooltip.tycooncraft.judge.durability": "내구도 %s / %s — 다 닳으면 터짐 · 모루에서 네더라이트 주괴로 수리",
+  "message.tycooncraft.judge.wear": "⚠ 이계의 심판자 내구도 %s 남음!",
+  "message.tycooncraft.judge.broke": "이계의 심판자가 과부하로 터졌습니다!",
+  "entity.tycooncraft.destroyer_golem": "파괴수 골렘 디스트로이어",
+  "entity.tycooncraft.behemoth": "화산 거수 베헤모스",
+  "entity.tycooncraft.storm_wyvern": "폭풍 와이번",
+  "entity.tycooncraft.boss_orb": "번개 구체",
+  "item.tycooncraft.destroyer_golem_spawn_egg": "파괴수 골렘 생성 알",
+  "item.tycooncraft.behemoth_spawn_egg": "베헤모스 생성 알",
+  "item.tycooncraft.storm_wyvern_spawn_egg": "폭풍 와이번 생성 알",
+  "item.tycooncraft.destroyer_core": "디스트로이어 코어",
+  "item.tycooncraft.behemoth_heart": "베헤모스의 심장",
+  "item.tycooncraft.storm_scale": "폭풍 비늘",
+  "item.tycooncraft.storm_orb": "번개 구체"
 }

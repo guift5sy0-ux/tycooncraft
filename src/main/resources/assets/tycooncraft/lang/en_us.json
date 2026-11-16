@@ -249,7 +249,21 @@
   "message.tycooncraft.miner.too_hard": "Auto excavator: %s is too hard, stopped",
   "item.tycooncraft.judge": "Sharp Semi-Auto Otherworld Judge",
   "tooltip.tycooncraft.judge.lore": "A judgment forged beyond the End",
-  "tooltip.tycooncraft.judge.mark": "Hits mark the target → hit again within 5 s for Judgment (lightning + 14 armor-piercing damage) · pierces 3",
+  "tooltip.tycooncraft.judge.mark": "Hits mark the target (3 s) → hit again for Judgment (lightning + 6 armor-piercing damage, 6 s per-target cooldown)",
   "tooltip.tycooncraft.judge.blade": "Underbarrel blade: 12 melee damage",
-  "message.tycooncraft.judge.judgment": "⚡ Judgment!"
+  "message.tycooncraft.judge.judgment": "⚡ Judgment!",
+  "tooltip.tycooncraft.judge.durability": "Durability %s / %s — explodes when worn out · repair with netherite ingots on an anvil",
+  "message.tycooncraft.judge.wear": "⚠ Otherworld Judge: %s shots left!",
+  "message.tycooncraft.judge.broke": "The Otherworld Judge overloaded and exploded!",
+  "entity.tycooncraft.destroyer_golem": "Destroyer Golem",
+  "entity.tycooncraft.behemoth": "Volcanic Behemoth",
+  "entity.tycooncraft.storm_wyvern": "Storm Wyvern",
+  "entity.tycooncraft.boss_orb": "Storm Orb",
+  "item.tycooncraft.destroyer_golem_spawn_egg": "Destroyer Golem Spawn Egg",
+  "item.tycooncraft.behemoth_spawn_egg": "Behemoth Spawn Egg",
+  "item.tycooncraft.storm_wyvern_spawn_egg": "Storm Wyvern Spawn Egg",
+  "item.tycooncraft.destroyer_core": "Destroyer Core",
+  "item.tycooncraft.behemoth_heart": "Heart of the Behemoth",
+  "item.tycooncraft.storm_scale": "Storm Scale",
+  "item.tycooncraft.storm_orb": "Storm Orb"
 }

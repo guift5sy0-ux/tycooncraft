@@ -63,6 +63,9 @@ public class TycoonCraft {
         event.put(ModEntities.OUTLAW.get(), GunnerEntity.attributes(GunnerEntity.Kind.OUTLAW).build());
         event.put(ModEntities.CARTEL_BOSS.get(), GunnerEntity.attributes(GunnerEntity.Kind.BOSS).build());
         event.put(ModEntities.MUTANT_SPIDER.get(), com.tycooncraft.mob.MutantSpider.attributes().build());
+        event.put(ModEntities.DESTROYER_GOLEM.get(), com.tycooncraft.mob.DestroyerGolem.attributes().build());
+        event.put(ModEntities.BEHEMOTH.get(), com.tycooncraft.mob.Behemoth.attributes().build());
+        event.put(ModEntities.STORM_WYVERN.get(), com.tycooncraft.mob.StormWyvern.attributes().build());
     }
 
     private void spawnPlacements(net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent event) {
@@ -70,6 +73,17 @@ public class TycoonCraft {
             event.register(type, net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND, net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     net.minecraft.world.entity.monster.Monster::checkMonsterSpawnRules, net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.Operation.REPLACE);
         }
+        // 보스급: 자연 스폰은 드물게 (조건 통과 후에도 1/5~1/8)
+        event.register(ModEntities.DESTROYER_GOLEM.get(), net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND, net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                (type, level, reason, pos, random) -> net.minecraft.world.entity.monster.Monster.checkMonsterSpawnRules(type, level, reason, pos, random)
+                        && (reason != net.minecraft.world.entity.MobSpawnType.NATURAL || random.nextInt(5) == 0),
+                net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(ModEntities.BEHEMOTH.get(), net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND, net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                (type, level, reason, pos, random) -> net.minecraft.world.entity.monster.Monster.checkAnyLightMonsterSpawnRules(type, level, reason, pos, random)
+                        && (reason != net.minecraft.world.entity.MobSpawnType.NATURAL || random.nextInt(8) == 0),
+                net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.Operation.REPLACE);
+        event.register(ModEntities.STORM_WYVERN.get(), net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND, net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                com.tycooncraft.mob.StormWyvern::checkSpawn, net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.Operation.REPLACE);
         event.register(ModEntities.MUTANT_SPIDER.get(), net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND, net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 net.minecraft.world.entity.monster.Monster::checkMonsterSpawnRules, net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }

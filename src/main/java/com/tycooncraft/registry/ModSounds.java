@@ -33,6 +33,12 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> DRONE_BUZZ = sound("vehicle.drone.buzz");
     public static final DeferredHolder<SoundEvent, SoundEvent> DRONE_ARM = sound("vehicle.drone.arm");
     public static final DeferredHolder<SoundEvent, SoundEvent> RPG_FIRE = sound("gun.rpg.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MINIGUN_SPIN = sound("mob.destroyer.minigun_spin");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SERVO = sound("mob.destroyer.servo");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BEHEMOTH_ROAR = sound("mob.behemoth.roar");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BEHEMOTH_STOMP = sound("mob.behemoth.stomp");
+    public static final DeferredHolder<SoundEvent, SoundEvent> WYVERN_SCREECH = sound("mob.storm_wyvern.screech");
+    public static final DeferredHolder<SoundEvent, SoundEvent> STORM_ORB = sound("mob.storm_wyvern.orb");
     public static final DeferredHolder<SoundEvent, SoundEvent> JUDGE_FIRE = sound("gun.judge.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> GRENADE_EXPLODE = sound("gun.grenade.explode");
     public static final DeferredHolder<SoundEvent, SoundEvent> GRENADE_PIN = sound("gun.grenade.pin");
