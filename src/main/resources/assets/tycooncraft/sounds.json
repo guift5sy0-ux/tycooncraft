@@ -356,5 +356,49 @@
         "attenuation_distance": 32
       }
     ]
+  },
+  "gun.bullet.whiz": {
+    "subtitle": "subtitles.tycooncraft.bullet_whiz",
+    "sounds": [
+      "tycooncraft:gun/bullet_whiz_1",
+      "tycooncraft:gun/bullet_whiz_2",
+      "tycooncraft:gun/bullet_whiz_3"
+    ]
+  },
+  "gun.bullet.impact_stone": {
+    "subtitle": "subtitles.tycooncraft.bullet_impact",
+    "sounds": [
+      "tycooncraft:gun/bullet_impact_stone_1",
+      "tycooncraft:gun/bullet_impact_stone_2"
+    ]
+  },
+  "gun.bullet.impact_dirt": {
+    "subtitle": "subtitles.tycooncraft.bullet_impact",
+    "sounds": [
+      "tycooncraft:gun/bullet_impact_dirt_1",
+      "tycooncraft:gun/bullet_impact_dirt_2"
+    ]
+  },
+  "gun.bullet.impact_metal": {
+    "subtitle": "subtitles.tycooncraft.bullet_impact",
+    "sounds": [
+      "tycooncraft:gun/bullet_impact_metal_1",
+      "tycooncraft:gun/bullet_impact_metal_2"
+    ]
+  },
+  "machine.emp.charge": {
+    "subtitle": "subtitles.tycooncraft.emp_charge",
+    "sounds": [
+      "tycooncraft:gun/emp_charge"
+    ]
+  },
+  "machine.emp.blast": {
+    "subtitle": "subtitles.tycooncraft.emp_blast",
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/emp_blast",
+        "attenuation_distance": 64
+      }
+    ]
   }
 }

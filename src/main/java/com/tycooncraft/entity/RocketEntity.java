@@ -19,6 +19,8 @@ public class RocketEntity extends Projectile {
     private static final EntityDataAccessor<Integer> KIND = SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
     private float power = 3.5f;
     private int life;
+    /** 클라이언트 렌더용: 마지막으로 알던 비행 방향 */
+    public net.minecraft.world.phys.Vec3 lastDir = new net.minecraft.world.phys.Vec3(0, 0, -1);
 
     public RocketEntity(EntityType<? extends RocketEntity> type, Level level) {
         super(type, level);

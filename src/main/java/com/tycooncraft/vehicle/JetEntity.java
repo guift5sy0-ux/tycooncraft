@@ -210,6 +210,8 @@ public class JetEntity extends VehicleEntity {
             for (int k = -1; k <= 1; k += 2) {
                 Vec3 side = Vec3.directionFromRotation(0, getYRot() + 90).scale(k * 0.6);
                 Vec3 spread = dir.add(random.nextGaussian() * 0.012, random.nextGaussian() * 0.012, random.nextGaussian() * 0.012).normalize();
+                Ballistics.nextKind = 3;
+                Ballistics.nextSpeed = 34f;
                 Ballistics.shoot((ServerLevel) level(), player, nose.add(side), spread, 120, 8f * GunItem.DAMAGE_SCALE, 0, 1.5f, false, true,
                         level().damageSources().playerAttack(player), e -> e != this && !hasPassenger(e));
             }

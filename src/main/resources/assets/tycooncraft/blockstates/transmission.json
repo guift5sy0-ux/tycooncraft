@@ -8,6 +8,12 @@
     },
     "speed=3": {
       "model": "tycooncraft:block/transmission_3"
+    },
+    "speed=4": {
+      "model": "tycooncraft:block/transmission_4"
+    },
+    "speed=5": {
+      "model": "tycooncraft:block/transmission_5"
     }
   }
 }

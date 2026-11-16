@@ -25,11 +25,11 @@ import java.util.Set;
 
 /**
  * 변속기: 컨베이어 줄 옆(위·아래 포함)에 붙이면 이어진 컨베이어 전체의 속도를 정한다.
- * 우클릭으로 1단(보통) → 2단(빠름) → 3단(매우 빠름). 부수면 1단으로 돌아간다.
+ * 우클릭으로 1단(보통) → … → 5단(5배). 부수면 1단으로 돌아간다.
  */
 public class TransmissionBlock extends Block {
     public static final MapCodec<TransmissionBlock> CODEC = simpleCodec(TransmissionBlock::new);
-    public static final IntegerProperty SPEED = IntegerProperty.create("speed", 1, 3);
+    public static final IntegerProperty SPEED = IntegerProperty.create("speed", 1, 5);
     private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 8, 16);
     private static final int MAX_CHAIN = 1024;
 
@@ -55,13 +55,13 @@ public class TransmissionBlock extends Block {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        int next = state.getValue(SPEED) % 3 + 1;
+        int next = state.getValue(SPEED) % 5 + 1;
         if (!level.isClientSide) {
             level.setBlock(pos, state.setValue(SPEED, next), 3);
             int n = apply(level, pos, next);
             level.playSound(null, pos, SoundEvents.PISTON_EXTEND, SoundSource.BLOCKS, 0.6f, 0.8f + next * 0.25f);
             player.displayClientMessage(Component.translatable("message.tycooncraft.transmission", next, n)
-                    .withStyle(next == 1 ? ChatFormatting.GREEN : next == 2 ? ChatFormatting.YELLOW : ChatFormatting.RED), true);
+                    .withStyle(next <= 2 ? ChatFormatting.GREEN : next <= 4 ? ChatFormatting.YELLOW : ChatFormatting.RED), true);
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
     }

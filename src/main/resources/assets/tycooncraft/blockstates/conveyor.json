@@ -44,6 +44,36 @@
     "facing=east,speed=3": {
       "model": "tycooncraft:block/conveyor_3",
       "y": 270
+    },
+    "facing=south,speed=4": {
+      "model": "tycooncraft:block/conveyor_4"
+    },
+    "facing=west,speed=4": {
+      "model": "tycooncraft:block/conveyor_4",
+      "y": 90
+    },
+    "facing=north,speed=4": {
+      "model": "tycooncraft:block/conveyor_4",
+      "y": 180
+    },
+    "facing=east,speed=4": {
+      "model": "tycooncraft:block/conveyor_4",
+      "y": 270
+    },
+    "facing=south,speed=5": {
+      "model": "tycooncraft:block/conveyor_5"
+    },
+    "facing=west,speed=5": {
+      "model": "tycooncraft:block/conveyor_5",
+      "y": 90
+    },
+    "facing=north,speed=5": {
+      "model": "tycooncraft:block/conveyor_5",
+      "y": 180
+    },
+    "facing=east,speed=5": {
+      "model": "tycooncraft:block/conveyor_5",
+      "y": 270
     }
   }
 }

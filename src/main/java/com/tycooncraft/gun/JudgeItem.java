@@ -43,6 +43,7 @@ public class JudgeItem extends GunItem {
         Vec3 dir = player.getViewVector(1f);
         Vec3 from = player.getEyePosition();
         int hunter = GunEnchants.level(stack, GunEnchants.HEADHUNTER);
+        Ballistics.nextKind = 2;
         Vec3 hit = Ballistics.shoot(level, player, from, dir, stats().range(), damage(stack),
                 0, 1.8f + 0.4f * hunter,
                 GunEnchants.level(stack, GunEnchants.INCENDIARY) > 0, false, level.damageSources().playerAttack(player),

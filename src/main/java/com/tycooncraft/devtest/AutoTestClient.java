@@ -461,7 +461,29 @@ public final class AutoTestClient {
             case 2075 -> shot(mc, "53_ship_outside");
             case 2110 -> serverDo(mc, sp -> V15Test.dockClientShip(sp));
             case 2125 -> shot(mc, "54_ship_docked");
-            case 2130 -> next(11);
+            // ── v0.15.2: 눈에 보이는 총알 + 로켓 방향 ──
+            case 2130 -> serverDo(mc, sp -> {
+                sp.getAbilities().flying = true;
+                sp.onUpdateAbilities();
+                sp.teleportTo(sp.serverLevel(), 60.5, g + 3, 60.5, 90f, 0f);   // 서쪽(-X)을 봄
+                sp.getInventory().selected = 2;
+            });
+            case 2140 -> serverDo(mc, sp -> {
+                var sl = sp.serverLevel();
+                // 옆에서 보이는 사격선: 동쪽으로 날아가는 로켓/포탄 + 총알 연사
+                for (int i = 0; i < 3; i++) {
+                    var r = com.tycooncraft.entity.RocketEntity.create(com.tycooncraft.registry.ModEntities.ROCKET.get(), sl, null,
+                            new net.minecraft.world.phys.Vec3(48 + i * 2, g + 2.5 + i * 0.8, 52), new net.minecraft.world.phys.Vec3(0.9, 0.05 * i, 0), i, 0.5f);
+                    sl.addFreshEntity(r);
+                }
+                var from = new net.minecraft.world.phys.Vec3(46, g + 1.6, 66);
+                for (int i = 0; i < 6; i++)
+                    com.tycooncraft.gun.Ballistics.shoot(sl, null, from.add(0, i * 0.15, 0), new net.minecraft.world.phys.Vec3(1, 0.01 * i, 0), 60, 0, 0, 1f, false, true,
+                            sl.damageSources().generic(), e -> false);
+            });
+            case 2141 -> shot(mc, "55_bullets_rockets");
+            case 2143 -> V15Test.logClientFx();
+            case 2150 -> next(11);
             default -> {
             }
         }

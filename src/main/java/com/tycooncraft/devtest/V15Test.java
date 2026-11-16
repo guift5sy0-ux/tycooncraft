@@ -42,8 +42,8 @@ public final class V15Test {
         if (t == 45) factory(level);
         if (t == 50) {
             BlockPos tp = new BlockPos(101, gy, 139);
-            level.setBlock(tp, ModBlocks.TRANSMISSION.get().defaultBlockState().setValue(TransmissionBlock.SPEED, 3), 3);
-            int n = TransmissionBlock.apply(level, tp, 3);
+            level.setBlock(tp, ModBlocks.TRANSMISSION.get().defaultBlockState().setValue(TransmissionBlock.SPEED, 5), 3);
+            int n = TransmissionBlock.apply(level, tp, 5);
             System.out.println("[AUTOTEST] v15 transmission chain=" + n + " speeds=" + speeds(level));
         }
         if (t == 52) {
@@ -52,7 +52,7 @@ public final class V15Test {
             level.addFreshEntity(ore);
         }
         if (t == 56) oreX0 = ore.getX();
-        if (t == 66) System.out.printf("[AUTOTEST] v15 belt speed3 dx/10t=%.2f oreY=%.3f (belt top %.3f)%n", ore.getX() - oreX0, ore.getY(), gy + ConveyorBlock.BELT_TOP);
+        if (t == 62) System.out.printf("[AUTOTEST] v15 belt speed5 dx/10t=%.2f (target 7.5) oreY=%.3f (belt top %.3f)%n", ore.getX() - oreX0, ore.getY(), gy + ConveyorBlock.BELT_TOP);
         if (t == 260) {
             int dust = 0;
             double y = 0;
@@ -94,12 +94,18 @@ public final class V15Test {
             empCar.moveTo(100.5, gy, 160.5, 0, 0);
             empCar.setFuel(1000);
             level.addFreshEntity(empCar);
-            GrenadeEntity g = new GrenadeEntity(ModEntities.GRENADE.get(), level);
-            g.setItem(new ItemStack(ModItems.EMP_GRENADE.get()));
-            g.moveTo(104.5, gy + 0.2, 160.5);
-            level.addFreshEntity(g);
+            BlockPos ep = new BlockPos(106, gy, 160);
+            level.setBlockAndUpdate(ep, ModBlocks.EMP_GENERATOR.get().defaultBlockState());
+            if (level.getBlockEntity(ep) instanceof com.tycooncraft.machine.EmpGeneratorBlockEntity be) {
+                var fp = net.neoforged.neoforge.common.util.FakePlayerFactory.getMinecraft(level);
+                be.arm(fp);                       // 충전 없음 → 거부
+                be.charge(fp, new ItemStack(Items.REDSTONE_BLOCK, 4));
+                be.arm(fp);                       // 3초 뒤 방출
+                System.out.println("[AUTOTEST] v15 emp armed charges=" + be.charges() + " active=" + level.getBlockState(ep).getValue(com.tycooncraft.machine.EmpGeneratorBlock.ACTIVE));
+            }
         }
-        if (t == 130) System.out.println("[AUTOTEST] v15 emp carEmp=" + empCar.empTicks() + " hits=" + GrenadeEntity.empHits);
+        if (t == 100) System.out.println("[AUTOTEST] v15 emp before carEmp=" + empCar.empTicks());
+        if (t == 130) System.out.println("[AUTOTEST] v15 emp after carEmp=" + empCar.empTicks() + " hits=" + com.tycooncraft.machine.EmpPulse.hits);
         // ── 배: 수조 ──
         if (t == 50) {
             for (int x = 98; x <= 126; x++) for (int z = 98; z <= 126; z++) {
@@ -215,6 +221,15 @@ public final class V15Test {
                     pl.getX(), pl.getY() - gy, pl.getZ(), pl.onGround(), s.standingOn(pl, 0.2), pl.position().subtract(s.position()).horizontalDistance(),
                     s.getX(), s.getZ(), s.yaw);
         }
+    }
+
+    public static void logClientFx() {
+        StringBuilder sb = new StringBuilder();
+        var mc = net.minecraft.client.Minecraft.getInstance();
+        for (var e : mc.level.entitiesForRendering())
+            if (e instanceof com.tycooncraft.entity.RocketEntity r)
+                sb.append(String.format(" rocket v=%.2f,%.2f,%.2f", r.getDeltaMovement().x, r.getDeltaMovement().y, r.getDeltaMovement().z));
+        System.out.println("[AUTOTEST] v15 client bullets=" + com.tycooncraft.client.BulletFx.spawned + sb);
     }
 
     public static void buildShipAt(ServerLevel level, int unused) {

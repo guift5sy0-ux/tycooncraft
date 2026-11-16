@@ -183,6 +183,11 @@ public class GunItem extends Item {
             // 반동: 화면이 살짝 위로
             player.setXRot(player.getXRot() - recoil);
             player.setYRot(player.getYRot() + (player.getRandom().nextFloat() - 0.5f) * recoil * 0.5f);
+            // 쏜 사람은 서버 왕복 없이 바로 총소리를 듣는다 (다른 사람에겐 서버가 들려줌)
+            float p0 = 0.96f + player.getRandom().nextFloat() * 0.08f;
+            if (tier == 2) level.playSound(player, player.getX(), player.getY(), player.getZ(), ModSounds.SILENCED_FIRE.get(), SoundSource.PLAYERS, 0.75f, p0);
+            else if (tier == 1) level.playSound(player, player.getX(), player.getY(), player.getZ(), ModSounds.SILENCED_FIRE.get(), SoundSource.PLAYERS, 1.0f, p0 * 0.92f);
+            else level.playSound(player, player.getX(), player.getY(), player.getZ(), stats.fireSound().get(), SoundSource.PLAYERS, 1.0f, p0);
             return;
         }
         ServerLevel server = (ServerLevel) level;
@@ -194,19 +199,18 @@ public class GunItem extends Item {
         if (isDual()) player.getPersistentData().putBoolean("tycooncraft_dual_left", !player.getPersistentData().getBoolean("tycooncraft_dual_left"));
         float pitch = 0.96f + player.getRandom().nextFloat() * 0.08f;
         if (tier == 2) {
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.SILENCED_FIRE.get(), SoundSource.PLAYERS, 0.75f, pitch);
+            level.playSound(player, player.getX(), player.getY(), player.getZ(), ModSounds.SILENCED_FIRE.get(), SoundSource.PLAYERS, 0.75f, pitch);
         } else if (tier == 1) {
             // 일반 소음기: 생각보다 크게 들림 (약 32블록)
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.SILENCED_FIRE.get(), SoundSource.PLAYERS, 2.0f, pitch * 0.92f);
+            level.playSound(player, player.getX(), player.getY(), player.getZ(), ModSounds.SILENCED_FIRE.get(), SoundSource.PLAYERS, 2.0f, pitch * 0.92f);
         } else {
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), stats.fireSound().get(), SoundSource.PLAYERS, 4.0f, pitch);
+            level.playSound(player, player.getX(), player.getY(), player.getZ(), stats.fireSound().get(), SoundSource.PLAYERS, 4.0f, pitch);
         }
         // 총구 화염 + 연기 (소음기면 화염 없음). 쌍권총은 좌우 번갈아
         Vec3 look = player.getViewVector(1f);
         Vec3 right = look.cross(new Vec3(0, 1, 0)).normalize();
         double side = isDual() ? (player.getPersistentData().getBoolean("tycooncraft_dual_left") ? 0.32 : -0.32) : 0.25;
         Vec3 muzzle = player.getEyePosition().add(look.scale(tier > 0 ? 1.7 : 1.3)).add(right.scale(side)).add(0, -0.18, 0);
-        if (tier == 0) server.sendParticles(ParticleTypes.FLAME, muzzle.x, muzzle.y, muzzle.z, 2, 0.02, 0.02, 0.02, 0.005);
         server.sendParticles(ParticleTypes.SMOKE, muzzle.x, muzzle.y, muzzle.z, tier > 0 ? 1 : 4, 0.04, 0.04, 0.04, 0.012);
     }
 

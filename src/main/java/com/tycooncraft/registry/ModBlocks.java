@@ -36,6 +36,9 @@ public final class ModBlocks {
             () -> new com.tycooncraft.ship.ShipMotorBlock(machineProps().strength(2.0f, 6.0f)));
     public static final DeferredBlock<com.tycooncraft.ship.ShipHelmBlock> SHIP_HELM = BLOCKS.register("ship_helm",
             () -> new com.tycooncraft.ship.ShipHelmBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).sound(SoundType.WOOD).strength(1.5f).noOcclusion()));
+    public static final DeferredBlock<com.tycooncraft.machine.EmpGeneratorBlock> EMP_GENERATOR = BLOCKS.register("emp_generator",
+            () -> new com.tycooncraft.machine.EmpGeneratorBlock(machineProps().strength(4.0f, 12.0f).requiresCorrectToolForDrops().noOcclusion()
+                    .lightLevel(s -> s.getValue(com.tycooncraft.machine.EmpGeneratorBlock.ACTIVE) ? 12 : 0)));
     public static final DeferredBlock<LiftBlock> LIFT_UP = BLOCKS.register("lift_up",
             () -> new LiftBlock(machineProps().strength(1.5f), true));
     public static final DeferredBlock<LiftBlock> LIFT_DOWN = BLOCKS.register("lift_down",

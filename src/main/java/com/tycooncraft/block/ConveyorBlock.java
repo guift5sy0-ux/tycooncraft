@@ -26,8 +26,11 @@ public class ConveyorBlock extends HorizontalDirectionalBlock {
     /** 벨트 윗면 높이(블록 단위) */
     public static final double BELT_TOP = 0.5;
     public static final net.minecraft.world.level.block.state.properties.IntegerProperty SPEED_LEVEL =
-            net.minecraft.world.level.block.state.properties.IntegerProperty.create("speed", 1, 3);
-    private static final double[] SPEEDS = {0, 0.15, 0.27, 0.40};
+            net.minecraft.world.level.block.state.properties.IntegerProperty.create("speed", 1, 5);
+    /** 벨트 속도(블록/틱): 1단 = 기본, 5단 = 5배 */
+    private static final double[] SPEEDS = {0, 0.15, 0.30, 0.45, 0.60, 0.75};
+    /** 땅 마찰(0.6×0.98)로 깎이는 만큼 보정 → 물건이 실제로 벨트 속도대로 움직인다 */
+    private static final double FRICTION_COMP = 1 / 0.588;
     private static final double CENTERING = 0.2;
 
     public ConveyorBlock(Properties properties) {
@@ -66,7 +69,7 @@ public class ConveyorBlock extends HorizontalDirectionalBlock {
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (entity.getY() < pos.getY() + BELT_TOP - 0.1 || entity.isShiftKeyDown() || entity.isSpectator()) return;
         Direction dir = state.getValue(FACING);
-        double SPEED = SPEEDS[state.getValue(SPEED_LEVEL)];
+        double SPEED = SPEEDS[state.getValue(SPEED_LEVEL)] * FRICTION_COMP;
         Vec3 motion = entity.getDeltaMovement();
         double vx, vz;
         if (dir.getAxis() == Direction.Axis.X) {

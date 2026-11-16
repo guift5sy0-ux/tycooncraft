@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GAG",
+    "CRC",
+    "PPP"
+  ],
+  "key": {
+    "G": {
+      "item": "tycooncraft:gold_wire"
+    },
+    "A": {
+      "item": "tycooncraft:advanced_circuit"
+    },
+    "C": {
+      "item": "tycooncraft:copper_wire"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    },
+    "P": {
+      "item": "tycooncraft:steel_plate"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:emp_generator",
+    "count": 1
+  }
+}

@@ -70,6 +70,21 @@ public final class Ballistics {
         return base * (1 - VEST_CUT[vestTier(le)]) * legs * boots;
     }
 
+    /** 다음 한 발의 총알 모양 (서버 스레드 전용): 종류 0 일반 1 화염 2 심판자 3 기관포, 속도(블록/틱), 소음기 여부 */
+    public static int nextKind = -1;
+    public static float nextSpeed;
+    public static boolean nextSilenced;
+
+    /** 플레이어가 쏘면 총알이 눈이 아니라 손에 든 총의 총구에서 나가 보이게 */
+    static Vec3 visualMuzzle(Entity shooter, Vec3 from, Vec3 dir) {
+        if (!(shooter instanceof net.minecraft.world.entity.player.Player p) || from.distanceToSqr(p.getEyePosition()) > 2.5) return from;
+        Vec3 right = dir.cross(new Vec3(0, 1, 0));
+        right = right.lengthSqr() < 1e-6 ? new Vec3(1, 0, 0) : right.normalize();
+        double side = p.getPersistentData().contains("tycooncraft_dual_left") && p.getMainHandItem().getItem() instanceof GunItem g && g.isDual()
+                ? (p.getPersistentData().getBoolean("tycooncraft_dual_left") ? -0.3 : 0.3) : 0.24;
+        return p.getEyePosition().add(dir.scale(0.85)).add(right.scale(side)).add(0, -0.17, 0);
+    }
+
     /** 한 발: 경로상 대상(가까운 순)을 pierce+1 명까지 맞힘. 맞힌 첫 지점 반환 */
     public static Vec3 shoot(ServerLevel level, Entity shooter, Vec3 from, Vec3 dir, double range, float dmg, int pierce,
                              float headMult, boolean fire, boolean tracer, DamageSource src, Predicate<Entity> extraFilter) {
@@ -117,18 +132,18 @@ public final class Ballistics {
             level.sendParticles(fire ? ParticleTypes.FLAME : ParticleTypes.CRIT, impact.x, impact.y, impact.z, 6, 0.1, 0.1, 0.1, 0.2);
             n++;
         }
-        if (n == 0 && blockHit.getType() == HitResult.Type.BLOCK) {
-            var state = level.getBlockState(blockHit.getBlockPos());
-            level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), impact.x, impact.y, impact.z, 6, 0.05, 0.05, 0.05, 0.1);
-        }
         Vec3 first = n > 0 ? hits.get(0).getLocation() : impact;
-        if (tracer) {
-            double dist = (n > pierce ? hits.get(pierce).getLocation() : impact).distanceTo(from);
-            for (double t = 2; t < dist; t += 2.5) {
-                Vec3 p = from.add(dir.scale(t));
-                level.sendParticles(fire ? ParticleTypes.SMALL_FLAME : ParticleTypes.ELECTRIC_SPARK, p.x, p.y - 0.1, p.z, 1, 0, 0, 0, 0);
-            }
-        }
+        // 눈에 보이는 총알 (탄착 파편·소리는 총알이 도착할 때 클라이언트가 만든다)
+        Vec3 stop = n > pierce ? hits.get(pierce).getLocation() : impact;
+        byte kind = nextKind >= 0 ? (byte) nextKind : fire ? (byte) 1 : (byte) 0;
+        byte imp = n > pierce ? (byte) 2 : blockHit.getType() == HitResult.Type.BLOCK ? (byte) 1 : (byte) 0;
+        Vec3 vis = visualMuzzle(shooter, from, dir);
+        float speed = nextSpeed > 0 ? nextSpeed : range >= 150 ? 30f : range >= 70 ? 22f : 16f;
+        net.neoforged.neoforge.network.PacketDistributor.sendToPlayersNear(level, null, vis.x, vis.y, vis.z, 160,
+                new com.tycooncraft.network.TracerPayload(vis, stop, kind, imp, shooter == null ? -1 : shooter.getId(), speed, tracer && !nextSilenced));
+        nextKind = -1;
+        nextSpeed = 0;
+        nextSilenced = false;
         return first;
     }
 

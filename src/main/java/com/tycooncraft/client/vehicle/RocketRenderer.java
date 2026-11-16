@@ -21,8 +21,13 @@ public class RocketRenderer extends EntityRenderer<RocketEntity> {
     @Override
     public void render(RocketEntity r, float entityYaw, float pt, PoseStack ps, MultiBufferSource buffers, int light) {
         ps.pushPose();
-        ps.mulPose(Axis.YP.rotationDegrees(Mth.lerp(pt, r.yRotO, r.getYRot()) + 180f));
-        ps.mulPose(Axis.XP.rotationDegrees(Mth.lerp(pt, r.xRotO, r.getXRot())));
+        // 모델의 탄두는 -Z 쪽 → 실제 속도 방향으로 정확히 돌린다 (예전엔 남북·동서가 뒤집혀 보였음)
+        net.minecraft.world.phys.Vec3 v = r.getDeltaMovement();
+        if (v.lengthSqr() < 1e-8) v = r.lastDir;
+        else r.lastDir = v;
+        double hz = Math.sqrt(v.x * v.x + v.z * v.z);
+        ps.mulPose(Axis.YP.rotation((float) Math.atan2(-v.x, -v.z)));
+        ps.mulPose(Axis.XP.rotation((float) Math.atan2(v.y, hz)));
         boolean shell = r.kind() == RocketEntity.SHELL;
         VehicleModels.part(ps, VehicleModels.cutout(buffers), shell ? VehicleModels.SHELL : VehicleModels.ROCKET, r.kind() == RocketEntity.MISSILE ? 1.6f : 1f, 0xF000F0);
         ps.popPose();

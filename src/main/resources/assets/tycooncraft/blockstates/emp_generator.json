@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "active=false": {
+      "model": "tycooncraft:block/emp_generator"
+    },
+    "active=true": {
+      "model": "tycooncraft:block/emp_generator_active"
+    }
+  }
+}

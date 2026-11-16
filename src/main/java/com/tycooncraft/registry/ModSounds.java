@@ -11,6 +11,12 @@ public final class ModSounds {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, TycoonCraft.MODID);
 
     public static final DeferredHolder<SoundEvent, SoundEvent> PISTOL_FIRE = sound("gun.pistol.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BULLET_WHIZ = sound("gun.bullet.whiz");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BULLET_IMPACT_STONE = sound("gun.bullet.impact_stone");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BULLET_IMPACT_DIRT = sound("gun.bullet.impact_dirt");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BULLET_IMPACT_METAL = sound("gun.bullet.impact_metal");
+    public static final DeferredHolder<SoundEvent, SoundEvent> EMP_CHARGE = sound("machine.emp.charge");
+    public static final DeferredHolder<SoundEvent, SoundEvent> EMP_BLAST = sound("machine.emp.blast");
     public static final DeferredHolder<SoundEvent, SoundEvent> PISTOL_RELOAD = sound("gun.pistol.reload");
     public static final DeferredHolder<SoundEvent, SoundEvent> SMG_FIRE = sound("gun.smg.fire");
     public static final DeferredHolder<SoundEvent, SoundEvent> SMG_RELOAD = sound("gun.smg.reload");
