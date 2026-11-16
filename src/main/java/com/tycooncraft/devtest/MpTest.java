@@ -37,8 +37,6 @@ public final class MpTest {
         village = level.findNearestMapStructure(com.tycooncraft.world.WorldGen.structureTag("village"), sp.blockPosition(), 100, false);
         ruin = level.findNearestMapStructure(com.tycooncraft.world.WorldGen.structureTag("ruin"), sp.blockPosition(), 100, false);
         System.out.println("[MPTEST] structures near spawn village=" + village + " ruin=" + ruin);
-        inspect(level, "village", village, 32, 32);
-        inspect(level, "ruin", ruin, 22, 14);
     }
 
     @SubscribeEvent
@@ -49,13 +47,13 @@ public final class MpTest {
     /** 구조물 주변 청크를 생성시키고 상인·스포너·상자 수를 센다 */
     static void inspect(net.minecraft.server.level.ServerLevel level, String kind, net.minecraft.core.BlockPos at, int sx, int sz) {
         if (at == null) return;
-        for (int cx = (at.getX() >> 4) - 3; cx <= (at.getX() >> 4) + 3; cx++)
-            for (int cz = (at.getZ() >> 4) - 3; cz <= (at.getZ() >> 4) + 3; cz++) level.getChunk(cx, cz);
-        var box = new net.minecraft.world.phys.AABB(at).inflate(40, 40, 40);
+        int gy0 = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, at.getX(), at.getZ());
+        at = new net.minecraft.core.BlockPos(at.getX(), gy0, at.getZ());
+        var box = new net.minecraft.world.phys.AABB(at).inflate(40, 30, 40);
         int traders = level.getEntitiesOfClass(net.minecraft.world.entity.npc.Villager.class, box, v -> v.hasCustomName()).size();
         int mobs = level.getEntitiesOfClass(net.minecraft.world.entity.monster.Monster.class, box).size();
         int spawners = 0, chests = 0, machines = 0;
-        int y0 = at.getY() - 20, y1 = at.getY() + 40;
+        int y0 = at.getY() - 12, y1 = at.getY() + 24;
         for (var p : net.minecraft.core.BlockPos.betweenClosed(at.getX() - 40, y0, at.getZ() - 40, at.getX() + 40, y1, at.getZ() + 40)) {
             var s = level.getBlockState(p);
             if (s.is(net.minecraft.world.level.block.Blocks.SPAWNER)) spawners++;
@@ -73,7 +71,9 @@ public final class MpTest {
         if (tester != null && joinTick >= 0) {
             int dt = ticks - joinTick;
             if (dt == 1300 && village != null) view(village, 16);
+            if (dt == 1440) inspect(tester.serverLevel(), "village", village, 32, 32);
             if (dt == 1500 && ruin != null) view(ruin, 11);
+            if (dt == 1640) inspect(tester.serverLevel(), "ruin", ruin, 22, 14);
         }
         if (++ticks % 200 == 0)
             System.out.println("[MPTEST] server tick=" + ticks + " players=" + e.getServer().getPlayerCount() + " detonations=" + com.tycooncraft.vehicle.DroneEntity.DETONATIONS);
