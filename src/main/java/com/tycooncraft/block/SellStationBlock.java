@@ -77,7 +77,11 @@ public class SellStationBlock extends BaseEntityBlock {
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
                                               Player player, InteractionHand hand, BlockHitResult hit) {
+        // 1.21 은 빈손이어도 이 메서드를 먼저 부른다 → 빈손이면 창 열기(useWithoutItem)로 넘긴다
+        if (stack.isEmpty()) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         if (level.isClientSide) return ItemInteractionResult.SUCCESS;
+        // 팔 수 없는 물건(동전·도구 등)을 들고 있어도 창은 열리게
+        if (!com.tycooncraft.economy.MarketData.canSell(stack)) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         if (level.getBlockEntity(pos) instanceof SellStationBlockEntity station) station.sellFromHand(player, hand);
         return ItemInteractionResult.CONSUME;
     }

@@ -64,6 +64,25 @@ public final class V15Test {
             }
             System.out.printf("[AUTOTEST] v15 crusher out iron_dust=%d itemY=%.3f oreAlive=%s%n", dust, y, ore.isAlive());
         }
+        if (t == 270) {   // 판매소: 빈손 우클릭 → 창 열기로 넘어가는지, 판매 후 인출되는지
+            BlockPos sp = new BlockPos(110, gy, 138);
+            var fp = net.neoforged.neoforge.common.util.FakePlayerFactory.getMinecraft(level);
+            fp.moveTo(110.5, gy, 140.5, 180, 0);
+            var hit = new net.minecraft.world.phys.BlockHitResult(sp.getCenter(), Direction.SOUTH, sp, false);
+            fp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+            var empty = level.getBlockState(sp).useItemOn(ItemStack.EMPTY, level, fp, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
+            fp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.IRON_DUST.get(), 20));
+            var sell = level.getBlockState(sp).useItemOn(fp.getMainHandItem(), level, fp, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
+            long bal = 0;
+            int coins = 0;
+            if (level.getBlockEntity(sp) instanceof com.tycooncraft.blockentity.SellStationBlockEntity st) {
+                bal = st.balance();
+                fp.getInventory().clearContent();
+                st.withdraw(fp);
+                for (int i = 0; i < fp.getInventory().getContainerSize(); i++) if (!fp.getInventory().getItem(i).isEmpty()) coins += fp.getInventory().getItem(i).getCount();
+            }
+            System.out.println("[AUTOTEST] v15 sellstation emptyHand=" + empty + " sell=" + sell + " balance=" + bal + " withdrawnCoinItems=" + coins);
+        }
         // ── EMP ──
         tickClientShip();
         if (t == 60) {
