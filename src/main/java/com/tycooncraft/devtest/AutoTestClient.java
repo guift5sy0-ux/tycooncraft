@@ -111,6 +111,7 @@ public final class AutoTestClient {
     }
 
     private static net.minecraft.world.entity.LivingEntity judgeTarget;
+    private static net.minecraft.world.entity.Entity display;
 
     /** 대상이 화면 가운데 오도록 거리 dist, 높이 up 만큼 떨어진 곳으로 이동 */
     private static void view(net.minecraft.server.level.ServerPlayer sp, net.minecraft.world.entity.LivingEntity e, double dist, double up, double g) {
@@ -361,7 +362,35 @@ public final class AutoTestClient {
             case 1385 -> shot(mc, "40b_wither_close");
             case 1388 -> serverDo(mc, sp -> view(sp, AutoTest.dragon, 18, 3, g));
             case 1420 -> shot(mc, "41b_dragon_close");
-            case 1425 -> next(11);
+            // ── 외형 확인용 정지 개체 촬영 ──
+            case 1428 -> serverDo(mc, sp -> {
+                var sl = sp.serverLevel();
+                var w = net.minecraft.world.entity.EntityType.WITHER.create(sl);
+                w.moveTo(0.5, g + 2.5, 92.5, 0, 0);
+                w.setYHeadRot(0);
+                w.setNoAi(true);
+                sl.addFreshEntity(w);
+                display = w;
+                sp.removeAllEffects();
+                sp.teleportTo(sl, 0.5, g + 3.2, 100.5, 180f, 4f);
+            });
+            case 1452 -> shot(mc, "42_wither_portrait");
+            case 1454 -> serverDo(mc, sp -> sp.teleportTo(sp.serverLevel(), 6.5, g + 4.5, 98.5, 140f, 12f));
+            case 1472 -> shot(mc, "42b_wither_angle");
+            case 1474 -> serverDo(mc, sp -> {
+                var sl = sp.serverLevel();
+                if (display != null) display.discard();
+                var d = net.minecraft.world.entity.EntityType.ENDER_DRAGON.create(sl);
+                d.moveTo(0.5, g + 7, 70.5, 0, 0);
+                d.setNoAi(true);
+                sl.addFreshEntity(d);
+                display = d;
+                sp.teleportTo(sl, 14.5, g + 10, 88.5, 142f, 14f);
+            });
+            case 1500 -> shot(mc, "43_dragon_portrait");
+            case 1502 -> serverDo(mc, sp -> sp.teleportTo(sp.serverLevel(), -12.5, g + 12, 62.5, -125f, 18f));
+            case 1522 -> shot(mc, "43b_dragon_side");
+            case 1526 -> next(11);
             default -> {
             }
         }

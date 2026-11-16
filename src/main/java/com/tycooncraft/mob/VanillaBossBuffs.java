@@ -100,6 +100,7 @@ public final class VanillaBossBuffs {
     public static void onTick(EntityTickEvent.Post event) {
         Entity e = event.getEntity();
         if (!(e.level() instanceof ServerLevel sl) || !e.isAlive()) return;
+        if (e instanceof net.minecraft.world.entity.Mob m && m.isNoAi()) return;
         if (e instanceof WitherBoss w) tickWither(sl, w, st(w));
         else if (e instanceof EnderDragon d) tickDragon(sl, d, st(d));
     }
