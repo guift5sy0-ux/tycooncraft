@@ -25,10 +25,10 @@ public final class AbyssalWitherGeo {
         PartDefinition p_whorn_r_2 = p_whorn_r_1.addOrReplaceChild("whorn_r_2", CubeListBuilder.create().texOffs(80, 35).addBox(-0.8F, -0.8F, 0F, 1F, 1F, 4F), PartPose.offsetAndRotation(0F, 0F, 4.5F, 0.15F, 0F, 0.45F));
         PartDefinition p_whorn_r_3 = p_whorn_r_2.addOrReplaceChild("whorn_r_3", CubeListBuilder.create().texOffs(118, 41).addBox(-0.5F, -0.5F, 0F, 1F, 1F, 3F), PartPose.offsetAndRotation(0F, 0F, 3.5F, 0.2F, 0F, 0.35F));
         PartDefinition p_right_head = p_root.addOrReplaceChild("right_head", CubeListBuilder.create().texOffs(44, 0).addBox(-4F, -4F, -4F, 6F, 6F, 6F).texOffs(0, 27).addBox(-4.5F, -4.8F, -4.5F, 7F, 1F, 7F).texOffs(50, 45).addBox(-1.5F, -5.6F, -4.8F, 1F, 1F, 1F), PartPose.offsetAndRotation(-8F, 4F, 0F, 0F, 0F, 0F));
-        PartDefinition p_right_h-4 = p_right_head.addOrReplaceChild("right_h-4", CubeListBuilder.create().texOffs(90, 35).addBox(-0.5F, -4F, -0.5F, 1F, 4F, 1F), PartPose.offsetAndRotation(-3.5F, -4.8F, -1F, 0F, 0F, 0.4F));
+        PartDefinition p_right_h0 = p_right_head.addOrReplaceChild("right_h0", CubeListBuilder.create().texOffs(90, 35).addBox(-0.5F, -4F, -0.5F, 1F, 4F, 1F), PartPose.offsetAndRotation(-3.5F, -4.8F, -1F, 0F, 0F, 0.4F));
         PartDefinition p_right_h1 = p_right_head.addOrReplaceChild("right_h1", CubeListBuilder.create().texOffs(94, 35).addBox(-0.5F, -4F, -0.5F, 1F, 4F, 1F), PartPose.offsetAndRotation(1.5F, -4.8F, -1F, 0F, 0F, -0.4F));
         PartDefinition p_left_head = p_root.addOrReplaceChild("left_head", CubeListBuilder.create().texOffs(68, 0).addBox(-4F, -4F, -4F, 6F, 6F, 6F).texOffs(28, 27).addBox(-4.5F, -4.8F, -4.5F, 7F, 1F, 7F).texOffs(54, 45).addBox(-1.5F, -5.6F, -4.8F, 1F, 1F, 1F), PartPose.offsetAndRotation(10F, 4F, 0F, 0F, 0F, 0F));
-        PartDefinition p_left_h-4 = p_left_head.addOrReplaceChild("left_h-4", CubeListBuilder.create().texOffs(98, 35).addBox(-0.5F, -4F, -0.5F, 1F, 4F, 1F), PartPose.offsetAndRotation(-3.5F, -4.8F, -1F, 0F, 0F, 0.4F));
+        PartDefinition p_left_h0 = p_left_head.addOrReplaceChild("left_h0", CubeListBuilder.create().texOffs(98, 35).addBox(-0.5F, -4F, -0.5F, 1F, 4F, 1F), PartPose.offsetAndRotation(-3.5F, -4.8F, -1F, 0F, 0F, 0.4F));
         PartDefinition p_left_h1 = p_left_head.addOrReplaceChild("left_h1", CubeListBuilder.create().texOffs(102, 35).addBox(-0.5F, -4F, -0.5F, 1F, 4F, 1F), PartPose.offsetAndRotation(1.5F, -4.8F, -1F, 0F, 0F, -0.4F));
         return LayerDefinition.create(mesh, 128, 64);
     }
@@ -48,10 +48,10 @@ public final class AbyssalWitherGeo {
         m.put("whorn_r_2", root.getChild("center_head").getChild("whorn_r").getChild("whorn_r_1").getChild("whorn_r_2"));
         m.put("whorn_r_3", root.getChild("center_head").getChild("whorn_r").getChild("whorn_r_1").getChild("whorn_r_2").getChild("whorn_r_3"));
         m.put("right_head", root.getChild("right_head"));
-        m.put("right_h-4", root.getChild("right_head").getChild("right_h-4"));
+        m.put("right_h0", root.getChild("right_head").getChild("right_h0"));
         m.put("right_h1", root.getChild("right_head").getChild("right_h1"));
         m.put("left_head", root.getChild("left_head"));
-        m.put("left_h-4", root.getChild("left_head").getChild("left_h-4"));
+        m.put("left_h0", root.getChild("left_head").getChild("left_h0"));
         m.put("left_h1", root.getChild("left_head").getChild("left_h1"));
         return m;
     }
