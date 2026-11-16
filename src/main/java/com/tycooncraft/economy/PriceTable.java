@@ -65,6 +65,10 @@ public final class PriceTable {
             // 4차: 기어
             p.put(ModItems.IRON_GEAR.get(), 22.0);
             p.put(ModItems.STEEL_GEAR.get(), 60.0);
+            p.put(ModItems.TRANSMISSION.get(), 180.0);
+            p.put(ModItems.SHIP_MOTOR.get(), 900.0);
+            p.put(ModItems.SHIP_HELM.get(), 300.0);
+            p.put(ModItems.EMP_GRENADE.get(), 220.0);
             // 5차: 조립품
             p.put(ModItems.CIRCUIT.get(), 45.0);
             p.put(ModItems.MECHANISM.get(), 160.0);

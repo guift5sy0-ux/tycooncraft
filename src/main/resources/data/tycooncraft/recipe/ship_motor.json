@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PEP",
+    "GSG"
+  ],
+  "key": {
+    "P": {
+      "item": "tycooncraft:steel_plate"
+    },
+    "E": {
+      "item": "tycooncraft:engine"
+    },
+    "G": {
+      "item": "tycooncraft:steel_gear"
+    },
+    "S": {
+      "item": "tycooncraft:steel_rod"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:ship_motor",
+    "count": 1
+  }
+}

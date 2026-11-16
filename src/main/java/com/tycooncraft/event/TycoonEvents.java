@@ -90,6 +90,12 @@ public final class TycoonEvents {
     /** 판매 가능한 아이템에 기준가 표시 */
     @SubscribeEvent
     public static void onTooltip(ItemTooltipEvent event) {
+        var item = event.getItemStack().getItem();
+        if (item instanceof net.minecraft.world.item.BlockItem bi && (bi.getBlock() instanceof com.tycooncraft.block.TransmissionBlock
+                || bi.getBlock() instanceof com.tycooncraft.ship.ShipMotorBlock || bi.getBlock() instanceof com.tycooncraft.ship.ShipHelmBlock)) {
+            String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item).getPath();
+            event.getToolTip().add(Component.translatable("tooltip.tycooncraft." + id).withStyle(ChatFormatting.GRAY));
+        }
         double base = PriceTable.basePrice(event.getItemStack().getItem());
         if (base > 0) {
             event.getToolTip().add(Component.translatable("tooltip.tycooncraft.base_price", Coins.format(base))

@@ -1,18 +1,48 @@
 {
   "variants": {
-    "facing=south": {
-      "model": "tycooncraft:block/conveyor"
+    "facing=south,speed=1": {
+      "model": "tycooncraft:block/conveyor_1"
     },
-    "facing=west": {
-      "model": "tycooncraft:block/conveyor",
+    "facing=west,speed=1": {
+      "model": "tycooncraft:block/conveyor_1",
       "y": 90
     },
-    "facing=north": {
-      "model": "tycooncraft:block/conveyor",
+    "facing=north,speed=1": {
+      "model": "tycooncraft:block/conveyor_1",
       "y": 180
     },
-    "facing=east": {
-      "model": "tycooncraft:block/conveyor",
+    "facing=east,speed=1": {
+      "model": "tycooncraft:block/conveyor_1",
+      "y": 270
+    },
+    "facing=south,speed=2": {
+      "model": "tycooncraft:block/conveyor_2"
+    },
+    "facing=west,speed=2": {
+      "model": "tycooncraft:block/conveyor_2",
+      "y": 90
+    },
+    "facing=north,speed=2": {
+      "model": "tycooncraft:block/conveyor_2",
+      "y": 180
+    },
+    "facing=east,speed=2": {
+      "model": "tycooncraft:block/conveyor_2",
+      "y": 270
+    },
+    "facing=south,speed=3": {
+      "model": "tycooncraft:block/conveyor_3"
+    },
+    "facing=west,speed=3": {
+      "model": "tycooncraft:block/conveyor_3",
+      "y": 90
+    },
+    "facing=north,speed=3": {
+      "model": "tycooncraft:block/conveyor_3",
+      "y": 180
+    },
+    "facing=east,speed=3": {
+      "model": "tycooncraft:block/conveyor_3",
       "y": 270
     }
   }

@@ -5,7 +5,7 @@
     "up": "tycooncraft:block/lathe_top",
     "down": "tycooncraft:block/lathe_side",
     "north": "tycooncraft:block/lathe_side",
-    "south": "tycooncraft:block/lathe_side",
+    "south": "tycooncraft:block/lathe_front",
     "east": "tycooncraft:block/lathe_side",
     "west": "tycooncraft:block/lathe_side"
   }

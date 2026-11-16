@@ -5,7 +5,7 @@
     "up": "tycooncraft:block/assembler_top",
     "down": "tycooncraft:block/assembler_side",
     "north": "tycooncraft:block/assembler_side",
-    "south": "tycooncraft:block/assembler_side",
+    "south": "tycooncraft:block/assembler_front",
     "east": "tycooncraft:block/assembler_side",
     "west": "tycooncraft:block/assembler_side"
   }

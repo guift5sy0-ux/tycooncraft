@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "speed=1": {
+      "model": "tycooncraft:block/transmission_1"
+    },
+    "speed=2": {
+      "model": "tycooncraft:block/transmission_2"
+    },
+    "speed=3": {
+      "model": "tycooncraft:block/transmission_3"
+    }
+  }
+}

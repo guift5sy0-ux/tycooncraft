@@ -55,6 +55,10 @@ public final class ModEntities {
             () -> EntityType.Builder.<com.tycooncraft.entity.GrenadeEntity>of(com.tycooncraft.entity.GrenadeEntity::new, MobCategory.MISC)
                     .sized(0.25f, 0.25f).clientTrackingRange(8).updateInterval(2).build("grenade"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.ship.ShipEntity>> SHIP = ENTITIES.register("ship",
+            () -> EntityType.Builder.<com.tycooncraft.ship.ShipEntity>of(com.tycooncraft.ship.ShipEntity::new, MobCategory.MISC)
+                    .sized(1f, 1f).clientTrackingRange(12).updateInterval(1).fireImmune().build("ship"));
+
     public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.entity.SpiderShot>> SPIDER_SHOT = ENTITIES.register("spider_shot",
             () -> EntityType.Builder.<com.tycooncraft.entity.SpiderShot>of(com.tycooncraft.entity.SpiderShot::new, MobCategory.MISC)
                     .sized(0.4f, 0.4f).clientTrackingRange(8).updateInterval(1).build("spider_shot"));

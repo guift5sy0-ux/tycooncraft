@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "tycooncraft:block/ship_motor_top",
+    "front": "tycooncraft:block/ship_motor_front",
+    "side": "tycooncraft:block/ship_motor_side"
+  }
+}

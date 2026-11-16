@@ -36,6 +36,7 @@ public abstract class VehicleEntity extends Entity implements FueledVehicle {
     private static final EntityDataAccessor<Integer> FUEL = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> DAMAGE = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Integer> HURT = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> EMP = SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
 
     protected float deltaRotation;
     private Vec3 lastServerPos;
@@ -79,6 +80,16 @@ public abstract class VehicleEntity extends Entity implements FueledVehicle {
         builder.define(FUEL, 0);
         builder.define(DAMAGE, 0f);
         builder.define(HURT, 0);
+        builder.define(EMP, 0);
+    }
+
+    /** EMP 로 먹통인 남은 틱 (조작·엔진 모두 정지) */
+    public int empTicks() {
+        return entityData.get(EMP);
+    }
+
+    public void emp(int ticks) {
+        entityData.set(EMP, Math.max(empTicks(), ticks));
     }
 
     @Override
@@ -130,8 +141,9 @@ public abstract class VehicleEntity extends Entity implements FueledVehicle {
         preDrive();
         if (isControlledByLocalInstance()) {
             boolean manned = getControllingPassenger() != null;
-            VehicleHooks.Input in = manned && level().isClientSide ? VehicleHooks.client.input() : VehicleHooks.Input.NONE;
-            drive(in, getFuel() > 0);
+            boolean dead = empTicks() > 0;
+            VehicleHooks.Input in = manned && level().isClientSide && !dead ? VehicleHooks.client.input() : VehicleHooks.Input.NONE;
+            drive(in, getFuel() > 0 && !dead);
             Vec3 before = getDeltaMovement();
             move(MoverType.SELF, before);
             afterMove(before);
@@ -151,6 +163,12 @@ public abstract class VehicleEntity extends Entity implements FueledVehicle {
         forwardSpeedO = forwardSpeed;
         forwardSpeed = (float) (moved.x * fwd.x + moved.z * fwd.z);
         yawRate = Mth.wrapDegrees(getYRot() - yRotO);
+        if (empTicks() > 0) {
+            if (!level().isClientSide) entityData.set(EMP, empTicks() - 1);
+            else if (tickCount % 3 == 0)
+                level().addParticle(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK, getX() + (random.nextDouble() - 0.5) * getBbWidth(),
+                        getY() + random.nextDouble() * getBbHeight(), getZ() + (random.nextDouble() - 0.5) * getBbWidth(), 0, 0.05, 0);
+        }
         if (level().isClientSide) {
             VehicleHooks.client.tick(this);
         } else {

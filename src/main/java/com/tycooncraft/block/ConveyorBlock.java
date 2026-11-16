@@ -17,17 +17,22 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
  * 컨베이어. 동력 필요 없음. 설치할 때 바라본 방향(화살표)으로 위의 아이템·몹·플레이어를 운반.
- * 웅크리면 멈춰 설 수 있다.
+ * 웅크리면 멈춰 설 수 있다. v0.15: 다리 달린 반 블록 높이(벨트 면 = 8px) — 기계 투입구와 높이가 맞는다.
+ * SPEED(1~3)는 이어진 변속기가 정한다.
  */
 public class ConveyorBlock extends HorizontalDirectionalBlock {
     public static final MapCodec<ConveyorBlock> CODEC = simpleCodec(ConveyorBlock::new);
-    private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 3, 16);
-    private static final double SPEED = 0.15;
+    private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 8, 16);
+    /** 벨트 윗면 높이(블록 단위) */
+    public static final double BELT_TOP = 0.5;
+    public static final net.minecraft.world.level.block.state.properties.IntegerProperty SPEED_LEVEL =
+            net.minecraft.world.level.block.state.properties.IntegerProperty.create("speed", 1, 3);
+    private static final double[] SPEEDS = {0, 0.15, 0.27, 0.40};
     private static final double CENTERING = 0.2;
 
     public ConveyorBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(SPEED_LEVEL, 1));
     }
 
     @Override
@@ -37,12 +42,19 @@ public class ConveyorBlock extends HorizontalDirectionalBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING, SPEED_LEVEL);
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return defaultBlockState().setValue(FACING, context.getHorizontalDirection());
+        // 이웃 컨베이어(또는 변속기)의 속도를 이어받는다
+        int sp = 1;
+        for (Direction d : Direction.values()) {
+            BlockState n = context.getLevel().getBlockState(context.getClickedPos().relative(d));
+            if (n.getBlock() instanceof ConveyorBlock) sp = Math.max(sp, n.getValue(SPEED_LEVEL));
+            else if (n.getBlock() instanceof TransmissionBlock) sp = Math.max(sp, n.getValue(TransmissionBlock.SPEED));
+        }
+        return defaultBlockState().setValue(FACING, context.getHorizontalDirection()).setValue(SPEED_LEVEL, sp);
     }
 
     @Override
@@ -52,8 +64,9 @@ public class ConveyorBlock extends HorizontalDirectionalBlock {
 
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        if (entity.getY() < pos.getY() + 0.1 || entity.isShiftKeyDown() || entity.isSpectator()) return;
+        if (entity.getY() < pos.getY() + BELT_TOP - 0.1 || entity.isShiftKeyDown() || entity.isSpectator()) return;
         Direction dir = state.getValue(FACING);
+        double SPEED = SPEEDS[state.getValue(SPEED_LEVEL)];
         Vec3 motion = entity.getDeltaMovement();
         double vx, vz;
         if (dir.getAxis() == Direction.Axis.X) {

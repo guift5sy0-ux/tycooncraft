@@ -130,6 +130,8 @@ public final class ModItems {
             () -> new com.tycooncraft.gun.GrenadeItem(new Item.Properties(), "tooltip.tycooncraft.flash_grenade"));
     public static final DeferredItem<com.tycooncraft.gun.GrenadeItem> SMOKE_GRENADE = ITEMS.register("smoke_grenade",
             () -> new com.tycooncraft.gun.GrenadeItem(new Item.Properties(), "tooltip.tycooncraft.smoke_grenade"));
+    public static final DeferredItem<com.tycooncraft.gun.GrenadeItem> EMP_GRENADE = ITEMS.register("emp_grenade",
+            () -> new com.tycooncraft.gun.GrenadeItem(new Item.Properties(), "tooltip.tycooncraft.emp_grenade"));
     public static final DeferredItem<Item> VENOM_SPIT = ITEMS.registerSimpleItem("venom_spit");
     public static final DeferredItem<Item> DRILL_HEAD = ITEMS.registerSimpleItem("drill_head");
     public static final DeferredItem<Item> WHEEL = ITEMS.registerSimpleItem("wheel");
@@ -177,6 +179,9 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> SELL_STATION = ITEMS.registerSimpleBlockItem(ModBlocks.SELL_STATION);
     public static final DeferredItem<BlockItem> EXCHANGE = ITEMS.registerSimpleBlockItem(ModBlocks.EXCHANGE);
     public static final DeferredItem<BlockItem> CONVEYOR = ITEMS.registerSimpleBlockItem(ModBlocks.CONVEYOR);
+    public static final DeferredItem<BlockItem> TRANSMISSION = ITEMS.registerSimpleBlockItem(ModBlocks.TRANSMISSION);
+    public static final DeferredItem<BlockItem> SHIP_MOTOR = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_MOTOR);
+    public static final DeferredItem<BlockItem> SHIP_HELM = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_HELM);
     public static final DeferredItem<BlockItem> LIFT_UP = ITEMS.registerSimpleBlockItem(ModBlocks.LIFT_UP);
     public static final DeferredItem<BlockItem> LIFT_DOWN = ITEMS.registerSimpleBlockItem(ModBlocks.LIFT_DOWN);
     public static final DeferredItem<BlockItem> BROKEN_MACHINE = ITEMS.registerSimpleBlockItem(ModBlocks.BROKEN_MACHINE);

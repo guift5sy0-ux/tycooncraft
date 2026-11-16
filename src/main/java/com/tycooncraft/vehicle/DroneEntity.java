@@ -153,6 +153,12 @@ public class DroneEntity extends Entity {
         super.lerpTo(x, y, z, yRot, xRot, steps);
     }
 
+    /** EMP: 배터리가 나가고 조종이 끊겨 추락한다 */
+    public void emp() {
+        entityData.set(BATTERY, 0);
+        setPiloted(false);
+    }
+
     // ── 틱 ────────────────────────────────────────────────────────
     @Override
     public void tick() {

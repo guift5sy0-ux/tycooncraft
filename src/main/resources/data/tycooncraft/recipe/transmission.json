@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GIG",
+    "IRI"
+  ],
+  "key": {
+    "G": {
+      "item": "tycooncraft:steel_gear"
+    },
+    "I": {
+      "item": "tycooncraft:iron_plate"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:transmission",
+    "count": 1
+  }
+}

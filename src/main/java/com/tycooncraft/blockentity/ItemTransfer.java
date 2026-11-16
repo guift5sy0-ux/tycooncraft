@@ -36,11 +36,12 @@ public final class ItemTransfer {
         return stack;
     }
 
-    /** pos 블록 위(컨베이어 높이)에 아이템을 놓고 dir 방향으로 밀어 줌 */
+    /** pos 블록 위(컨베이어 벨트 높이)에 아이템을 놓고 dir 방향으로 밀어 줌 */
     public static void spawnAt(Level level, BlockPos pos, Direction dir, ItemStack stack) {
         double x = pos.getX() + 0.5 - dir.getStepX() * 0.35;
         double z = pos.getZ() + 0.5 - dir.getStepZ() * 0.35;
-        ItemEntity entity = new ItemEntity(level, x, pos.getY() + 0.3, z, stack.copy(),
+        double y = pos.getY() + (level.getBlockState(pos).getBlock() instanceof ConveyorBlock ? ConveyorBlock.BELT_TOP + 0.05 : 0.3);
+        ItemEntity entity = new ItemEntity(level, x, y, z, stack.copy(),
                 dir.getStepX() * 0.08, 0.0, dir.getStepZ() * 0.08);
         entity.setPickUpDelay(10);
         level.addFreshEntity(entity);

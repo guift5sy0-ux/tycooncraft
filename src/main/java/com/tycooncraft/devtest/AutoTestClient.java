@@ -418,8 +418,50 @@ public final class AutoTestClient {
             case 1836 -> shot(mc, "48_dragon_p2_rush");
             case 1860 -> {
                 serverDo(mc, sp -> System.out.println("[AUTOTEST] dragon moves dstats=" + java.util.Arrays.toString(com.tycooncraft.mob.VanillaBossBuffs.DSTATS)));
-                next(11);
+                if (display != null) serverDo(mc, sp -> display.discard());
             }
+            // ── v0.15: 공장(높인 컨베이어·투입구) 촬영 ──
+            case 1866 -> serverDo(mc, sp -> sp.teleportTo(sp.serverLevel(), 101.5, g + 3.2, 144.5, 200f, 30f));
+            case 1890 -> shot(mc, "50_factory");
+            case 1892 -> serverDo(mc, sp -> sp.teleportTo(sp.serverLevel(), 107.5, g + 1.6, 141.2, 155f, 25f));
+            case 1910 -> shot(mc, "50b_factory_close");
+            // ── 배: 갑판 위에 서서 출항 ──
+            case 1912 -> serverDo(mc, sp -> {
+                var sl = sp.serverLevel();
+                // 수조 안 새 배 (서버 테스트가 끝난 뒤 다시 지어서 조립)
+                for (int x = 100; x <= 124; x++) for (int z = 100; z <= 124; z++) for (int y = -1; y <= 3; y++) {
+                    var p = new net.minecraft.core.BlockPos(x, g + y, z);
+                    if (y == -1) sl.setBlock(p, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState(), 2);
+                    else if (!sl.getBlockState(p).isAir() && !(sl.getBlockState(p).getBlock() instanceof net.minecraft.world.level.block.LiquidBlock)) sl.setBlock(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+                }
+                V15Test.buildShipAt(sl, 0);
+                sp.getAbilities().flying = false;
+                sp.onUpdateAbilities();
+                sp.teleportTo(sl, 111.5, g + 0.2, 109.5, 0f, 10f);
+            });
+            case 1925 -> serverDo(mc, sp -> V15Test.assembleClientShip(sp.serverLevel()));
+            case 1935 -> V15Test.logClient(mc, "start");
+            case 1940 -> serverDo(mc, sp -> V15Test.clientShipInput(1, 0));
+            case 1975 -> shot(mc, "51_ship_deck");
+            case 1990 -> V15Test.logClient(mc, "sailing");
+            case 1995 -> serverDo(mc, sp -> V15Test.clientShipInput(0.7f, 1));
+            case 2030 -> {
+                V15Test.logClient(mc, "turning");
+                o.setCameraType(CameraType.THIRD_PERSON_BACK);
+            }
+            case 2045 -> shot(mc, "52_ship_turn_tp");
+            case 2047 -> o.setCameraType(CameraType.FIRST_PERSON);
+            case 2050 -> serverDo(mc, sp -> V15Test.clientShipInput(0, 0));
+            case 2054 -> serverDo(mc, sp -> {
+                sp.getAbilities().flying = true;
+                sp.onUpdateAbilities();
+                var s = V15Test.clientShip;
+                if (s != null) sp.teleportTo(sp.serverLevel(), s.getX() + 9, g + 6, s.getZ() - 7, 50f, 25f);
+            });
+            case 2075 -> shot(mc, "53_ship_outside");
+            case 2110 -> serverDo(mc, sp -> V15Test.dockClientShip(sp));
+            case 2125 -> shot(mc, "54_ship_docked");
+            case 2130 -> next(11);
             default -> {
             }
         }

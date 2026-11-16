@@ -29,6 +29,7 @@ public record HornPayload() implements CustomPacketPayload {
         registrar.playToServer(TYPE, STREAM_CODEC, HornPayload::handle);
         DronePayloads.register(registrar);
         registrar.playToServer(VehicleActionPayload.TYPE, VehicleActionPayload.CODEC, VehicleActionPayload::handle);
+        com.tycooncraft.ship.ShipPayloads.register(registrar);
     }
 
     private static void handle(HornPayload payload, IPayloadContext ctx) {

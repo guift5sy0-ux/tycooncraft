@@ -69,6 +69,8 @@ public final class VehicleClient {
         event.registerEntityRenderer(ModEntities.BEHEMOTH.get(), com.tycooncraft.client.mob.BossRenderers.Beast::new);
         event.registerEntityRenderer(ModEntities.STORM_WYVERN.get(), com.tycooncraft.client.mob.BossRenderers.Wyvern::new);
         event.registerEntityRenderer(ModEntities.BOSS_ORB.get(), ctx -> new net.minecraft.client.renderer.entity.ThrownItemRenderer<>(ctx, 1.6f, true));
+        event.registerEntityRenderer(ModEntities.SHIP.get(), com.tycooncraft.client.ship.ShipRenderer::new);
+        com.tycooncraft.client.ship.ShipClient.init();
         event.registerEntityRenderer(ModEntities.GRENADE.get(), ctx -> new net.minecraft.client.renderer.entity.ThrownItemRenderer<>(ctx, 0.75f, false));
         event.registerEntityRenderer(ModEntities.SPIDER_SHOT.get(), ctx -> new net.minecraft.client.renderer.entity.ThrownItemRenderer<>(ctx, 1.3f, true));
         event.registerEntityRenderer(ModEntities.GANGSTER.get(), com.tycooncraft.client.mob.GunnerRenderer::new);

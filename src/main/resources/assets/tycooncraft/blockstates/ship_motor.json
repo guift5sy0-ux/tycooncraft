@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "tycooncraft:block/ship_motor"
+    },
+    "facing=east": {
+      "model": "tycooncraft:block/ship_motor",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "tycooncraft:block/ship_motor",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "tycooncraft:block/ship_motor",
+      "y": 270
+    }
+  }
+}

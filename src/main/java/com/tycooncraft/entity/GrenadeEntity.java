@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -26,7 +27,7 @@ import net.minecraft.world.phys.Vec3;
 
 /** 수류탄 (파편 / 섬광 / 연막): 튕기며 굴러가다 신관 시간 뒤 작동 */
 public class GrenadeEntity extends ThrowableItemProjectile {
-    public static final int FRAG = 0, FLASH = 1, SMOKE = 2;
+    public static final int FRAG = 0, FLASH = 1, SMOKE = 2, EMP = 3;
     private static final EntityDataAccessor<Integer> SMOKE_T = SynchedEntityData.defineId(GrenadeEntity.class, EntityDataSerializers.INT);
     public static final int SMOKE_TIME = 400;
     private int fuse = 50;
@@ -56,6 +57,7 @@ public class GrenadeEntity extends ThrowableItemProjectile {
     public int kind() {
         if (getItem().is(ModItems.FLASH_GRENADE.get())) return FLASH;
         if (getItem().is(ModItems.SMOKE_GRENADE.get())) return SMOKE;
+        if (getItem().is(ModItems.EMP_GRENADE.get())) return EMP;
         return FRAG;
     }
 
@@ -136,6 +138,7 @@ public class GrenadeEntity extends ThrowableItemProjectile {
         ServerLevel sl = (ServerLevel) level();
         switch (kind()) {
             case FLASH -> flash(sl);
+            case EMP -> emp(sl);
             case SMOKE -> {
                 entityData.set(SMOKE_T, 1);
                 setDeltaMovement(Vec3.ZERO);
@@ -148,6 +151,41 @@ public class GrenadeEntity extends ThrowableItemProjectile {
             }
         }
     }
+
+    public static final double EMP_RADIUS = 18;
+    public static final int EMP_TIME = 200;
+
+    /** EMP: 반경 안의 모든 탈것(차·헬기·전투기·탱크·기관차·배)을 10초간 먹통으로, 드론은 추락 */
+    private void emp(ServerLevel sl) {
+        Vec3 c = position().add(0, 0.3, 0);
+        sl.playSound(null, c.x, c.y, c.z, net.minecraft.sounds.SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 4f, 0.6f);
+        sl.playSound(null, c.x, c.y, c.z, net.minecraft.sounds.SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.PLAYERS, 2f, 1.6f);
+        sl.sendParticles(ParticleTypes.FLASH, c.x, c.y, c.z, 1, 0, 0, 0, 0);
+        for (int r = 2; r <= EMP_RADIUS; r += 2)
+            for (int i = 0; i < r * 4; i++) {
+                double a = i * Math.PI * 2 / (r * 4);
+                sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, c.x + Math.cos(a) * r, c.y + 0.2, c.z + Math.sin(a) * r, 1, 0, 0.3, 0, 0.1);
+            }
+        sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, c.x, c.y + 1, c.z, 120, 2, 2, 2, 0.8);
+        int hit = 0;
+        for (Entity e : sl.getEntities(this, getBoundingBox().inflate(EMP_RADIUS), e -> e.distanceTo(this) <= EMP_RADIUS + e.getBbWidth() / 2)) {
+            boolean ok = true;
+            if (e instanceof com.tycooncraft.vehicle.VehicleEntity v) v.emp(EMP_TIME);
+            else if (e instanceof com.tycooncraft.vehicle.DroneEntity d) d.emp();
+            else if (e instanceof com.tycooncraft.ship.ShipEntity s) s.emp(EMP_TIME);
+            else ok = false;
+            if (!ok) continue;
+            hit++;
+            for (Entity p : e.getPassengers()) if (p instanceof ServerPlayer sp)
+                sp.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.tycooncraft.emp_hit", EMP_TIME / 20)
+                        .withStyle(net.minecraft.ChatFormatting.AQUA), true);
+            sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, e.getX(), e.getY() + e.getBbHeight() / 2, e.getZ(), 40, e.getBbWidth() / 2, e.getBbHeight() / 2, e.getBbWidth() / 2, 0.3);
+        }
+        empHits += hit;
+        discard();
+    }
+
+    public static int empHits;
 
     private void flash(ServerLevel sl) {
         Vec3 c = position().add(0, 0.2, 0);

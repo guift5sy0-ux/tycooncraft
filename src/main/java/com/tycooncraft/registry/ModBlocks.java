@@ -29,6 +29,13 @@ public final class ModBlocks {
     // ── 운반 ──
     public static final DeferredBlock<ConveyorBlock> CONVEYOR = BLOCKS.register("conveyor",
             () -> new ConveyorBlock(machineProps().strength(1.0f).noOcclusion()));
+    public static final DeferredBlock<com.tycooncraft.block.TransmissionBlock> TRANSMISSION = BLOCKS.register("transmission",
+            () -> new com.tycooncraft.block.TransmissionBlock(machineProps().strength(1.5f).noOcclusion()));
+    // ── 배 ──
+    public static final DeferredBlock<com.tycooncraft.ship.ShipMotorBlock> SHIP_MOTOR = BLOCKS.register("ship_motor",
+            () -> new com.tycooncraft.ship.ShipMotorBlock(machineProps().strength(2.0f, 6.0f)));
+    public static final DeferredBlock<com.tycooncraft.ship.ShipHelmBlock> SHIP_HELM = BLOCKS.register("ship_helm",
+            () -> new com.tycooncraft.ship.ShipHelmBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).sound(SoundType.WOOD).strength(1.5f).noOcclusion()));
     public static final DeferredBlock<LiftBlock> LIFT_UP = BLOCKS.register("lift_up",
             () -> new LiftBlock(machineProps().strength(1.5f), true));
     public static final DeferredBlock<LiftBlock> LIFT_DOWN = BLOCKS.register("lift_down",

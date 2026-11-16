@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "LCL",
+    " R ",
+    "LLL"
+  ],
+  "key": {
+    "L": {
+      "tag": "minecraft:planks"
+    },
+    "C": {
+      "item": "tycooncraft:circuit"
+    },
+    "R": {
+      "item": "tycooncraft:steel_rod"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:ship_helm",
+    "count": 1
+  }
+}

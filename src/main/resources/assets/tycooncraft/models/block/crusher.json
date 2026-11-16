@@ -5,7 +5,7 @@
     "up": "tycooncraft:block/crusher_top",
     "down": "tycooncraft:block/crusher_side",
     "north": "tycooncraft:block/crusher_side",
-    "south": "tycooncraft:block/crusher_side",
+    "south": "tycooncraft:block/crusher_front",
     "east": "tycooncraft:block/crusher_side",
     "west": "tycooncraft:block/crusher_side"
   }
