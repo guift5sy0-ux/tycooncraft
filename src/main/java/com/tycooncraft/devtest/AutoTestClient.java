@@ -347,7 +347,13 @@ public final class AutoTestClient {
                 mc.player.getInventory().selected = 1;
             }
             case 1245 -> shot(mc, "39_fp_vss");
-            case 1250 -> next(11);
+            case 1247 -> o.setCameraType(CameraType.THIRD_PERSON_FRONT);
+            case 1257 -> shot(mc, "39b_tp_vss");
+            case 1259 -> o.setCameraType(CameraType.FIRST_PERSON);
+            case 1264 -> key(o.keyUse, true);
+            case 1268 -> shot(mc, "39c_fp_vss_fire");
+            case 1274 -> key(o.keyUse, false);
+            case 1280 -> next(11);
             default -> {
             }
         }

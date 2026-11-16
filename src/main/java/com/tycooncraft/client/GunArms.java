@@ -45,7 +45,7 @@ public final class GunArms {
         if (s.is(ModItems.RIFLE.get())) return new float[]{0.33f, -0.32f, -0.60f, 0.296f, -0.291f, -1.083f};
         if (s.is(ModItems.SHOTGUN.get())) return new float[]{0.33f, -0.32f, -0.60f, 0.289f, -0.339f, -1.189f};
         if (s.is(ModItems.SNIPER.get())) return new float[]{0.33f, -0.33f, -0.62f, 0.30f, -0.264f, -1.048f};
-        if (s.is(ModItems.VSS.get())) return new float[]{0.33f, -0.33f, -0.62f, 0.292f, -0.288f, -1.162f};
+        if (s.is(ModItems.VSS.get())) return new float[]{0.31f, -0.33f, -0.62f, 0.29f, -0.285f, -0.98f};
         if (s.is(ModItems.RPG.get())) return new float[]{0.34f, -0.28f, -0.58f, 0.331f, -0.314f, -0.752f};
         if (s.is(ModItems.DUAL_PISTOLS.get())) return new float[]{0.36f, -0.34f, -0.62f, -0.36f, -0.34f, -0.62f};
         return null;
@@ -102,7 +102,10 @@ public final class GunArms {
         ps.popPose();
         // 팔
         drawArm(ps, buf, light, p, true, new Vector3f(h[0], h[1], h[2]), new Vector3f(0.5f, -0.95f, 0.2f));
-        drawArm(ps, buf, light, p, false, new Vector3f(h[3], h[4], h[5]), new Vector3f(-0.5f, -0.95f, 0.2f));
+        // 왼팔: 권총류는 옆에서 감싸 쥐고, 긴 총은 아래쪽 가운데에서 올라와 총열 덮개를 받침
+        boolean longGun = !(stack.is(ModItems.PISTOL.get()) || stack.is(ModItems.JUDGE.get()) || stack.is(ModItems.DUAL_PISTOLS.get()));
+        drawArm(ps, buf, light, p, false, new Vector3f(h[3], h[4], h[5]),
+                longGun ? new Vector3f(-0.15f, -1.15f, 0.05f) : new Vector3f(-0.5f, -0.95f, 0.2f));
         ps.popPose();
     }
 
