@@ -232,7 +232,19 @@ public class DroneEntity extends Entity {
         DETONATIONS++;
         Player owner = owner();
         DamageSource src = damageSources().explosion(this, owner);
-        level().explode(this, src, null, getX(), getY() + 0.2, getZ(), power(), false, Level.ExplosionInteraction.MOB);
+        // 조종자 본인(제자리에 서 있는 몸)은 자기 드론 폭발에 다치지 않는다
+        net.minecraft.world.level.ExplosionDamageCalculator calc = new net.minecraft.world.level.ExplosionDamageCalculator() {
+            @Override
+            public boolean shouldDamageEntity(net.minecraft.world.level.Explosion explosion, Entity entity) {
+                return entity != owner;
+            }
+
+            @Override
+            public float getKnockbackMultiplier(Entity entity) {
+                return entity == owner ? 0f : 1f;
+            }
+        };
+        level().explode(this, src, calc, getX(), getY() + 0.2, getZ(), power(), false, Level.ExplosionInteraction.MOB);
         if (level() instanceof ServerLevel sl) {
             sl.sendParticles(ParticleTypes.EXPLOSION_EMITTER, getX(), getY(), getZ(), 1, 0, 0, 0, 0);
         }

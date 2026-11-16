@@ -36,6 +36,7 @@ public final class MpTestClient {
         var o = mc.options;
         int k = t % 200;
         if (t > 60 && round < 3) {
+            if (k == 0) System.out.println("[MPTEST] client round " + round + " start");
             if (k == 10) {
                 mc.player.getInventory().selected = round == 2 ? 4 : round;
                 mc.player.setXRot(0);
@@ -53,7 +54,42 @@ public final class MpTestClient {
                 round++;
             }
         }
-        if (round >= 3 && k == 180) {
+        // 4라운드: 소환 직후 바로 클릭 / 5라운드: Shift 로 내려놓고 드론을 우클릭해 다시 조종 → 클릭
+        if (round == 3) {
+            if (k == 10) mc.player.getInventory().selected = 3;
+            if (k == 20) KeyMapping.click(o.keyUse.getKey());
+            if (k == 40) KeyMapping.click(o.keyAttack.getKey());
+            if (k == 90) {
+                System.out.println("[MPTEST] client round 3 instant-click hp=" + mc.player.getHealth() + " piloting=" + com.tycooncraft.client.vehicle.DroneClient.piloting());
+                round++;
+            }
+            return;
+        }
+        if (round == 4) {
+            if (k == 10) mc.player.getInventory().selected = 2;
+            if (k == 20) KeyMapping.click(o.keyUse.getKey());
+            if (k == 50) KeyMapping.set(o.keyShift.getKey(), true);           // 조종 끝 (드론은 제자리)
+            if (k == 54) KeyMapping.set(o.keyShift.getKey(), false);
+            if (k == 70) {
+                var ds = mc.level.getEntitiesOfClass(com.tycooncraft.vehicle.DroneEntity.class, mc.player.getBoundingBox().inflate(8));
+                System.out.println("[MPTEST] client round 4 released piloting=" + com.tycooncraft.client.vehicle.DroneClient.piloting() + " nearbyDrones=" + ds.size());
+                if (!ds.isEmpty()) {
+                    var d = ds.get(0);
+                    mc.player.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, d.position().add(0, 0.2, 0));
+                }
+            }
+            if (k == 74) KeyMapping.click(o.keyUse.getKey());                 // 드론 우클릭 → 다시 조종
+            if (k == 100) {
+                System.out.println("[MPTEST] client round 4 re-pilot piloting=" + com.tycooncraft.client.vehicle.DroneClient.piloting());
+                KeyMapping.click(o.keyAttack.getKey());
+            }
+            if (k == 150) {
+                System.out.println("[MPTEST] client round 4 after click piloting=" + com.tycooncraft.client.vehicle.DroneClient.piloting() + " hp=" + mc.player.getHealth());
+                round++;
+            }
+            return;
+        }
+        if (round >= 5 && k == 180) {
             System.out.println("[MPTEST] client still connected, finished OK");
             System.out.println("[MPTEST] finished");
             mc.stop();
