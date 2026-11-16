@@ -79,7 +79,7 @@ public final class AutoTest {
         behemoth = ModEntities.BEHEMOTH.get().create(level);
         behemoth.moveTo(42, gy, -10, 0, 0);
         level.addFreshEntity(behemoth);
-        behemoth.setHealth(320);                       // 2페이즈(운석) 확인용
+        behemoth.setHealth(280);                       // 2페이즈(운석) 확인용
         beastDummy = dummy(level, 42, 5);
         wyvern = ModEntities.STORM_WYVERN.get().create(level);
         wyvern.moveTo(10, gy + 14, 30, 0, 0);
