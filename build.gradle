@@ -65,6 +65,18 @@ neoForge {
             systemProperty 'tycooncraft.autotest', 'true'
         }
 
+        // CI 전용: 전용 서버 + 접속 클라이언트로 멀티플레이 시험
+        mpServer {
+            server()
+            programArgument '--nogui'
+            systemProperty 'tycooncraft.mptest', 'true'
+        }
+        mpClient {
+            client()
+            programArguments.addAll '--quickPlayMultiplayer', '127.0.0.1:25565', '--username', 'MpTester'
+            systemProperty 'tycooncraft.mptest', 'true'
+        }
+
         server {
             server()
             programArgument '--nogui'

@@ -225,8 +225,11 @@ public class DroneEntity extends Entity {
         }
     }
 
+    public static int DETONATIONS;
+
     public void detonate() {
         if (level().isClientSide || isRemoved()) return;
+        DETONATIONS++;
         Player owner = owner();
         DamageSource src = damageSources().explosion(this, owner);
         level().explode(this, src, null, getX(), getY() + 0.2, getZ(), power(), false, Level.ExplosionInteraction.MOB);

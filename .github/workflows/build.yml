@@ -109,13 +109,41 @@ jobs:
           ls -la /tmp/shots
           grep -E "AUTOTEST|Exception|Crash|ERROR" vehicle-log.txt | grep -v DEBUG | head -200 > vehicle-errors.txt || true
 
+      # 전용 서버를 켜고 다른 클라이언트가 접속해 드론 소환·클릭 폭파 (멀티플레이 전용 버그 확인)
+      - name: Multiplayer drone test
+        if: success()
+        continue-on-error: true
+        run: |
+          pkill -f "net.neoforged" || true
+          sleep 3
+          rm -rf /tmp/mpclient && cp -r . /tmp/mpclient
+          rm -rf /tmp/mpclient/run && mkdir -p /tmp/mpclient/run
+          printf "pauseOnLostFocus:false\nonboardAccessibility:false\ntutorialStep:none\nskipMultiplayerWarning:true\nrenderDistance:6\n" > /tmp/mpclient/run/options.txt
+          ./gradlew runMpServer --no-configuration-cache > mp-server-log.txt 2>&1 &
+          for i in $(seq 1 120); do
+            if grep -q "Done (" mp-server-log.txt; then echo "MP SERVER STARTED"; break; fi
+            sleep 5
+          done
+          (cd /tmp/mpclient && xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runMpClient --no-configuration-cache > $GITHUB_WORKSPACE/mp-client-log.txt 2>&1) &
+          for i in $(seq 1 150); do
+            if grep -q "MPTEST\] finished" mp-client-log.txt 2>/dev/null; then echo "MP TEST FINISHED"; break; fi
+            if grep -q "Crash Report" mp-client-log.txt 2>/dev/null; then echo "MP CLIENT CRASHED"; break; fi
+            sleep 5
+          done
+          sleep 5
+          pkill -f "net.neoforged" || true
+          sleep 3
+          grep -aE "MPTEST|lost connection|Exception|Caused by|ERROR|kicked|Disconnect" mp-server-log.txt | grep -v DEBUG | head -150 > mp-errors.txt || true
+          echo "---- client ----" >> mp-errors.txt
+          grep -aE "MPTEST|Exception|Caused by|ERROR|Disconnect|Crash" mp-client-log.txt | grep -v DEBUG | head -150 >> mp-errors.txt || true
+
       - name: Save logs
         if: always()
         run: |
           git config user.name "build-bot"
           git config user.email "build-bot@users.noreply.github.com"
           mkdir -p /tmp/logs
-          cp build-log.txt server-log.txt server-latest.log smoke-errors.txt client-log.txt client-errors.txt vehicle-log.txt vehicle-errors.txt /tmp/logs/ 2>/dev/null || true
+          cp build-log.txt server-log.txt server-latest.log smoke-errors.txt client-log.txt client-errors.txt vehicle-log.txt vehicle-errors.txt mp-server-log.txt mp-client-log.txt mp-errors.txt /tmp/logs/ 2>/dev/null || true
           grep -E "error:|warning:|FAILURE|What went wrong|\.java:[0-9]+" build-log.txt > /tmp/logs/build-errors.txt || true
           # 바닐라 보스 텍스처 UV 배치 참고용 (외형 재설계용 마스크)
           J=$(ls build/moddev/artifacts/*client-extra*.jar 2>/dev/null | head -1)
