@@ -39,21 +39,21 @@ public final class V15Test {
         gy = groundY;
         if (t == 20)
             for (int cx = 6; cx <= 7; cx++) for (int cz = 6; cz <= 10; cz++) level.setChunkForced(cx, cz, true);
-        if (t == 25) factory(level);
-        if (t == 30) {
+        if (t == 45) factory(level);
+        if (t == 50) {
             BlockPos tp = new BlockPos(101, gy, 139);
             level.setBlock(tp, ModBlocks.TRANSMISSION.get().defaultBlockState().setValue(TransmissionBlock.SPEED, 3), 3);
             int n = TransmissionBlock.apply(level, tp, 3);
             System.out.println("[AUTOTEST] v15 transmission chain=" + n + " speeds=" + speeds(level));
         }
-        if (t == 32) {
+        if (t == 52) {
             ore = new ItemEntity(level, 98.5, gy + 0.6, 138.5, new ItemStack(Items.RAW_IRON, 3));
             ore.setDeltaMovement(0, 0, 0);
             level.addFreshEntity(ore);
         }
-        if (t == 36) oreX0 = ore.getX();
-        if (t == 46) System.out.printf("[AUTOTEST] v15 belt speed3 dx/10t=%.2f oreY=%.3f (belt top %.3f)%n", ore.getX() - oreX0, ore.getY(), gy + ConveyorBlock.BELT_TOP);
-        if (t == 200) {
+        if (t == 56) oreX0 = ore.getX();
+        if (t == 66) System.out.printf("[AUTOTEST] v15 belt speed3 dx/10t=%.2f oreY=%.3f (belt top %.3f)%n", ore.getX() - oreX0, ore.getY(), gy + ConveyorBlock.BELT_TOP);
+        if (t == 260) {
             int dust = 0;
             double y = 0;
             for (ItemEntity e : level.getEntitiesOfClass(ItemEntity.class, new AABB(105.5, gy - 1, 136, 112, gy + 2, 141))) {
@@ -66,7 +66,7 @@ public final class V15Test {
         }
         // ── EMP ──
         tickClientShip();
-        if (t == 40) {
+        if (t == 60) {
             for (int x = 96; x <= 112; x++) for (int z = 156; z <= 164; z++) {
                 level.setBlockAndUpdate(new BlockPos(x, gy - 1, z), Blocks.STONE.defaultBlockState());
                 for (int y = 0; y < 4; y++) level.setBlockAndUpdate(new BlockPos(x, gy + y, z), Blocks.AIR.defaultBlockState());
@@ -80,7 +80,7 @@ public final class V15Test {
             g.moveTo(104.5, gy + 0.2, 160.5);
             level.addFreshEntity(g);
         }
-        if (t == 110) System.out.println("[AUTOTEST] v15 emp carEmp=" + empCar.empTicks() + " hits=" + GrenadeEntity.empHits);
+        if (t == 130) System.out.println("[AUTOTEST] v15 emp carEmp=" + empCar.empTicks() + " hits=" + GrenadeEntity.empHits);
         // ── 배: 수조 ──
         if (t == 50) {
             for (int x = 98; x <= 126; x++) for (int z = 98; z <= 126; z++) {
