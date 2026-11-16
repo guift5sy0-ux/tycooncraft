@@ -117,12 +117,17 @@ jobs:
           mkdir -p /tmp/logs
           cp build-log.txt server-log.txt server-latest.log smoke-errors.txt client-log.txt client-errors.txt vehicle-log.txt vehicle-errors.txt /tmp/logs/ 2>/dev/null || true
           grep -E "error:|warning:|FAILURE|What went wrong|\.java:[0-9]+" build-log.txt > /tmp/logs/build-errors.txt || true
+          # 바닐라 보스 텍스처 UV 배치 참고용 (외형 재설계용 마스크)
+          J=$(ls build/moddev/artifacts/*client-extra*.jar 2>/dev/null | head -1)
+          mkdir -p /tmp/ref
+          if [ -n "$J" ]; then unzip -o -q "$J" 'assets/minecraft/textures/entity/wither/*' 'assets/minecraft/textures/entity/enderdragon/*' -d /tmp/ref || true; fi
           git checkout --orphan ci-log
           git rm -rf --cached . > /dev/null
           git clean -fdq -e build -e run || true
           cp /tmp/logs/* .
           mkdir -p shots && cp /tmp/shots/*.png shots/ 2>/dev/null || true
-          git add -f *.txt *.log shots 2>/dev/null || true
+          mkdir -p ref && cp -r /tmp/ref/assets ref/ 2>/dev/null || true
+          git add -f *.txt *.log shots ref 2>/dev/null || true
           git commit -qm "logs ${{ github.sha }}" || true
           git push -qf origin ci-log
 
