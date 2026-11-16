@@ -95,12 +95,18 @@ public final class AutoTest {
         float h1 = dragon.getHealth();
         boolean r2 = dragon.hurt(level.damageSources().playerAttack(fp), 20f);
         float h2 = dragon.getHealth();
-        com.tycooncraft.gun.Ballistics.shoot(level, fp, fp.getEyePosition(), dragon.position().add(0, 1, 0).subtract(fp.getEyePosition()).normalize(),
-                40, 12f, 0, 1f, false, false, level.damageSources().playerAttack(fp), e -> true);
+        // 연사: 같은 틱에 총알 3발 — 모두 들어가야 함
+        for (int i = 0; i < 3; i++)
+            com.tycooncraft.gun.Ballistics.shoot(level, fp, fp.getEyePosition(), dragon.position().add(0, 1, 0).subtract(fp.getEyePosition()).normalize(),
+                    40, 12f, 0, 1f, false, false, level.damageSources().playerAttack(fp), e -> true);
         float h3 = dragon.getHealth();
         System.out.println("[AUTOTEST] dragonhit t=" + t + " phase=" + dragon.getPhaseManager().getCurrentPhase().getPhase()
                 + String.format(" hp %.1f -head(%s)-> %.1f -body(%s)-> %.1f -gun-> %.1f", h0, r1, h1, r2, h2, h3)
                 + " inv=" + dragon.isInvulnerable() + " invT=" + dragon.invulnerableTime + " max=" + dragon.getMaxHealth());
+    }
+
+    public static void dummyVillagerAt(ServerLevel level, double x, double z) {
+        dummyVillager(level, x, z);
     }
 
     private static void dummyVillager(ServerLevel level, double x, double z) {
@@ -254,9 +260,14 @@ public final class AutoTest {
             if (dragon != null && dragon.isAlive()) dragon.setHealth(dragon.getMaxHealth() * 0.45f);
         }
         if (dragon != null && (t == 1610 || t == 1720 || t == 1800 || t == 1900 || t == 2100 || t == 2300)) dragonHitTest(level, t);
+        if (t == 2000 && dragon != null && dragon.isAlive()) {   // 착지 기술 확인: 강제로 앉히고 대상 배치
+            dragon.moveTo(0, gy + 1, -20, 0, 0);
+            dragon.getPhaseManager().setPhase(net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase.SITTING_SCANNING);
+        }
         if (t == 1600 || t == 2400) System.out.println("[AUTOTEST] vanilla t=" + t + " wither=" + (wither == null ? "none" : (int) wither.getHealth() + "/" + (int) wither.getMaxHealth())
                 + " dragon=" + (dragon == null ? "none" : (int) dragon.getHealth() + "/" + (int) dragon.getMaxHealth())
-                + " stats=" + java.util.Arrays.toString(com.tycooncraft.mob.VanillaBossBuffs.STATS));
+                + " stats=" + java.util.Arrays.toString(com.tycooncraft.mob.VanillaBossBuffs.STATS)
+                + " dstats=" + java.util.Arrays.toString(com.tycooncraft.mob.VanillaBossBuffs.DSTATS));
         if (t > 40 && t % 20 == 0) {
             if (golem != null && golem.isAlive() && golemDummy.isAlive()) golem.setTarget(golemDummy);
             if (behemoth != null && behemoth.isAlive() && beastDummy.isAlive()) behemoth.setTarget(beastDummy);

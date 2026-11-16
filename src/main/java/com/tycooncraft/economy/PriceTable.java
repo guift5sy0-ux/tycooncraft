@@ -100,6 +100,10 @@ public final class PriceTable {
             p.put(ModItems.HELMET_2.get(), 300.0);
             p.put(ModItems.HELMET_3.get(), 900.0);
             p.put(ModItems.PARACHUTE.get(), 150.0);
+            p.put(ModItems.HELMET_4.get(), 2200.0);
+            p.put(ModItems.VEST_4.get(), 2800.0);
+            p.put(ModItems.JUGGERNAUT_LEGGINGS.get(), 1300.0);
+            p.put(ModItems.COMBAT_BOOTS.get(), 700.0);
             p.put(ModItems.TURRET.get(), 1600.0);
             p.put(ModItems.TANK.get(), 9000.0);
             p.put(ModItems.FIGHTER_JET.get(), 12000.0);

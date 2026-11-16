@@ -390,7 +390,36 @@ public final class AutoTestClient {
             case 1500 -> shot(mc, "43_dragon_portrait");
             case 1502 -> serverDo(mc, sp -> sp.teleportTo(sp.serverLevel(), -12.5, g + 12, 62.5, -125f, 18f));
             case 1522 -> shot(mc, "43b_dragon_side");
-            case 1526 -> next(11);
+            // ── v0.14.2 드래곤 신규 패턴 촬영 ──
+            case 1526 -> serverDo(mc, sp -> {
+                var sl = sp.serverLevel();
+                if (display != null) display.discard();
+                sp.getAbilities().invulnerable = true;
+                var d = net.minecraft.world.entity.EntityType.ENDER_DRAGON.create(sl);
+                d.moveTo(0.5, g + 18, 64.5, 0, 0);
+                sl.addFreshEntity(d);
+                display = d;
+                AutoTest.dummyVillagerAt(sl, 0.5, 44.5);
+                sp.teleportTo(sl, 26.5, g + 9, 48.5, 110f, 8f);
+            });
+            case 1532 -> serverDo(mc, sp -> com.tycooncraft.mob.VanillaBossBuffs.forceMove((net.minecraft.world.entity.boss.enderdragon.EnderDragon) display, 1));
+            case 1550 -> shot(mc, "44_dragon_rush_charge");
+            case 1562 -> shot(mc, "44b_dragon_rush");
+            case 1590 -> serverDo(mc, sp -> com.tycooncraft.mob.VanillaBossBuffs.forceMove((net.minecraft.world.entity.boss.enderdragon.EnderDragon) display, 2));
+            case 1618 -> shot(mc, "45_dragon_dive_rise");
+            case 1631 -> shot(mc, "45b_dragon_dive_impact");
+            case 1650 -> serverDo(mc, sp -> com.tycooncraft.mob.VanillaBossBuffs.forceMove((net.minecraft.world.entity.boss.enderdragon.EnderDragon) display, 3));
+            case 1680 -> shot(mc, "46_dragon_sweep");
+            case 1712 -> serverDo(mc, sp -> ((net.minecraft.world.entity.LivingEntity) display).setHealth(((net.minecraft.world.entity.LivingEntity) display).getMaxHealth() * 0.45f));
+            case 1750 -> shot(mc, "47_dragon_awaken_charge");
+            case 1773 -> shot(mc, "47b_dragon_awaken_blast");
+            case 1790 -> shot(mc, "47c_dragon_red_lightning");
+            case 1800 -> serverDo(mc, sp -> com.tycooncraft.mob.VanillaBossBuffs.forceMove((net.minecraft.world.entity.boss.enderdragon.EnderDragon) display, 1));
+            case 1836 -> shot(mc, "48_dragon_p2_rush");
+            case 1860 -> {
+                serverDo(mc, sp -> System.out.println("[AUTOTEST] dragon moves dstats=" + java.util.Arrays.toString(com.tycooncraft.mob.VanillaBossBuffs.DSTATS)));
+                next(11);
+            }
             default -> {
             }
         }

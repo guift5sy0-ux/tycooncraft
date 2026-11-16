@@ -30,13 +30,14 @@ import java.util.function.Predicate;
  */
 public final class Ballistics {
     /** 방탄조끼 등급별 몸통 총알 피해 감소 */
-    private static final float[] VEST_CUT = {0f, 0.15f, 0.25f, 0.35f};
+    private static final float[] VEST_CUT = {0f, 0.15f, 0.25f, 0.35f, 0.45f};
     /** 방탄모 등급별 헤드샷 '추가' 피해 감소 + 머리 피해 자체 감소 */
-    private static final float[] HELMET_BONUS_CUT = {0f, 0.2f, 0.35f, 0.5f};
-    private static final float[] HELMET_CUT = {0f, 0.05f, 0.08f, 0.1f};
+    private static final float[] HELMET_BONUS_CUT = {0f, 0.2f, 0.35f, 0.5f, 0.65f};
+    private static final float[] HELMET_CUT = {0f, 0.05f, 0.08f, 0.1f, 0.15f};
 
     public static int vestTier(LivingEntity e) {
         ItemStack s = e.getItemBySlot(EquipmentSlot.CHEST);
+        if (s.is(ModItems.VEST_4.get())) return 4;
         if (s.is(ModItems.VEST_3.get())) return 3;
         if (s.is(ModItems.VEST_2.get())) return 2;
         if (s.is(ModItems.VEST_1.get())) return 1;
@@ -45,6 +46,7 @@ public final class Ballistics {
 
     public static int helmetTier(LivingEntity e) {
         ItemStack s = e.getItemBySlot(EquipmentSlot.HEAD);
+        if (s.is(ModItems.HELMET_4.get())) return 4;
         if (s.is(ModItems.HELMET_3.get())) return 3;
         if (s.is(ModItems.HELMET_2.get())) return 2;
         if (s.is(ModItems.HELMET_1.get())) return 1;
@@ -63,7 +65,9 @@ public final class Ballistics {
             float mult = 1 + (headMult - 1) * (1 - HELMET_BONUS_CUT[h]);
             return base * mult * (1 - HELMET_CUT[h]);
         }
-        return base * (1 - VEST_CUT[vestTier(le)]);
+        float legs = le.getItemBySlot(EquipmentSlot.LEGS).is(ModItems.JUGGERNAUT_LEGGINGS.get()) ? 0.92f : 1f;
+        float boots = le.getItemBySlot(EquipmentSlot.FEET).is(ModItems.COMBAT_BOOTS.get()) ? 0.95f : 1f;
+        return base * (1 - VEST_CUT[vestTier(le)]) * legs * boots;
     }
 
     /** 한 발: 경로상 대상(가까운 순)을 pierce+1 명까지 맞힘. 맞힌 첫 지점 반환 */
@@ -96,6 +100,8 @@ public final class Ballistics {
             boolean head = isHead(target, impact);
             float d = damage(target, dmg * (n == 0 ? 1f : 0.7f), head, headMult);
             target.invulnerableTime = 0;
+            // 엔더 드래곤 같은 다중 부위 몹: 실제 체력은 본체에 있으므로 본체의 무적 시간도 풀어 준다
+            if (target instanceof net.neoforged.neoforge.entity.PartEntity<?> part) part.getParent().invulnerableTime = 0;
             if (target.hurt(src, d)) {
                 if (onHit != null) onHit.accept(target);
                 if (fire) target.igniteForSeconds(4);

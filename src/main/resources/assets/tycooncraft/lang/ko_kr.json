@@ -266,9 +266,15 @@
   "item.tycooncraft.behemoth_heart": "베헤모스의 심장",
   "item.tycooncraft.storm_scale": "폭풍 비늘",
   "item.tycooncraft.storm_orb": "번개 구체",
-  "message.tycooncraft.wither.rise": "☠ 심연의 위더가 깨어난다…",
-  "message.tycooncraft.wither.awaken": "☠ 위더 각성! 영혼 기사단이 소환되었습니다",
-  "message.tycooncraft.dragon.awaken": "✦ 공허의 군주가 각성했습니다! 발밑을 조심하세요",
-  "entity.minecraft.wither": "심연의 위더",
-  "entity.minecraft.ender_dragon": "공허의 군주 엔더 드래곤"
+  "message.tycooncraft.wither.rise": "☠ 업화의 위더가 깨어난다…",
+  "message.tycooncraft.wither.awaken": "☠ 위더 각성! 지옥불 기사단이 소환되었습니다",
+  "message.tycooncraft.dragon.awaken": "✦ 공허의 군주 각성! 붉은 번개와 화염이 몰아칩니다 — 거리를 벌리세요",
+  "entity.minecraft.wither": "업화의 위더",
+  "entity.minecraft.ender_dragon": "공허의 군주 엔더 드래곤",
+  "item.tycooncraft.helmet_4": "중장갑 헬멧 (IV)",
+  "item.tycooncraft.vest_4": "중장갑 방탄복 (IV)",
+  "item.tycooncraft.juggernaut_leggings": "중장갑 각반",
+  "item.tycooncraft.combat_boots": "중장갑 전투화",
+  "tooltip.tycooncraft.jugg_legs": "몸통 총알 피해 추가 -%s%% · 세트: 폭발 피해 -25%%",
+  "tooltip.tycooncraft.jugg_boots": "몸통 총알 피해 추가 -%s%% · 낙하 피해 -40%%"
 }

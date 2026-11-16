@@ -38,6 +38,9 @@ import java.util.List;
  * 웅크리고 우클릭 = 재장전 (인벤토리의 탄약 사용).
  */
 public class GunItem extends Item {
+    /** v0.14.2: 전체 총기 피해 1.2배 */
+    public static final float DAMAGE_SCALE = 1.2f;
+
     private static final int USE_DURATION = 72000;
     private final GunStats stats;
 
@@ -92,7 +95,7 @@ public class GunItem extends Item {
 
     public float damage(ItemStack stack) {
         float sil = silencerTier(stack) == 1 && !stack.is(ModItems.VSS.get()) ? 0.93f : 1f;
-        return stats.damage() * (1 + 0.15f * GunEnchants.level(stack, GunEnchants.FIREPOWER)) * sil;
+        return stats.damage() * DAMAGE_SCALE * (1 + 0.15f * GunEnchants.level(stack, GunEnchants.FIREPOWER)) * sil;
     }
 
     private float precision(ItemStack stack) {

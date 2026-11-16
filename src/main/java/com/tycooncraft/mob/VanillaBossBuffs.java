@@ -58,8 +58,8 @@ import java.util.WeakHashMap;
  */
 public final class VanillaBossBuffs {
     private static final ResourceLocation BUFF = TycoonCraft.id("boss_buff");
-    private static final DustParticleOptions SOUL = new DustParticleOptions(new Vector3f(0.25f, 0.85f, 1f), 1.6f);
-    private static final DustParticleOptions DARK = new DustParticleOptions(new Vector3f(0.12f, 0.05f, 0.18f), 2.4f);
+    private static final DustParticleOptions SOUL = new DustParticleOptions(new Vector3f(1f, 0.45f, 0.08f), 1.6f);
+    private static final DustParticleOptions DARK = new DustParticleOptions(new Vector3f(0.22f, 0.04f, 0.03f), 2.4f);
     private static final DustParticleOptions VOID = new DustParticleOptions(new Vector3f(0.7f, 0.2f, 1f), 2.0f);
 
     /** 개체별 패턴 상태 (메모리에만) */
@@ -139,7 +139,7 @@ public final class VanillaBossBuffs {
         double ring = powered ? 2.6 : 1.9;
         for (int i = 0; i < 3; i++) {
             double a = s.t * 0.25 + i * Math.PI * 2 / 3;
-            sl.sendParticles(powered ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.SMOKE, c.x + Math.cos(a) * ring, c.y + Math.sin(s.t * 0.1 + i) * 0.6, c.z + Math.sin(a) * ring, 1, 0, 0, 0, 0);
+            sl.sendParticles(powered ? ParticleTypes.FLAME : ParticleTypes.SMOKE, c.x + Math.cos(a) * ring, c.y + Math.sin(s.t * 0.1 + i) * 0.6, c.z + Math.sin(a) * ring, 1, 0, 0, 0, 0);
         }
         if (s.t % 3 == 0) sl.sendParticles(DARK, w.getX(), w.getY() + 0.5, w.getZ(), 2, 0.6, 0.4, 0.6, 0);
         if (w.getInvulnerableTicks() > 0) {
@@ -147,7 +147,7 @@ public final class VanillaBossBuffs {
             int it = w.getInvulnerableTicks();
             for (int k = 0; k < 4; k++) {
                 double a = it * 0.3 + k * Math.PI / 2, r = 1 + (220 - it) / 40.0;
-                sl.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, w.getX() + Math.cos(a) * r, w.getY() + (220 - it) % 40 / 8.0, w.getZ() + Math.sin(a) * r, 1, 0, 0, 0, 0);
+                sl.sendParticles(ParticleTypes.FLAME, w.getX() + Math.cos(a) * r, w.getY() + (220 - it) % 40 / 8.0, w.getZ() + Math.sin(a) * r, 1, 0, 0, 0, 0);
             }
             if (it == 200) {
                 announce(sl, w, "message.tycooncraft.wither.rise", ChatFormatting.DARK_PURPLE, ChatFormatting.BOLD);
@@ -159,10 +159,10 @@ public final class VanillaBossBuffs {
         if (powered && !s.awakened) {
             s.awakened = true;
             STATS[5]++;
-            announce(sl, w, "message.tycooncraft.wither.awaken", ChatFormatting.AQUA, ChatFormatting.BOLD);
+            announce(sl, w, "message.tycooncraft.wither.awaken", ChatFormatting.GOLD, ChatFormatting.BOLD);
             sl.playSound(null, w.getX(), w.getY(), w.getZ(), SoundEvents.WITHER_SPAWN, SoundSource.HOSTILE, 5f, 0.7f);
             for (int k = 0; k < 4; k++) bolt(sl, w.position().add(Math.cos(k * Math.PI / 2) * 5, 0, Math.sin(k * Math.PI / 2) * 5));
-            sl.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, c.x, c.y, c.z, 150, 0.5, 0.5, 0.5, 0.4);
+            sl.sendParticles(ParticleTypes.FLAME, c.x, c.y, c.z, 150, 0.5, 0.5, 0.5, 0.4);
             for (int k = 0; k < 3; k++) {
                 WitherSkeleton g = EntityType.WITHER_SKELETON.create(sl);
                 if (g == null) continue;
@@ -177,7 +177,7 @@ public final class VanillaBossBuffs {
                 g.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 99999));
                 g.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 99999, 1));
                 sl.addFreshEntity(g);
-                sl.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, x, g.getY() + 1, z, 40, 0.3, 1, 0.3, 0.05);
+                sl.sendParticles(ParticleTypes.FLAME, x, g.getY() + 1, z, 40, 0.3, 1, 0.3, 0.05);
             }
         }
         List<LivingEntity> foes = foes(sl, w, 64);
@@ -219,7 +219,7 @@ public final class VanillaBossBuffs {
                     double a = sl.random.nextDouble() * Math.PI * 2, r = 7 - s.nova * 0.2;
                     Vec3 p = c.add(Math.cos(a) * r, sl.random.nextGaussian(), Math.sin(a) * r);
                     Vec3 v = c.subtract(p).scale(0.15);
-                    sl.sendParticles(ParticleTypes.SOUL, p.x, p.y, p.z, 0, v.x, v.y, v.z, 1);
+                    sl.sendParticles(ParticleTypes.LARGE_SMOKE, p.x, p.y, p.z, 0, v.x, v.y, v.z, 1);
                 }
                 w.setDeltaMovement(w.getDeltaMovement().scale(0.5));
             } else if (s.nova == 30) {
@@ -240,7 +240,7 @@ public final class VanillaBossBuffs {
                 int n = (int) (r * 8) + 8;
                 for (int i = 0; i < n; i++) {
                     double a = i * Math.PI * 2 / n;
-                    sl.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, c.x + Math.cos(a) * r, c.y - 0.5, c.z + Math.sin(a) * r, 1, 0, 0.05, 0, 0);
+                    sl.sendParticles(ParticleTypes.FLAME, c.x + Math.cos(a) * r, c.y - 0.5, c.z + Math.sin(a) * r, 1, 0, 0.05, 0, 0);
                 }
             } else {
                 s.nova = -1;
@@ -295,12 +295,12 @@ public final class VanillaBossBuffs {
                 s.dash++;
                 if (s.dash < 10) {
                     w.setDeltaMovement(Vec3.ZERO);
-                    sl.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, c.x, c.y, c.z, 6, 0.6, 0.6, 0.6, 0.05);
+                    sl.sendParticles(ParticleTypes.FLAME, c.x, c.y, c.z, 6, 0.6, 0.6, 0.6, 0.05);
                 } else if (s.dash < 26) {
                     w.setDeltaMovement(s.dashDir.scale(1.5));
                     if (s.dash % 3 == 0) {
                         sl.explode(w, c.x, c.y - 1, c.z, 1.2f, net.minecraft.world.level.Level.ExplosionInteraction.NONE);
-                        sl.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, c.x, c.y, c.z, 20, 0.6, 0.6, 0.6, 0.1);
+                        sl.sendParticles(ParticleTypes.FLAME, c.x, c.y, c.z, 20, 0.6, 0.6, 0.6, 0.1);
                     }
                     for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, w.getBoundingBox().inflate(1.2))) {
                         if (e == w || e instanceof WitherSkeleton) continue;
@@ -315,127 +315,459 @@ public final class VanillaBossBuffs {
         }
     }
 
-    // ═════════════════════ 공허의 군주 엔더 드래곤 ═════════════════════
-    private static void tickDragon(ServerLevel sl, EnderDragon d, State s) {
-        s.t++;
+    // ═════════════════════ 공허의 군주 엔더 드래곤 (폭룡 베일 모티프) ═════════════════════
+    // 공중 기술: 돌진(박치기) · 급강하 내려찍기 · 화염 휩쓸기 / 착지 기술: 꼬리 휩쓸기 · 엄니 찌르기 · 포효
+    // 전역 기술: 붉은 낙뢰 · 폭염 분출(2페이즈) / 50% 이하: 각성 폭발 후 더 공격적으로 (붉은 번개 날개)
+    public static final int[] DSTATS = new int[10];   // rush, dive, sweep, lightning, erupt, tail, stab, roar, transition, hits
+    private static final DustParticleOptions RED = new DustParticleOptions(new Vector3f(1f, 0.12f, 0.08f), 2.2f);
+    private static final DustParticleOptions EMBER = new DustParticleOptions(new Vector3f(1f, 0.55f, 0.1f), 1.8f);
+    static final int M_NONE = 0, M_RUSH = 1, M_DIVE = 2, M_SWEEP = 3;
+
+    static final class DState {
+        int move, mt, stab, chain, moveCd = 100, groundCd = 50, boltCd = 160, eruptCd = 120, fireCd = 140, transition = -1;
+        Vec3 anchor = Vec3.ZERO, dir = Vec3.ZERO, mark = Vec3.ZERO;
+        float sweepYaw;
+        final java.util.Set<Entity> hit = new java.util.HashSet<>();
+        final List<double[]> strikes = new ArrayList<>();   // x, z, 남은 틱, 종류(0 낙뢰 1 폭염)
+    }
+
+    private static final Map<Entity, DState> DSTATES = new WeakHashMap<>();
+
+    /** 테스트용: 기술 강제 시작 */
+    public static void forceMove(EnderDragon d, int move) {
+        DState s = DSTATES.computeIfAbsent(d, k -> new DState());
+        s.move = move;
+        s.mt = 0;
+        s.chain = 0;
+        s.hit.clear();
+        s.anchor = d.position();
+    }
+
+    private static boolean airborne(EnderDragon d) {
+        var p = d.getPhaseManager().getCurrentPhase().getPhase();
+        return p == EnderDragonPhase.HOLDING_PATTERN || p == EnderDragonPhase.STRAFE_PLAYER
+                || p == EnderDragonPhase.CHARGING_PLAYER || p == EnderDragonPhase.HOVERING;
+    }
+
+    /** 드래곤의 '앞'은 일반 몹과 반대: (sin yaw, -cos yaw) */
+    private static void face(EnderDragon d, Vec3 dir) {
+        if (dir.horizontalDistanceSqr() < 1e-4) return;
+        d.setYRot((float) Math.toDegrees(Math.atan2(dir.x, -dir.z)));
+    }
+
+    private static Vec3 fwd(EnderDragon d) {
+        float y = d.getYRot() * Mth.DEG_TO_RAD;
+        return new Vec3(Mth.sin(y), 0, -Mth.cos(y));
+    }
+
+    private static void hold(EnderDragon d, Vec3 p) {
+        d.setPos(p.x, p.y, p.z);
+        d.setDeltaMovement(Vec3.ZERO);
+    }
+
+    private static void smash(ServerLevel sl, EnderDragon d, Vec3 c, double r, float dmg, double kb) {
+        for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, new AABB(c, c).inflate(r, r * 0.6 + 2, r))) {
+            if (e == d) continue;
+            double dist = e.position().distanceTo(c);
+            if (dist > r) continue;
+            float f = (float) (1 - 0.5 * dist / r);
+            if (e.hurt(d.damageSources().mobAttack(d), dmg * f)) DSTATS[9]++;
+            Vec3 push = e.position().subtract(c).multiply(1, 0, 1);
+            push = push.lengthSqr() < 1e-3 ? new Vec3(1, 0, 0) : push.normalize();
+            e.push(push.x * kb * f, 0.5 + 0.4 * kb * f, push.z * kb * f);
+            e.hurtMarked = true;
+        }
+    }
+
+    private static void redBolt(ServerLevel sl, EnderDragon d, double x, double z, float dmg) {
+        double gy = ground(sl, x, z);
+        bolt(sl, new Vec3(x, gy, z));
+        for (double y = 0; y < 16; y += 0.8)
+            sl.sendParticles(RED, x + sl.random.nextGaussian() * 0.15, gy + y, z + sl.random.nextGaussian() * 0.15, 2, 0.05, 0.1, 0.05, 0);
+        sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, x, gy + 0.3, z, 30, 1.2, 0.3, 1.2, 0.4);
+        sl.sendParticles(ParticleTypes.FLAME, x, gy + 0.3, z, 20, 1.0, 0.2, 1.0, 0.08);
+        for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, new AABB(x - 2.6, gy - 1, z - 2.6, x + 2.6, gy + 5, z + 2.6))) {
+            if (e == d) continue;
+            if (e.hurt(d.damageSources().indirectMagic(d, d), dmg)) DSTATS[9]++;
+            e.igniteForSeconds(3);
+        }
+    }
+
+    private static void queue(DState s, double x, double z, int delay, int kind) {
+        s.strikes.add(new double[]{x, z, delay, kind});
+    }
+
+    private static void tickDragon(ServerLevel sl, EnderDragon d, State s0) {
+        DState s = DSTATES.computeIfAbsent(d, k -> new DState());
+        s0.t++;
         var phase = d.getPhaseManager().getCurrentPhase();
         if (phase.getPhase() == EnderDragonPhase.DYING) return;
         boolean powered = d.getHealth() <= d.getMaxHealth() * 0.5f;
-        // 날개 끝 공허 궤적
+        boolean sitting = phase.isSitting();
         float yaw = d.getYRot() * Mth.DEG_TO_RAD;
         Vec3 right = new Vec3(-Mth.cos(yaw), 0, -Mth.sin(yaw));
+        // 날개 끝: 1페이즈 공허 궤적 / 2페이즈 붉은 번개 날개
         for (int sd : new int[]{-1, 1}) {
             Vec3 tip = d.position().add(right.scale(sd * 6.5)).add(0, 2, 0);
-            sl.sendParticles(powered ? ParticleTypes.REVERSE_PORTAL : ParticleTypes.PORTAL, tip.x, tip.y, tip.z, 3, 0.2, 0.2, 0.2, 0.02);
+            if (powered) {
+                sl.sendParticles(RED, tip.x, tip.y, tip.z, 3, 0.6, 0.3, 0.6, 0);
+                if (s0.t % 3 == 0) sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, tip.x, tip.y, tip.z, 4, 0.8, 0.4, 0.8, 0.3);
+            } else sl.sendParticles(ParticleTypes.PORTAL, tip.x, tip.y, tip.z, 3, 0.2, 0.2, 0.2, 0.02);
         }
-        if (powered && s.t % 2 == 0) sl.sendParticles(VOID, d.getX(), d.getY() + 2, d.getZ(), 4, 2, 1, 2, 0);
-        if (powered && !s.awakened) {
-            s.awakened = true;
-            STATS[6]++;
-            announce(sl, d, "message.tycooncraft.dragon.awaken", ChatFormatting.LIGHT_PURPLE, ChatFormatting.BOLD);
-            sl.playSound(null, d.getX(), d.getY(), d.getZ(), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 8f, 0.6f);
-            sl.sendParticles(ParticleTypes.DRAGON_BREATH, d.getX(), d.getY() + 2, d.getZ(), 200, 3, 2, 3, 0.2);
+        // 대기 중인 낙뢰·폭염 처리 (항상)
+        for (var it = s.strikes.iterator(); it.hasNext(); ) {
+            double[] k = it.next();
+            double gy = ground(sl, k[0], k[1]) + 0.15;
+            if (--k[2] > 0) {
+                if ((int) k[2] % 2 == 0) {
+                    double r = k[3] == 0 ? 2.6 : 2.2;
+                    for (int i = 0; i < 12; i++) {
+                        double a = i * Math.PI / 6 + k[2] * 0.2;
+                        sl.sendParticles(k[3] == 0 ? RED : EMBER, k[0] + Math.cos(a) * r, gy, k[1] + Math.sin(a) * r, 1, 0, 0, 0, 0);
+                    }
+                    if (k[3] == 1) sl.sendParticles(ParticleTypes.LAVA, k[0], gy, k[1], 1, 0.5, 0, 0.5, 0);
+                }
+                continue;
+            }
+            if (k[3] == 0) redBolt(sl, d, k[0], k[1], powered ? 15f : 12f);
+            else {
+                sl.explode(d, k[0], gy, k[1], powered ? 2.6f : 2.2f, net.minecraft.world.level.Level.ExplosionInteraction.NONE);
+                for (double y = 0; y < 7; y += 0.5) sl.sendParticles(ParticleTypes.FLAME, k[0], gy + y, k[1], 3, 0.3, 0.1, 0.3, 0.03);
+            }
+            it.remove();
         }
-        List<LivingEntity> foes = foes(sl, d, 128);
-        if (foes.isEmpty()) return;
-        LivingEntity t = foes.stream().min(java.util.Comparator.comparingDouble(d::distanceToSqr)).orElse(foes.get(0));
-        float speed = powered ? 1.5f : 1f;
-        Vec3 head = d.head.position();
 
-        // 1) 화염구 부채꼴 (비행 중)
-        if (!phase.isSitting() && --s.fireCd <= 0) {
-            STATS[7]++;
-            Vec3 aim = t.getEyePosition().subtract(head).normalize();
-            for (int i = -2; i <= 2; i++) {
-                Vec3 dir = aim.yRot(i * 0.14f);
-                DragonFireball fb = new DragonFireball(sl, d, dir.scale(1.2));
-                fb.setPos(head.add(dir.scale(2)));
-                sl.addFreshEntity(fb);
-            }
-            sl.playSound(null, d.getX(), d.getY(), d.getZ(), SoundEvents.ENDER_DRAGON_SHOOT, SoundSource.HOSTILE, 6f, 0.8f);
-            s.fireCd = (int) (140 / speed);
+        List<LivingEntity> foes = foes(sl, d, 128);
+        // ── 각성(2페이즈) 전환: 멈춰서 화염·번개를 모았다가 대폭발 ──
+        if (powered && !s0.awakened) {
+            s0.awakened = true;
+            s.transition = 0;
+            s.move = M_NONE;
+            s.anchor = d.position();
+            DSTATS[8]++;
+            STATS[6]++;
+            announce(sl, d, "message.tycooncraft.dragon.awaken", ChatFormatting.RED, ChatFormatting.BOLD);
+            sl.playSound(null, d.getX(), d.getY(), d.getZ(), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 8f, 0.5f);
         }
-        // 2) 셜커 탄 군단: 모든 대상에게 유도탄
-        if (--s.bulletCd <= 0) {
-            STATS[8]++;
-            for (int i = 0; i < Math.min(8, foes.size() * 3); i++) {
-                LivingEntity e = foes.get(i % foes.size());
-                ShulkerBullet b = new ShulkerBullet(sl, d, e, Direction.Axis.values()[i % 3]);
-                b.setPos(d.getX() + sl.random.nextGaussian() * 2, d.getY() + 3, d.getZ() + sl.random.nextGaussian() * 2);
-                sl.addFreshEntity(b);
+        if (s.transition >= 0) {
+            int t = ++s.transition;
+            if (airborne(d)) hold(d, s.anchor);
+            Vec3 c = d.position().add(0, 2, 0);
+            for (int i = 0; i < 6; i++) {
+                double a = t * 0.3 + i * Math.PI / 3, r = 14 - t * 0.2;
+                sl.sendParticles(i % 2 == 0 ? RED : EMBER, c.x + Math.cos(a) * r, c.y + Math.sin(t * 0.2 + i) * 3, c.z + Math.sin(a) * r, 2, 0.1, 0.1, 0.1, 0);
             }
-            sl.playSound(null, d.getX(), d.getY(), d.getZ(), SoundEvents.SHULKER_SHOOT, SoundSource.HOSTILE, 5f, 0.6f);
-            s.bulletCd = (int) (260 / speed);
-        }
-        // 3) 착지 충격파: 앉아 있을 때 주기적으로 공허 고리
-        if (phase.isSitting() && --s.shockCd <= 0) {
-            STATS[4]++;
-            s.shockCd = powered ? 40 : 60;
-            Vec3 c = d.position();
-            sl.playSound(null, c.x, c.y, c.z, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 6f, 1.2f);
-            for (int r = 2; r <= 12; r += 2)
-                for (int i = 0; i < r * 6; i++) {
-                    double a = i * Math.PI * 2 / (r * 6);
-                    sl.sendParticles(ParticleTypes.REVERSE_PORTAL, c.x + Math.cos(a) * r, c.y + 0.3, c.z + Math.sin(a) * r, 1, 0, 0.1, 0, 0.02);
+            if (t % 10 == 0) sl.playSound(null, c.x, c.y, c.z, SoundEvents.BEACON_POWER_SELECT, SoundSource.HOSTILE, 4f, 0.5f + t * 0.01f);
+            if (t == 60) {
+                sl.playSound(null, c.x, c.y, c.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.HOSTILE, 8f, 0.6f);
+                sl.playSound(null, c.x, c.y, c.z, SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.HOSTILE, 8f, 0.7f);
+                sl.sendParticles(ParticleTypes.EXPLOSION_EMITTER, c.x, c.y, c.z, 3, 2, 1, 2, 0);
+                sl.sendParticles(ParticleTypes.FLAME, c.x, c.y, c.z, 300, 3, 2, 3, 0.6);
+                sl.sendParticles(RED, c.x, c.y, c.z, 200, 6, 3, 6, 0);
+                smash(sl, d, new Vec3(c.x, ground(sl, c.x, c.z), c.z), 18, 18f, 2.8);
+                smash(sl, d, c, 14, 10f, 2.0);
+                for (int i = 0; i < 14; i++) {
+                    double a = sl.random.nextDouble() * Math.PI * 2, r = 5 + sl.random.nextDouble() * 15;
+                    queue(s, c.x + Math.cos(a) * r, c.z + Math.sin(a) * r, 4 + i * 3, 0);
                 }
-            for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, d.getBoundingBox().inflate(12, 4, 12))) {
-                if (e == d) continue;
-                double dist = e.distanceTo(d);
-                if (dist > 12) continue;
-                e.hurt(d.damageSources().indirectMagic(d, d), 10f);
-                Vec3 push = e.position().subtract(c).normalize();
-                e.push(push.x * 2.2, 0.8, push.z * 2.2);
-                e.hurtMarked = true;
             }
+            if (t >= 80) s.transition = -1;
+            return;
         }
-        // 4) (각성 후) 공허 붕괴: 모든 대상 발밑에 소용돌이 → 공허 기둥 폭발
-        if (powered) {
-            if (s.collapse < 0 && --s.collapseCd <= 0) {
-                s.collapse = 0;
-                STATS[9]++;
-                s.marks.clear();
-                for (LivingEntity e : foes.subList(0, Math.min(6, foes.size()))) s.marks.add(e.position());
-                sl.playSound(null, d.getX(), d.getY(), d.getZ(), SoundEvents.END_PORTAL_SPAWN, SoundSource.HOSTILE, 3f, 1.5f);
+        if (foes.isEmpty()) {
+            s.move = M_NONE;
+            return;
+        }
+        LivingEntity tgt = foes.stream().min(java.util.Comparator.comparingDouble(d::distanceToSqr)).orElse(foes.get(0));
+        float speed = powered ? 1.5f : 1f;
+
+        // ── 전역: 붉은 낙뢰 (대상 발밑 + 주변) ──
+        if (--s.boltCd <= 0) {
+            DSTATS[3]++;
+            sl.playSound(null, d.getX(), d.getY(), d.getZ(), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 6f, 1.3f);
+            int waves = powered ? 3 : 1;
+            for (int w = 0; w < waves; w++)
+                for (LivingEntity e : foes.subList(0, Math.min(6, foes.size()))) {
+                    Vec3 lead = e.position().add(e.getDeltaMovement().multiply(12, 0, 12));
+                    queue(s, lead.x + sl.random.nextGaussian() * w * 1.5, lead.z + sl.random.nextGaussian() * w * 1.5, 30 + w * 14, 0);
+                }
+            for (int i = 0; i < (powered ? 6 : 3); i++) {
+                double a = sl.random.nextDouble() * Math.PI * 2, r = 4 + sl.random.nextDouble() * 10;
+                queue(s, tgt.getX() + Math.cos(a) * r, tgt.getZ() + Math.sin(a) * r, 30 + i * 4, 0);
             }
-            if (s.collapse >= 0) {
-                s.collapse++;
-                if (s.collapse < 40 && s.collapse % 2 == 0) {
-                    for (Vec3 m : s.marks) {
-                        double gy = ground(sl, m.x, m.z) + 0.1;
-                        double r = 3.2 - s.collapse * 0.05;
-                        for (int i = 0; i < 14; i++) {
-                            double a = i * Math.PI / 7 + s.collapse * 0.25;
-                            sl.sendParticles(VOID, m.x + Math.cos(a) * r, gy, m.z + Math.sin(a) * r, 1, 0, 0, 0, 0);
+            s.boltCd = (int) (240 / speed);
+        }
+        // ── 2페이즈 전역: 폭염 분출 (드래곤 주변 땅이 터져 오름) ──
+        if (powered && --s.eruptCd <= 0) {
+            DSTATS[4]++;
+            Vec3 c = sitting ? d.position() : tgt.position();
+            sl.playSound(null, c.x, c.y, c.z, SoundEvents.LAVA_AMBIENT, SoundSource.HOSTILE, 6f, 0.5f);
+            for (int i = 0; i < 10; i++) {
+                double a = i * Math.PI * 2 / 10 + sl.random.nextDouble() * 0.4, r = 3 + sl.random.nextDouble() * 9;
+                queue(s, c.x + Math.cos(a) * r, c.z + Math.sin(a) * r, 22 + i * 2, 1);
+            }
+            s.eruptCd = 200;
+        }
+
+        // ── 착지 중: 꼬리 휩쓸기 · 엄니 찌르기 · 포효 ──
+        if (sitting) {
+            s.move = M_NONE;
+            if (s.stab > 0) {                                   // 엄니 찌르기 예고 진행 중
+                s.stab--;
+                Vec3 h = d.head.position();
+                sl.sendParticles(powered ? RED : EMBER, h.x, h.y, h.z, 4, 0.5, 0.5, 0.5, 0);
+                if (s.stab == 0) {
+                    Vec3 f = s.dir;
+                    sl.playSound(null, h.x, h.y, h.z, SoundEvents.ENDER_DRAGON_HURT, SoundSource.HOSTILE, 6f, 0.5f);
+                    for (double k = 0; k < 11; k += 0.7) {
+                        Vec3 p = h.add(f.scale(k));
+                        sl.sendParticles(ParticleTypes.SWEEP_ATTACK, p.x, p.y - 1, p.z, 1, 0, 0, 0, 0);
+                        if (powered) sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, p.x, p.y - 1, p.z, 3, 0.3, 0.3, 0.3, 0.2);
+                    }
+                    for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, d.getBoundingBox().inflate(14, 5, 14))) {
+                        if (e == d) continue;
+                        Vec3 rel = e.position().subtract(h).multiply(1, 0, 1);
+                        double along = rel.dot(f), side = rel.subtract(f.scale(along)).length();
+                        if (along > -1 && along < 12 && side < 2.8) {
+                            if (e.hurt(d.damageSources().mobAttack(d), powered ? 24f : 20f)) DSTATS[9]++;
+                            e.push(f.x * 2.6, 0.7, f.z * 2.6);
+                            e.hurtMarked = true;
                         }
                     }
+                    if (powered) for (int i = 2; i <= 10; i += 4) queue(s, h.x + f.x * i, h.z + f.z * i, 10 + i, 0);
                 }
-                if (s.collapse == 40) {
-                    for (Vec3 m : s.marks) {
-                        double gy = ground(sl, m.x, m.z);
-                        for (double y = 0; y < 14; y += 0.7)
-                            sl.sendParticles(ParticleTypes.DRAGON_BREATH, m.x, gy + y, m.z, 4, 0.4, 0.2, 0.4, 0.02);
-                        AreaEffectCloud cloud = new AreaEffectCloud(sl, m.x, gy, m.z);
-                        cloud.setOwner(d);
-                        cloud.setParticle(ParticleTypes.DRAGON_BREATH);
-                        cloud.setRadius(2.8f);
-                        cloud.setDuration(100);
-                        cloud.addEffect(new MobEffectInstance(MobEffects.HARM, 1, 1));
-                        sl.addFreshEntity(cloud);
-                        for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, new AABB(m.x - 2.8, gy - 1, m.z - 2.8, m.x + 2.8, gy + 6, m.z + 2.8))) {
-                            if (e == d) continue;
-                            e.hurt(d.damageSources().indirectMagic(d, d), 12f);
-                            e.addEffect(new MobEffectInstance(MobEffects.LEVITATION, 40, 2), d);
-                        }
+                return;
+            }
+            if (--s.groundCd <= 0) {
+                Vec3 f = fwd(d);
+                Vec3 rel = tgt.position().subtract(d.position()).multiply(1, 0, 1);
+                double dist = rel.length();
+                double dot = dist > 0.1 ? rel.normalize().dot(f) : 1;
+                if (dot < -0.2 && dist < 16) {                    // 꼬리 휩쓸기 (뒤쪽)
+                    DSTATS[5]++;
+                    Vec3 back = d.position().subtract(f.scale(6));
+                    sl.playSound(null, back.x, back.y, back.z, SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.HOSTILE, 6f, 0.5f);
+                    for (int i = -6; i <= 6; i++) {
+                        Vec3 p = d.position().add(f.scale(-7).yRot(i * 0.18f)).add(0, 1, 0);
+                        sl.sendParticles(ParticleTypes.SWEEP_ATTACK, p.x, p.y, p.z, 1, 0, 0, 0, 0);
+                        sl.sendParticles(ParticleTypes.CLOUD, p.x, p.y - 0.8, p.z, 3, 0.3, 0.1, 0.3, 0.05);
                     }
-                    sl.playSound(null, d.getX(), d.getY(), d.getZ(), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 8f, 0.5f);
+                    smash(sl, d, back, 9, powered ? 18f : 14f, 3.0);
+                    s.groundCd = (int) (50 / speed);
+                } else if (dot > 0.3 && dist < 18) {               // 엄니 찌르기 (정면) — 예고 후 발동
+                    DSTATS[6]++;
+                    s.dir = rel.normalize();
+                    s.stab = powered ? 12 : 18;
+                    sl.playSound(null, d.getX(), d.getY(), d.getZ(), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 5f, 1.4f);
+                    s.groundCd = (int) (60 / speed);
+                } else {                                         // 포효: 밀쳐내고 둔화
+                    DSTATS[7]++;
+                    Vec3 c = d.position();
+                    sl.playSound(null, c.x, c.y, c.z, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 8f, 0.6f);
+                    for (int r = 2; r <= 12; r += 2)
+                        for (int i = 0; i < r * 5; i++) {
+                            double a = i * Math.PI * 2 / (r * 5);
+                            sl.sendParticles(powered ? RED : ParticleTypes.REVERSE_PORTAL, c.x + Math.cos(a) * r, c.y + 0.4, c.z + Math.sin(a) * r, 1, 0, 0.1, 0, 0.02);
+                        }
+                    for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, d.getBoundingBox().inflate(12, 4, 12))) {
+                        if (e == d || e.distanceTo(d) > 12) continue;
+                        e.hurt(d.damageSources().mobAttack(d), 6f);
+                        e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 1), d);
+                        Vec3 p = e.position().subtract(c).normalize();
+                        e.push(p.x * 2.4, 0.6, p.z * 2.4);
+                        e.hurtMarked = true;
+                    }
+                    s.groundCd = (int) (70 / speed);
                 }
-                if (s.collapse > 50) {
-                    s.collapse = -1;
-                    s.collapseCd = 240;
+            }
+            return;
+        }
+
+        // ── 비행 중 ──
+        if (s.move != M_NONE && !airborne(d)) s.move = M_NONE;
+        if (s.move == M_NONE && airborne(d)) {
+            if (--s.moveCd <= 0 && d.distanceTo(tgt) < 90) {
+                int r = sl.random.nextInt(7);
+                forceMove(d, r < 3 ? M_RUSH : r < 5 ? M_DIVE : M_SWEEP);
+                s.moveCd = (int) (110 / speed);
+            } else if (--s.fireCd <= 0) {                      // 화염구 부채꼴 (틈틈이)
+                Vec3 head = d.head.position();
+                Vec3 aim = tgt.getEyePosition().subtract(head).normalize();
+                for (int i = -2; i <= 2; i++) {
+                    Vec3 dir = aim.yRot(i * 0.14f);
+                    DragonFireball fb = new DragonFireball(sl, d, dir.scale(1.2));
+                    fb.setPos(head.add(dir.scale(2)));
+                    sl.addFreshEntity(fb);
                 }
+                sl.playSound(null, d.getX(), d.getY(), d.getZ(), SoundEvents.ENDER_DRAGON_SHOOT, SoundSource.HOSTILE, 6f, 0.8f);
+                s.fireCd = (int) (170 / speed);
+            }
+        }
+        switch (s.move) {
+            case M_RUSH -> rush(sl, d, s, tgt, powered);
+            case M_DIVE -> dive(sl, d, s, tgt, powered);
+            case M_SWEEP -> sweep(sl, d, s, tgt, powered);
+            default -> {
             }
         }
     }
+
+    /** 돌진: 포효하며 힘을 모은 뒤 대상에게 일직선으로 들이받는다 (2페이즈 2연속) */
+    private static void rush(ServerLevel sl, EnderDragon d, DState s, LivingEntity tgt, boolean powered) {
+        int tele = s.chain == 0 ? 26 : 12;
+        int t = ++s.mt;
+        if (t == 1) {
+            DSTATS[0]++;
+            sl.playSound(null, d.getX(), d.getY(), d.getZ(), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 8f, 0.8f);
+        }
+        if (t <= tele) {
+            Vec3 to = tgt.position().add(0, 1.5, 0).subtract(s.anchor);
+            face(d, to);
+            hold(d, s.anchor.add(fwd(d).scale(-0.08 * t)));   // 뒤로 살짝 빠지며 힘을 모음
+            Vec3 h = d.head.position();
+            sl.sendParticles(powered ? RED : EMBER, h.x, h.y, h.z, 6, 0.8, 0.8, 0.8, 0);
+            sl.sendParticles(ParticleTypes.FLAME, h.x, h.y, h.z, 3, 0.5, 0.5, 0.5, 0.02);
+            if (t == tele) {
+                s.dir = to.normalize();
+                s.anchor = d.position();
+                s.hit.clear();
+                sl.playSound(null, d.getX(), d.getY(), d.getZ(), SoundEvents.ENDER_DRAGON_FLAP, SoundSource.HOSTILE, 8f, 0.5f);
+            }
+            return;
+        }
+        int dt = t - tele;
+        double v = powered ? 3.0 : 2.4;
+        Vec3 p = d.position().add(s.dir.scale(v));
+        double gy = ground(sl, p.x, p.z);
+        if (p.y < gy + 2.5) p = new Vec3(p.x, gy + 2.5, p.z);
+        hold(d, p);
+        face(d, s.dir);
+        sl.sendParticles(ParticleTypes.FLAME, p.x, p.y + 1, p.z, 12, 2.5, 1, 2.5, 0.05);
+        sl.sendParticles(ParticleTypes.LARGE_SMOKE, p.x, p.y + 1, p.z, 4, 2, 1, 2, 0.02);
+        if (powered) sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, p.x, p.y + 1, p.z, 8, 2, 1, 2, 0.3);
+        if (powered && dt % 3 == 0) queue(s, p.x, p.z, 16 + dt, 0);
+        for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, d.getBoundingBox().inflate(2.5))) {
+            if (e == d || !s.hit.add(e)) continue;
+            if (e.hurt(d.damageSources().mobAttack(d), powered ? 22f : 17f)) DSTATS[9]++;
+            e.push(s.dir.x * 3, 1.0, s.dir.z * 3);
+            e.hurtMarked = true;
+            sl.playSound(null, e.getX(), e.getY(), e.getZ(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.HOSTILE, 3f, 1.2f);
+        }
+        boolean passed = p.subtract(s.anchor).dot(s.dir) > tgt.position().subtract(s.anchor).dot(s.dir) + 10;
+        if (dt >= 30 || passed) {
+            sl.sendParticles(ParticleTypes.EXPLOSION, p.x, p.y, p.z, 6, 2, 1, 2, 0);
+            if (powered && s.chain == 0) {         // 2페이즈: 곧바로 한 번 더
+                s.chain = 1;
+                s.mt = 0;
+                s.anchor = d.position();
+            } else s.move = M_NONE;
+        }
+    }
+
+    /** 급강하 내려찍기: 대상 위로 솟구쳤다가 표시된 지점에 수직 낙하 → 폭발·화염 고리 (2페이즈: 번개 고리) */
+    private static void dive(ServerLevel sl, EnderDragon d, DState s, LivingEntity tgt, boolean powered) {
+        int t = ++s.mt;
+        if (t == 1) {
+            DSTATS[1]++;
+            sl.playSound(null, d.getX(), d.getY(), d.getZ(), SoundEvents.ENDER_DRAGON_FLAP, SoundSource.HOSTILE, 8f, 0.6f);
+        }
+        if (t <= 32) {
+            s.mark = new Vec3(tgt.getX(), ground(sl, tgt.getX(), tgt.getZ()), tgt.getZ());
+            Vec3 up = s.mark.add(0, 22, 0);
+            Vec3 p = d.position().add(up.subtract(d.position()).scale(0.12));
+            hold(d, p);
+            face(d, s.mark.subtract(p));
+            if (t % 2 == 0)
+                for (int i = 0; i < 20; i++) {
+                    double a = i * Math.PI / 10 + t * 0.1;
+                    sl.sendParticles(powered ? RED : EMBER, s.mark.x + Math.cos(a) * 6, s.mark.y + 0.2, s.mark.z + Math.sin(a) * 6, 1, 0, 0, 0, 0);
+                }
+            if (t == 32) sl.playSound(null, d.getX(), d.getY(), d.getZ(), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 8f, 0.7f);
+            return;
+        }
+        if (t <= 34) {           // 정점에서 잠깐 멈춤
+            hold(d, d.position());
+            return;
+        }
+        Vec3 p = d.position();
+        Vec3 to = s.mark.add(0, 1.5, 0).subtract(p);
+        double step = Math.min(3.2, to.length());
+        p = to.lengthSqr() > 1e-3 ? p.add(to.normalize().scale(step)) : p;
+        hold(d, p);
+        sl.sendParticles(ParticleTypes.FLAME, p.x, p.y + 1, p.z, 10, 1.5, 1.5, 1.5, 0.05);
+        if (step < 3.2 || t > 60) {
+            Vec3 c = s.mark;
+            sl.playSound(null, c.x, c.y, c.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.HOSTILE, 8f, 0.5f);
+            sl.sendParticles(ParticleTypes.EXPLOSION_EMITTER, c.x, c.y + 1, c.z, 2, 1, 0.5, 1, 0);
+            for (int r = 2; r <= 10; r += 2)
+                for (int i = 0; i < r * 6; i++) {
+                    double a = i * Math.PI * 2 / (r * 6);
+                    sl.sendParticles(ParticleTypes.FLAME, c.x + Math.cos(a) * r, c.y + 0.3, c.z + Math.sin(a) * r, 1, 0, 0.2, 0, 0.05);
+                }
+            smash(sl, d, c, 10, powered ? 24f : 20f, 2.6);
+            if (powered)
+                for (int ring = 0; ring < 3; ring++)
+                    for (int i = 0; i < 8; i++) {
+                        double a = i * Math.PI / 4 + ring * 0.4, r = 5 + ring * 4;
+                        queue(s, c.x + Math.cos(a) * r, c.z + Math.sin(a) * r, 8 + ring * 8, 0);
+                    }
+            else
+                for (int i = 0; i < 6; i++) {
+                    double a = i * Math.PI / 3, r = 7;
+                    queue(s, c.x + Math.cos(a) * r, c.z + Math.sin(a) * r, 14, 1);
+                }
+            s.move = M_NONE;
+        }
+    }
+
+    /** 화염 휩쓸기: 공중에 멈춰 대상 쪽을 좌→우로 훑는 화염 숨결 (2페이즈: 화염+번개) */
+    private static void sweep(ServerLevel sl, EnderDragon d, DState s, LivingEntity tgt, boolean powered) {
+        int t = ++s.mt;
+        int len = 44;
+        if (t == 1) {
+            DSTATS[2]++;
+            Vec3 to = tgt.position().subtract(d.position());
+            s.sweepYaw = (float) Math.toDegrees(Math.atan2(to.x, -to.z));
+            sl.playSound(null, d.getX(), d.getY(), d.getZ(), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 7f, 1.0f);
+        }
+        hold(d, s.anchor);
+        if (t <= 12) {
+            d.setYRot(s.sweepYaw - 55);
+            Vec3 h = d.head.position();
+            sl.sendParticles(ParticleTypes.FLAME, h.x, h.y, h.z, 4, 0.4, 0.4, 0.4, 0.02);
+            return;
+        }
+        float k = (t - 12) / (float) len;
+        float yaw = s.sweepYaw - 55 + 110 * k;
+        d.setYRot(yaw);
+        Vec3 h = d.head.position();
+        Vec3 flat = new Vec3(Mth.sin(yaw * Mth.DEG_TO_RAD), 0, -Mth.cos(yaw * Mth.DEG_TO_RAD));
+        double drop = Math.max(0, h.y - tgt.getY() - 1);
+        double reach = 26;
+        Vec3 dir = flat.scale(reach).add(0, -drop, 0).normalize();
+        for (double q = 1; q < reach; q += 1.4) {
+            Vec3 p = h.add(dir.scale(q));
+            sl.sendParticles(ParticleTypes.FLAME, p.x, p.y, p.z, 2, 0.25 + q * 0.04, 0.25, 0.25 + q * 0.04, 0.02);
+            if (powered && sl.random.nextInt(3) == 0) sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, p.x, p.y, p.z, 1, 0.3, 0.3, 0.3, 0.2);
+        }
+        if (t % 4 == 0)
+            for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, new AABB(h, h).inflate(reach))) {
+                if (e == d) continue;
+                Vec3 rel = e.position().add(0, 1, 0).subtract(h);
+                double along = rel.dot(dir);
+                if (along < 0 || along > reach) continue;
+                if (rel.subtract(dir.scale(along)).length() < 1.6 + along * 0.08) {
+                    if (e.hurt(d.damageSources().indirectMagic(d, d), powered ? 7f : 5f)) DSTATS[9]++;
+                    e.igniteForSeconds(5);
+                }
+            }
+        if (powered && t % 8 == 0) {
+            Vec3 end = h.add(dir.scale(reach));
+            queue(s, end.x, end.z, 12, 0);
+        }
+        if (t >= 12 + len) s.move = M_NONE;
+    }
+
 
     // 추가 전리품
     @SubscribeEvent

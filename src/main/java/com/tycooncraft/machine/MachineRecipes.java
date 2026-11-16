@@ -106,6 +106,11 @@ public final class MachineRecipes {
                 r.add(MachineRecipe.of(ModItems.HELMET_3.get(), 1).in(ModItems.HELMET_2.get()).in(ModItems.STEEL_PLATE.get(), 5).in(Items.GLASS_PANE, 2).in(Items.DIAMOND).build());
                 r.add(MachineRecipe.of(ModItems.HELMET_2.get(), 1).in(ModItems.HELMET_1.get()).in(ModItems.STEEL_PLATE.get(), 3).build());
                 r.add(MachineRecipe.of(ModItems.HELMET_1.get(), 1).in(ModItems.IRON_PLATE.get(), 3).in(Items.LEATHER, 2).build());
+                // 중장갑 세트
+                r.add(MachineRecipe.of(ModItems.HELMET_4.get(), 1).in(ModItems.HELMET_3.get()).in(ModItems.STEEL_PLATE.get(), 6).in(Items.NETHERITE_SCRAP).in(Items.GLOWSTONE_DUST, 2).build());
+                r.add(MachineRecipe.of(ModItems.VEST_4.get(), 1).in(ModItems.VEST_3.get()).in(ModItems.STEEL_PLATE.get(), 10).in(Items.NETHERITE_SCRAP, 2).build());
+                r.add(MachineRecipe.of(ModItems.JUGGERNAUT_LEGGINGS.get(), 1).in(ModItems.STEEL_PLATE.get(), 7).in(Items.LEATHER, 3).in(Items.DIAMOND).build());
+                r.add(MachineRecipe.of(ModItems.COMBAT_BOOTS.get(), 1).in(ModItems.STEEL_PLATE.get(), 4).in(Items.LEATHER, 4).in(Items.SLIME_BALL, 2).build());
                 r.add(MachineRecipe.of(ModItems.PARACHUTE.get(), 1).in(Items.STRING, 8).in(Items.WHITE_WOOL, 4).in(Items.RED_WOOL, 2).in(Items.LEATHER, 2).build());
                 r.add(MachineRecipe.of(ModItems.CARTEL_FLARE.get(), 1).in(ModItems.GOLD_PLATE.get(), 2).in(Items.GUNPOWDER, 4).in(Items.REDSTONE, 2).in(ModItems.COIN_GOLD.get(), 5).build());
                 // 탈것 (부품 6종까지)

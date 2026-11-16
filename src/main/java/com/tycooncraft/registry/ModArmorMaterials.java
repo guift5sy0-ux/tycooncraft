@@ -26,6 +26,17 @@ public final class ModArmorMaterials {
             }), 1, SoundEvents.ARMOR_EQUIP_LEATHER, () -> Ingredient.EMPTY,
             List.of(new ArmorMaterial.Layer(TycoonCraft.id("parachute"))), 0f, 0f));
 
+    /** 중장갑(저거넛) 세트: 4부위 모두 방어력 */
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> JUGGERNAUT = MATERIALS.register("juggernaut", () -> new ArmorMaterial(
+            Util.make(new EnumMap<>(ArmorItem.Type.class), m -> {
+                m.put(ArmorItem.Type.HELMET, 4);
+                m.put(ArmorItem.Type.CHESTPLATE, 9);
+                m.put(ArmorItem.Type.LEGGINGS, 6);
+                m.put(ArmorItem.Type.BOOTS, 3);
+                m.put(ArmorItem.Type.BODY, 0);
+            }), 12, SoundEvents.ARMOR_EQUIP_NETHERITE, () -> Ingredient.of(ModItems.STEEL_PLATE.get()),
+            List.of(new ArmorMaterial.Layer(TycoonCraft.id("juggernaut"))), 3.5f, 0.15f));
+
     private static DeferredHolder<ArmorMaterial, ArmorMaterial> tactical(String name, int helmet, int chest, float toughness, float kb) {
         return MATERIALS.register(name, () -> new ArmorMaterial(
                 Util.make(new EnumMap<>(ArmorItem.Type.class), m -> {

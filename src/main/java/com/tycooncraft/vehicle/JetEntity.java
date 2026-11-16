@@ -2,6 +2,7 @@ package com.tycooncraft.vehicle;
 
 import com.tycooncraft.entity.RocketEntity;
 import com.tycooncraft.gun.Ballistics;
+import com.tycooncraft.gun.GunItem;
 import com.tycooncraft.registry.ModEntities;
 import com.tycooncraft.registry.ModItems;
 import com.tycooncraft.registry.ModSounds;
@@ -209,7 +210,7 @@ public class JetEntity extends VehicleEntity {
             for (int k = -1; k <= 1; k += 2) {
                 Vec3 side = Vec3.directionFromRotation(0, getYRot() + 90).scale(k * 0.6);
                 Vec3 spread = dir.add(random.nextGaussian() * 0.012, random.nextGaussian() * 0.012, random.nextGaussian() * 0.012).normalize();
-                Ballistics.shoot((ServerLevel) level(), player, nose.add(side), spread, 120, 8f, 0, 1.5f, false, true,
+                Ballistics.shoot((ServerLevel) level(), player, nose.add(side), spread, 120, 8f * GunItem.DAMAGE_SCALE, 0, 1.5f, false, true,
                         level().damageSources().playerAttack(player), e -> e != this && !hasPassenger(e));
             }
             level().playSound(null, nose.x, nose.y, nose.z, ModSounds.RIFLE_FIRE.get(), SoundSource.PLAYERS, 3.0f, 1.35f);

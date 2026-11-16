@@ -111,6 +111,11 @@ public final class ModItems {
     public static final DeferredItem<GearItem> HELMET_1 = gear("helmet_1", ModArmorMaterials.TACTICAL_LIGHT, ArmorItem.Type.HELMET, 15, "tooltip.tycooncraft.helmet", 20);
     public static final DeferredItem<GearItem> HELMET_2 = gear("helmet_2", ModArmorMaterials.TACTICAL_MEDIUM, ArmorItem.Type.HELMET, 25, "tooltip.tycooncraft.helmet", 35);
     public static final DeferredItem<GearItem> HELMET_3 = gear("helmet_3", ModArmorMaterials.TACTICAL_HEAVY, ArmorItem.Type.HELMET, 35, "tooltip.tycooncraft.helmet", 50);
+    // 중장갑 세트 (4종)
+    public static final DeferredItem<GearItem> HELMET_4 = gear("helmet_4", ModArmorMaterials.JUGGERNAUT, ArmorItem.Type.HELMET, 45, "tooltip.tycooncraft.helmet", 65);
+    public static final DeferredItem<GearItem> VEST_4 = gear("vest_4", ModArmorMaterials.JUGGERNAUT, ArmorItem.Type.CHESTPLATE, 45, "tooltip.tycooncraft.vest", 45);
+    public static final DeferredItem<GearItem> JUGGERNAUT_LEGGINGS = gear("juggernaut_leggings", ModArmorMaterials.JUGGERNAUT, ArmorItem.Type.LEGGINGS, 45, "tooltip.tycooncraft.jugg_legs", 8);
+    public static final DeferredItem<GearItem> COMBAT_BOOTS = gear("combat_boots", ModArmorMaterials.JUGGERNAUT, ArmorItem.Type.BOOTS, 45, "tooltip.tycooncraft.jugg_boots", 5);
     public static final DeferredItem<GearItem> PARACHUTE = ITEMS.register("parachute", () -> new GearItem(ModArmorMaterials.PARACHUTE, ArmorItem.Type.LEGGINGS,
             new Item.Properties().stacksTo(1), "tooltip.tycooncraft.parachute"));
 

@@ -266,9 +266,15 @@
   "item.tycooncraft.behemoth_heart": "Heart of the Behemoth",
   "item.tycooncraft.storm_scale": "Storm Scale",
   "item.tycooncraft.storm_orb": "Storm Orb",
-  "message.tycooncraft.wither.rise": "☠ The Abyssal Wither awakens…",
+  "message.tycooncraft.wither.rise": "☠ The Infernal Wither awakens…",
   "message.tycooncraft.wither.awaken": "☠ The Wither is empowered! Soul knights have risen",
-  "message.tycooncraft.dragon.awaken": "✦ The Void Lord awakens! Watch your footing",
-  "entity.minecraft.wither": "Abyssal Wither",
-  "entity.minecraft.ender_dragon": "Void Lord Ender Dragon"
+  "message.tycooncraft.dragon.awaken": "✦ The Void Lord awakens! Red lightning and fire erupt — get back!",
+  "entity.minecraft.wither": "Infernal Wither",
+  "entity.minecraft.ender_dragon": "Void Lord Ender Dragon",
+  "item.tycooncraft.helmet_4": "Juggernaut Helmet (IV)",
+  "item.tycooncraft.vest_4": "Juggernaut Plate Carrier (IV)",
+  "item.tycooncraft.juggernaut_leggings": "Juggernaut Leggings",
+  "item.tycooncraft.combat_boots": "Juggernaut Combat Boots",
+  "tooltip.tycooncraft.jugg_legs": "Extra body bullet damage -%s%% · Full set: explosion damage -25%%",
+  "tooltip.tycooncraft.jugg_boots": "Extra body bullet damage -%s%% · Fall damage -40%%"
 }
