@@ -723,12 +723,9 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             Cell cell = cells.get(i);
             double d = cellCenter(cell).distanceTo(c);
             nearest = Math.min(nearest, d);
-            if (d > r * 2) continue;
-            float res = cell.state.getBlock().getExplosionResistance();
-            // 바닐라 폭발 광선과 같은 감쇠: 세기 r·(0.7~1.3) − 거리·0.75 − (저항+0.3)·0.3
-            double f = r * (0.7 + random.nextDouble() * 0.6) - d * 0.75 - (res + 0.3) * 0.3;
             // 선체(기체)는 안 부서짐 — 부유체·엔진만 파괴될 수 있다
-            if (f > 0 && fragile(cell)) broken.add(i);
+            if (d > r * 2 || !fragile(cell)) continue;
+            if (rayReaches(c, cell, r * (0.7 + random.nextDouble() * 0.6))) broken.add(i);
         }
         if (nearest > r * 2) return;
         // 충격: 폭발 반대쪽으로 밀리고 기울어짐
@@ -744,6 +741,48 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             updateBoxes();
         }
         if (!broken.isEmpty()) removeCells(broken, r);
+    }
+
+    public static int SHIELDED;
+
+    /**
+     * 바닐라 폭발 광선처럼 0.3칸씩 나아가며 감쇠: 칸마다 0.225, 블록 안이면 (저항+0.3)·0.3 추가.
+     * 사이에 있는 선체 블록·지형이 막아 준다 → 철판 한 겹이면 RPG 를 거의 다 막음, 판자는 2~3겹.
+     */
+    boolean rayReaches(Vec3 from, Cell target, double f) {
+        Vec3 to = cellCenter(target);
+        Vec3 d = to.subtract(from);
+        double len = d.length();
+        int steps = Math.max(1, (int) Math.ceil(len / 0.3));
+        Vec3 step = d.scale(1.0 / steps);
+        BlockPos.MutableBlockPos bp = new BlockPos.MutableBlockPos();
+        boolean blocked = false;
+        for (int i = 0; i <= steps && f > 0; i++) {
+            Vec3 p = from.add(step.scale(i));
+            Vec3 l = toLocal(p);
+            Cell c = cellAt(Mth.floor(l.x), Mth.floor(l.y), Mth.floor(l.z));
+            float res = -1;
+            if (c == target) {        // 목표에 닿음: 바닐라처럼 그 블록 저항을 한 번 빼고 남은 힘이 있으면 파괴
+                boolean hit = f - (c.state.getBlock().getExplosionResistance() + 0.3f) * 0.3f > 0;
+                if (!hit && blocked) SHIELDED++;
+                return hit;
+            }
+            if (c != null) {
+                res = c.state.getBlock().getExplosionResistance();
+                blocked = true;
+            } else {
+                bp.set(Mth.floor(p.x), Mth.floor(p.y), Mth.floor(p.z));
+                BlockState st = level().getBlockState(bp);
+                if (!st.isAir()) {
+                    res = Math.max(st.getBlock().getExplosionResistance(), level().getFluidState(bp).getExplosionResistance());
+                    blocked = true;
+                }
+            }
+            if (res >= 0) f -= (res + 0.3f) * 0.3f;
+            f -= 0.225;
+        }
+        if (blocked) SHIELDED++;
+        return false;
     }
 
     /** 피격·추락으로 부서질 수 있는 셀: 부유체와 엔진뿐 (플레이어가 지은 선체는 보호) */

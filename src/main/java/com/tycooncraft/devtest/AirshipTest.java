@@ -164,6 +164,52 @@ public final class AirshipTest {
         }
     }
 
+    // ── 3차: 장갑으로 부유체 보호 — 노출된 부유체 vs 철 블록으로 감싼 부유체 ──
+    static ShipEntity armor;
+
+    static void tick3(ServerLevel level, int t, int gy) {
+        int x0 = 150, z0 = 122;
+        if (t == 1700) {
+            for (int x = x0 - 3; x <= x0 + 7; x++)
+                for (int z = z0 - 5; z <= z0 + 6; z++) {
+                    level.setBlockAndUpdate(new BlockPos(x, gy - 1, z), Blocks.STONE.defaultBlockState());
+                    for (int dy = 0; dy < 8; dy++) level.setBlockAndUpdate(new BlockPos(x, gy + dy, z), Blocks.AIR.defaultBlockState());
+                }
+            for (int x = x0; x <= x0 + 4; x++)
+                for (int z = z0; z <= z0 + 4; z++) level.setBlockAndUpdate(new BlockPos(x, gy, z), Blocks.SPRUCE_PLANKS.defaultBlockState());
+            BlockPos helm = new BlockPos(x0 + 2, gy + 1, z0 + 2);
+            level.setBlockAndUpdate(helm, ModBlocks.SHIP_HELM.get().defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+            level.setBlockAndUpdate(new BlockPos(x0 + 2, gy + 1, z0 + 4), ModBlocks.SHIP_MOTOR.get().defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+            level.setBlockAndUpdate(new BlockPos(x0, gy + 1, z0), ModBlocks.SHIP_FLOAT.get().defaultBlockState());          // 노출
+            level.setBlockAndUpdate(new BlockPos(x0 + 4, gy + 1, z0), ModBlocks.SHIP_FLOAT.get().defaultBlockState());      // 장갑
+            for (BlockPos p : new BlockPos[]{new BlockPos(x0 + 4, gy + 1, z0 - 1), new BlockPos(x0 + 5, gy + 1, z0), new BlockPos(x0 + 4, gy + 2, z0),
+                    new BlockPos(x0 + 3, gy + 1, z0), new BlockPos(x0 + 5, gy + 1, z0 - 1), new BlockPos(x0 + 3, gy + 1, z0 - 1)})
+                level.setBlockAndUpdate(p, Blocks.IRON_BLOCK.defaultBlockState());
+            armor = ShipAssembler.assemble(level, helm, null);
+            System.out.println("[AUTOTEST] v16 armor assembled=" + (armor != null) + (armor == null ? "" : " cells=" + armor.cells().size() + " floats=" + armor.floatCount()));
+        }
+        if (armor == null || armor.isRemoved()) return;
+        if (t > 1700 && t <= 1740 && t % 5 == 0) {   // 각 부유체 정면 2칸 앞에서 RPG 급(3.5) 폭발 8번씩
+            level.explode(null, x0 + 0.5, gy + 1.5, z0 - 2.0, 3.5f, net.minecraft.world.level.Level.ExplosionInteraction.TNT);
+            level.explode(null, x0 + 4.5, gy + 1.5, z0 - 2.5, 3.5f, net.minecraft.world.level.Level.ExplosionInteraction.TNT);
+        }
+        if (t == 1750) {
+            boolean exposed = false, shielded = false;
+            Vec3 o = armor.position();
+            for (var c : armor.cells())
+                if (c.state().getBlock() instanceof com.tycooncraft.ship.ShipFloatBlock) {
+                    Vec3 w = armor.cellCenter(c);
+                    if (w.x < x0 + 2) exposed = true;
+                    else shielded = true;
+                }
+            long iron = armor.cells().stream().filter(c -> c.state().is(Blocks.IRON_BLOCK)).count();
+            System.out.println("[AUTOTEST] v16 armor exposedFloatSurvived=" + exposed + " shieldedFloatSurvived=" + shielded
+                    + " ironLeft=" + iron + "/6 shieldedRays=" + ShipEntity.SHIELDED);
+            armor.disassemble(null);
+            armor = null;
+        }
+    }
+
     // ── 클라이언트 스크린샷용 ──
     public static ShipEntity clientShip;
 
