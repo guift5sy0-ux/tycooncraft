@@ -82,6 +82,13 @@ public class RocketEntity extends Projectile {
         }
     }
 
+    /** 요격당함: 탄두가 공중에서 약하게 터진다 */
+    public void intercept() {
+        if (level().isClientSide || isRemoved()) return;
+        power *= 0.5f;
+        explode();
+    }
+
     private void explode() {
         if (level().isClientSide || isRemoved()) return;
         level().explode(this, damageSources().explosion(this, getOwner()), null, getX(), getY(), getZ(), power, false, Level.ExplosionInteraction.MOB);

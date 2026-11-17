@@ -573,7 +573,16 @@ public final class AutoTestClient {
             case 2450 -> serverDo(mc, sp -> {
                 if (AirshipTest.clientShip != null) System.out.printf("[AUTOTEST] v16 clientair y=%.2f fuel=%d%n", AirshipTest.clientShip.getY() - g, AirshipTest.clientShip.fuel());
             });
-            case 2455 -> next(11);
+            // ── v0.16: 방공 요격 포대 ──
+            case 2455 -> serverDo(mc, sp -> {
+                CiwsTest.clientSetup(sp.serverLevel(), (int) g);
+                sp.teleportTo(sp.serverLevel(), 7.5, g + 2.5, -80.5, 124f, -8f);
+            });
+            case 2462, 2470, 2478, 2486 -> serverDo(mc, sp -> CiwsTest.clientRocket(sp.serverLevel(), (int) g));
+            case 2468 -> shot(mc, "64_ciws_tracking");
+            case 2476 -> shot(mc, "65_ciws_intercept");
+            case 2500 -> serverDo(mc, sp -> System.out.println("[AUTOTEST] v16 clientciws kills=" + com.tycooncraft.turret.Interceptor.KILLS + " shots=" + com.tycooncraft.turret.Interceptor.SHOTS));
+            case 2505 -> next(11);
             default -> {
             }
         }

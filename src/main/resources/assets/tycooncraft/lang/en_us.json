@@ -367,5 +367,8 @@
   "message.tycooncraft.ship.hud_air": "🎈 ⛽ %s%% (%s) · %s blocks/s · altitude %s",
   "message.tycooncraft.ship.refueled": "⛽ Refueled: %s / %s",
   "message.tycooncraft.ship.fuel_status": "⛽ This transporter: %s engines · fuel %s / %s · %s floats · %s blocks",
-  "message.tycooncraft.ship.fail.not_enough_floats": "Not enough lift floats: %s floats lift %s blocks — this one has %s blocks, needs %s"
+  "message.tycooncraft.ship.fail.not_enough_floats": "Not enough lift floats: %s floats lift %s blocks — this one has %s blocks, needs %s",
+  "block.tycooncraft.ciws": "CIWS Interceptor",
+  "tooltip.tycooncraft.ciws": "Shoots down incoming RPGs, shells, missiles, grenades, fireballs and kamikaze drones within 40 blocks. Ignores yours and your team's · heavy ammo = 4 rounds, light = 2 · works on transporters",
+  "message.tycooncraft.ship.fail.too_strong": "%s is far too blast-proof to use in a hull (at %s, %s, %s)"
 }

@@ -367,5 +367,8 @@
   "message.tycooncraft.ship.hud_air": "🎈 ⛽ %s%% (%s) · 속도 %s칸/초 · 고도 %s",
   "message.tycooncraft.ship.refueled": "⛽ 주유 완료: %s / %s",
   "message.tycooncraft.ship.fuel_status": "⛽ 이 운송기 엔진 %s개 · 연료 합계 %s / %s · 부유체 %s개 · 블록 %s개",
-  "message.tycooncraft.ship.fail.not_enough_floats": "부유체가 부족해요: %s개로는 %s블록까지 — 지금 %s블록이라 %s개가 필요해요"
+  "message.tycooncraft.ship.fail.not_enough_floats": "부유체가 부족해요: %s개로는 %s블록까지 — 지금 %s블록이라 %s개가 필요해요",
+  "block.tycooncraft.ciws": "방공 요격 포대",
+  "tooltip.tycooncraft.ciws": "40블록 안으로 날아오는 RPG·포탄·미사일·수류탄·화염구·자폭 드론을 자동으로 쏴서 공중에서 터뜨려요. 내가·우리 팀이 쏜 건 무시 · 중탄 1개=4발, 경탄=2발 · 운송기에 실어도 작동",
+  "message.tycooncraft.ship.fail.too_strong": "%s처럼 준 파괴 불가급 블록은 선체에 쓸 수 없어요 (위치 %s, %s, %s)"
 }

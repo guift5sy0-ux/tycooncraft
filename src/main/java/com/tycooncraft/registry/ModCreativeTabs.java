@@ -35,6 +35,7 @@ public final class ModCreativeTabs {
                         out.accept(ModItems.TANK.get());
                         out.accept(ModItems.FIGHTER_JET.get());
                         out.accept(ModItems.TURRET.get());
+                        out.accept(ModItems.CIWS.get());
                         out.accept(ModItems.AUTO_MINER.get());
                         out.accept(ModItems.DRILL_HEAD.get());
                         out.accept(ModItems.WHEEL.get());

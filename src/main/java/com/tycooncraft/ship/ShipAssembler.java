@@ -40,7 +40,7 @@ public final class ShipAssembler {
                 || s.is(Blocks.TALL_SEAGRASS) || s.is(Blocks.SEA_PICKLE) || s.is(BlockTags.CORAL_BLOCKS) || s.is(BlockTags.CORALS)
                 || s.is(BlockTags.WALL_CORALS) || s.is(Blocks.BEDROCK) || s.is(BlockTags.ICE) || s.is(BlockTags.LEAVES)
                 || s.is(Blocks.LILY_PAD) || s.is(Blocks.SUGAR_CANE) || s.is(BlockTags.SNOW) || s.is(Blocks.MAGMA_BLOCK)
-                || s.is(BlockTags.TERRACOTTA) || s.is(Blocks.OBSIDIAN) || s.is(BlockTags.COAL_ORES) || s.is(BlockTags.IRON_ORES));
+                || s.is(BlockTags.TERRACOTTA) || s.is(BlockTags.COAL_ORES) || s.is(BlockTags.IRON_ORES));
     }
 
     /** 엔진에서 이어진 구조물 전체: {엔진 수, 연료 합, 용량, 부유체 수, 블록 수} */
@@ -66,6 +66,11 @@ public final class ShipAssembler {
         return r;
     }
 
+    /** 흑요석·우는 흑요석·네더라이트 블록·모루 등 폭발 저항 1000 이상(준 파괴 불가급)은 선체 금지 */
+    public static boolean tooStrong(BlockState s) {
+        return s.getBlock().getExplosionResistance() >= 1000f;
+    }
+
     @Nullable
     public static ShipEntity assemble(ServerLevel level, BlockPos helmPos, @Nullable Player player) {
         BlockState helmState = level.getBlockState(helmPos);
@@ -80,6 +85,7 @@ public final class ShipAssembler {
             BlockState s = level.getBlockState(p);
             if (!partOfShip(s)) continue;
             if (s.getDestroySpeed(level, p) < 0) return fail(player, "unbreakable");
+            if (tooStrong(s)) return fail(player, "too_strong", s.getBlock().getName(), p.getX(), p.getY(), p.getZ());
             if (s.getBlock() instanceof ShipHelmBlock && !p.equals(helmPos)) return fail(player, "two_helms");
             found.add(p);
             if (found.size() > MAX_BLOCKS) return fail(player, "too_big", MAX_BLOCKS);

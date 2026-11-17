@@ -56,6 +56,8 @@ public final class ModBlocks {
     }
 
     // ── 폐공장 장식 ──
+    public static final DeferredBlock<com.tycooncraft.turret.CiwsBlock> CIWS = BLOCKS.register("ciws",
+            () -> new com.tycooncraft.turret.CiwsBlock(machineProps().strength(5.0f, 12.0f).requiresCorrectToolForDrops().noOcclusion()));
     public static final DeferredBlock<com.tycooncraft.turret.TurretBlock> TURRET = BLOCKS.register("turret",
             () -> new com.tycooncraft.turret.TurretBlock(machineProps().strength(4.0f, 12.0f).requiresCorrectToolForDrops().noOcclusion()));
     public static final DeferredBlock<net.minecraft.world.level.block.DropExperienceBlock> SULFUR_ORE = BLOCKS.register("sulfur_ore",

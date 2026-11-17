@@ -92,6 +92,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         public float yaw, yawO, pitch, pitchO;
     }
     final Map<Long, Turret> turrets = new HashMap<>();
+    final Map<Long, com.tycooncraft.turret.Interceptor.State> ciws = new HashMap<>();
     public static int TURRET_SHOTS, BLAST_CELLS, CONVEYOR_PUSHES, CRASHES;
     private double vspeed, fuelAcc;
     private int fuel, floats;
@@ -219,7 +220,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             if (c.state.getBlock() instanceof ShipMotorBlock) motors++;
             if (c.state.getBlock() instanceof ShipFloatBlock) floats++;
             if (c.state.getBlock() instanceof com.tycooncraft.block.ConveyorBlock) hasConveyor = true;
-            if (c.state.getBlock() instanceof com.tycooncraft.turret.TurretBlock) hasTurret = true;
+            if (c.state.getBlock() instanceof com.tycooncraft.turret.TurretBlock || c.state.getBlock() instanceof com.tycooncraft.turret.CiwsBlock) hasTurret = true;
             index.put(key(c.x, c.y, c.z), i);
             if (c.state.getBlock() instanceof ShipHelmBlock) helm = i;
         }
@@ -574,6 +575,20 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     private void tickTurrets(ServerLevel sl, boolean powered) {
         boolean changed = false;
         for (Cell c : cells) {
+            if (c.state.getBlock() instanceof com.tycooncraft.turret.CiwsBlock) {   // 실린 요격 포대
+                long k = key(c.x, c.y, c.z);
+                var st = ciws.computeIfAbsent(k, kk -> new com.tycooncraft.turret.Interceptor.State());
+                Vec3 m = turretMuzzle(c);
+                absorbAmmo(sl, c, m);
+                java.util.UUID owner = c.be != null && c.be.hasUUID("Owner") ? c.be.getUUID("Owner") : null;
+                if (powered) {
+                    int before = st.target;
+                    com.tycooncraft.turret.Interceptor.tick(sl, m, st, owner, () -> takeAmmo(c), this);
+                    if (before != st.target) changed = true;
+                    turrets.computeIfAbsent(k, kk -> new Turret()).target = st.target;
+                }
+                continue;
+            }
             if (!(c.state.getBlock() instanceof com.tycooncraft.turret.TurretBlock)) continue;
             long k = key(c.x, c.y, c.z);
             Turret t = turrets.computeIfAbsent(k, kk -> new Turret());
@@ -668,7 +683,8 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     private void clientTurrets() {
         CompoundTag tag = entityData.get(TURRETS);
         for (Cell c : cells) {
-            if (!(c.state.getBlock() instanceof com.tycooncraft.turret.TurretBlock)) continue;
+            boolean isCiws = c.state.getBlock() instanceof com.tycooncraft.turret.CiwsBlock;
+            if (!(c.state.getBlock() instanceof com.tycooncraft.turret.TurretBlock) && !isCiws) continue;
             long k = key(c.x, c.y, c.z);
             Turret t = turrets.computeIfAbsent(k, kk -> new Turret());
             t.yawO = t.yaw;
@@ -685,8 +701,8 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
                 tp = 0;
             }
             float dy = Mth.wrapDegrees((ty - t.yaw) * Mth.RAD_TO_DEG) * Mth.DEG_TO_RAD;
-            t.yaw += Mth.clamp(dy, -0.25f, 0.25f);
-            t.pitch += Mth.clamp(tp - t.pitch, -0.15f, 0.15f);
+            t.yaw += Mth.clamp(dy, isCiws ? -0.6f : -0.25f, isCiws ? 0.6f : 0.25f);
+            t.pitch += Mth.clamp(tp - t.pitch, isCiws ? -0.4f : -0.15f, isCiws ? 0.4f : 0.15f);
         }
     }
 
@@ -747,6 +763,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
                 sl.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK, c.state), w.x, w.y, w.z, 8, 0.3, 0.3, 0.3, 0.1);
             keys.add(key(c.x, c.y, c.z));
             turrets.remove(key(c.x, c.y, c.z));
+            ciws.remove(key(c.x, c.y, c.z));
             cells.remove(i);
             BLAST_CELLS++;
         }

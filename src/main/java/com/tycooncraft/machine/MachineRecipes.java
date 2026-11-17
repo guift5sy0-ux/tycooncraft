@@ -100,6 +100,8 @@ public final class MachineRecipes {
                 for (Item[] w : wood) r.add(MachineRecipe.of(w[1], 6).in(w[0]).build());
             }
             case ASSEMBLER -> {
+                r.add(MachineRecipe.of(ModItems.CIWS.get(), 1).in(ModItems.TURRET.get()).in(ModItems.GUN_BARREL.get(), 6).in(ModItems.ELECTRIC_MOTOR.get())
+                        .in(ModItems.ADVANCED_CIRCUIT.get(), 2).in(ModItems.CONTROL_BOARD.get()).in(ModItems.STEEL_PLATE.get(), 4).build());
                 // ── 산업 완제품·부품 (신규 재료가 들어가 기존 레시피와 겹치지 않음) ──
                 r.add(MachineRecipe.of(ModItems.INDUSTRIAL_ROBOT_ARM.get(), 1).in(ModItems.ELECTRIC_MOTOR.get(), 3).in(ModItems.GEARBOX.get(), 2).in(ModItems.CONTROL_BOARD.get()).in(ModItems.HYDRAULIC_CYLINDER.get(), 2).in(ModItems.ALUMINUM_PLATE.get(), 4).in(ModItems.BOLT.get(), 8).build());
                 r.add(MachineRecipe.of(ModItems.TRANSFORMER.get(), 1).in(ModItems.COPPER_COIL.get(), 2).in(ModItems.STEEL_PLATE.get(), 4).in(ModItems.FIBERGLASS.get(), 2).in(ModItems.INSULATED_CABLE.get(), 2).build());

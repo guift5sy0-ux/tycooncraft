@@ -236,6 +236,7 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> LIFT_DOWN = ITEMS.registerSimpleBlockItem(ModBlocks.LIFT_DOWN);
     public static final DeferredItem<BlockItem> BROKEN_MACHINE = ITEMS.registerSimpleBlockItem(ModBlocks.BROKEN_MACHINE);
     public static final DeferredItem<BlockItem> TURRET = ITEMS.registerSimpleBlockItem(ModBlocks.TURRET);
+    public static final DeferredItem<BlockItem> CIWS = ITEMS.registerSimpleBlockItem(ModBlocks.CIWS);
     public static final List<DeferredItem<BlockItem>> MACHINE_ITEMS = new ArrayList<>();
     static {
         for (MachineType type : MachineType.values()) {

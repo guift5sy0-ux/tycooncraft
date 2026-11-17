@@ -38,6 +38,8 @@ public final class VehicleModels {
     public static final ModelResourceLocation SHELL = id("shell");
     public static final ModelResourceLocation TURRET_HEAD = id("turret_head");
     public static final ModelResourceLocation TURRET_GUN = id("turret_gun");
+    public static final ModelResourceLocation CIWS_HEAD = id("ciws_head");
+    public static final ModelResourceLocation CIWS_GUN = id("ciws_gun");
     public static final ModelResourceLocation CHUTE_CANOPY = id("parachute_canopy");
     public static final ModelResourceLocation CHUTE_PACK = id("parachute_pack");
     public static final ModelResourceLocation MINER_BODY = id("miner_body");
@@ -47,7 +49,7 @@ public final class VehicleModels {
     public static final ModelResourceLocation GANG_TRUCK_WHEEL = id("gang_truck_wheel");
     public static final ModelResourceLocation GANG_MG = id("gang_mg");
     public static final ModelResourceLocation[] ALL = {GANG_TRUCK_BODY, GANG_TRUCK_WHEEL, GANG_MG, MINER_BODY, MINER_WHEEL, MINER_DRILL, CAR_BODY, CAR_WHEEL, LOCO_BODY, LOCO_WHEELS, HELI_BODY, HELI_ROTOR, HELI_TAIL_ROTOR, DRONE_BODY, DRONE_PROP,
-            DRONE2_BODY, DRONE_PROP2, TANK_HULL, TANK_WHEEL, TANK_TURRET, TANK_BARREL, JET_BODY, ROCKET, SHELL, TURRET_HEAD, TURRET_GUN, CHUTE_CANOPY, CHUTE_PACK};
+            DRONE2_BODY, DRONE_PROP2, TANK_HULL, TANK_WHEEL, TANK_TURRET, TANK_BARREL, JET_BODY, ROCKET, SHELL, TURRET_HEAD, TURRET_GUN, CIWS_HEAD, CIWS_GUN, CHUTE_CANOPY, CHUTE_PACK};
 
     private static ModelResourceLocation id(String name) {
         return ModelResourceLocation.standalone(TycoonCraft.id("vehicle/" + name));
