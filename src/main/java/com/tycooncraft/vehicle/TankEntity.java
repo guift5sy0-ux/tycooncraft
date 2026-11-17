@@ -82,6 +82,8 @@ public class TankEntity extends VehicleEntity {
         else if (th < 0) speed += (-0.2 - speed) * 0.05;
         else speed *= 0.85;
         if (Math.abs(speed) < 0.004) speed = 0;
+        // 포탄 반동·폭발 넉백으로 생긴 초과 속도가 4%씩만 줄어 시속 90km 까지 나오던 버그: 최고 속도(전진 0.42, 후진 0.2)로 즉시 제한
+        speed = Mth.clamp(speed, -0.22, 0.44);
         float turn = hasFuel ? -in.strafe() * 3.6f : 0;
         deltaRotation = 0;
         setYRot(getYRot() + turn);

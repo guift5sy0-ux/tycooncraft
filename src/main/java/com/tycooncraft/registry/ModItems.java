@@ -89,7 +89,7 @@ public final class ModItems {
     public static final DeferredItem<GunItem> DUAL_PISTOLS = ITEMS.register("dual_pistols", () -> new GunItem(new Item.Properties(),
             new GunStats(5.5f, 1, 0.032f, 40, 24, 2, 22, true, false, 1.3f, LIGHT_AMMO, ModSounds.PISTOL_FIRE, ModSounds.PISTOL_RELOAD)));
     public static final DeferredItem<RpgItem> RPG = ITEMS.register("rpg", () -> new RpgItem(new Item.Properties(),
-            new GunStats(0f, 1, 0f, 0, 1, 20, 50, false, false, 5f, ModItems.ROCKET, ModSounds.RPG_FIRE, ModSounds.RIFLE_RELOAD)));
+            new GunStats(0f, 1, 0f, 0, 1, 20, 36, false, false, 5f, ModItems.ROCKET, ModSounds.RPG_FIRE, ModSounds.RIFLE_RELOAD)));
     /** 날카로운 반자동 "이계의 심판자": 네더라이트 5 + 권총 + 드래곤 알 + 신호기 2 */
     public static final DeferredItem<com.tycooncraft.gun.JudgeItem> JUDGE = ITEMS.register("judge", () -> new com.tycooncraft.gun.JudgeItem(
             new Item.Properties().fireResistant().rarity(net.minecraft.world.item.Rarity.EPIC).durability(com.tycooncraft.gun.JudgeItem.DURABILITY)
@@ -230,6 +230,7 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> TRANSMISSION = ITEMS.registerSimpleBlockItem(ModBlocks.TRANSMISSION);
     public static final DeferredItem<BlockItem> SHIP_MOTOR = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_MOTOR);
     public static final DeferredItem<BlockItem> SHIP_BOOSTER = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_BOOSTER);
+    public static final DeferredItem<BlockItem> SETTER = ITEMS.registerSimpleBlockItem(ModBlocks.SETTER);
     public static final DeferredItem<BlockItem> SHIP_HELM = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_HELM);
     public static final DeferredItem<BlockItem> SHIP_FLOAT = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_FLOAT);
     public static final DeferredItem<BlockItem> EMP_GENERATOR = ITEMS.registerSimpleBlockItem(ModBlocks.EMP_GENERATOR);

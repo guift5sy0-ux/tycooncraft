@@ -601,7 +601,11 @@ public final class AutoTestClient {
             }
             case 2569 -> serverDo(mc, sp -> System.out.printf("[AUTOTEST] v16 dismount onDeck=%s y=%.2f shipY=%.2f%n",
                     AirshipTest.seatShip != null && AirshipTest.seatShip.standingOn(sp, 0.3), sp.getY(), AirshipTest.seatShip == null ? 0 : AirshipTest.seatShip.getY()));
-            case 2570 -> next(11);
+            // ── v0.16.9: 왼손 총 금지 ──
+            case 2571 -> serverDo(mc, sp -> sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.RPG.get())));
+            case 2580 -> serverDo(mc, sp -> System.out.println("[AUTOTEST] v16 offhand rpgStillInOffhand=" + sp.getOffhandItem().is(com.tycooncraft.registry.ModItems.RPG.get())
+                    + " rpgInBag=" + sp.getInventory().contains(new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.RPG.get())) + " blocked=" + com.tycooncraft.gun.GunEvents.OFFHAND_BLOCKED));
+            case 2585 -> next(11);
             default -> {
             }
         }

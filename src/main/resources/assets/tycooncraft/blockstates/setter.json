@@ -1,0 +1,26 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "tycooncraft:block/setter"
+    },
+    "facing=east": {
+      "model": "tycooncraft:block/setter",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "tycooncraft:block/setter",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "tycooncraft:block/setter",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "tycooncraft:block/setter_vertical"
+    },
+    "facing=down": {
+      "model": "tycooncraft:block/setter_vertical",
+      "x": 180
+    }
+  }
+}

@@ -24,6 +24,11 @@ public final class GunEvents {
             return;
         }
         ItemStack main = p.getMainHandItem();
+        if (main.getItem() instanceof GunItem && !main.is(ModItems.VSS.get())) {   // 총(RPG 포함)은 왼손으로 못 옮김
+            event.setCanceled(true);
+            p.displayClientMessage(Component.translatable("message.tycooncraft.gun.no_offhand").withStyle(ChatFormatting.RED), true);
+            return;
+        }
         if (main.is(ModItems.VSS.get())) {
             event.setCanceled(true);
             int mode = GunItem.fireMode(main) == 0 ? 1 : 0;
@@ -33,6 +38,22 @@ public final class GunEvents {
                     .withStyle(ChatFormatting.YELLOW), true);
             p.level().playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.LEVER_CLICK, SoundSource.PLAYERS, 0.6f, 1.6f);
         }
+    }
+
+    public static int OFFHAND_BLOCKED;
+
+    /** 인벤토리에서 끌어다 놓는 경우까지: 왼손에 총이 있으면 가방으로 돌려보냄(가득 차면 떨굼) */
+    @SubscribeEvent
+    public static void onPlayerTick(net.neoforged.neoforge.event.tick.PlayerTickEvent.Post event) {
+        Player p = event.getEntity();
+        if (p.level().isClientSide) return;
+        ItemStack off = p.getOffhandItem();
+        if (!(off.getItem() instanceof GunItem)) return;
+        ItemStack moved = off.copy();
+        p.setItemSlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+        if (!p.getInventory().add(moved)) p.drop(moved, false);
+        OFFHAND_BLOCKED++;
+        p.displayClientMessage(Component.translatable("message.tycooncraft.gun.no_offhand").withStyle(ChatFormatting.RED), true);
     }
 
     @SubscribeEvent

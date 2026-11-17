@@ -118,6 +118,7 @@ public class GunItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
+        if (hand == InteractionHand.OFF_HAND) return InteractionResultHolder.fail(stack);   // 왼손 사격 금지
         if (player.getCooldowns().isOnCooldown(this)) return InteractionResultHolder.fail(stack);
 
         if (player.isShiftKeyDown()) {
