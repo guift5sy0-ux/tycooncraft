@@ -68,7 +68,7 @@ public class ShipRenderer extends EntityRenderer<ShipEntity> {
     }
 
     /** 타륜 허브 위치(px, 남쪽 바라보는 기본 방향) */
-    private static final float HUB_X = 8, HUB_Y = 19, HUB_Z = 13.0f;
+    private static final float HUB_X = 8, HUB_Y = 16.5f, HUB_Z = 13.0f;
 
     /** 조종석: 의자·기둥 + 조향에 따라 도는 타륜, 1인칭 조종사는 두 손으로 타륜을 잡은 팔까지 */
     private void renderHelm(ShipEntity ship, ShipEntity.Cell c, PoseStack pose, MultiBufferSource buffers, int light, float pt) {
@@ -98,7 +98,7 @@ public class ShipRenderer extends EntityRenderer<ShipEntity> {
                 var avc = buffers.getBuffer(net.minecraft.client.renderer.RenderType.entityCutoutNoCull(skin));
                 for (int side = -1; side <= 1; side += 2) {      // -1: 오른손(서쪽 -x), +1: 왼손
                     double a = Math.toRadians((side < 0 ? 180 : 0) + wa);
-                    float gx = HUB_X + (float) (Math.cos(a) * 6.0), gy = HUB_Y + (float) (Math.sin(a) * 6.0), gz = HUB_Z - 0.8f;
+                    float gx = HUB_X + (float) (Math.cos(a) * 4.6), gy = HUB_Y + (float) (Math.sin(a) * 4.6), gz = HUB_Z - 0.7f;
                     float sx = 8 + side * 5f, sy = 17.6f, sz = 5.0f;
                     org.joml.Vector3f dir = new org.joml.Vector3f(gx - sx, gy - sy, gz - sz);
                     var arm = side < 0 ? model.rightArm : model.leftArm;

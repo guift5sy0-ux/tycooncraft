@@ -36,7 +36,7 @@ public final class DroneDiveTest {
             sky = launch(level, 150.5, gy + 2, 132.5);
             sky.startDive(0f, -85f);    // 거의 수직 위로 → 사정거리(100) 끝
         }
-        if (t == 1920) System.out.println("[AUTOTEST] v16 dive sky removed=" + sky.isRemoved() + " end=" + DroneEntity.LAST_DIVE_END + " dives=" + DroneEntity.DIVES);
+        if (t == 1955) System.out.println("[AUTOTEST] v16 dive sky removed=" + sky.isRemoved() + " end=" + DroneEntity.LAST_DIVE_END + " dives=" + DroneEntity.DIVES);
     }
 
     private DroneDiveTest() {}

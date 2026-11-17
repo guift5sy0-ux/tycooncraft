@@ -166,6 +166,7 @@ public final class AirshipTest {
 
     // ── 3차: 장갑으로 부유체 보호 — 노출된 부유체 vs 철 블록으로 감싼 부유체 ──
     static ShipEntity armor;
+    static long exposedKey = -1, shieldKey = -1, frontKey = -1;
 
     static void tick3(ServerLevel level, int t, int gy) {
         int x0 = 150, z0 = 122;
@@ -192,9 +193,27 @@ public final class AirshipTest {
             System.out.println("[AUTOTEST] v16 armor assembled=" + (armor != null) + (armor == null ? "" : " cells=" + armor.cells().size() + " floats=" + armor.floatCount()));
         }
         if (armor == null || armor.isRemoved()) return;
-        if (t > 1700 && t <= 1740 && t % 5 == 0) {   // 각 부유체 정면 2칸 앞에서 RPG 급(3.5) 폭발 8번씩
-            level.explode(null, x0 + 0.5, gy + 1.5, z0 - 2.0, 3.5f, net.minecraft.world.level.Level.ExplosionInteraction.TNT);
-            level.explode(null, x0 + 4.5, gy + 1.5, z0 - 2.5, 3.5f, net.minecraft.world.level.Level.ExplosionInteraction.TNT);
+        if (t == 1701) {
+            for (var c : armor.cells()) {
+                Vec3 w = armor.cellCenter(c);
+                if (c.state().getBlock() instanceof com.tycooncraft.ship.ShipMotorBlock && w.z < z0 + 2) {
+                    if (w.x < x0 + 2) exposedKey = ShipEntity.key(c.x(), c.y(), c.z());
+                    else shieldKey = ShipEntity.key(c.x(), c.y(), c.z());
+                }
+                if (c.state().is(Blocks.IRON_BLOCK) && Math.abs(w.x - (x0 + 4.5)) < 0.1 && w.z < z0) frontKey = ShipEntity.key(c.x(), c.y(), c.z());
+            }
+        }
+        if (t > 1700 && t <= 1740 && t % 5 == 0) {   // RPG 급(3.5) 폭발 8번씩: 노출 엔진 2칸 앞 / 철판 1칸 앞 (운송기가 흔들려 돌아가도 같은 쪽)
+            Vec3 e1 = armor.cellCenterByKeyForTest(exposedKey), sh = armor.cellCenterByKeyForTest(shieldKey), fr = armor.cellCenterByKeyForTest(frontKey);
+            if (e1 != null) {
+                Vec3 out = e1.subtract(armor.position()).multiply(1, 0, 1).normalize();
+                Vec3 p = e1.add(out.scale(2.0));
+                level.explode(null, p.x, p.y, p.z, 3.5f, net.minecraft.world.level.Level.ExplosionInteraction.TNT);
+            }
+            if (sh != null && fr != null) {
+                Vec3 p = fr.add(fr.subtract(sh).normalize().scale(1.0));
+                level.explode(null, p.x, p.y, p.z, 3.5f, net.minecraft.world.level.Level.ExplosionInteraction.TNT);
+            }
         }
         if (t == 1750) {
             boolean exposed = false, shielded = false;
@@ -233,6 +252,7 @@ public final class AirshipTest {
 
     // ── 4차: 부스터 속도 비교, 운송기 위 상자 열기 ──
     static ShipEntity fast, slow;
+    static long used0;
 
     static void tick4(ServerLevel level, int t, int gy) {
         if (t == 1960) {
@@ -256,15 +276,13 @@ public final class AirshipTest {
             Vec3 cc = fast.cellCenter(chest);
             fp.setPos(cc.x, cc.y, cc.z - 1.5);
             boolean opened = fast.openContainer(fp, ShipEntity.key(chest.x(), chest.y(), chest.z()));
-            boolean put = false;
-            if (opened && fp.containerMenu instanceof net.minecraft.world.inventory.ChestMenu m) {
-                m.getContainer().setItem(4, new ItemStack(Items.DIAMOND, 7));
-                put = true;
-                fp.closeContainer();
-            }
+            var box = fast.containerForTest(ShipEntity.key(chest.x(), chest.y(), chest.z()));
+            box.setItem(4, new ItemStack(Items.DIAMOND, 7));
+            boolean put = box.getItem(4).getCount() == 7;
             System.out.println("[AUTOTEST] v16 shipchest opened=" + opened + " put=" + put + " tagHasItems=" + (chest.be() != null && chest.be().contains("Items")));
         }
-        if (t == 2099) System.out.printf("[AUTOTEST] v16 booster speed=%.3f fuelUsed=%d (2 motors earlier ~0.25)%n", fast.shipSpeed(), 60_000 - fast.fuel());
+        if (t == 2040) used0 = ShipEntity.FUEL_USED;
+        if (t == 2099) System.out.printf("[AUTOTEST] v16 booster speed=%.3f fuelPerTick=%.1f (motors-only airship ~0.30, ~0.75/tick)%n", fast.shipSpeed(), (ShipEntity.FUEL_USED - used0) / 59.0);
         if (t == 2150) {
             BlockPos sc = fast.blockPosition();
             fast.disassemble(null);

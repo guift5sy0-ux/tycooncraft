@@ -350,6 +350,18 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         return boosters;
     }
 
+    @Nullable
+    public Vec3 cellCenterByKeyForTest(long k) {
+        return hasCell(k) ? cellCenterByKey(k) : null;
+    }
+
+    /** 테스트용: 실린 상자 창 (플레이어 없이) */
+    public net.minecraft.world.Container containerForTest(long k) {
+        Integer i = index.get(k);
+        Cell c = cells.get(i);
+        return openBoxes.computeIfAbsent(k, kk -> new ShipContainer(this, kk, c.be, 27));
+    }
+
     public void setYawForTest(float y) {
         yaw = yawO = y;
         entityData.set(YAW, y);
@@ -486,10 +498,10 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         if (tickCount % 20 == 0) refuelFromHoppers();
         boolean powered = motors > 0 && emp == 0 && fuel > 0;
         int n = Math.max(1, cells.size());
-        double thrust = motors + 1.5 * boosters;          // 부스터 = 엔진 2.5개
+        double thrust = motors + 3.0 * boosters;          // 부스터 = 엔진 4개
         double vmax = Math.min(boosters > 0 ? 0.95 : 0.6, 0.12 + 0.16 * Math.sqrt(thrust) * Math.sqrt(80.0 / Math.max(80, n)));
         double target = !powered ? 0 : inF > 0 ? vmax * inF : inF < 0 ? vmax * 0.4 * inF : 0;
-        speed += (target - speed) * (target == 0 ? 0.02 : 0.035);
+        speed += (target - speed) * (target == 0 ? 0.02 : boosters > 0 ? 0.06 : 0.035);
         if (Math.abs(speed) < 1e-4) speed = 0;
         float turn = 0;
         if (powered && inT != 0) {
