@@ -490,7 +490,7 @@ public final class StructureBuilder {
                 out.add(new MerchantOffer(o.getItemCostA(), o.getItemCostB(), r, Integer.MAX_VALUE, 0, 0f));
             } else {
                 ItemCost a = o.getItemCostA();
-                ItemCost na = new ItemCost(a.item(), Mth.clamp(Math.round(a.count() * f), 1, 64));
+                ItemCost na = new ItemCost(a.item().value(), Mth.clamp(Math.round(a.count() * f), 1, 64));
                 out.add(new MerchantOffer(na, o.getItemCostB(), o.getResult().copy(), Integer.MAX_VALUE, 0, 0f));
             }
         }
