@@ -37,6 +37,11 @@ import java.util.UUID;
 public class DroneEntity extends Entity {
     private static final EntityDataAccessor<Optional<UUID>> OWNER = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Boolean> PILOTED = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DIVING = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.BOOLEAN);
+    private Vec3 diveDir = Vec3.ZERO, diveStart = Vec3.ZERO;
+    private int diveTicks;
+    public static int DIVES;
+    public static String LAST_DIVE_END = "";
     private static final EntityDataAccessor<Integer> BATTERY = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> TIER = SynchedEntityData.defineId(DroneEntity.class, EntityDataSerializers.INT);
 
@@ -79,6 +84,7 @@ public class DroneEntity extends Entity {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(OWNER, Optional.empty());
         builder.define(PILOTED, false);
+        builder.define(DIVING, false);
         builder.define(BATTERY, 900);
         builder.define(TIER, 1);
     }
@@ -136,6 +142,57 @@ public class DroneEntity extends Entity {
         return (horizontalCollision || verticalCollision) && speed > 0.38;
     }
 
+    public boolean isDiving() {
+        return entityData.get(DIVING);
+    }
+
+    /** 우클릭 돌진: 조종을 놓고(조종자는 바로 다른 드론 사용 가능) 바라본 방향으로 곧장 날아가 부딪히면 폭발 */
+    public void startDive(float yaw, float pitch) {
+        if (level().isClientSide || isRemoved() || isDiving()) return;
+        diveDir = Vec3.directionFromRotation(pitch, yaw).normalize();
+        diveStart = position();
+        diveTicks = 0;
+        setYRot(yaw);
+        setXRot(pitch);
+        setPiloted(false);
+        entityData.set(DIVING, true);
+        DIVES++;
+        level().playSound(null, getX(), getY(), getZ(), net.minecraft.sounds.SoundEvents.FIREWORK_ROCKET_LAUNCH, net.minecraft.sounds.SoundSource.PLAYERS, 1.4f, 0.7f);
+    }
+
+    private void diveTick() {
+        double sp = Math.min(2.4, 1.35 * speedMul());
+        Vec3 v = diveDir.scale(sp);
+        var ship = com.tycooncraft.ship.ShipCollisions.clip(level(), position(), position().add(v));
+        if (ship != null) {
+            setPos(ship.point().x, ship.point().y, ship.point().z);
+            endDive("ship");
+            return;
+        }
+        setDeltaMovement(v);
+        move(MoverType.SELF, v);
+        if (level() instanceof ServerLevel sl && tickCount % 2 == 0)
+            sl.sendParticles(ParticleTypes.SMOKE, getX(), getY() + 0.1, getZ(), 1, 0.05, 0.05, 0.05, 0);
+        Player owner = owner();
+        if (horizontalCollision || verticalCollision) {
+            endDive("block");
+            return;
+        }
+        for (Entity e : level().getEntities(this, getBoundingBox().inflate(0.4), e -> e instanceof LivingEntity && e.isAlive() && e != owner)) {
+            endDive("entity");
+            return;
+        }
+        // 사정거리 끝: 조종자(없으면 출발점)에서 최대 거리에 닿으면 자동 폭발
+        double dist = owner != null && owner.level() == level() ? distanceTo(owner) : position().distanceTo(diveStart);
+        if (dist >= maxRange() || ++diveTicks > 600) endDive("range");
+    }
+
+    private void endDive(String why) {
+        Player owner = owner();
+        LAST_DIVE_END = why + String.format(" dist=%.1f", owner != null ? distanceTo(owner) : position().distanceTo(diveStart));
+        detonate();
+    }
+
     public boolean isMk2() {
         return tier() >= 2;
     }
@@ -179,6 +236,10 @@ public class DroneEntity extends Entity {
             if (isPiloted() && tickCount % 10 == 0) {
                 level().addParticle(ParticleTypes.SMOKE, getX(), getY() + 0.1, getZ(), 0, -0.02, 0);
             }
+            return;
+        }
+        if (isDiving()) {
+            diveTick();
             return;
         }
         if (battery() > 0 && (isPiloted() || !onGround())) entityData.set(BATTERY, battery() - 1);
@@ -256,7 +317,7 @@ public class DroneEntity extends Entity {
     // ── 상호작용 ──────────────────────────────────────────────────
     @Override
     public InteractionResult interact(Player player, InteractionHand hand) {
-        if (isPiloted() || !player.getUUID().equals(ownerId()) || battery() <= 0) return InteractionResult.PASS;
+        if (isPiloted() || isDiving() || !player.getUUID().equals(ownerId()) || battery() <= 0) return InteractionResult.PASS;
         if (!level().isClientSide && player instanceof ServerPlayer sp) DroneItem.startPiloting(sp, this);
         return InteractionResult.sidedSuccess(level().isClientSide);
     }

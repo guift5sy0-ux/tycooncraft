@@ -30,13 +30,13 @@ import net.neoforged.neoforge.network.PacketDistributor;
 public final class DroneClient {
     private static int pilotId = -1;
     private static int waitTicks;
-    private static boolean seenDrone, seenPiloted, detonate;
+    private static boolean seenDrone, seenPiloted, detonate, dive;
     private static VehicleHooks.Input input = VehicleHooks.Input.NONE;
 
     public static void start(int entityId) {
         pilotId = entityId;
         waitTicks = 0;
-        seenDrone = seenPiloted = detonate = false;
+        seenDrone = seenPiloted = detonate = dive = false;
     }
 
     public static boolean piloting() {
@@ -71,13 +71,14 @@ public final class DroneClient {
         in.shiftKeyDown = false;
     }
 
-    /** 조종 중 클릭 = 폭파 (공격·사용 막기) */
+    /** 조종 중 좌클릭 = 그 자리 폭파, 우클릭 = 바라본 방향으로 자동 돌진 (카메라는 돌아옴) */
     @SubscribeEvent
     public static void onClick(InputEvent.InteractionKeyMappingTriggered event) {
         if (!piloting()) return;
         event.setCanceled(true);
         event.setSwingHand(false);
-        if (event.isAttack() || event.isUseItem()) detonate = true;
+        if (event.isAttack()) detonate = true;
+        else if (event.isUseItem()) dive = true;
     }
 
     @SubscribeEvent
@@ -105,6 +106,7 @@ public final class DroneClient {
         if (mc.screen == null) {
             boolean crash = d.flyLocal(input, mc.player.getYRot(), mc.player.getXRot());
             if (crash || detonate) action = 1;
+            else if (dive) action = 3;
         }
         PacketDistributor.sendToServer(new DronePayloads.Control(d.getId(), d.getX(), d.getY(), d.getZ(), d.getYRot(), d.getXRot(), action));
         if (action != 0) stop(mc);

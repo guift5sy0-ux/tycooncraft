@@ -33,7 +33,7 @@ public final class DronePayloads {
         }
     }
 
-    /** 조종자 → 서버. action: 0 비행, 1 폭파, 2 조종 끝 */
+    /** 조종자 → 서버. action: 0 비행, 1 폭파, 2 조종 끝, 3 자동 돌진 */
     public record Control(int entityId, double x, double y, double z, float yaw, float pitch, byte action) implements CustomPacketPayload {
         public static final Type<Control> TYPE = new Type<>(TycoonCraft.id("drone_control"));
         public static final StreamCodec<FriendlyByteBuf, Control> CODEC = CustomPacketPayload.codec(Control::write, Control::new);
@@ -70,6 +70,10 @@ public final class DronePayloads {
             if (!(e instanceof DroneEntity drone) || !sp.getUUID().equals(drone.ownerId())) return;
             drone.applyPilotUpdate(sp, c.x(), c.y(), c.z(), c.yaw(), c.pitch());
             if (c.action() == 1 || c.action() == 2) drone.detonate();   // 자폭 드론은 취소 없음
+            else if (c.action() == 3) {                                  // 자동 돌진: 조종을 놓고 앞으로
+                drone.startDive(c.yaw(), c.pitch());
+                sp.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.tycooncraft.drone.dive"), true);
+            }
         });
     }
 

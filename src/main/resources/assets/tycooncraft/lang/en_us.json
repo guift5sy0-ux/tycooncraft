@@ -133,13 +133,13 @@
   "entity.tycooncraft.drone": "Kamikaze Drone",
   "tooltip.tycooncraft.gun.silenced": "🔇 Silencer (heard ~32 blocks, -7% dmg)",
   "tooltip.tycooncraft.drone": "Use: launch and fly it through its camera",
-  "tooltip.tycooncraft.drone2": "W fly · A/D strafe · Space/Ctrl up/down · click to detonate (no cancel — it always explodes)",
+  "tooltip.tycooncraft.drone2": "W fly · A/D strafe · Space/Ctrl up/down · left click detonate · right click auto-dive (flies where you look, explodes on impact or at max range; you can launch the next drone right away) · no cancelling",
   "message.tycooncraft.gun.headshot": "Headshot!",
   "message.tycooncraft.drone.lost": "Drone signal lost — detonating!",
   "hud.tycooncraft.drone.battery": "BATT",
   "hud.tycooncraft.drone.dist": "DIST %sm / %sm",
   "hud.tycooncraft.drone.alt": "ALT %s",
-  "hud.tycooncraft.drone.hint": "Click: detonate   ·   no cancel",
+  "hud.tycooncraft.drone.hint": "Left click: detonate · Right click: auto-dive",
   "hud.tycooncraft.drone.low": "LOW BATTERY!",
   "subtitles.tycooncraft.gun.silenced": "Suppressed shot",
   "subtitles.tycooncraft.drone": "Drone buzzes",
@@ -370,5 +370,6 @@
   "message.tycooncraft.ship.fail.not_enough_floats": "Not enough lift floats: %s floats lift %s blocks — this one has %s blocks, needs %s",
   "block.tycooncraft.ciws": "CIWS Interceptor",
   "tooltip.tycooncraft.ciws": "Shoots down incoming RPGs, shells, missiles, grenades, fireballs and kamikaze drones within 40 blocks. Ignores yours and your team's · heavy ammo = 4 rounds, light = 2 · works on transporters",
-  "message.tycooncraft.ship.fail.too_strong": "%s is far too blast-proof to use in a hull (at %s, %s, %s)"
+  "message.tycooncraft.ship.fail.too_strong": "%s is far too blast-proof to use in a hull (at %s, %s, %s)",
+  "message.tycooncraft.drone.dive": "🚀 Drone diving! — launch the next one"
 }
