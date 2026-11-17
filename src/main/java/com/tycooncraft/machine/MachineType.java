@@ -16,7 +16,9 @@ public enum MachineType implements StringRepresentable {
     PRESS("press", 20),
     WIRE_DRAWER("wire_drawer", 20),
     LATHE("lathe", 30),
-    ASSEMBLER("assembler", 40);
+    ASSEMBLER("assembler", 40),
+    CHEMICAL_REACTOR("chemical_reactor", 40),
+    ELECTROLYZER("electrolyzer", 60);
 
     public static final Codec<MachineType> CODEC = StringRepresentable.fromEnum(MachineType::values);
 

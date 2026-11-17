@@ -84,6 +84,21 @@ public final class MpTest {
             if (dt == 1320 || dt == 1380 || dt == 1440) inspect(tester.serverLevel(), "village", village, 32, 32);
             if (dt == 1500 && ruin != null) view(ruin, 11);
             if (dt == 1640) inspect(tester.serverLevel(), "ruin", ruin, 22, 14);
+            if (dt == 1660) {
+                var l = tester.serverLevel();
+                int baux = 0, salt = 0;
+                var c = tester.chunkPosition();
+                for (int cx = c.x - 2; cx <= c.x + 2; cx++)
+                    for (int cz = c.z - 2; cz <= c.z + 2; cz++) {
+                        var ch = l.getChunk(cx, cz);
+                        for (net.minecraft.core.BlockPos p : net.minecraft.core.BlockPos.betweenClosed(cx * 16, -60, cz * 16, cx * 16 + 15, 100, cz * 16 + 15)) {
+                            var s = ch.getBlockState(p);
+                            if (s.is(com.tycooncraft.registry.ModBlocks.BAUXITE_ORE.get()) || s.is(com.tycooncraft.registry.ModBlocks.DEEPSLATE_BAUXITE_ORE.get())) baux++;
+                            else if (s.is(com.tycooncraft.registry.ModBlocks.ROCK_SALT_ORE.get())) salt++;
+                        }
+                    }
+                System.out.println("[MPTEST] ores 5x5 chunks bauxite=" + baux + " rockSalt=" + salt);
+            }
             if (dt == 1700 && hideout != null) view(hideout, 15);
             if (dt == 1840 && hideout != null) {
                 var l = tester.serverLevel();

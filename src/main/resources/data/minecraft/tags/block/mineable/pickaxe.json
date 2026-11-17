@@ -16,6 +16,11 @@
     "tycooncraft:turret",
     "tycooncraft:sulfur_ore",
     "tycooncraft:deepslate_sulfur_ore",
-    "tycooncraft:emp_generator"
+    "tycooncraft:emp_generator",
+    "tycooncraft:bauxite_ore",
+    "tycooncraft:deepslate_bauxite_ore",
+    "tycooncraft:rock_salt_ore",
+    "tycooncraft:chemical_reactor",
+    "tycooncraft:electrolyzer"
   ]
 }

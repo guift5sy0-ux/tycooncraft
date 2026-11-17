@@ -2,6 +2,9 @@
   "replace": false,
   "values": [
     "tycooncraft:sulfur_ore",
-    "tycooncraft:deepslate_sulfur_ore"
+    "tycooncraft:deepslate_sulfur_ore",
+    "tycooncraft:bauxite_ore",
+    "tycooncraft:deepslate_bauxite_ore",
+    "tycooncraft:rock_salt_ore"
   ]
 }

@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PGP",
+    "CSC",
+    "PMP"
+  ],
+  "key": {
+    "P": {
+      "item": "tycooncraft:steel_plate"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "C": {
+      "item": "tycooncraft:circuit"
+    },
+    "S": {
+      "item": "tycooncraft:smelter"
+    },
+    "M": {
+      "item": "tycooncraft:coin_gold"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:chemical_reactor",
+    "count": 1
+  }
+}

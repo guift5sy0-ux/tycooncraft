@@ -261,6 +261,7 @@ public final class AutoTest {
         if (t == 1500) v14Setup(level);
         V15Test.tick(level, t, gy);
         V16Test.tick(level, t, gy);
+        IndustryTest.tick(level, t, gy);
         if (t == 1700) {
             if (wither != null && wither.isAlive()) wither.setHealth(wither.getMaxHealth() * 0.45f);
             if (dragon != null && dragon.isAlive()) dragon.setHealth(dragon.getMaxHealth() * 0.45f);

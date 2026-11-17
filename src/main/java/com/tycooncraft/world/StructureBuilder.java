@@ -377,7 +377,8 @@ public final class StructureBuilder {
                 offer(ir, 6, ModItems.SELL_STATION.get(), 1), offer(ir, 6, ModItems.machineItem(MachineType.CRUSHER), 1),
                 offer(ir, 6, ModItems.machineItem(MachineType.SMELTER), 1), offer(ir, 8, ModItems.machineItem(MachineType.PRESS), 1),
                 offer(go, 2, ModItems.machineItem(MachineType.ALLOY_FURNACE), 1), offer(go, 2, ModItems.machineItem(MachineType.WIRE_DRAWER), 1),
-                offer(go, 2, ModItems.machineItem(MachineType.LATHE), 1), offer(em, 2, ModItems.machineItem(MachineType.ASSEMBLER), 1)));
+                offer(go, 2, ModItems.machineItem(MachineType.LATHE), 1), offer(em, 2, ModItems.machineItem(MachineType.ASSEMBLER), 1),
+                offer(go, 5, ModItems.machineItem(MachineType.CHEMICAL_REACTOR), 1), offer(go, 5, ModItems.machineItem(MachineType.ELECTROLYZER), 1)));
         b.trader(16, 0, 11, "trader.tycooncraft.buyer", VillagerProfession.CLERIC, List.of(
                 offer(Items.ROTTEN_FLESH, 16, cu, 4), offer(Items.BONE, 8, cu, 5), offer(Items.STRING, 8, cu, 6),
                 offer(Items.SPIDER_EYE, 4, cu, 4), offer(Items.FEATHER, 16, cu, 5), offer(Items.LEATHER, 4, ir, 1),

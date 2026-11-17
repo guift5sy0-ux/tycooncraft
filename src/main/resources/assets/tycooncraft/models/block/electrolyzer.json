@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "tycooncraft:block/electrolyzer_side",
+    "up": "tycooncraft:block/electrolyzer_top",
+    "down": "tycooncraft:block/electrolyzer_side",
+    "north": "tycooncraft:block/electrolyzer_side",
+    "south": "tycooncraft:block/electrolyzer_front",
+    "east": "tycooncraft:block/electrolyzer_side",
+    "west": "tycooncraft:block/electrolyzer_side"
+  }
+}

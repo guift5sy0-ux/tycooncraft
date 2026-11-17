@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "tycooncraft:block/chemical_reactor_side",
+    "up": "tycooncraft:block/chemical_reactor_top",
+    "down": "tycooncraft:block/chemical_reactor_side",
+    "north": "tycooncraft:block/chemical_reactor_side",
+    "south": "tycooncraft:block/chemical_reactor_front",
+    "east": "tycooncraft:block/chemical_reactor_side",
+    "west": "tycooncraft:block/chemical_reactor_side"
+  }
+}

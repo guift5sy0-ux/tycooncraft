@@ -517,11 +517,47 @@ public final class AutoTestClient {
             case 2240 -> serverDo(mc, sp -> {
                 if (V16Test.clientTruck != null) V16Test.clientTruck.discard();
             });
-            case 2250 -> serverDo(mc, sp -> sp.teleportTo(sp.serverLevel(), 172.5, g + 18, 186.5, 135f, 30f));
+            case 2245 -> serverDo(mc, sp -> com.tycooncraft.world.StructureBuilder.hideout(sp.serverLevel(), new net.minecraft.core.BlockPos(-70, (int) g, -10)));
+            case 2250 -> serverDo(mc, sp -> sp.teleportTo(sp.serverLevel(), -27.5, g + 17, 33.5, 135f, 28f));
             case 2290 -> shot(mc, "59_gang_hideout");
-            case 2292 -> serverDo(mc, sp -> sp.teleportTo(sp.serverLevel(), 143.5, g + 9, 177.5, 180f, 22f));
+            case 2292 -> serverDo(mc, sp -> sp.teleportTo(sp.serverLevel(), -54.5, g + 6, 33.5, 180f, 14f));
             case 2325 -> shot(mc, "59b_gang_hideout_gate");
-            case 2330 -> next(11);
+            // ── v0.16: 산업 (신규 기계·광석 + 아이템 액자) ──
+            case 2330 -> serverDo(mc, sp -> {
+                var sl = sp.serverLevel();
+                int y = (int) g, z = -40;
+                net.minecraft.world.level.block.state.BlockState[] row = {
+                        com.tycooncraft.registry.ModBlocks.machine(com.tycooncraft.machine.MachineType.CHEMICAL_REACTOR).defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, net.minecraft.core.Direction.SOUTH),
+                        com.tycooncraft.registry.ModBlocks.machine(com.tycooncraft.machine.MachineType.ELECTROLYZER).defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, net.minecraft.core.Direction.SOUTH),
+                        com.tycooncraft.registry.ModBlocks.BAUXITE_ORE.get().defaultBlockState(),
+                        com.tycooncraft.registry.ModBlocks.DEEPSLATE_BAUXITE_ORE.get().defaultBlockState(),
+                        com.tycooncraft.registry.ModBlocks.ROCK_SALT_ORE.get().defaultBlockState()};
+                for (int i = 0; i < row.length; i++) sl.setBlockAndUpdate(new net.minecraft.core.BlockPos(-24 + i * 2, y, z), row[i]);
+                // 아이템 액자 벽 (10×3)
+                net.minecraft.world.item.Item[] show = {
+                        com.tycooncraft.registry.ModItems.RAW_BAUXITE.get(), com.tycooncraft.registry.ModItems.ALUMINA.get(), com.tycooncraft.registry.ModItems.ALUMINUM_INGOT.get(),
+                        com.tycooncraft.registry.ModItems.ALUMINUM_FOIL.get(), com.tycooncraft.registry.ModItems.COKE.get(), com.tycooncraft.registry.ModItems.GRAPHITE.get(),
+                        com.tycooncraft.registry.ModItems.SULFURIC_ACID.get(), com.tycooncraft.registry.ModItems.CHLORINE_CYLINDER.get(), com.tycooncraft.registry.ModItems.EPOXY_RESIN.get(),
+                        com.tycooncraft.registry.ModItems.RUBBER.get(), com.tycooncraft.registry.ModItems.BALL_BEARING.get(), com.tycooncraft.registry.ModItems.VALVE.get(),
+                        com.tycooncraft.registry.ModItems.HYDRAULIC_CYLINDER.get(), com.tycooncraft.registry.ModItems.COPPER_COIL.get(), com.tycooncraft.registry.ModItems.ELECTRIC_MOTOR.get(),
+                        com.tycooncraft.registry.ModItems.GEARBOX.get(), com.tycooncraft.registry.ModItems.SILICON_WAFER.get(), com.tycooncraft.registry.ModItems.MICROCHIP.get(),
+                        com.tycooncraft.registry.ModItems.PCB.get(), com.tycooncraft.registry.ModItems.CONTROL_BOARD.get(), com.tycooncraft.registry.ModItems.BATTERY_CELL.get(),
+                        com.tycooncraft.registry.ModItems.SOLAR_PANEL.get(), com.tycooncraft.registry.ModItems.TRANSFORMER.get(), com.tycooncraft.registry.ModItems.INDUSTRIAL_ROBOT_ARM.get(),
+                        com.tycooncraft.registry.ModItems.H_BEAM.get(), com.tycooncraft.registry.ModItems.PRECAST_PANEL.get(), com.tycooncraft.registry.ModItems.CEMENT.get(),
+                        com.tycooncraft.registry.ModItems.STEEL_PIPE.get(), com.tycooncraft.registry.ModItems.INSULATED_CABLE.get(), com.tycooncraft.registry.ModItems.GAS_CYLINDER.get()};
+                for (int i = 0; i < show.length; i++) {
+                    var wall = new net.minecraft.core.BlockPos(-24 + i % 10, y + 3 - i / 10, z - 3);
+                    sl.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.SMOOTH_STONE.defaultBlockState());
+                    var frame = new net.minecraft.world.entity.decoration.ItemFrame(sl, wall.south(), net.minecraft.core.Direction.SOUTH);
+                    frame.setItem(new net.minecraft.world.item.ItemStack(show[i]), false);
+                    sl.addFreshEntity(frame);
+                }
+                sp.teleportTo(sl, -19.5, g + 2.2, z + 5.5, 180f, 12f);
+            });
+            case 2350 -> shot(mc, "60_industry_items");
+            case 2352 -> serverDo(mc, sp -> sp.teleportTo(sp.serverLevel(), -19.5, g + 1.6, -36.5, 180f, 10f));
+            case 2370 -> shot(mc, "61_industry_machines");
+            case 2375 -> next(11);
             default -> {
             }
         }

@@ -63,6 +63,16 @@ public final class ModBlocks {
             () -> new net.minecraft.world.level.block.DropExperienceBlock(net.minecraft.util.valueproviders.UniformInt.of(1, 3),
                     net.minecraft.world.level.block.state.BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.DEEPSLATE_COAL_ORE)));
 
+    public static final DeferredBlock<net.minecraft.world.level.block.DropExperienceBlock> BAUXITE_ORE = BLOCKS.register("bauxite_ore",
+            () -> new net.minecraft.world.level.block.DropExperienceBlock(net.minecraft.util.valueproviders.UniformInt.of(0, 2),
+                    net.minecraft.world.level.block.state.BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.IRON_ORE)));
+    public static final DeferredBlock<net.minecraft.world.level.block.DropExperienceBlock> DEEPSLATE_BAUXITE_ORE = BLOCKS.register("deepslate_bauxite_ore",
+            () -> new net.minecraft.world.level.block.DropExperienceBlock(net.minecraft.util.valueproviders.UniformInt.of(0, 2),
+                    net.minecraft.world.level.block.state.BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.DEEPSLATE_IRON_ORE)));
+    public static final DeferredBlock<net.minecraft.world.level.block.DropExperienceBlock> ROCK_SALT_ORE = BLOCKS.register("rock_salt_ore",
+            () -> new net.minecraft.world.level.block.DropExperienceBlock(net.minecraft.util.valueproviders.UniformInt.of(0, 2),
+                    net.minecraft.world.level.block.state.BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.IRON_ORE)));
+
     public static final DeferredBlock<Block> BROKEN_MACHINE = BLOCKS.registerSimpleBlock("broken_machine",
             machineProps().strength(3.0f, 6.0f).requiresCorrectToolForDrops());
 

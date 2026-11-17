@@ -18,6 +18,11 @@ public final class MachineRecipes {
         List<MachineRecipe> r = new ArrayList<>();
         switch (type) {
             case CRUSHER -> {
+                r.add(MachineRecipe.of(ModItems.BAUXITE_DUST.get(), 2).in(ModItems.RAW_BAUXITE.get()).build());
+                r.add(MachineRecipe.of(ModItems.SALT.get(), 3).in(ModItems.ROCK_SALT.get()).build());
+                r.add(MachineRecipe.of(ModItems.LIMESTONE_DUST.get(), 2).in(Items.CALCITE).build());
+                r.add(MachineRecipe.of(ModItems.SILICA_DUST.get(), 2).in(Items.QUARTZ).build());
+                r.add(MachineRecipe.of(ModItems.SILICA_DUST.get(), 1).in(Items.SAND).build());
                 r.add(MachineRecipe.of(ModItems.IRON_DUST.get(), 2).in(Items.RAW_IRON).build());
                 r.add(MachineRecipe.of(ModItems.COPPER_DUST.get(), 2).in(Items.RAW_COPPER).build());
                 r.add(MachineRecipe.of(ModItems.GOLD_DUST.get(), 2).in(Items.RAW_GOLD).build());
@@ -35,6 +40,10 @@ public final class MachineRecipes {
                 r.add(MachineRecipe.of(Items.SAND, 1).in(Items.GRAVEL).build());
             }
             case SMELTER -> {
+                r.add(MachineRecipe.of(ModItems.COKE.get(), 1).in(Items.COAL).build());
+                r.add(MachineRecipe.of(ModItems.GRAPHITE.get(), 1).in(ModItems.COKE.get(), 2).build());
+                r.add(MachineRecipe.of(ModItems.QUICKLIME.get(), 1).in(ModItems.LIMESTONE_DUST.get()).build());
+                r.add(MachineRecipe.of(Items.GLASS, 1).in(ModItems.SILICA_DUST.get()).build());
                 r.add(MachineRecipe.of(Items.IRON_INGOT, 1).in(ModItems.IRON_DUST.get()).build());
                 r.add(MachineRecipe.of(Items.COPPER_INGOT, 1).in(ModItems.COPPER_DUST.get()).build());
                 r.add(MachineRecipe.of(Items.GOLD_INGOT, 1).in(ModItems.GOLD_DUST.get()).build());
@@ -47,21 +56,39 @@ public final class MachineRecipes {
                 r.add(MachineRecipe.of(Items.BRICK, 1).in(Items.CLAY_BALL).build());
                 r.add(MachineRecipe.of(Items.BAKED_POTATO, 1).in(Items.POTATO).build());
             }
-            case ALLOY_FURNACE ->
-                    r.add(MachineRecipe.of(ModItems.STEEL_INGOT.get(), 1).in(Items.IRON_INGOT).in(ModItems.COAL_DUST.get(), 2).build());
+            case ALLOY_FURNACE -> {
+                r.add(MachineRecipe.of(ModItems.STEEL_INGOT.get(), 2).in(Items.IRON_INGOT, 2).in(ModItems.COKE.get()).in(ModItems.QUICKLIME.get()).build());
+                r.add(MachineRecipe.of(ModItems.SILICON.get(), 1).in(ModItems.SILICA_DUST.get(), 2).in(ModItems.COKE.get()).build());
+                r.add(MachineRecipe.of(ModItems.RUBBER.get(), 2).in(ModItems.LATEX.get(), 2).in(ModItems.SULFUR.get()).build());
+                r.add(MachineRecipe.of(ModItems.CEMENT.get(), 3).in(ModItems.LIMESTONE_DUST.get(), 2).in(Items.CLAY_BALL).build());
+                r.add(MachineRecipe.of(ModItems.STEEL_INGOT.get(), 1).in(Items.IRON_INGOT).in(ModItems.COAL_DUST.get(), 2).build());
+            }
             case PRESS -> {
+                r.add(MachineRecipe.of(ModItems.ALUMINUM_PLATE.get(), 1).in(ModItems.ALUMINUM_INGOT.get()).build());
+                r.add(MachineRecipe.of(ModItems.ALUMINUM_FOIL.get(), 4).in(ModItems.ALUMINUM_PLATE.get()).build());
+                r.add(MachineRecipe.of(ModItems.COPPER_FOIL.get(), 4).in(ModItems.COPPER_PLATE.get()).build());
+                r.add(MachineRecipe.of(ModItems.REBAR.get(), 1).in(ModItems.STEEL_ROD.get()).build());
+                r.add(MachineRecipe.of(ModItems.H_BEAM.get(), 1).in(ModItems.STEEL_PLATE.get(), 3).build());
+                r.add(MachineRecipe.of(ModItems.GASKET.get(), 4).in(ModItems.RUBBER.get()).build());
+                r.add(MachineRecipe.of(ModItems.LATEX.get(), 2).in(Items.JUNGLE_LOG).build());
                 r.add(MachineRecipe.of(ModItems.IRON_PLATE.get(), 1).in(Items.IRON_INGOT).build());
                 r.add(MachineRecipe.of(ModItems.COPPER_PLATE.get(), 1).in(Items.COPPER_INGOT).build());
                 r.add(MachineRecipe.of(ModItems.GOLD_PLATE.get(), 1).in(Items.GOLD_INGOT).build());
                 r.add(MachineRecipe.of(ModItems.STEEL_PLATE.get(), 1).in(ModItems.STEEL_INGOT.get()).build());
             }
             case WIRE_DRAWER -> {
+                r.add(MachineRecipe.of(ModItems.FIBERGLASS.get(), 3).in(Items.GLASS).build());
+                r.add(MachineRecipe.of(ModItems.STEEL_PIPE.get(), 2).in(ModItems.STEEL_PLATE.get()).build());
                 r.add(MachineRecipe.of(ModItems.COPPER_WIRE.get(), 3).in(Items.COPPER_INGOT).build());
                 r.add(MachineRecipe.of(ModItems.GOLD_WIRE.get(), 3).in(Items.GOLD_INGOT).build());
                 r.add(MachineRecipe.of(ModItems.IRON_ROD.get(), 2).in(Items.IRON_INGOT).build());
                 r.add(MachineRecipe.of(ModItems.STEEL_ROD.get(), 2).in(ModItems.STEEL_INGOT.get()).build());
             }
             case LATHE -> {
+                r.add(MachineRecipe.of(ModItems.BOLT.get(), 4).in(ModItems.IRON_ROD.get()).build());
+                r.add(MachineRecipe.of(ModItems.BALL_BEARING.get(), 2).in(ModItems.STEEL_INGOT.get()).build());
+                r.add(MachineRecipe.of(ModItems.PISTON.get(), 1).in(ModItems.ALUMINUM_INGOT.get()).build());
+                r.add(MachineRecipe.of(ModItems.SILICON_WAFER.get(), 4).in(ModItems.SILICON.get()).build());
                 r.add(MachineRecipe.of(ModItems.IRON_GEAR.get(), 1).in(ModItems.IRON_PLATE.get()).build());
                 r.add(MachineRecipe.of(ModItems.STEEL_GEAR.get(), 1).in(ModItems.STEEL_PLATE.get()).build());
                 r.add(MachineRecipe.of(ModItems.GUN_BARREL.get(), 1).in(ModItems.STEEL_ROD.get()).build());
@@ -73,6 +100,23 @@ public final class MachineRecipes {
                 for (Item[] w : wood) r.add(MachineRecipe.of(w[1], 6).in(w[0]).build());
             }
             case ASSEMBLER -> {
+                // ── 산업 완제품·부품 (신규 재료가 들어가 기존 레시피와 겹치지 않음) ──
+                r.add(MachineRecipe.of(ModItems.INDUSTRIAL_ROBOT_ARM.get(), 1).in(ModItems.ELECTRIC_MOTOR.get(), 3).in(ModItems.GEARBOX.get(), 2).in(ModItems.CONTROL_BOARD.get()).in(ModItems.HYDRAULIC_CYLINDER.get(), 2).in(ModItems.ALUMINUM_PLATE.get(), 4).in(ModItems.BOLT.get(), 8).build());
+                r.add(MachineRecipe.of(ModItems.TRANSFORMER.get(), 1).in(ModItems.COPPER_COIL.get(), 2).in(ModItems.STEEL_PLATE.get(), 4).in(ModItems.FIBERGLASS.get(), 2).in(ModItems.INSULATED_CABLE.get(), 2).build());
+                r.add(MachineRecipe.of(ModItems.SOLAR_PANEL.get(), 1).in(ModItems.SILICON_WAFER.get(), 4).in(ModItems.COPPER_FOIL.get()).in(ModItems.ALUMINUM_PLATE.get(), 2).in(Items.GLASS_PANE, 2).in(ModItems.EPOXY_RESIN.get()).build());
+                r.add(MachineRecipe.of(ModItems.CONTROL_BOARD.get(), 1).in(ModItems.PCB.get()).in(ModItems.MICROCHIP.get()).in(ModItems.RESISTOR.get(), 4).in(ModItems.CAPACITOR.get(), 2).in(Items.REDSTONE).build());
+                r.add(MachineRecipe.of(ModItems.ELECTRIC_MOTOR.get(), 1).in(ModItems.COPPER_COIL.get(), 2).in(ModItems.STEEL_PLATE.get(), 2).in(ModItems.DRIVE_SHAFT.get()).in(ModItems.GRAPHITE.get()).build());
+                r.add(MachineRecipe.of(ModItems.GEARBOX.get(), 1).in(ModItems.STEEL_GEAR.get(), 4).in(ModItems.DRIVE_SHAFT.get()).in(ModItems.ALUMINUM_PLATE.get(), 2).in(ModItems.BOLT.get(), 4).build());
+                r.add(MachineRecipe.of(ModItems.HYDRAULIC_CYLINDER.get(), 1).in(ModItems.STEEL_PIPE.get()).in(ModItems.PISTON.get()).in(ModItems.GASKET.get(), 2).in(ModItems.STEEL_ROD.get()).in(ModItems.VALVE.get()).build());
+                r.add(MachineRecipe.of(ModItems.BATTERY_CELL.get(), 2).in(ModItems.ALUMINUM_FOIL.get()).in(ModItems.COPPER_FOIL.get()).in(ModItems.GRAPHITE.get(), 2).in(ModItems.PLASTIC_PELLET.get()).in(ModItems.CAUSTIC_SODA.get()).build());
+                r.add(MachineRecipe.of(ModItems.GAS_CYLINDER.get(), 1).in(ModItems.STEEL_PIPE.get(), 2).in(ModItems.VALVE.get()).build());
+                r.add(MachineRecipe.of(ModItems.VALVE.get(), 1).in(ModItems.STEEL_PIPE.get()).in(ModItems.BOLT.get(), 2).in(ModItems.GASKET.get()).build());
+                r.add(MachineRecipe.of(ModItems.DRIVE_SHAFT.get(), 1).in(ModItems.STEEL_ROD.get(), 2).in(ModItems.BALL_BEARING.get(), 2).build());
+                r.add(MachineRecipe.of(ModItems.COPPER_COIL.get(), 1).in(ModItems.COPPER_WIRE.get(), 8).in(ModItems.EPOXY_RESIN.get()).build());
+                r.add(MachineRecipe.of(ModItems.PRECAST_PANEL.get(), 2).in(ModItems.CEMENT.get(), 2).in(ModItems.REBAR.get(), 2).in(Items.GRAVEL, 2).in(Items.SAND).build());
+                r.add(MachineRecipe.of(ModItems.CAPACITOR.get(), 4).in(ModItems.ALUMINUM_FOIL.get(), 2).in(Items.PAPER).in(ModItems.COPPER_WIRE.get()).build());
+                r.add(MachineRecipe.of(ModItems.RESISTOR.get(), 8).in(ModItems.GRAPHITE.get()).in(ModItems.COPPER_WIRE.get(), 2).build());
+                r.add(MachineRecipe.of(ModItems.INSULATED_CABLE.get(), 4).in(ModItems.COPPER_WIRE.get(), 4).in(ModItems.PLASTIC_PELLET.get()).build());
                 // 순서 = 우선순위 (상위 부품 먼저) — 탈것이 맨 앞이어야 엔진 레시피가 재료를 가로채지 않음
                 // 대형 병기 (엔진 레시피보다 먼저)
                 r.add(MachineRecipe.of(ModItems.FIGHTER_JET.get(), 1)
@@ -155,6 +199,19 @@ public final class MachineRecipes {
                 for (Item planks : new Item[]{Items.OAK_PLANKS, Items.SPRUCE_PLANKS, Items.BIRCH_PLANKS}) {
                     r.add(MachineRecipe.of(ModItems.WOODEN_CRATE.get(), 1).in(planks, 4).in(ModItems.IRON_ROD.get()).build());
                 }
+            }
+            case CHEMICAL_REACTOR -> {
+                r.add(MachineRecipe.of(ModItems.PCB.get(), 2).in(ModItems.FIBERGLASS.get(), 2).in(ModItems.EPOXY_RESIN.get()).in(ModItems.COPPER_FOIL.get()).in(ModItems.SULFURIC_ACID.get()).build());
+                r.add(MachineRecipe.of(ModItems.MICROCHIP.get(), 2).in(ModItems.SILICON_WAFER.get()).in(ModItems.SULFURIC_ACID.get()).in(ModItems.GOLD_WIRE.get(), 2).build());
+                r.add(MachineRecipe.of(ModItems.ALUMINA.get(), 2).in(ModItems.BAUXITE_DUST.get(), 2).in(ModItems.CAUSTIC_SODA.get()).build());
+                r.add(MachineRecipe.of(ModItems.EPOXY_RESIN.get(), 8).in(ModItems.PLASTIC_PELLET.get(), 2).in(ModItems.CHLORINE_CYLINDER.get()).build());
+                r.add(MachineRecipe.of(ModItems.PLASTIC_PELLET.get(), 4).in(ModItems.FUEL_CANISTER.get()).in(ModItems.COAL_DUST.get(), 2).build());
+                r.add(MachineRecipe.of(ModItems.SULFURIC_ACID.get(), 1).in(ModItems.SULFUR.get(), 2).in(Items.GLASS_BOTTLE).build());
+            }
+            case ELECTROLYZER -> {
+                r.add(MachineRecipe.of(ModItems.CHLORINE_CYLINDER.get(), 1).in(ModItems.SALT.get(), 3).in(ModItems.GAS_CYLINDER.get()).build());
+                r.add(MachineRecipe.of(ModItems.CAUSTIC_SODA.get(), 1).in(ModItems.SALT.get(), 2).in(Items.GLASS_BOTTLE).build());
+                r.add(MachineRecipe.of(ModItems.ALUMINUM_INGOT.get(), 1).in(ModItems.ALUMINA.get(), 2).in(ModItems.COKE.get()).build());
             }
         }
         return List.copyOf(r);
