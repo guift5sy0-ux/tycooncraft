@@ -213,7 +213,7 @@ public class JetEntity extends VehicleEntity {
                 Vec3 spread = dir.add(random.nextGaussian() * 0.012, random.nextGaussian() * 0.012, random.nextGaussian() * 0.012).normalize();
                 Ballistics.nextKind = 3;
                 Ballistics.nextSpeed = 34f;
-                Ballistics.shoot((ServerLevel) level(), player, nose.add(side), spread, 120, 8f * GunItem.DAMAGE_SCALE, 0, 1.5f, false, true,
+                Ballistics.shoot((ServerLevel) level(), player, nose.add(side), spread, 120, 6f * GunItem.DAMAGE_SCALE, 0, 1.5f, false, true,
                         level().damageSources().playerAttack(player), e -> e != this && !hasPassenger(e));
             }
             level().playSound(null, nose.x, nose.y, nose.z, ModSounds.RIFLE_FIRE.get(), SoundSource.PLAYERS, 3.0f, 1.35f);

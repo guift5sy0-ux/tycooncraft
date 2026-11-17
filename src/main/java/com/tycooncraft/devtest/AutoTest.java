@@ -100,6 +100,16 @@ public final class AutoTest {
             com.tycooncraft.gun.Ballistics.shoot(level, fp, fp.getEyePosition(), dragon.position().add(0, 1, 0).subtract(fp.getEyePosition()).normalize(),
                     40, 12f, 0, 1f, false, false, level.damageSources().playerAttack(fp), e -> true);
         float h3 = dragon.getHealth();
+        if (t == 1610) {   // 보스가 주는 피해 하향 확인: 드래곤이 10 피해를 주면 6 이 들어가야 함
+            var v = net.minecraft.world.entity.EntityType.VILLAGER.create(level);
+            v.moveTo(dragon.getX() + 30, dragon.getY(), dragon.getZ(), 0, 0);
+            v.setNoAi(true);
+            level.addFreshEntity(v);
+            float v0 = v.getHealth();
+            v.hurt(level.damageSources().mobAttack(dragon), 10f);
+            System.out.println("[AUTOTEST] bossdmg dragon 10 -> " + (v0 - v.getHealth()));
+            v.discard();
+        }
         System.out.println("[AUTOTEST] dragonhit t=" + t + " phase=" + dragon.getPhaseManager().getCurrentPhase().getPhase()
                 + String.format(" hp %.1f -head(%s)-> %.1f -body(%s)-> %.1f -gun-> %.1f", h0, r1, h1, r2, h2, h3)
                 + " inv=" + dragon.isInvulnerable() + " invT=" + dragon.invulnerableTime + " max=" + dragon.getMaxHealth());

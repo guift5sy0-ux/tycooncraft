@@ -67,15 +67,15 @@ public final class ModItems {
 
     // ── 총 ── (피해, 탄 수, 퍼짐, 사거리, 탄창, 발사 간격, 재장전, 연사, 조준, 반동, 탄약, 발사음, 재장전음)
     public static final DeferredItem<GunItem> PISTOL = ITEMS.register("pistol", () -> new GunItem(new Item.Properties(),
-            new GunStats(9f, 1, 0.012f, 48, 12, 6, 30, false, false, 2.5f, LIGHT_AMMO, ModSounds.PISTOL_FIRE, ModSounds.PISTOL_RELOAD)));
+            new GunStats(7f, 1, 0.012f, 48, 12, 6, 30, false, false, 2.5f, LIGHT_AMMO, ModSounds.PISTOL_FIRE, ModSounds.PISTOL_RELOAD)));
     public static final DeferredItem<GunItem> SMG = ITEMS.register("smg", () -> new GunItem(new Item.Properties(),
-            new GunStats(6.5f, 1, 0.03f, 40, 30, 3, 40, true, false, 1.2f, LIGHT_AMMO, ModSounds.SMG_FIRE, ModSounds.SMG_RELOAD)));
+            new GunStats(5f, 1, 0.03f, 40, 30, 3, 40, true, false, 1.2f, LIGHT_AMMO, ModSounds.SMG_FIRE, ModSounds.SMG_RELOAD)));
     public static final DeferredItem<GunItem> RIFLE = ITEMS.register("rifle", () -> new GunItem(new Item.Properties(),
-            new GunStats(11f, 1, 0.015f, 80, 30, 4, 50, true, false, 1.8f, HEAVY_AMMO, ModSounds.RIFLE_FIRE, ModSounds.RIFLE_RELOAD)));
+            new GunStats(8f, 1, 0.015f, 80, 30, 4, 50, true, false, 1.8f, HEAVY_AMMO, ModSounds.RIFLE_FIRE, ModSounds.RIFLE_RELOAD)));
     public static final DeferredItem<GunItem> SHOTGUN = ITEMS.register("shotgun", () -> new GunItem(new Item.Properties(),
-            new GunStats(5.5f, 8, 0.09f, 20, 6, 18, 50, false, false, 6f, SHOTGUN_SHELL, ModSounds.SHOTGUN_FIRE, ModSounds.SHOTGUN_RELOAD)));
+            new GunStats(4f, 8, 0.09f, 20, 6, 18, 50, false, false, 6f, SHOTGUN_SHELL, ModSounds.SHOTGUN_FIRE, ModSounds.SHOTGUN_RELOAD)));
     public static final DeferredItem<GunItem> SNIPER = ITEMS.register("sniper", () -> new GunItem(new Item.Properties(),
-            new GunStats(40f, 1, 0.05f, 160, 5, 30, 60, false, true, 8f, HEAVY_AMMO, ModSounds.SNIPER_FIRE, ModSounds.SNIPER_RELOAD)));
+            new GunStats(26f, 1, 0.05f, 160, 5, 30, 60, false, true, 8f, HEAVY_AMMO, ModSounds.SNIPER_FIRE, ModSounds.SNIPER_RELOAD)));
 
     // ── 총기 부착물 & 드론 ──
     public static final DeferredItem<Item> SILENCER = ITEMS.register("silencer", () -> new Item(new Item.Properties().stacksTo(16)));
@@ -85,9 +85,9 @@ public final class ModItems {
 
     // ── 신형 총기 ──
     public static final DeferredItem<GunItem> VSS = ITEMS.register("vss", () -> new GunItem(new Item.Properties(),
-            new GunStats(11f, 1, 0.008f, 100, 10, 6, 40, false, true, 2.0f, LIGHT_AMMO, ModSounds.SILENCED_FIRE, ModSounds.RIFLE_RELOAD)));
+            new GunStats(8f, 1, 0.008f, 100, 10, 6, 40, false, true, 2.0f, LIGHT_AMMO, ModSounds.SILENCED_FIRE, ModSounds.RIFLE_RELOAD)));
     public static final DeferredItem<GunItem> DUAL_PISTOLS = ITEMS.register("dual_pistols", () -> new GunItem(new Item.Properties(),
-            new GunStats(7f, 1, 0.032f, 40, 24, 2, 22, true, false, 1.3f, LIGHT_AMMO, ModSounds.PISTOL_FIRE, ModSounds.PISTOL_RELOAD)));
+            new GunStats(5.5f, 1, 0.032f, 40, 24, 2, 22, true, false, 1.3f, LIGHT_AMMO, ModSounds.PISTOL_FIRE, ModSounds.PISTOL_RELOAD)));
     public static final DeferredItem<RpgItem> RPG = ITEMS.register("rpg", () -> new RpgItem(new Item.Properties(),
             new GunStats(0f, 1, 0f, 0, 1, 20, 50, false, false, 5f, ModItems.ROCKET, ModSounds.RPG_FIRE, ModSounds.RIFLE_RELOAD)));
     /** 날카로운 반자동 "이계의 심판자": 네더라이트 5 + 권총 + 드래곤 알 + 신호기 2 */
@@ -100,7 +100,7 @@ public final class ModItems {
                             .add(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_SPEED, new net.minecraft.world.entity.ai.attributes.AttributeModifier(
                                     Item.BASE_ATTACK_SPEED_ID, -2.2, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE),
                                     net.minecraft.world.entity.EquipmentSlotGroup.MAINHAND).build()),
-            new GunStats(15f, 1, 0.005f, 90, 9, 5, 34, false, false, 3.2f, HEAVY_AMMO, ModSounds.JUDGE_FIRE, ModSounds.PISTOL_RELOAD)));
+            new GunStats(11f, 1, 0.005f, 90, 9, 5, 34, false, false, 3.2f, HEAVY_AMMO, ModSounds.JUDGE_FIRE, ModSounds.PISTOL_RELOAD)));
     public static final DeferredItem<Item> ROCKET = ITEMS.register("rocket", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final DeferredItem<Item> TANK_SHELL = ITEMS.register("tank_shell", () -> new Item(new Item.Properties().stacksTo(16)));
 

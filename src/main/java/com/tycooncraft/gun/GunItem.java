@@ -38,8 +38,8 @@ import java.util.List;
  * 웅크리고 우클릭 = 재장전 (인벤토리의 탄약 사용).
  */
 public class GunItem extends Item {
-    /** v0.14.2: 전체 총기 피해 1.2배 */
-    public static final float DAMAGE_SCALE = 1.2f;
+    /** 전체 총기 피해 배율 (v0.15.6: 하향 평준화 — 기본값 자체를 낮춤) */
+    public static final float DAMAGE_SCALE = 1.0f;
 
     private static final int USE_DURATION = 72000;
     private final GunStats stats;

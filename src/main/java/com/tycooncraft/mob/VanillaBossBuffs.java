@@ -82,18 +82,42 @@ public final class VanillaBossBuffs {
     public static void onJoin(EntityJoinLevelEvent event) {
         if (event.getLevel().isClientSide) return;
         Entity e = event.getEntity();
-        if (e instanceof WitherBoss w) buff(w, 600, 10, event.loadedFromDisk());
-        else if (e instanceof EnderDragon d) buff(d, 600, 0, event.loadedFromDisk());
+        // v0.15.6: 체력은 바닐라로 원복 (위더 300, 드래곤 200), 위더 방어력 +10 만 유지
+        if (e instanceof WitherBoss w) buff(w, 0, 10, event.loadedFromDisk());
+        else if (e instanceof EnderDragon d) buff(d, 0, 0, event.loadedFromDisk());
     }
 
     private static void buff(LivingEntity e, double hp, double armor, boolean loaded) {
         AttributeInstance mh = e.getAttribute(Attributes.MAX_HEALTH);
-        if (mh != null && !mh.hasModifier(BUFF)) {
+        // 예전 버전에서 체력 강화(+600)를 받은 채 저장된 보스는 강화를 떼고 체력을 비율대로 맞춘다
+        if (mh != null && hp == 0 && mh.hasModifier(BUFF)) {
+            float ratio = e.getHealth() / e.getMaxHealth();
+            mh.removeModifier(BUFF);
+            e.setHealth(Math.max(1f, e.getMaxHealth() * ratio));
+        }
+        if (mh != null && hp > 0 && !mh.hasModifier(BUFF)) {
             mh.addPermanentModifier(new AttributeModifier(BUFF, hp, AttributeModifier.Operation.ADD_VALUE));
             if (!loaded) e.setHealth(e.getMaxHealth());
         }
         AttributeInstance ar = e.getAttribute(Attributes.ARMOR);
         if (armor > 0 && ar != null && !ar.hasModifier(BUFF)) ar.addPermanentModifier(new AttributeModifier(BUFF, armor, AttributeModifier.Operation.ADD_VALUE));
+    }
+
+    /** 보스가 주는 피해 (보스 본체·투사체·폭발·패턴 모두) */
+    public static final float BOSS_DAMAGE = 0.6f;
+
+    public static boolean isBoss(Entity e) {
+        return e instanceof WitherBoss || e instanceof EnderDragon || e instanceof com.tycooncraft.mob.Behemoth
+                || e instanceof com.tycooncraft.mob.DestroyerGolem || e instanceof com.tycooncraft.mob.StormWyvern
+                || e instanceof com.tycooncraft.mob.MutantSpider;
+    }
+
+    @SubscribeEvent
+    public static void onBossHit(net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent event) {
+        var src = event.getSource();
+        if (isBoss(event.getEntity())) return;
+        if ((src.getEntity() != null && isBoss(src.getEntity())) || (src.getDirectEntity() != null && isBoss(src.getDirectEntity())))
+            event.setAmount(event.getAmount() * BOSS_DAMAGE);
     }
 
     @SubscribeEvent
