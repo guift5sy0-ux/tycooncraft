@@ -517,7 +517,11 @@ public final class AutoTestClient {
             case 2240 -> serverDo(mc, sp -> {
                 if (V16Test.clientTruck != null) V16Test.clientTruck.discard();
             });
-            case 2250 -> next(11);
+            case 2250 -> serverDo(mc, sp -> sp.teleportTo(sp.serverLevel(), 172.5, g + 18, 186.5, 135f, 30f));
+            case 2290 -> shot(mc, "59_gang_hideout");
+            case 2292 -> serverDo(mc, sp -> sp.teleportTo(sp.serverLevel(), 143.5, g + 9, 177.5, 180f, 22f));
+            case 2325 -> shot(mc, "59b_gang_hideout_gate");
+            case 2330 -> next(11);
             default -> {
             }
         }

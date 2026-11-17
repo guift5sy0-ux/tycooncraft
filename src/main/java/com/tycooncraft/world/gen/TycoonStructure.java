@@ -36,11 +36,19 @@ public class TycoonStructure extends Structure {
     }
 
     static int sizeX(String kind) {
-        return kind.equals("village") ? 32 : 22;
+        return switch (kind) {
+            case "village" -> 32;
+            case "hideout" -> 31;
+            default -> 22;
+        };
     }
 
     static int sizeZ(String kind) {
-        return kind.equals("village") ? 32 : 14;
+        return switch (kind) {
+            case "village" -> 32;
+            case "hideout" -> 31;
+            default -> 14;
+        };
     }
 
     @Override

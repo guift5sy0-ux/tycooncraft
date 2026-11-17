@@ -1,0 +1,8 @@
+{
+  "type": "tycooncraft:tycoon",
+  "kind": "hideout",
+  "biomes": "#tycooncraft:has_gang_hideout",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "beard_thin"
+}

@@ -109,7 +109,7 @@ public final class WorldGen {
     /** 월드 생성 구조물 태그 */
     static net.minecraft.tags.TagKey<net.minecraft.world.level.levelgen.structure.Structure> tag(String type) {
         return net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.STRUCTURE,
-                com.tycooncraft.TycoonCraft.id(type.equals("village") ? "trader_village" : "abandoned_factory"));
+                com.tycooncraft.TycoonCraft.id(type.equals("village") ? "trader_village" : type.equals("hideout") ? "gang_hideout" : "abandoned_factory"));
     }
 
     public static BlockPos nearest(ServerLevel level, String type, BlockPos from) {

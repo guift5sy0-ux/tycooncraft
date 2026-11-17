@@ -47,6 +47,8 @@ import java.util.Optional;
 public final class StructureBuilder {
     public static final ResourceKey<LootTable> VILLAGE_CHEST = loot("chests/tycoon_village");
     public static final ResourceKey<LootTable> RUIN_CHEST = loot("chests/abandoned_factory");
+    public static final ResourceKey<LootTable> GANG_VAULT = loot("chests/gang_vault");
+    public static final ResourceKey<LootTable> GANG_SUPPLY = loot("chests/gang_supply");
 
     private final net.minecraft.world.level.WorldGenLevel level;
     private final BlockPos origin;
@@ -74,6 +76,7 @@ public final class StructureBuilder {
                                 net.minecraft.world.level.levelgen.structure.BoundingBox clip) {
         StructureBuilder b = new StructureBuilder(level, origin, RandomSource.create(seed), clip);
         if (kind.equals("village")) b.buildVillage();
+        else if (kind.equals("hideout")) b.buildHideout();
         else b.buildRuin();
     }
 
@@ -172,7 +175,7 @@ public final class StructureBuilder {
         mob.moveTo(p.getX() + 0.5, p.getY(), p.getZ() + 0.5, yaw, 0);
         mob.finalizeSpawn(level, level.getCurrentDifficultyAt(p), MobSpawnType.STRUCTURE, null);
         mob.setPersistenceRequired();
-        level.addFreshEntity(mob);
+        level.addFreshEntityWithPassengers(mob);      // 트럭처럼 승무원을 태운 몹도 함께
     }
 
     private static MerchantOffer offer(Item cost, int costCount, Item result, int count) {
@@ -379,6 +382,120 @@ public final class StructureBuilder {
                 offer(Items.ROTTEN_FLESH, 16, cu, 4), offer(Items.BONE, 8, cu, 5), offer(Items.STRING, 8, cu, 6),
                 offer(Items.SPIDER_EYE, 4, cu, 4), offer(Items.FEATHER, 16, cu, 5), offer(Items.LEATHER, 4, ir, 1),
                 offer(Items.GUNPOWDER, 4, ir, 1), offer(Items.SLIME_BALL, 4, ir, 1), offer(Items.ENDER_PEARL, 2, ir, 3)));
+    }
+
+    /** 테스트·명령어용: 갱단 아지트를 지금 바로 짓는다 */
+    public static void hideout(ServerLevel level, BlockPos origin) {
+        new StructureBuilder(level, origin).buildHideout();
+    }
+
+    /**
+     * 카르텔 아지트 (31×31): 돌벽 + 철창, 모서리 감시탑 4개(용병 저격조), 창고 안 철문 금고실(상자 3) + 카르텔 두목,
+     * 마당엔 마대 바리케이드·모닥불·깃발·주차된 무장 트럭과 경비 갱단.
+     */
+    private void buildHideout() {
+        StructureBuilder b = this;
+        RandomSource r = b.random;
+        int N = 30;
+        b.fill(0, 0, 0, N, 12, N, Blocks.AIR);
+        b.foundation(0, -5, 0, N, -2, N, Blocks.DIRT);
+        for (int x = 0; x <= N; x++)
+            for (int z = 0; z <= N; z++) {
+                float f = r.nextFloat();
+                b.set(x, -1, z, f < 0.55f ? Blocks.COARSE_DIRT : f < 0.85f ? Blocks.GRAVEL : Blocks.PACKED_MUD);
+            }
+        // 외벽 (높이 4) + 철창
+        for (int i = 0; i <= N; i++) {
+            for (int[] p : new int[][]{{i, 0}, {i, N}, {0, i}, {N, i}}) {
+                boolean gate = p[1] == N && p[0] >= 13 && p[0] <= 17;
+                for (int y = 0; y < 4; y++) {
+                    if (gate) continue;
+                    float f = r.nextFloat();
+                    b.set(p[0], y, p[1], f < 0.6f ? Blocks.STONE_BRICKS : f < 0.82f ? Blocks.CRACKED_STONE_BRICKS : Blocks.MOSSY_STONE_BRICKS);
+                }
+                if (!gate) b.set(p[0], 4, p[1], Blocks.IRON_BARS);
+            }
+        }
+        // 정문 기둥 + 등불
+        for (int x : new int[]{12, 18}) {
+            b.fill(x, 0, N, x, 5, N, Blocks.POLISHED_DEEPSLATE);
+            b.set(x, 6, N, Blocks.LANTERN);
+        }
+        b.fill(12, 5, N, 18, 5, N, Blocks.DEEPSLATE_BRICK_SLAB);
+        // 감시탑 4개
+        for (int[] c : new int[][]{{0, 0}, {N - 4, 0}, {0, N - 4}, {N - 4, N - 4}}) {
+            int x0 = c[0], z0 = c[1];
+            for (int[] k : new int[][]{{0, 0}, {4, 0}, {0, 4}, {4, 4}}) b.fill(x0 + k[0], 0, z0 + k[1], x0 + k[0], 9, z0 + k[1], Blocks.SPRUCE_LOG);
+            b.fill(x0, 7, z0, x0 + 4, 7, z0 + 4, Blocks.SPRUCE_PLANKS);
+            for (int i = 0; i <= 4; i++) {
+                b.set(x0 + i, 8, z0, Blocks.SPRUCE_FENCE);
+                b.set(x0 + i, 8, z0 + 4, Blocks.SPRUCE_FENCE);
+                b.set(x0, 8, z0 + i, Blocks.SPRUCE_FENCE);
+                b.set(x0 + 4, 8, z0 + i, Blocks.SPRUCE_FENCE);
+            }
+            b.fill(x0 - 1, 10, z0 - 1, x0 + 5, 10, z0 + 5, Blocks.SPRUCE_SLAB);
+            b.fill(x0 + 2, 0, z0 + 2, x0 + 2, 6, z0 + 2, Blocks.AIR);
+            for (int y = 0; y < 7; y++) b.set(x0 + 2, y, z0 + 3, Blocks.SPRUCE_PLANKS);
+            for (int y = 0; y < 8; y++) b.set(x0 + 2, y, z0 + 2, Blocks.LADDER.defaultBlockState().setValue(net.minecraft.world.level.block.LadderBlock.FACING, Direction.NORTH));
+            b.set(x0 + 1, 8, z0 + 1, Blocks.LANTERN);
+            b.spawnMob(com.tycooncraft.registry.ModEntities.MERCENARY.get(), x0 + 3, 8, z0 + 1);
+        }
+        // 창고 (15×11, 높이 6)
+        int wx0 = 7, wx1 = 21, wz0 = 5, wz1 = 15;
+        b.fill(wx0, -1, wz0, wx1, -1, wz1, Blocks.POLISHED_ANDESITE);
+        for (int y = 0; y <= 5; y++)
+            for (int x = wx0; x <= wx1; x++)
+                for (int z = wz0; z <= wz1; z++) {
+                    boolean edge = x == wx0 || x == wx1 || z == wz0 || z == wz1;
+                    if (!edge) continue;
+                    boolean corner = (x == wx0 || x == wx1) && (z == wz0 || z == wz1);
+                    b.set(x, y, z, corner ? Blocks.STRIPPED_DARK_OAK_LOG : y == 2 && (x - wx0) % 4 == 2 ? Blocks.IRON_BARS : Blocks.DARK_OAK_PLANKS);
+                }
+        b.fill(wx0, 6, wz0, wx1, 6, wz1, Blocks.DEEPSLATE_TILES);
+        b.fill(wx0 + 1, 6, wz0 + 1, wx1 - 1, 6, wz1 - 1, Blocks.DEEPSLATE_TILE_SLAB);
+        b.fill(13, 0, wz1, 15, 2, wz1, Blocks.AIR);                    // 창고 입구
+        for (int x = wx0 + 3; x <= wx1 - 3; x += 4) b.set(x, 5, (wz0 + wz1) / 2, Blocks.LANTERN.defaultBlockState().setValue(net.minecraft.world.level.block.LanternBlock.HANGING, true));
+        // 금고실: 철창 칸막이 + 철문 (부수고 들어가야 함)
+        int vx0 = wx0 + 1, vx1 = wx0 + 5, vz0 = wz0 + 1, vz1 = wz0 + 4;
+        for (int y = 0; y <= 4; y++) {
+            for (int x = vx0; x <= vx1 + 1; x++) b.set(x, y, vz1 + 1, Blocks.IRON_BARS);
+            for (int z = vz0; z <= vz1 + 1; z++) b.set(vx1 + 1, y, z, Blocks.IRON_BARS);
+        }
+        b.set(vx0 + 2, 0, vz1 + 1, Blocks.IRON_DOOR.defaultBlockState().setValue(net.minecraft.world.level.block.DoorBlock.FACING, Direction.SOUTH));
+        b.set(vx0 + 2, 1, vz1 + 1, Blocks.IRON_DOOR.defaultBlockState().setValue(net.minecraft.world.level.block.DoorBlock.FACING, Direction.SOUTH)
+                .setValue(net.minecraft.world.level.block.DoorBlock.HALF, net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER));
+        b.chest(vx0, 0, vz0, Direction.SOUTH, GANG_VAULT);
+        b.chest(vx0 + 2, 0, vz0, Direction.SOUTH, GANG_VAULT);
+        b.chest(vx0 + 4, 0, vz0, Direction.SOUTH, GANG_VAULT);
+        b.set(vx0 + 1, 0, vz0, Blocks.GOLD_BLOCK);
+        b.set(vx0 + 3, 0, vz0, Blocks.GOLD_BLOCK);
+        // 창고 안 물자: 술통·상자·작업대
+        for (int x = wx1 - 5; x <= wx1 - 1; x++) {
+            b.set(x, 0, wz0 + 1, Blocks.BARREL);
+            if (x % 2 == 0) b.set(x, 1, wz0 + 1, Blocks.BARREL);
+        }
+        b.chest(wx1 - 1, 0, wz1 - 2, Direction.WEST, GANG_SUPPLY);
+        b.set(wx1 - 1, 0, wz1 - 3, Blocks.SMITHING_TABLE);
+        b.set(wx0 + 8, 0, wz0 + 6, Blocks.DARK_OAK_PLANKS);
+        b.set(wx0 + 8, 1, wz0 + 6, Blocks.DARK_OAK_PRESSURE_PLATE);
+        b.spawnMob(com.tycooncraft.registry.ModEntities.CARTEL_BOSS.get(), wx0 + 9, 0, wz0 + 5);
+        b.spawnMob(com.tycooncraft.registry.ModEntities.MERCENARY.get(), wx0 + 11, 0, wz0 + 7);
+        b.spawnMob(com.tycooncraft.registry.ModEntities.OUTLAW.get(), wx0 + 6, 0, wz0 + 8);
+        // 마당: 마대 바리케이드, 모닥불, 깃발
+        for (int x = 9; x <= 21; x++) if (x < 13 || x > 17) b.set(x, 0, 25, Blocks.MUD_BRICK_WALL);
+        for (int x = 10; x <= 20; x++) if (x < 13 || x > 17) b.set(x, 1, 25, Blocks.MUD_BRICK_SLAB);
+        b.set(24, 0, 20, Blocks.CAMPFIRE);
+        for (int[] p : new int[][]{{23, 19}, {25, 19}, {23, 21}, {25, 21}}) b.set(p[0], 0, p[1], Blocks.SPRUCE_LOG);
+        for (int y = 0; y < 6; y++) b.set(4, y, 20, Blocks.SPRUCE_FENCE);
+        b.fill(5, 4, 20, 7, 5, 20, Blocks.RED_WOOL);
+        b.set(6, 4, 20, Blocks.BLACK_WOOL);
+        for (int[] p : new int[][]{{25, 7}, {26, 8}, {25, 9}, {24, 12}}) b.set(p[0], 0, p[1], r.nextBoolean() ? Blocks.BARREL : Blocks.HAY_BLOCK);
+        // 경비 갱단 + 주차된 무장 트럭
+        b.spawnMob(com.tycooncraft.registry.ModEntities.GANGSTER.get(), 14, 0, 24);
+        b.spawnMob(com.tycooncraft.registry.ModEntities.GANGSTER.get(), 16, 0, 24);
+        b.spawnMob(com.tycooncraft.registry.ModEntities.GANGSTER.get(), 23, 0, 23);
+        b.spawnMob(com.tycooncraft.registry.ModEntities.OUTLAW.get(), 6, 0, 24);
+        b.spawnMob(com.tycooncraft.registry.ModEntities.GANG_TRUCK.get(), 3, 0, 12);
     }
 
     private void buildVillage() {

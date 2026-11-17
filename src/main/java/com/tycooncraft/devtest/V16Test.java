@@ -24,6 +24,8 @@ public final class V16Test {
             System.out.println("[AUTOTEST] v16 truck spawned=" + (truck != null) + " crew=" + (truck == null ? 0 : truck.getPassengers().size())
                     + (truck == null ? "" : " types=" + truck.getPassengers().stream().map(e -> e.getType().toShortString()).toList()));
         }
+        if (t == 800) com.tycooncraft.world.StructureBuilder.hideout(level, new BlockPos(128, gy, 140));
+        if (t == 840) inspectHideout(level, new BlockPos(128, gy, 140));
         if (truck == null) return;
         if (t > 300 && t < 720 && truck.isAlive() && target.isAlive()) truck.setTarget(target);
         if (t == 400 || t == 520 || t == 640)
@@ -39,6 +41,21 @@ public final class V16Test {
             System.out.println("[AUTOTEST] v16 truck destroyed=" + !truck.isAlive() + " drops=" + drops);
             truck = null;
         }
+    }
+
+    public static void inspectHideout(ServerLevel level, BlockPos o) {
+        AABB box = new AABB(o).expandTowards(31, 12, 31).inflate(2);
+        long gang = level.getEntitiesOfClass(com.tycooncraft.mob.GunnerEntity.class, box).size();
+        long trucks = level.getEntitiesOfClass(GangTruck.class, box).size();
+        long boss = level.getEntitiesOfClass(com.tycooncraft.mob.CartelBoss.class, box).size();
+        int chests = 0, doors = 0, bars = 0;
+        for (BlockPos p : BlockPos.betweenClosed(o.getX(), o.getY() - 1, o.getZ(), o.getX() + 31, o.getY() + 11, o.getZ() + 31)) {
+            var s = level.getBlockState(p);
+            if (s.is(net.minecraft.world.level.block.Blocks.CHEST)) chests++;
+            else if (s.is(net.minecraft.world.level.block.Blocks.IRON_DOOR)) doors++;
+            else if (s.is(net.minecraft.world.level.block.Blocks.IRON_BARS)) bars++;
+        }
+        System.out.println("[AUTOTEST] v16 hideout gunners=" + gang + " trucks=" + trucks + " boss=" + boss + " chests=" + chests + " ironDoor=" + doors + " bars=" + bars);
     }
 
     private V16Test() {}

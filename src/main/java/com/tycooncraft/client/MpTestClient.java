@@ -97,7 +97,8 @@ public final class MpTestClient {
         // 서버가 1300틱·1500틱에 마을·폐공장 위로 보내 준다 → 촬영
         if (t == 1440) shot(mc, "mp_village");
         if (t == 1640) shot(mc, "mp_ruin");
-        if (round >= 5 && t >= 1700) {
+        if (t == 1840) shot(mc, "mp_hideout");
+        if (round >= 5 && t >= 1900) {
             System.out.println("[MPTEST] client still connected, finished OK");
             System.out.println("[MPTEST] finished");
             mc.stop();

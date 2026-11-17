@@ -13,7 +13,7 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 public final class MpTest {
     public static final boolean ON = Boolean.getBoolean("tycooncraft.mptest");
     static int ticks, joinTick = -1;
-    static net.minecraft.core.BlockPos village, ruin;
+    static net.minecraft.core.BlockPos village, ruin, hideout;
     static ServerPlayer tester;
 
     public static void init() {
@@ -36,7 +36,8 @@ public final class MpTest {
         var level = sp.serverLevel();
         village = level.findNearestMapStructure(com.tycooncraft.world.WorldGen.structureTag("village"), sp.blockPosition(), 100, false);
         ruin = level.findNearestMapStructure(com.tycooncraft.world.WorldGen.structureTag("ruin"), sp.blockPosition(), 100, false);
-        System.out.println("[MPTEST] structures near spawn village=" + village + " ruin=" + ruin);
+        hideout = level.findNearestMapStructure(com.tycooncraft.world.WorldGen.structureTag("hideout"), sp.blockPosition(), 100, false);
+        System.out.println("[MPTEST] structures near spawn village=" + village + " ruin=" + ruin + " hideout=" + hideout);
     }
 
     @SubscribeEvent
@@ -83,6 +84,16 @@ public final class MpTest {
             if (dt == 1320 || dt == 1380 || dt == 1440) inspect(tester.serverLevel(), "village", village, 32, 32);
             if (dt == 1500 && ruin != null) view(ruin, 11);
             if (dt == 1640) inspect(tester.serverLevel(), "ruin", ruin, 22, 14);
+            if (dt == 1700 && hideout != null) view(hideout, 15);
+            if (dt == 1840 && hideout != null) {
+                var l = tester.serverLevel();
+                int gy = l.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, hideout.getX(), hideout.getZ());
+                var box = new net.minecraft.world.phys.AABB(hideout).inflate(40, 0, 40).setMinY(gy - 20).setMaxY(gy + 30);
+                System.out.println("[MPTEST] hideout at " + hideout.getX() + "," + hideout.getZ() + " entitiesLoaded=" + l.areEntitiesLoaded(new net.minecraft.world.level.ChunkPos(hideout).toLong())
+                        + " gunners=" + l.getEntitiesOfClass(com.tycooncraft.mob.GunnerEntity.class, box).size()
+                        + " trucks=" + l.getEntitiesOfClass(com.tycooncraft.mob.GangTruck.class, box).size()
+                        + " boss=" + l.getEntitiesOfClass(com.tycooncraft.mob.CartelBoss.class, box).size());
+            }
         }
         if (++ticks % 200 == 0)
             System.out.println("[MPTEST] server tick=" + ticks + " players=" + e.getServer().getPlayerCount() + " detonations=" + com.tycooncraft.vehicle.DroneEntity.DETONATIONS);
