@@ -663,6 +663,7 @@ public final class AutoTestClient {
             // ── v0.18: 은행 (저축·송금·경매) ──
             case 2670 -> serverDo(mc, BankTest::run);
             case 2674 -> mc.setScreen(new net.minecraft.client.gui.screens.inventory.InventoryScreen(mc.player));
+            case 2682 -> mc.getToasts().clear();
             case 2684 -> shot(mc, "72_inventory_bank_button");
             case 2686 -> com.tycooncraft.client.BankClient.open();
             case 2690 -> { if (mc.screen instanceof com.tycooncraft.client.BankScreen b) b.demo(0, 0); }
@@ -680,6 +681,7 @@ public final class AutoTestClient {
             }
             // ── v0.18: 폐공장 지하실 + 골렘, 갱단 드롭, 스코프 전환 ──
             case 2732 -> serverDo(mc, V18Test::build);
+            case 2748 -> mc.getToasts().clear();
             case 2750 -> shot(mc, "77_ruin_basement_golem");
             case 2752 -> serverDo(mc, V18Test::kill);
             case 2760 -> serverDo(mc, V18Test::check);

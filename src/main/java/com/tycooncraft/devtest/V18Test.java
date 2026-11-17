@@ -40,7 +40,7 @@ public final class V18Test {
         sp.getInventory().clearContent();
         sp.getAbilities().flying = true;
         sp.onUpdateAbilities();
-        sp.teleportTo(sl, ruin.getX() + 18.5, ruin.getY() - 9.5, ruin.getZ() + 11.0, 125f, 12f);
+        sp.teleportTo(sl, ruin.getX() + 14.5, ruin.getY() - 9.5, ruin.getZ() + 12.2, 143f, 22f);
     }
 
     static void kill(ServerPlayer sp) {
