@@ -276,7 +276,7 @@
   "entity.tycooncraft.ship": "운송기",
   "tooltip.tycooncraft.transmission": "컨베이어 줄 옆에 붙이고 우클릭: 이어진 컨베이어 전체 속도 1단~5단 (5단 = 5배)",
   "tooltip.tycooncraft.ship_motor": "운송기 블록에 붙이면 추진력 — 연료(연료통·코크스·석탄 등)를 넣어야 움직여요. 호퍼로도 넣을 수 있고, 붙어 있는 엔진끼리 연료를 함께 써요",
-  "tooltip.tycooncraft.ship_helm": "운송기를 블록으로 짓고(물 위, 또는 부유체를 달면 어디서든) 엔진과 함께 붙인 뒤 우클릭 → 출발! 연료를 들고 우클릭하면 주유",
+  "tooltip.tycooncraft.ship_helm": "조종석(의자+타륜): 운송기를 블록으로 짓고(물 위, 또는 부유체를 달면 어디서든) 엔진을 붙인 뒤 우클릭 → 앉아서 출발! 연료를 들고 우클릭하면 주유",
   "message.tycooncraft.transmission": "⚙ 변속기 %s단 — 컨베이어 %s칸",
   "message.tycooncraft.emp_hit": "⚡ EMP! 전자 장비 먹통 (%s초)",
   "message.tycooncraft.ship.assembled": "⚓ 운송기 조립 완료: 블록 %s개 · 엔진 %s개 · 연료 %s — W/S 속도, A/D 방향, Shift 내리기 · 조종기를 웅크리고 우클릭하면 정박",
@@ -359,7 +359,7 @@
   "block.tycooncraft.chemical_reactor": "화학 반응기",
   "block.tycooncraft.electrolyzer": "전해조",
   "block.tycooncraft.ship_float": "부유체",
-  "tooltip.tycooncraft.ship_float": "운송기에 붙이면 하늘을 날 수 있어요 — 1개당 40블록까지 띄움 · Space 상승 / Ctrl 하강 · 떠 있는 동안 연료를 더 먹어요",
+  "tooltip.tycooncraft.ship_float": "운송기에 붙이면 하늘을 날 수 있어요 — 1개당 40블록까지 띄움 · Space 상승 / Ctrl 하강 · 떠 있는 동안 연료를 더 먹어요 · 부서지지 않아요",
   "message.tycooncraft.ship.assembled_air": "🎈 비행 운송기 조립 완료: 블록 %s개 · 엔진 %s개 · 연료 %s · 부유체 %s개 — Space 상승 / Ctrl 하강, W/S 속도, A/D 방향",
   "message.tycooncraft.ship.controls_air": "🎈 Space 상승 · Ctrl 하강 · W/S 속도 · A/D 방향 · Shift 내리기",
   "message.tycooncraft.ship.no_fuel": "⛽ 연료가 없어요! 엔진에 연료를 넣거나(호퍼 가능) 연료를 들고 조종기를 우클릭하세요",
@@ -371,5 +371,7 @@
   "block.tycooncraft.ciws": "방공 요격 포대",
   "tooltip.tycooncraft.ciws": "40블록 안으로 날아오는 RPG·포탄·미사일·수류탄·화염구·자폭 드론을 자동으로 쏴서 공중에서 터뜨려요. 내가·우리 팀이 쏜 건 무시 · 중탄 1개=4발, 경탄=2발 · 운송기에 실어도 작동",
   "message.tycooncraft.ship.fail.too_strong": "%s처럼 준 파괴 불가급 블록은 선체에 쓸 수 없어요 (위치 %s, %s, %s)",
-  "message.tycooncraft.drone.dive": "🚀 드론 자동 돌진! — 다음 드론을 띄울 수 있어요"
+  "message.tycooncraft.drone.dive": "🚀 드론 자동 돌진! — 다음 드론을 띄울 수 있어요",
+  "block.tycooncraft.ship_booster": "운송기 부스터",
+  "tooltip.tycooncraft.ship_booster": "고속 엔진: 엔진 2.5개만큼 밀고 최고 속도 한계를 올려요 — 대신 연료를 3배 빨리 먹어요. 연료 탱크·호퍼 공급은 엔진과 같음"
 }

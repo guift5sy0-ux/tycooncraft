@@ -25,6 +25,7 @@
     "tycooncraft:ship_float",
     "tycooncraft:ciws",
     "tycooncraft:ship_motor",
-    "tycooncraft:ship_helm"
+    "tycooncraft:ship_helm",
+    "tycooncraft:ship_booster"
   ]
 }

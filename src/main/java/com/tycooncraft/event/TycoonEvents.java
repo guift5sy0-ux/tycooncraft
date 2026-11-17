@@ -92,6 +92,7 @@ public final class TycoonEvents {
         if (item instanceof net.minecraft.world.item.BlockItem bi && (bi.getBlock() instanceof com.tycooncraft.block.TransmissionBlock
                 || bi.getBlock() instanceof com.tycooncraft.machine.EmpGeneratorBlock || bi.getBlock() instanceof com.tycooncraft.ship.ShipMotorBlock || bi.getBlock() instanceof com.tycooncraft.ship.ShipHelmBlock
                 || bi.getBlock() instanceof com.tycooncraft.ship.ShipFloatBlock
+                || bi.getBlock() instanceof com.tycooncraft.ship.ShipBoosterBlock
                 || bi.getBlock() instanceof com.tycooncraft.turret.CiwsBlock)) {
             String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item).getPath();
             event.getToolTip().add(Component.translatable("tooltip.tycooncraft." + id).withStyle(ChatFormatting.GRAY));

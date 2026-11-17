@@ -229,6 +229,7 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> CONVEYOR = ITEMS.registerSimpleBlockItem(ModBlocks.CONVEYOR);
     public static final DeferredItem<BlockItem> TRANSMISSION = ITEMS.registerSimpleBlockItem(ModBlocks.TRANSMISSION);
     public static final DeferredItem<BlockItem> SHIP_MOTOR = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_MOTOR);
+    public static final DeferredItem<BlockItem> SHIP_BOOSTER = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_BOOSTER);
     public static final DeferredItem<BlockItem> SHIP_HELM = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_HELM);
     public static final DeferredItem<BlockItem> SHIP_FLOAT = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_FLOAT);
     public static final DeferredItem<BlockItem> EMP_GENERATOR = ITEMS.registerSimpleBlockItem(ModBlocks.EMP_GENERATOR);

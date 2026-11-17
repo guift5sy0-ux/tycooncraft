@@ -33,6 +33,18 @@ public final class ShipPayloads {
         }
     }
 
+    /** 클라이언트 → 서버: 실린 상자 열기 */
+    public record Open(int ship, long cell) implements CustomPacketPayload {
+        public static final Type<Open> TYPE = new Type<>(TycoonCraft.id("ship_open"));
+        public static final StreamCodec<ByteBuf, Open> CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, Open::ship, ByteBufCodecs.VAR_LONG, Open::cell, Open::new);
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+    }
+
     /** 클라이언트 → 서버: 곡괭이로 다 캔 셀 */
     public record Mine(int ship, long cell) implements CustomPacketPayload {
         public static final Type<Mine> TYPE = new Type<>(TycoonCraft.id("ship_mine"));
@@ -65,6 +77,9 @@ public final class ShipPayloads {
             if (ctx.player().getVehicle() instanceof ShipEntity s) s.input(ctx.player(), p.forward(), p.turn(), p.vertical());
         }));
         r.playToServer(Use.TYPE, Use.CODEC, (p, ctx) -> ctx.enqueueWork(() -> use(p, ctx)));
+        r.playToServer(Open.TYPE, Open.CODEC, (p, ctx) -> ctx.enqueueWork(() -> {
+            if (ctx.player() instanceof ServerPlayer sp && sp.level().getEntity(p.ship()) instanceof ShipEntity s) s.openContainer(sp, p.cell());
+        }));
         r.playToServer(Mine.TYPE, Mine.CODEC, (p, ctx) -> ctx.enqueueWork(() -> {
             if (ctx.player() instanceof ServerPlayer sp && sp.level().getEntity(p.ship()) instanceof ShipEntity s) s.mineCell(sp, p.cell());
         }));

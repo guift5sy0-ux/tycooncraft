@@ -265,6 +265,7 @@ public final class AutoTest {
         AirshipTest.tick(level, t, gy);
         AirshipTest.tick2(level, t, gy);
         AirshipTest.tick3(level, t, gy);
+        AirshipTest.tick4(level, t, gy);
         CiwsTest.tick(level, t, gy);
         DroneDiveTest.tick(level, t, gy);
         if (t == 1700) {

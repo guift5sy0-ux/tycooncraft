@@ -38,8 +38,27 @@ public final class ShipCollisions {
         return out;
     }
 
+    /** 클라이언트: 사라진 배의 선체 상자 잔상 (만료 게임 시각) */
+    private record Ghost(Level level, AABB[] boxes, long until) {}
+    private static final List<Ghost> GHOSTS = new ArrayList<>();
+
+    static void ghost(Level level, AABB[] boxes, int ticks) {
+        GHOSTS.add(new Ghost(level, boxes.clone(), level.getGameTime() + ticks));
+    }
+
     public static List<VoxelShape> append(Level level, Entity self, AABB box, List<VoxelShape> base) {
         Set<ShipEntity> set = set(level.isClientSide);
+        if (level.isClientSide && !GHOSTS.isEmpty()) {
+            GHOSTS.removeIf(g -> g.level != level || level.getGameTime() > g.until);
+            List<VoxelShape> out = null;
+            for (Ghost g : GHOSTS)
+                for (AABB b : g.boxes)
+                    if (b != null && b.intersects(box)) {
+                        if (out == null) out = new ArrayList<>(base);
+                        out.add(Shapes.create(b));
+                    }
+            if (out != null) base = out;
+        }
         if (set.isEmpty() || self instanceof ShipEntity) return base;
         List<VoxelShape> out = null;
         for (ShipEntity s : set) {

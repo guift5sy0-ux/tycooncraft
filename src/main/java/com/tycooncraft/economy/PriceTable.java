@@ -65,6 +65,7 @@ public final class PriceTable {
             p.put(ModItems.STEEL_GEAR.get(), 60.0);
             p.put(ModItems.TRANSMISSION.get(), 180.0);
             p.put(ModItems.SHIP_MOTOR.get(), 900.0);
+            p.put(ModItems.SHIP_BOOSTER.get(), 2400.0);
             p.put(ModItems.SHIP_HELM.get(), 300.0);
             p.put(ModItems.SHIP_FLOAT.get(), 420.0);
             p.put(ModItems.EMP_GENERATOR.get(), 2500.0);

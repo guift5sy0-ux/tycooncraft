@@ -26,7 +26,7 @@ public final class ModBlockEntities {
                     () -> BlockEntityType.Builder.of(com.tycooncraft.machine.EmpGeneratorBlockEntity::new, ModBlocks.EMP_GENERATOR.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.ship.ShipMotorBlockEntity>> SHIP_MOTOR =
             BLOCK_ENTITY_TYPES.register("ship_motor",
-                    () -> BlockEntityType.Builder.of(com.tycooncraft.ship.ShipMotorBlockEntity::new, ModBlocks.SHIP_MOTOR.get()).build(null));
+                    () -> BlockEntityType.Builder.of(com.tycooncraft.ship.ShipMotorBlockEntity::new, ModBlocks.SHIP_MOTOR.get(), ModBlocks.SHIP_BOOSTER.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<SellStationBlockEntity>> SELL_STATION =
             BLOCK_ENTITY_TYPES.register("sell_station",
                     () -> BlockEntityType.Builder.of(SellStationBlockEntity::new, ModBlocks.SELL_STATION.get()).build(null));

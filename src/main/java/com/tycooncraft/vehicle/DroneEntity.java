@@ -161,7 +161,7 @@ public class DroneEntity extends Entity {
     }
 
     private void diveTick() {
-        double sp = Math.min(2.4, 1.35 * speedMul());
+        double sp = Math.min(1.5, 0.85 * speedMul());   // 일반 17m/s, Mk2 27m/s
         Vec3 v = diveDir.scale(sp);
         var ship = com.tycooncraft.ship.ShipCollisions.clip(level(), position(), position().add(v));
         if (ship != null) {

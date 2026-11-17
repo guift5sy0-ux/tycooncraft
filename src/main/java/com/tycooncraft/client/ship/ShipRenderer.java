@@ -40,6 +40,11 @@ public class ShipRenderer extends EntityRenderer<ShipEntity> {
             int light = LevelRenderer.getLightColor(ship.level(), bp);
             pose.pushPose();
             pose.translate(c.x() - ship.pivotX(), c.y(), c.z() - ship.pivotZ());
+            if (c.state().getBlock() instanceof com.tycooncraft.ship.ShipHelmBlock) {
+                renderHelm(ship, c, pose, buffers, light, pt);
+                pose.popPose();
+                continue;
+            }
             br.renderSingleBlock(c.state(), pose, buffers, light, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null);
             boolean ciws = c.state().getBlock() instanceof com.tycooncraft.turret.CiwsBlock;
             ShipEntity.Turret t = c.state().getBlock() instanceof com.tycooncraft.turret.TurretBlock || ciws ? ship.turretAt(c) : null;
@@ -60,6 +65,66 @@ public class ShipRenderer extends EntityRenderer<ShipEntity> {
         }
         pose.popPose();
         super.render(ship, entityYaw, pt, pose, buffers, packedLight);
+    }
+
+    /** 타륜 허브 위치(px, 남쪽 바라보는 기본 방향) */
+    private static final float HUB_X = 8, HUB_Y = 19, HUB_Z = 13.0f;
+
+    /** 조종석: 의자·기둥 + 조향에 따라 도는 타륜, 1인칭 조종사는 두 손으로 타륜을 잡은 팔까지 */
+    private void renderHelm(ShipEntity ship, ShipEntity.Cell c, PoseStack pose, MultiBufferSource buffers, int light, float pt) {
+        Minecraft mc = Minecraft.getInstance();
+        var mr = mc.getBlockRenderer().getModelRenderer();
+        var vc = buffers.getBuffer(net.minecraft.client.renderer.Sheets.cutoutBlockSheet());
+        net.minecraft.core.Direction f = c.state().hasProperty(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING)
+                ? c.state().getValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING) : net.minecraft.core.Direction.SOUTH;
+        pose.pushPose();
+        pose.translate(0.5, 0, 0.5);
+        pose.mulPose(Axis.YP.rotationDegrees(-f.toYRot()));    // 블록스테이트 y 회전과 같게
+        pose.translate(-0.5, 0, -0.5);
+        mr.renderModel(pose.last(), vc, null, mc.getModelManager().getModel(com.tycooncraft.client.vehicle.VehicleModels.HELM_BODY), 1, 1, 1, light, OverlayTexture.NO_OVERLAY);
+        float wa = Mth.lerp(pt, ship.wheelAngleO, ship.wheelAngle);
+        pose.pushPose();
+        pose.translate(HUB_X / 16f, HUB_Y / 16f, HUB_Z / 16f);
+        pose.mulPose(Axis.ZP.rotationDegrees(wa));
+        pose.translate(-0.5, -0.5, -0.5);
+        mr.renderModel(pose.last(), vc, null, mc.getModelManager().getModel(com.tycooncraft.client.vehicle.VehicleModels.HELM_WHEEL), 1, 1, 1, light, OverlayTexture.NO_OVERLAY);
+        pose.popPose();
+        // 1인칭 조종사: 양손이 타륜 테(9시·3시)를 잡고 함께 돈다
+        if (mc.player != null && ship.getControllingPassengerForRender() == mc.player && mc.options.getCameraType().isFirstPerson()) {
+            var renderer = mc.getEntityRenderDispatcher().getRenderer(mc.player);
+            if (renderer instanceof net.minecraft.client.renderer.entity.player.PlayerRenderer pr) {
+                var model = pr.getModel();
+                var skin = mc.player.getSkin().texture();
+                var avc = buffers.getBuffer(net.minecraft.client.renderer.RenderType.entityCutoutNoCull(skin));
+                for (int side = -1; side <= 1; side += 2) {      // -1: 오른손(서쪽 -x), +1: 왼손
+                    double a = Math.toRadians((side < 0 ? 180 : 0) + wa);
+                    float gx = HUB_X + (float) (Math.cos(a) * 6.0), gy = HUB_Y + (float) (Math.sin(a) * 6.0), gz = HUB_Z - 0.8f;
+                    float sx = 8 + side * 5f, sy = 17.6f, sz = 5.0f;
+                    org.joml.Vector3f dir = new org.joml.Vector3f(gx - sx, gy - sy, gz - sz);
+                    var arm = side < 0 ? model.rightArm : model.leftArm;
+                    var sleeve = side < 0 ? model.rightSleeve : model.leftSleeve;
+                    var saved = arm.storePose();
+                    var savedS = sleeve.storePose();
+                    arm.setPos(0, 0, 0);
+                    arm.setRotation(0, 0, 0);
+                    sleeve.setPos(0, 0, 0);
+                    sleeve.setRotation(0, 0, 0);
+                    pose.pushPose();
+                    pose.translate(sx / 16f, sy / 16f, sz / 16f);
+                    pose.mulPose(new org.joml.Quaternionf().rotationTo(0, 1, 0, dir.x, dir.y, dir.z));
+                    // 팔 상자는 어깨(위 2px)에서 손(아래 10px)으로: 손끝이 테에 닿게 길이를 맞춤
+                    float len = dir.length();
+                    pose.translate(0, (len - 10f) / 16f, 0);
+                    pose.scale(1 / 16f, 1 / 16f, 1 / 16f);
+                    arm.render(pose, avc, light, OverlayTexture.NO_OVERLAY);
+                    sleeve.render(pose, avc, light, OverlayTexture.NO_OVERLAY);
+                    pose.popPose();
+                    arm.loadPose(saved);
+                    sleeve.loadPose(savedS);
+                }
+            }
+        }
+        pose.popPose();
     }
 
     @Override

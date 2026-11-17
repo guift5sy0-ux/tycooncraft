@@ -61,6 +61,7 @@ public final class ModCreativeTabs {
                         out.accept(ModItems.EMP_GENERATOR.get());
                         out.accept(ModItems.SHIP_HELM.get());
                         out.accept(ModItems.SHIP_MOTOR.get());
+                        out.accept(ModItems.SHIP_BOOSTER.get());
                         out.accept(ModItems.SHIP_FLOAT.get());
                         out.accept(ModItems.SULFUR.get());
                         out.accept(ModItems.SULFUR_ORE.get());

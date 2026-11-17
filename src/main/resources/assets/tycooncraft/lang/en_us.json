@@ -276,7 +276,7 @@
   "entity.tycooncraft.ship": "Transporter",
   "tooltip.tycooncraft.transmission": "Place next to a conveyor line, right click: whole line speed 1-5 (5 = 5x)",
   "tooltip.tycooncraft.ship_motor": "Thrust for a transporter — needs fuel (canisters, coke, coal…). Hoppers can feed it, and all engines on one transporter share fuel",
-  "tooltip.tycooncraft.ship_helm": "Build a transporter from blocks (on water, or anywhere with lift floats), attach engines, right click to go! Right click with fuel to refuel",
+  "tooltip.tycooncraft.ship_helm": "Helm seat (chair + wheel): build a transporter from blocks (on water, or anywhere with lift floats), attach engines, right click to sit and go! Right click with fuel to refuel",
   "message.tycooncraft.transmission": "⚙ Transmission gear %s — %s conveyors",
   "message.tycooncraft.emp_hit": "⚡ EMP! Electronics dead (%ss)",
   "message.tycooncraft.ship.assembled": "⚓ Transporter assembled: %s blocks · %s engines · fuel %s — W/S speed, A/D steer, Shift to leave · sneak + right click the helm to dock",
@@ -359,7 +359,7 @@
   "block.tycooncraft.chemical_reactor": "Chemical Reactor",
   "block.tycooncraft.electrolyzer": "Electrolyzer",
   "block.tycooncraft.ship_float": "Lift Float",
-  "tooltip.tycooncraft.ship_float": "Attach to a transporter to fly — each lifts 40 blocks · Space up / Ctrl down · burns extra fuel while airborne",
+  "tooltip.tycooncraft.ship_float": "Attach to a transporter to fly — each lifts 40 blocks · Space up / Ctrl down · burns extra fuel while airborne · indestructible",
   "message.tycooncraft.ship.assembled_air": "🎈 Flying transporter assembled: %s blocks · %s engines · fuel %s · %s floats — Space up / Ctrl down, W/S speed, A/D steer",
   "message.tycooncraft.ship.controls_air": "🎈 Space up · Ctrl down · W/S speed · A/D steer · Shift to leave",
   "message.tycooncraft.ship.no_fuel": "⛽ No fuel! Feed the engines (hoppers work) or right click the helm holding fuel",
@@ -371,5 +371,7 @@
   "block.tycooncraft.ciws": "CIWS Interceptor",
   "tooltip.tycooncraft.ciws": "Shoots down incoming RPGs, shells, missiles, grenades, fireballs and kamikaze drones within 40 blocks. Ignores yours and your team's · heavy ammo = 4 rounds, light = 2 · works on transporters",
   "message.tycooncraft.ship.fail.too_strong": "%s is far too blast-proof to use in a hull (at %s, %s, %s)",
-  "message.tycooncraft.drone.dive": "🚀 Drone diving! — launch the next one"
+  "message.tycooncraft.drone.dive": "🚀 Drone diving! — launch the next one",
+  "block.tycooncraft.ship_booster": "Transporter Booster",
+  "tooltip.tycooncraft.ship_booster": "High-speed engine: pushes like 2.5 engines and raises the top speed — but burns fuel 3x faster. Fuel tank and hopper feeding like a normal engine"
 }

@@ -180,8 +180,11 @@ public final class AirshipTest {
             BlockPos helm = new BlockPos(x0 + 2, gy + 1, z0 + 2);
             level.setBlockAndUpdate(helm, ModBlocks.SHIP_HELM.get().defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, Direction.SOUTH));
             level.setBlockAndUpdate(new BlockPos(x0 + 2, gy + 1, z0 + 4), ModBlocks.SHIP_MOTOR.get().defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, Direction.SOUTH));
-            level.setBlockAndUpdate(new BlockPos(x0, gy + 1, z0), ModBlocks.SHIP_FLOAT.get().defaultBlockState());          // 노출
-            level.setBlockAndUpdate(new BlockPos(x0 + 4, gy + 1, z0), ModBlocks.SHIP_FLOAT.get().defaultBlockState());      // 장갑
+            var north = ModBlocks.SHIP_MOTOR.get().defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, Direction.NORTH);
+            level.setBlockAndUpdate(new BlockPos(x0, gy + 1, z0), north);          // 노출된 엔진
+            level.setBlockAndUpdate(new BlockPos(x0 + 4, gy + 1, z0), north);      // 철로 감싼 엔진
+            level.setBlockAndUpdate(new BlockPos(x0 + 1, gy + 1, z0 + 3), ModBlocks.SHIP_FLOAT.get().defaultBlockState());
+            level.setBlockAndUpdate(new BlockPos(x0 + 3, gy + 1, z0 + 3), ModBlocks.SHIP_FLOAT.get().defaultBlockState());
             for (BlockPos p : new BlockPos[]{new BlockPos(x0 + 4, gy + 1, z0 - 1), new BlockPos(x0 + 5, gy + 1, z0), new BlockPos(x0 + 4, gy + 2, z0),
                     new BlockPos(x0 + 3, gy + 1, z0), new BlockPos(x0 + 5, gy + 1, z0 - 1), new BlockPos(x0 + 3, gy + 1, z0 - 1)})
                 level.setBlockAndUpdate(p, Blocks.IRON_BLOCK.defaultBlockState());
@@ -197,13 +200,14 @@ public final class AirshipTest {
             boolean exposed = false, shielded = false;
             Vec3 o = armor.position();
             for (var c : armor.cells())
-                if (c.state().getBlock() instanceof com.tycooncraft.ship.ShipFloatBlock) {
+                if (c.state().getBlock() instanceof com.tycooncraft.ship.ShipMotorBlock) {
                     Vec3 w = armor.cellCenter(c);
+                    if (w.z > z0 + 2) continue;          // 뒤쪽 원래 엔진
                     if (w.x < x0 + 2) exposed = true;
                     else shielded = true;
                 }
             long iron = armor.cells().stream().filter(c -> c.state().is(Blocks.IRON_BLOCK)).count();
-            System.out.println("[AUTOTEST] v16 armor exposedFloatSurvived=" + exposed + " shieldedFloatSurvived=" + shielded
+            System.out.println("[AUTOTEST] v16 armor exposedEngineSurvived=" + exposed + " shieldedEngineSurvived=" + shielded + " floats=" + armor.floatCount()
                     + " ironLeft=" + iron + "/6 shieldedRays=" + ShipEntity.SHIELDED);
             // 곡괭이로 엔진 캐기: 맨손은 거부, 곡괭이는 성공 + 아이템 드롭
             var fp = net.neoforged.neoforge.common.util.FakePlayerFactory.getMinecraft(level);
@@ -217,11 +221,73 @@ public final class AirshipTest {
             boolean pick = armor.mineCell(fp, k);
             var plank = armor.cells().stream().filter(c -> c.state().is(Blocks.SPRUCE_PLANKS)).findFirst().orElseThrow();
             boolean hull = armor.mineCell(fp, ShipEntity.key(plank.x(), plank.y(), plank.z()));
+            var fl = armor.cells().stream().filter(c -> c.state().getBlock() instanceof com.tycooncraft.ship.ShipFloatBlock).findFirst().orElseThrow();
+            boolean floatMined = armor.mineCell(fp, ShipEntity.key(fl.x(), fl.y(), fl.z()));
             long drops = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(ec, ec).inflate(3),
                     e -> e.getItem().is(com.tycooncraft.registry.ModItems.SHIP_MOTOR.get())).size();
-            System.out.println("[AUTOTEST] v16 mine bareHand=" + bare + " pickaxe=" + pick + " hullPlank=" + hull + " motorsLeft=" + armor.motorCount() + " motorItemDropped=" + drops);
+            System.out.println("[AUTOTEST] v16 mine bareHand=" + bare + " pickaxe=" + pick + " hullPlank=" + hull + " float=" + floatMined + " motorsLeft=" + armor.motorCount() + " motorItemDropped=" + drops);
             armor.disassemble(null);
             armor = null;
+        }
+    }
+
+    // ── 4차: 부스터 속도 비교, 운송기 위 상자 열기 ──
+    static ShipEntity fast, slow;
+
+    static void tick4(ServerLevel level, int t, int gy) {
+        if (t == 1960) {
+            BlockPos h1 = build(level, 150, gy, 121, 1);
+            level.setBlockAndUpdate(new BlockPos(151, gy + 1, 121), ModBlocks.SHIP_BOOSTER.get().defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, Direction.NORTH));
+            level.setBlockAndUpdate(new BlockPos(150, gy + 1, 124), Blocks.CHEST.defaultBlockState());
+            fast = ShipAssembler.assemble(level, h1, null);
+            if (fast != null) {
+                fast.setFuel(60_000);
+                fast.autopilot = true;
+            }
+            System.out.println("[AUTOTEST] v16 booster assembled=" + (fast != null) + (fast == null ? "" : " boosters=" + fast.boosterCount() + " motors=" + fast.motorCount()));
+        }
+        if (fast == null) return;
+        if (t > 1960 && t < 2040) fast.testInput(0, 0, 1);          // 아지트 감시탑보다 높이
+        else if (t >= 2040 && t < 2100) fast.testInput(1, 0, 0);    // 남쪽으로 전속
+        if (t == 1990) {
+            // 실린 상자 열기 → 넣은 아이템이 셀 태그에 저장, 정박하면 상자에 그대로
+            var fp = net.neoforged.neoforge.common.util.FakePlayerFactory.getMinecraft(level);
+            var chest = fast.cells().stream().filter(c -> c.state().is(Blocks.CHEST)).findFirst().orElseThrow();
+            Vec3 cc = fast.cellCenter(chest);
+            fp.setPos(cc.x, cc.y, cc.z - 1.5);
+            boolean opened = fast.openContainer(fp, ShipEntity.key(chest.x(), chest.y(), chest.z()));
+            boolean put = false;
+            if (opened && fp.containerMenu instanceof net.minecraft.world.inventory.ChestMenu m) {
+                m.getContainer().setItem(4, new ItemStack(Items.DIAMOND, 7));
+                put = true;
+                fp.closeContainer();
+            }
+            System.out.println("[AUTOTEST] v16 shipchest opened=" + opened + " put=" + put + " tagHasItems=" + (chest.be() != null && chest.be().contains("Items")));
+        }
+        if (t == 2099) System.out.printf("[AUTOTEST] v16 booster speed=%.3f fuelUsed=%d (2 motors earlier ~0.25)%n", fast.shipSpeed(), 60_000 - fast.fuel());
+        if (t == 2150) {
+            BlockPos sc = fast.blockPosition();
+            fast.disassemble(null);
+            int dia = 0;
+            for (BlockPos p : BlockPos.betweenClosed(sc.getX() - 6, sc.getY() - 3, sc.getZ() - 6, sc.getX() + 6, sc.getY() + 4, sc.getZ() + 6))
+                if (level.getBlockEntity(p) instanceof net.minecraft.world.level.block.entity.ChestBlockEntity ch)
+                    for (int i = 0; i < ch.getContainerSize(); i++) if (ch.getItem(i).is(Items.DIAMOND)) dia += ch.getItem(i).getCount();
+            System.out.println("[AUTOTEST] v16 shipchest docked diamondsInChest=" + dia);
+            fast = null;
+        }
+    }
+
+    // ── 클라이언트: 조종석 1인칭(타륜 잡은 손) ──
+    public static ShipEntity seatShip;
+
+    public static void clientSeat(net.minecraft.server.level.ServerPlayer sp, int gy) {
+        ServerLevel level = sp.serverLevel();
+        BlockPos helm = build(level, 40, gy, -100, 1);
+        seatShip = ShipAssembler.assemble(level, helm, null);
+        if (seatShip != null) {
+            seatShip.setFuel(30_000);
+            sp.teleportTo(level, helm.getX() + 0.5, helm.getY() + 0.2, helm.getZ() - 1.0, 0f, 15f);
+            sp.startRiding(seatShip, true);
         }
     }
 

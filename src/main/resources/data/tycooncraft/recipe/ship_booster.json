@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PEP",
+    "MBM",
+    "PCP"
+  ],
+  "key": {
+    "P": {
+      "item": "tycooncraft:aluminum_plate"
+    },
+    "E": {
+      "item": "tycooncraft:engine"
+    },
+    "M": {
+      "item": "tycooncraft:ship_motor"
+    },
+    "B": {
+      "item": "minecraft:blaze_powder"
+    },
+    "C": {
+      "item": "tycooncraft:control_board"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:ship_booster",
+    "count": 1
+  }
+}

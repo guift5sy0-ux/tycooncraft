@@ -81,6 +81,9 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     public float yaw, yawO;
     private float lastDyaw;
     private double speed;
+    private static final EntityDataAccessor<Float> WHEEL = SynchedEntityData.defineId(ShipEntity.class, EntityDataSerializers.FLOAT);
+    /** 클라이언트 타륜 각도(도) */
+    public float wheelAngle, wheelAngleO;
     private static final EntityDataAccessor<CompoundTag> TURRETS = SynchedEntityData.defineId(ShipEntity.class, EntityDataSerializers.COMPOUND_TAG);
     private float inF, inT, inV;
     /** 셀 위치 → 번호 */
@@ -93,9 +96,10 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     }
     final Map<Long, Turret> turrets = new HashMap<>();
     final Map<Long, com.tycooncraft.turret.Interceptor.State> ciws = new HashMap<>();
+    public static int DOCK_CARRIED;
     public static int TURRET_SHOTS, BLAST_CELLS, CONVEYOR_PUSHES, CRASHES;
     private double vspeed, fuelAcc;
-    private int fuel, floats;
+    private int fuel, floats, boosters;
     private boolean air;
     private int inAge, soundT;
     private int lerpSteps;
@@ -142,6 +146,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         b.define(EMP, 0);
         b.define(SPEED, 0f);
         b.define(TURRETS, new CompoundTag());
+        b.define(WHEEL, 0f);
     }
 
     public int empTicks() {
@@ -210,6 +215,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         index.clear();
         hasConveyor = hasTurret = false;
         motors = 0;
+        boosters = 0;
         floats = 0;
         helm = -1;
         for (int i = 0; i < cells.size(); i++) {
@@ -218,6 +224,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             mz = Math.max(mz, c.z);
             my = Math.max(my, c.y);
             if (c.state.getBlock() instanceof ShipMotorBlock) motors++;
+            if (c.state.getBlock() instanceof ShipBoosterBlock) boosters++;
             if (c.state.getBlock() instanceof ShipFloatBlock) floats++;
             if (c.state.getBlock() instanceof com.tycooncraft.block.ConveyorBlock) hasConveyor = true;
             if (c.state.getBlock() instanceof com.tycooncraft.turret.TurretBlock || c.state.getBlock() instanceof com.tycooncraft.turret.CiwsBlock) hasTurret = true;
@@ -290,7 +297,90 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         if (helm < 0) return position().add(0, sizeY, 0);
         Cell h = cells.get(helm);
         Direction f = h.state.hasProperty(HorizontalDirectionalBlock.FACING) ? h.state.getValue(HorizontalDirectionalBlock.FACING) : Direction.SOUTH;
-        return rot(h.x + 0.5 - f.getStepX() * 0.85, h.z + 0.5 - f.getStepZ() * 0.85, yaw).add(position()).add(0, h.y, 0);
+        return rot(h.x + 0.5 - f.getStepX() * 0.22, h.z + 0.5 - f.getStepZ() * 0.22, yaw).add(position()).add(0, h.y, 0);
+    }
+
+    // ── 실린 상자 열기 ──────────────────────────────────────────────
+    private final Map<Long, ShipContainer> openBoxes = new HashMap<>();
+    public static int CONTAINERS_OPENED;
+
+    boolean hasCell(long k) {
+        return index.containsKey(k);
+    }
+
+    Vec3 cellCenterByKey(long k) {
+        Integer i = index.get(k);
+        return i == null ? position() : cellCenter(cells.get(i));
+    }
+
+    /** 마지막으로 보던 사람이 닫으면 정리 (여러 명이 같은 상자를 보면 같은 창을 공유 → 복사 버그 없음) */
+    void containerClosed(ShipContainer c) {
+        if (openBoxes.get(c.key) == c) openBoxes.remove(c.key);
+    }
+
+    public static boolean isContainerCell(Cell c) {
+        var b = c.state.getBlock();
+        return b instanceof net.minecraft.world.level.block.ChestBlock || b instanceof net.minecraft.world.level.block.BarrelBlock
+                || b instanceof net.minecraft.world.level.block.HopperBlock || b instanceof net.minecraft.world.level.block.DispenserBlock;
+    }
+
+    /** 서버: 운송기 위 상자·통·호퍼·발사기 열기 */
+    public boolean openContainer(ServerPlayer sp, long k) {
+        Integer i = index.get(k);
+        if (i == null) return false;
+        Cell c = cells.get(i);
+        if (!isContainerCell(c) || c.be == null || sp.distanceToSqr(cellCenter(c)) > 64) return false;
+        var b = c.state.getBlock();
+        int size = b instanceof net.minecraft.world.level.block.HopperBlock ? 5 : b instanceof net.minecraft.world.level.block.DispenserBlock ? 9 : 27;
+        ShipContainer box = openBoxes.computeIfAbsent(k, kk -> new ShipContainer(this, kk, c.be, size));
+        Component title = c.state.getBlock().getName();
+        sp.openMenu(new net.minecraft.world.SimpleMenuProvider((id, inv, pl) -> switch (size) {
+            case 5 -> new net.minecraft.world.inventory.HopperMenu(id, inv, box);
+            case 9 -> new net.minecraft.world.inventory.DispenserMenu(id, inv, box);
+            default -> net.minecraft.world.inventory.ChestMenu.threeRows(id, inv, box);
+        }, title));
+        Vec3 w = cellCenter(c);
+        level().playSound(null, w.x, w.y, w.z, b instanceof net.minecraft.world.level.block.BarrelBlock ? SoundEvents.BARREL_OPEN : SoundEvents.CHEST_OPEN,
+                SoundSource.BLOCKS, 0.6f, 1f);
+        CONTAINERS_OPENED++;
+        return true;
+    }
+
+    public int boosterCount() {
+        return boosters;
+    }
+
+    public void setYawForTest(float y) {
+        yaw = yawO = y;
+        entityData.set(YAW, y);
+        updateBoxes();
+    }
+
+    /** 렌더러용: 조종석에 앉은 플레이어 */
+    @Nullable
+    public Entity getControllingPassengerForRender() {
+        return getPassengers().isEmpty() ? null : getPassengers().get(0);
+    }
+
+    /** 조종석 의자 뒤 (내릴 때) */
+    Vec3 behindSeat() {
+        if (helm < 0) return position().add(0, sizeY, 0);
+        Cell h = cells.get(helm);
+        Direction f = h.state.hasProperty(HorizontalDirectionalBlock.FACING) ? h.state.getValue(HorizontalDirectionalBlock.FACING) : Direction.SOUTH;
+        return rot(h.x + 0.5 - f.getStepX() * 1.0, h.z + 0.5 - f.getStepZ() * 1.0, yaw).add(position()).add(0, h.y, 0);
+    }
+
+    /** 조종석이 바라보는 월드 방향(도) */
+    public float seatYaw() {
+        if (helm < 0) return yaw;
+        Cell h = cells.get(helm);
+        Direction f = h.state.hasProperty(HorizontalDirectionalBlock.FACING) ? h.state.getValue(HorizontalDirectionalBlock.FACING) : Direction.SOUTH;
+        return f.toYRot() + (yaw - yaw0);
+    }
+
+    @Nullable
+    public Cell helmCell() {
+        return helm < 0 ? null : cells.get(helm);
     }
 
     /** e 의 발이 갑판(어떤 기둥의 윗면) 위에 있나 */
@@ -324,6 +414,8 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     public void onRemovedFromLevel() {
         super.onRemovedFromLevel();
         ShipCollisions.remove(this);
+        // 정박 직후 블록 갱신이 도착하기 전 몇 틱 동안 선체 상자를 남겨 둔다 (바닥 뚫고 떨어짐 방지)
+        if (level().isClientSide && getRemovalReason() == RemovalReason.DISCARDED) ShipCollisions.ghost(level(), boxes, 30);
     }
 
     @Override
@@ -365,6 +457,11 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             carryYaw = lastDyaw;
         }
         if (hasTurret) clientTurrets();
+        // 타륜: 누르는 동안 감기고, 놓으면 천천히 가운데로 (A=왼쪽 → 반시계)
+        wheelAngleO = wheelAngle;
+        float wt = entityData.get(WHEEL) * 170f;
+        wheelAngle += (wt - wheelAngle) * (wt == 0 ? 0.08f : 0.15f);
+        for (Entity p : getPassengers()) lockBody(p);
         if (empTicks() > 0 && tickCount % 2 == 0) {
             Cell c = cells.get(random.nextInt(cells.size()));
             Vec3 w = rot(c.x + 0.5, c.z + 0.5, yaw).add(now);
@@ -389,7 +486,8 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         if (tickCount % 20 == 0) refuelFromHoppers();
         boolean powered = motors > 0 && emp == 0 && fuel > 0;
         int n = Math.max(1, cells.size());
-        double vmax = Math.min(0.6, 0.12 + 0.16 * Math.sqrt(motors) * Math.sqrt(80.0 / Math.max(80, n)));
+        double thrust = motors + 1.5 * boosters;          // 부스터 = 엔진 2.5개
+        double vmax = Math.min(boosters > 0 ? 0.95 : 0.6, 0.12 + 0.16 * Math.sqrt(thrust) * Math.sqrt(80.0 / Math.max(80, n)));
         double target = !powered ? 0 : inF > 0 ? vmax * inF : inF < 0 ? vmax * 0.4 * inF : 0;
         speed += (target - speed) * (target == 0 ? 0.02 : 0.035);
         if (Math.abs(speed) < 1e-4) speed = 0;
@@ -421,7 +519,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         } else vspeed = 0;
         // 연료 소모: 클수록 많이
         if (powered) {
-            double use = Math.abs(speed) / Math.max(vmax, 0.01) * ShipFuel.thrustUse(n);
+            double use = Math.abs(speed) / Math.max(vmax, 0.01) * ShipFuel.thrustUse(n) * (1 + 2.0 * boosters / Math.max(1, motors));
             if (airborne || vspeed > 0.01) use += ShipFuel.liftUse(n) * (vspeed > 0.01 ? 1.5 : 1.0);
             fuelAcc += use;
             int whole = (int) fuelAcc;
@@ -478,6 +576,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             }
         }
         entityData.set(SPEED, (float) speed);
+        if (Math.abs(entityData.get(WHEEL) - inT) > 0.01f) entityData.set(WHEEL, inT);
         if (hasTurret && level() instanceof ServerLevel tl) tickTurrets(tl, emp == 0);
         if (hasConveyor && emp == 0)
             for (Entity e : level().getEntities(this, bounds.inflate(0.5, 2, 0.5), e -> !(e instanceof Player) && !(e instanceof ShipEntity) && !e.isPassenger()))
@@ -532,7 +631,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         return cellAt(Mth.floor(l.x), Mth.floor(l.y), Mth.floor(l.z));
     }
 
-    /** 곡괭이로 캘 수 있나 (부유체·엔진만, 곡괭이 필요) */
+    /** 곡괭이로 캘 수 있나 (엔진·부스터만, 곡괭이 필요) */
     public static boolean minable(Cell c, ItemStack tool) {
         return fragile(c) && tool.is(net.minecraft.tags.ItemTags.PICKAXES);
     }
@@ -815,7 +914,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
 
     /** 피격·추락으로 부서질 수 있는 셀: 부유체와 엔진뿐 (플레이어가 지은 선체는 보호) */
     static boolean fragile(Cell c) {
-        return c.state.getBlock() instanceof ShipFloatBlock || c.state.getBlock() instanceof ShipMotorBlock;
+        return c.state.getBlock() instanceof ShipMotorBlock;   // 부스터 포함. 부유체·선체는 부서지지 않음
     }
 
     /** 셀 제거 (서버): 드롭·연료 손실·동기화 */
@@ -913,7 +1012,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         int cap = motors * ShipFuel.MOTOR_CAPACITY;
         for (Cell c : cells) {
             if (fuel >= cap) return;
-            if (c.be == null || !c.state.is(Blocks.HOPPER) || !c.be.contains("Items")) continue;
+            if (c.be == null || !c.state.is(Blocks.HOPPER) || !c.be.contains("Items") || openBoxes.containsKey(key(c.x, c.y, c.z))) continue;
             ListTag items = c.be.getList("Items", Tag.TAG_COMPOUND);
             for (int i = 0; i < items.size(); i++) {
                 CompoundTag it = items.getCompound(i);
@@ -1080,6 +1179,15 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             default -> Rotation.NONE;
         };
         float snapped = yaw0 + k * 90f;
+        // 갑판 위 플레이어: 정박 후 같은 자리(블록 위)로 옮겨 바닥을 뚫고 떨어지지 않게
+        List<ServerPlayer> deck = new ArrayList<>();
+        List<Vec3> deckLocal = new ArrayList<>();
+        for (Player p : level().players())
+            if (p instanceof ServerPlayer sp && !sp.isPassenger() && standingOn(sp, 0.8)) {
+                deck.add(sp);
+                deckLocal.add(toLocal(sp.position()));
+            }
+        float yawBefore = yaw;
         if (getY() != Math.floor(getY())) {   // 공중·걸친 높이 → 가까운 정수 칸으로 (위쪽이 비어 있으면 위로)
             double up = Math.ceil(getY()), down = Math.floor(getY());
             setPos(getX(), canBeAt(new Vec3(getX(), down, getZ()), snapped) && getY() - down < 0.5 ? down : up, getZ());
@@ -1116,6 +1224,19 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         for (BlockPos bp : placed) if (lv.getBlockEntity(bp) instanceof ShipMotorBlockEntity m) engines.add(m);
         for (int i = 0; i < engines.size(); i++) engines.get(i).setFuel(fuel / engines.size() + (i < fuel % engines.size() ? 1 : 0));
         for (BlockPos bp : placed) lv.blockUpdated(bp, lv.getBlockState(bp).getBlock());
+        for (int i = 0; i < deck.size(); i++) {
+            ServerPlayer sp = deck.get(i);
+            Vec3 l = deckLocal.get(i);
+            Vec3 w = rot(l.x, l.z, snapped).add(position());
+            double ny = getY() + l.y;
+            // 발밑 블록 윗면에 정확히 올려 놓음 (반 블록·슬래브 포함)
+            BlockPos under = BlockPos.containing(w.x, ny - 0.05, w.z);
+            var shape = lv.getBlockState(under).getCollisionShape(lv, under);
+            if (!shape.isEmpty()) ny = Math.max(ny, under.getY() + shape.max(Direction.Axis.Y));
+            sp.connection.teleport(w.x, ny + 0.01, w.z, sp.getYRot() + (snapped - yawBefore), sp.getXRot());
+            sp.resetFallDistance();
+            DOCK_CARRIED++;
+        }
         lv.playSound(null, getX(), getY(), getZ(), SoundEvents.CHAIN_PLACE, SoundSource.BLOCKS, 1.5f, 0.6f);
         if (player != null)
             player.displayClientMessage(Component.translatable("message.tycooncraft.ship.docked", placed.size()).withStyle(ChatFormatting.GREEN), true);
@@ -1131,7 +1252,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
 
     @Override
     protected Vec3 getPassengerAttachmentPoint(Entity passenger, EntityDimensions dims, float scale) {
-        return seatWorld().subtract(position()).add(0, 0.45, 0);
+        return seatWorld().subtract(position()).add(0, 0.30, 0);   // 방석 위에 앉음
     }
 
     @Override
@@ -1141,11 +1262,30 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             passenger.setYRot(passenger.getYRot() + lastDyaw);
             passenger.setYHeadRot(passenger.getYHeadRot() + lastDyaw);
         }
+        lockBody(passenger);
+    }
+
+    /** 몸(다리)은 조종석 방향으로 고정, 고개만 좌우 120° 까지 */
+    private void lockBody(Entity passenger) {
+        if (!(passenger instanceof LivingEntity le)) return;
+        float sy = seatYaw();
+        le.setYBodyRot(sy);
+        le.yBodyRotO = sy;
+        float rel = Mth.clamp(Mth.wrapDegrees(le.getYRot() - sy), -120f, 120f);
+        le.yRotO += sy + rel - le.getYRot();
+        le.setYRot(sy + rel);
+        le.setYHeadRot(le.getYRot());
+        le.walkAnimation.setSpeed(0);
+    }
+
+    @Override
+    public void onPassengerTurned(Entity passenger) {
+        lockBody(passenger);
     }
 
     @Override
     public Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
-        return seatWorld().add(0, 0.05, 0);
+        return behindSeat().add(0, 0.05, 0);
     }
 
     // ── 기타 엔티티 성질 ───────────────────────────────────────────

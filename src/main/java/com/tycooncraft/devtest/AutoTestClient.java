@@ -582,7 +582,24 @@ public final class AutoTestClient {
             case 2468 -> shot(mc, "64_ciws_tracking");
             case 2476 -> shot(mc, "65_ciws_intercept");
             case 2500 -> serverDo(mc, sp -> System.out.println("[AUTOTEST] v16 clientciws kills=" + com.tycooncraft.turret.Interceptor.KILLS + " shots=" + com.tycooncraft.turret.Interceptor.SHOTS));
-            case 2505 -> next(11);
+            // ── v0.16.7: 조종석 1인칭 — 타륜을 잡은 손, 왼쪽으로 감기 ──
+            case 2505 -> serverDo(mc, sp -> AirshipTest.clientSeat(sp, (int) g));
+            case 2515 -> {
+                mc.player.setYRot(0f);
+                mc.player.setXRot(18f);
+                mc.options.keyLeft.setDown(true);
+            }
+            case 2540 -> shot(mc, "66_helm_first_person_left");
+            case 2542 -> {
+                mc.options.keyLeft.setDown(false);
+                mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
+            }
+            case 2560 -> shot(mc, "67_helm_seat_third_person");
+            case 2562 -> {
+                mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+                serverDo(mc, sp -> sp.stopRiding());
+            }
+            case 2570 -> next(11);
             default -> {
             }
         }

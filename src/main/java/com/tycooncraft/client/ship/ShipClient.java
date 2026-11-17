@@ -119,6 +119,13 @@ public final class ShipClient {
         }
     }
 
+    /** 조종 중 1인칭: 손에 든 것 대신 타륜을 잡은 팔(ShipRenderer)이 보인다 */
+    @SubscribeEvent
+    public static void onHand(net.neoforged.neoforge.client.event.RenderHandEvent event) {
+        var pl = Minecraft.getInstance().player;
+        if (pl != null && pl.getVehicle() instanceof ShipEntity) event.setCanceled(true);
+    }
+
     /** 배의 블록을 바라보고 우클릭: 조종기면 탑승/정박, 그 밖엔 뒤의 블록을 건드리지 않게 막는다 */
     @SubscribeEvent
     public static void onInteract(InputEvent.InteractionKeyMappingTriggered event) {
@@ -149,6 +156,15 @@ public final class ShipClient {
         if (bestShip == null) return;
         HitResult hr = mc.hitResult;
         if (hr != null && hr.getType() != HitResult.Type.MISS && hr.getLocation().distanceToSqr(eye) + 1e-4 < best) return;
+        if (event.isUseItem() && !helm && !pl.isShiftKeyDown()) {   // 실린 상자·통·호퍼 열기
+            ShipEntity.Cell c = bestShip.cellAtWorld(eye.add(pl.getViewVector(1f).scale(Math.sqrt(best) + 0.02)));
+            if (c != null && ShipEntity.isContainerCell(c)) {
+                PacketDistributor.sendToServer(new ShipPayloads.Open(bestShip.getId(), ShipEntity.key(c.x(), c.y(), c.z())));
+                event.setSwingHand(true);
+                event.setCanceled(true);
+                return;
+            }
+        }
         if (event.isUseItem() && helm) {
             PacketDistributor.sendToServer(new ShipPayloads.Use(bestShip.getId(), pl.isShiftKeyDown()));
             event.setSwingHand(true);
