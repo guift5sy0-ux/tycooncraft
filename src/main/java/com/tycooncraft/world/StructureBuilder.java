@@ -204,6 +204,7 @@ public final class StructureBuilder {
         v.setSilent(true);
         v.setPersistenceRequired();
         v.setCustomName(Component.translatable(nameKey).withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
+        v.getPersistentData().putString("tycooncraft_trader", nameKey);
         v.setCustomNameVisible(true);
         level.addFreshEntity(v);
     }
@@ -356,33 +357,47 @@ public final class StructureBuilder {
 
     /** 상인 5명 (월드 생성 때는 청크가 실제로 로딩될 때 따로 배치) */
     private void traders() {
-        StructureBuilder b = this;
+        trader(12, 0, 12, "trader.tycooncraft.food", VillagerProfession.FARMER, traderOffers("trader.tycooncraft.food"));
+        trader(20, 0, 12, "trader.tycooncraft.builder", VillagerProfession.MASON, traderOffers("trader.tycooncraft.builder"));
+        trader(12, 0, 20, "trader.tycooncraft.gear", VillagerProfession.ARMORER, traderOffers("trader.tycooncraft.gear"));
+        trader(20, 0, 20, "trader.tycooncraft.machines", VillagerProfession.TOOLSMITH, traderOffers("trader.tycooncraft.machines"));
+        trader(16, 0, 11, "trader.tycooncraft.buyer", VillagerProfession.CLERIC, traderOffers("trader.tycooncraft.buyer"));
+    }
+
+    /**
+     * 상인별 거래 목록 (v0.17.1: 사는 값 2배 — 돈이 더 많이 쓰이게). 1철화=10원, 1금화=100원, 1에메랄드화=1000원.
+     * 불러올 때 바닐라 거래로 바뀌어도 VillagerCoins 가 이 목록으로 되돌린다.
+     */
+    public static List<MerchantOffer> traderOffers(String key) {
         Item cu = ModItems.COIN_COPPER.get(), ir = ModItems.COIN_IRON.get(), go = ModItems.COIN_GOLD.get(), em = ModItems.COIN_EMERALD.get();
-        b.trader(12, 0, 12, "trader.tycooncraft.food", VillagerProfession.FARMER, List.of(
-                offer(ir, 1, Items.BREAD, 2), offer(ir, 1, Items.APPLE, 3), offer(ir, 2, Items.COOKED_BEEF, 4),
-                offer(ir, 5, Items.GOLDEN_CARROT, 4), offer(ir, 1, Items.WHEAT_SEEDS, 16), offer(ir, 1, Items.CARROT, 8),
-                offer(ir, 2, Items.COCOA_BEANS, 8), offer(ir, 2, Items.EGG, 8)));
-        b.trader(20, 0, 12, "trader.tycooncraft.builder", VillagerProfession.MASON, List.of(
-                offer(ir, 1, Items.STONE_BRICKS, 16), offer(ir, 1, Items.BRICKS, 16), offer(ir, 1, Items.SMOOTH_STONE, 16),
-                offer(ir, 2, cu, 4, Items.GLASS, 16), offer(ir, 1, Items.OAK_PLANKS, 32), offer(ir, 1, Items.TORCH, 16),
-                offer(ir, 3, Items.LANTERN, 4), offer(ir, 2, Items.WHITE_WOOL, 8)));
-        b.trader(12, 0, 20, "trader.tycooncraft.gear", VillagerProfession.ARMORER, List.of(
-                offer(ir, 5, Items.IRON_PICKAXE, 1), offer(ir, 5, Items.IRON_SWORD, 1), offer(ir, 4, Items.IRON_HELMET, 1),
-                offer(ir, 8, Items.IRON_CHESTPLATE, 1), offer(ir, 7, Items.IRON_LEGGINGS, 1), offer(ir, 4, Items.IRON_BOOTS, 1),
-                offer(ir, 3, Items.SHIELD, 1), offer(go, 3, Items.DIAMOND_PICKAXE, 1),
-                offer(ir, 3, ModItems.LIGHT_AMMO.get(), 16), offer(ir, 4, ModItems.HEAVY_AMMO.get(), 8),
-                offer(ir, 3, ModItems.SHOTGUN_SHELL.get(), 8), offer(go, 6, ModItems.PISTOL.get(), 1)));
-        b.trader(20, 0, 20, "trader.tycooncraft.machines", VillagerProfession.TOOLSMITH, List.of(
-                offer(ir, 2, ModItems.CONVEYOR.get(), 8), offer(ir, 3, ModItems.LIFT_UP.get(), 2), offer(ir, 3, ModItems.LIFT_DOWN.get(), 2),
-                offer(ir, 6, ModItems.SELL_STATION.get(), 1), offer(ir, 6, ModItems.machineItem(MachineType.CRUSHER), 1),
-                offer(ir, 6, ModItems.machineItem(MachineType.SMELTER), 1), offer(ir, 8, ModItems.machineItem(MachineType.PRESS), 1),
-                offer(go, 2, ModItems.machineItem(MachineType.ALLOY_FURNACE), 1), offer(go, 2, ModItems.machineItem(MachineType.WIRE_DRAWER), 1),
-                offer(go, 2, ModItems.machineItem(MachineType.LATHE), 1), offer(em, 2, ModItems.machineItem(MachineType.ASSEMBLER), 1),
-                offer(go, 5, ModItems.machineItem(MachineType.CHEMICAL_REACTOR), 1), offer(go, 5, ModItems.machineItem(MachineType.ELECTROLYZER), 1)));
-        b.trader(16, 0, 11, "trader.tycooncraft.buyer", VillagerProfession.CLERIC, List.of(
-                offer(Items.ROTTEN_FLESH, 16, cu, 4), offer(Items.BONE, 8, cu, 5), offer(Items.STRING, 8, cu, 6),
-                offer(Items.SPIDER_EYE, 4, cu, 4), offer(Items.FEATHER, 16, cu, 5), offer(Items.LEATHER, 4, ir, 1),
-                offer(Items.GUNPOWDER, 4, ir, 1), offer(Items.SLIME_BALL, 4, ir, 1), offer(Items.ENDER_PEARL, 2, ir, 3)));
+        return switch (key) {
+            case "trader.tycooncraft.food" -> List.of(
+                    offer(ir, 2, Items.BREAD, 2), offer(ir, 2, Items.APPLE, 3), offer(ir, 4, Items.COOKED_BEEF, 4),
+                    offer(go, 1, Items.GOLDEN_CARROT, 4), offer(ir, 2, Items.WHEAT_SEEDS, 16), offer(ir, 2, Items.CARROT, 8),
+                    offer(ir, 4, Items.COCOA_BEANS, 8), offer(ir, 4, Items.EGG, 8));
+            case "trader.tycooncraft.builder" -> List.of(
+                    offer(ir, 2, Items.STONE_BRICKS, 16), offer(ir, 2, Items.BRICKS, 16), offer(ir, 2, Items.SMOOTH_STONE, 16),
+                    offer(ir, 4, cu, 8, Items.GLASS, 16), offer(ir, 2, Items.OAK_PLANKS, 32), offer(ir, 2, Items.TORCH, 16),
+                    offer(ir, 6, Items.LANTERN, 4), offer(ir, 4, Items.WHITE_WOOL, 8));
+            case "trader.tycooncraft.gear" -> List.of(
+                    offer(ir, 10, Items.IRON_PICKAXE, 1), offer(ir, 10, Items.IRON_SWORD, 1), offer(ir, 8, Items.IRON_HELMET, 1),
+                    offer(ir, 16, Items.IRON_CHESTPLATE, 1), offer(ir, 14, Items.IRON_LEGGINGS, 1), offer(ir, 8, Items.IRON_BOOTS, 1),
+                    offer(ir, 6, Items.SHIELD, 1), offer(go, 6, Items.DIAMOND_PICKAXE, 1),
+                    offer(ir, 6, ModItems.LIGHT_AMMO.get(), 16), offer(ir, 8, ModItems.HEAVY_AMMO.get(), 8),
+                    offer(ir, 6, ModItems.SHOTGUN_SHELL.get(), 8), offer(go, 12, ModItems.PISTOL.get(), 1));
+            case "trader.tycooncraft.machines" -> List.of(
+                    offer(ir, 4, ModItems.CONVEYOR.get(), 8), offer(ir, 6, ModItems.LIFT_UP.get(), 2), offer(ir, 6, ModItems.LIFT_DOWN.get(), 2),
+                    offer(ir, 12, ModItems.SELL_STATION.get(), 1), offer(ir, 12, ModItems.machineItem(MachineType.CRUSHER), 1),
+                    offer(ir, 12, ModItems.machineItem(MachineType.SMELTER), 1), offer(ir, 16, ModItems.machineItem(MachineType.PRESS), 1),
+                    offer(go, 4, ModItems.machineItem(MachineType.ALLOY_FURNACE), 1), offer(go, 4, ModItems.machineItem(MachineType.WIRE_DRAWER), 1),
+                    offer(go, 4, ModItems.machineItem(MachineType.LATHE), 1), offer(em, 4, ModItems.machineItem(MachineType.ASSEMBLER), 1),
+                    offer(go, 10, ModItems.machineItem(MachineType.CHEMICAL_REACTOR), 1), offer(go, 10, ModItems.machineItem(MachineType.ELECTROLYZER), 1));
+            case "trader.tycooncraft.buyer" -> List.of(   // 상인이 사 주는 값은 그대로
+                    offer(Items.ROTTEN_FLESH, 16, cu, 4), offer(Items.BONE, 8, cu, 5), offer(Items.STRING, 8, cu, 6),
+                    offer(Items.SPIDER_EYE, 4, cu, 4), offer(Items.FEATHER, 16, cu, 5), offer(Items.LEATHER, 4, ir, 1),
+                    offer(Items.GUNPOWDER, 4, ir, 1), offer(Items.SLIME_BALL, 4, ir, 1), offer(Items.ENDER_PEARL, 2, ir, 3));
+            default -> null;
+        };
     }
 
     /** 테스트·명령어용: 갱단 아지트를 지금 바로 짓는다 */
