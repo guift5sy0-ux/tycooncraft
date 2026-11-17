@@ -75,6 +75,8 @@ public final class TycoonEvents {
             return;
         }
         if (!(entity instanceof Enemy)) return;
+        // 갱단은 자기 드롭(재료 1%·탄약 2%·총 0.1%)만
+        if (entity instanceof com.tycooncraft.mob.GunnerEntity || entity instanceof com.tycooncraft.mob.GangTruck) return;
 
         double r = random.nextDouble();
         Item coin = null;
