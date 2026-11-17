@@ -39,6 +39,8 @@ import net.minecraft.world.phys.Vec3;
  * 패턴: 개틀링(회전 후 2.5초 연사) · 로켓 3연발 · 가까우면 양팔 내려찍기(충격파)
  */
 public class DestroyerGolem extends Monster {
+    public static final String BASEMENT_TAG = "tycooncraft_basement";
+    public static int BASEMENT_DROPS;
     public static final int IDLE = 0, MINIGUN = 1, ROCKETS = 2, SLAM = 3;
     private static final EntityDataAccessor<Integer> ATTACK = SynchedEntityData.defineId(DestroyerGolem.class, EntityDataSerializers.INT);
     private final BossBar bar = new BossBar(Component.translatable("entity.tycooncraft.destroyer_golem"), BossEvent.BossBarColor.YELLOW,
@@ -210,6 +212,14 @@ public class DestroyerGolem extends Monster {
     @Override
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
         super.dropCustomDeathLoot(level, source, recentlyHit);
+        if (getPersistentData().getBoolean(BASEMENT_TAG)) {   // 폐공장 지하실 골렘: 코인 + 총 1자루
+            spawnAtLocation(new ItemStack(ModItems.COIN_EMERALD.get(), 2 + random.nextInt(4)));
+            spawnAtLocation(new ItemStack(ModItems.COIN_GOLD.get(), 5 + random.nextInt(11)));
+            net.minecraft.world.item.Item[] guns = {ModItems.PISTOL.get(), ModItems.SMG.get(), ModItems.SHOTGUN.get(), ModItems.RIFLE.get(), ModItems.SNIPER.get()};
+            spawnAtLocation(new ItemStack(guns[random.nextInt(guns.length)]));
+            BASEMENT_DROPS++;
+            return;
+        }
         spawnAtLocation(new ItemStack(ModItems.DESTROYER_CORE.get()));
         spawnAtLocation(new ItemStack(ModItems.STEEL_INGOT.get(), 4 + random.nextInt(5)));
         spawnAtLocation(new ItemStack(ModItems.HEAVY_AMMO.get(), 16 + random.nextInt(17)));

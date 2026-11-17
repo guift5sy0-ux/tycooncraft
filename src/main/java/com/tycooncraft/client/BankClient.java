@@ -35,7 +35,7 @@ public final class BankClient {
 
     public static void open() {
         Minecraft mc = Minecraft.getInstance();
-        mc.setScreen(new BankScreen(mc.screen instanceof InventoryScreen ? mc.screen : null));
+        mc.setScreen(new BankScreen(isInventory(mc.screen) ? mc.screen : null));
         send(BankPayloads.Action.of(BankPayloads.OP_REFRESH));
     }
 
@@ -54,18 +54,24 @@ public final class BankClient {
 
     @SubscribeEvent
     public static void onInit(ScreenEvent.Init.Post event) {
-        if (!(event.getScreen() instanceof InventoryScreen inv)) return;
-        button = new BankButton(inv.getGuiLeft() + 178, inv.getGuiTop() + 4);
+        if (!isInventory(event.getScreen())) return;
+        var inv = (net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>) event.getScreen();
+        button = new BankButton(inv.getGuiLeft() + inv.getXSize() + 2, inv.getGuiTop() + 4);
         event.addListener(button);
     }
 
     /** 레시피북을 열면 인벤토리가 옆으로 밀리므로 매 프레임 위치를 맞춤 */
     @SubscribeEvent
     public static void onRender(ScreenEvent.Render.Pre event) {
-        if (button != null && event.getScreen() instanceof InventoryScreen inv) {
-            button.setX(inv.getGuiLeft() + 178);
-            button.setY(inv.getGuiTop() + 4);
+        if (button != null && isInventory(event.getScreen())) {
+            var inv = (net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>) event.getScreen();
+            button.setX(inv.getGuiLeft() + inv.getXSize() + 2);
+            button.setY(inv.getGuiTop() + (event.getScreen() instanceof InventoryScreen ? 4 : 32));
         }
+    }
+
+    static boolean isInventory(net.minecraft.client.gui.screens.Screen s) {
+        return s instanceof InventoryScreen || s instanceof net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
     }
 
     private BankClient() {}

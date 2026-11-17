@@ -226,8 +226,12 @@ public class GunItem extends Item {
     }
 
     public boolean isScoped(ItemStack stack) {
-        if (stack.is(ModItems.VSS.get())) return fireMode(stack) == 0;
-        return stats.scoped() || GunParts.has(stack, GunPart.SCOPE);
+        return hasScope(stack) && fireMode(stack) == 0;
+    }
+
+    /** 스코프가 달린 총 (F 로 조준 사격 ↔ 일반 사격 전환) */
+    public boolean hasScope(ItemStack stack) {
+        return stack.is(ModItems.VSS.get()) || stats.scoped() || GunParts.has(stack, GunPart.SCOPE);
     }
 
     public boolean isDual() {
@@ -329,6 +333,8 @@ public class GunItem extends Item {
             tooltip.add(Component.translatable("tooltip.tycooncraft.gun.integral").withStyle(ChatFormatting.AQUA));
             tooltip.add(Component.translatable(fireMode(stack) == 1 ? "tooltip.tycooncraft.gun.mode_auto" : "tooltip.tycooncraft.gun.mode_semi").withStyle(ChatFormatting.YELLOW));
         }
+        else if (hasScope(stack))
+            tooltip.add(Component.translatable(fireMode(stack) == 1 ? "tooltip.tycooncraft.gun.mode_hip" : "tooltip.tycooncraft.gun.mode_scope").withStyle(ChatFormatting.YELLOW));
         else if (st > 0) tooltip.add(Component.translatable(st == 2 ? "tooltip.tycooncraft.gun.silenced2" : "tooltip.tycooncraft.gun.silenced").withStyle(ChatFormatting.AQUA));
         for (GunPart p : GunParts.installed(stack))
             tooltip.add(Component.literal("⚙ ").append(Component.translatable("item.tycooncraft.part_" + p.id)).withStyle(ChatFormatting.GREEN));

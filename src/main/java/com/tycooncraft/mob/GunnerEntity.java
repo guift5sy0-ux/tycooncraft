@@ -63,6 +63,7 @@ public class GunnerEntity extends Monster implements RangedAttackMob {
         }
     }
 
+    public static final float MATERIAL_CHANCE = 0.01f, AMMO_CHANCE = 0.02f, GUN_CHANCE = 0.001f;
     protected final Kind kind;
 
     public GunnerEntity(EntityType<? extends Monster> type, Level level, Kind kind) {
@@ -119,12 +120,12 @@ public class GunnerEntity extends Monster implements RangedAttackMob {
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData data) {
         SpawnGroupData d = super.finalizeSpawn(level, difficulty, reason, data);
         setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(weapon()));
-        setDropChance(EquipmentSlot.MAINHAND, kind == Kind.BOSS ? 1.0f : 0.06f);
+        setDropChance(EquipmentSlot.MAINHAND, kind == Kind.BOSS ? 1.0f : GUN_CHANCE);
         if (kind == Kind.MERCENARY) {
             setItemSlot(EquipmentSlot.CHEST, new ItemStack(random.nextFloat() < 0.3f ? ModItems.VEST_2.get() : ModItems.VEST_1.get()));
             setItemSlot(EquipmentSlot.HEAD, new ItemStack(ModItems.HELMET_1.get()));
-            setDropChance(EquipmentSlot.CHEST, 0.08f);
-            setDropChance(EquipmentSlot.HEAD, 0.08f);
+            setDropChance(EquipmentSlot.CHEST, MATERIAL_CHANCE);
+            setDropChance(EquipmentSlot.HEAD, MATERIAL_CHANCE);
         }
         return d;
     }
@@ -156,10 +157,12 @@ public class GunnerEntity extends Monster implements RangedAttackMob {
     @Override
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
         super.dropCustomDeathLoot(level, source, recentlyHit);
-        spawnAtLocation(new ItemStack(ModItems.COIN_IRON.get(), 1 + random.nextInt(kind == Kind.MERCENARY ? 4 : 3)));
-        if (random.nextFloat() < 0.5f) spawnAtLocation(new ItemStack(ModItems.COIN_COPPER.get(), 2 + random.nextInt(8)));
+        if (kind == Kind.BOSS) return;   // 보스는 자기 전리품(확정 총)을 따로 떨어뜨림
+        // 갱단원 전리품은 아주 드물게: 재료(동전 포함) 1%, 탄약 2%, 총은 0.1% (장비 드롭 확률)
+        if (random.nextFloat() < MATERIAL_CHANCE) spawnAtLocation(new ItemStack(ModItems.COIN_IRON.get(), 1 + random.nextInt(kind == Kind.MERCENARY ? 4 : 3)));
+        if (random.nextFloat() < MATERIAL_CHANCE) spawnAtLocation(new ItemStack(ModItems.COIN_COPPER.get(), 2 + random.nextInt(8)));
         Item ammo = kind == Kind.OUTLAW ? ModItems.SHOTGUN_SHELL.get() : kind == Kind.GANGSTER ? ModItems.LIGHT_AMMO.get() : ModItems.HEAVY_AMMO.get();
-        spawnAtLocation(new ItemStack(ammo, 2 + random.nextInt(6)));
+        if (random.nextFloat() < AMMO_CHANCE) spawnAtLocation(new ItemStack(ammo, 2 + random.nextInt(6)));
     }
 
     @Override

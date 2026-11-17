@@ -279,11 +279,12 @@ public class GangTruck extends Monster {
     @Override
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recent) {
         super.dropCustomDeathLoot(level, source, recent);
-        spawnAtLocation(new ItemStack(ModItems.COIN_GOLD.get(), 2 + random.nextInt(3)));
-        spawnAtLocation(new ItemStack(ModItems.STEEL_PLATE.get(), 2 + random.nextInt(3)));
-        spawnAtLocation(new ItemStack(ModItems.WHEEL.get(), 1 + random.nextInt(2)));
-        spawnAtLocation(new ItemStack(ModItems.HEAVY_AMMO.get(), 16 + random.nextInt(17)));
-        if (random.nextFloat() < 0.25f) spawnAtLocation(new ItemStack(ModItems.ENGINE.get()));
+        float m = GunnerEntity.MATERIAL_CHANCE;   // 갱단 전리품: 재료 1%, 탄약 2%
+        if (random.nextFloat() < m) spawnAtLocation(new ItemStack(ModItems.COIN_GOLD.get(), 2 + random.nextInt(3)));
+        if (random.nextFloat() < m) spawnAtLocation(new ItemStack(ModItems.STEEL_PLATE.get(), 2 + random.nextInt(3)));
+        if (random.nextFloat() < m) spawnAtLocation(new ItemStack(ModItems.WHEEL.get(), 1 + random.nextInt(2)));
+        if (random.nextFloat() < GunnerEntity.AMMO_CHANCE) spawnAtLocation(new ItemStack(ModItems.HEAVY_AMMO.get(), 16 + random.nextInt(17)));
+        if (random.nextFloat() < m) spawnAtLocation(new ItemStack(ModItems.ENGINE.get()));
     }
 
     @Override

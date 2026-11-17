@@ -477,7 +477,7 @@
   "gui.tycooncraft.bank.balance": "통장 잔액",
   "gui.tycooncraft.bank.balance_short": "잔액",
   "gui.tycooncraft.bank.wallet": "지갑 현금",
-  "gui.tycooncraft.bank.interest": "이자: 하루마다 0.1%% (최대 ₩%s)",
+  "gui.tycooncraft.bank.interest": "이자: 하루(20분)마다 0.1%%",
   "gui.tycooncraft.bank.denoms": "화폐: 1원 ~ 100만원",
   "gui.tycooncraft.bank.history": "거래 내역",
   "gui.tycooncraft.bank.no_history": "아직 거래가 없어요",
@@ -550,5 +550,10 @@
   "bank.tycooncraft.cancelled": "%s 등록을 취소했어요",
   "bank.tycooncraft.nothing_to_claim": "받을 물건이 없어요",
   "bank.tycooncraft.claimed": "물건 %s개를 받았어요",
-  "bank.tycooncraft.claims_waiting": "[은행] 경매 수령함에 물건 %s개가 있어요 (인벤토리 → 은행)"
+  "bank.tycooncraft.claims_waiting": "[은행] 경매 수령함에 물건 %s개가 있어요 (인벤토리 → 은행)",
+  "tooltip.tycooncraft.gun.mode_scope": "모드: 조준 사격 (꾹 눌러 스코프) — F 로 전환",
+  "tooltip.tycooncraft.gun.mode_hip": "모드: 일반 사격 (스코프 없음) — F 로 전환",
+  "message.tycooncraft.gun.mode_scope": "조준 사격 모드 (스코프)",
+  "message.tycooncraft.gun.mode_hip": "일반 사격 모드",
+  "gui.tycooncraft.bank.interest_cap": "하루 최대 ₩%s"
 }

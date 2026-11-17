@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingSwapItemsEvent;
 
-/** F 키(양손 바꾸기): VSS 사격 모드 전환 / 전투기 비행 중이면 배럴 롤 */
+/** F 키(양손 바꾸기): VSS 사격 모드 · 스코프 총 조준/일반 사격 전환 / 전투기 비행 중이면 배럴 롤 */
 public final class GunEvents {
 
     @SubscribeEvent
@@ -24,6 +24,16 @@ public final class GunEvents {
             return;
         }
         ItemStack main = p.getMainHandItem();
+        if (main.getItem() instanceof GunItem g && !main.is(ModItems.VSS.get()) && g.hasScope(main)) {   // 스코프 총: 조준 사격 ↔ 일반 사격
+            event.setCanceled(true);
+            int mode = GunItem.fireMode(main) == 0 ? 1 : 0;
+            main.set(ModComponents.FIRE_MODE.get(), mode);
+            p.stopUsingItem();
+            p.displayClientMessage(Component.translatable(mode == 1 ? "message.tycooncraft.gun.mode_hip" : "message.tycooncraft.gun.mode_scope")
+                    .withStyle(ChatFormatting.YELLOW), true);
+            p.level().playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.LEVER_CLICK, SoundSource.PLAYERS, 0.6f, 1.6f);
+            return;
+        }
         if (main.getItem() instanceof GunItem && !main.is(ModItems.VSS.get())) {   // 총(RPG 포함)은 왼손으로 못 옮김
             event.setCanceled(true);
             p.displayClientMessage(Component.translatable("message.tycooncraft.gun.no_offhand").withStyle(ChatFormatting.RED), true);

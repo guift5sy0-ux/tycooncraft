@@ -678,7 +678,12 @@ public final class AutoTestClient {
                         + " synced=" + (com.tycooncraft.client.BankClient.last != null) + " auctions=" + (com.tycooncraft.client.BankClient.last == null ? -1 : com.tycooncraft.client.BankClient.last.auctions().size()));
                 mc.setScreen(null);
             }
-            case 2732 -> next(11);
+            // ── v0.18: 폐공장 지하실 + 골렘, 갱단 드롭, 스코프 전환 ──
+            case 2732 -> serverDo(mc, V18Test::build);
+            case 2750 -> shot(mc, "77_ruin_basement_golem");
+            case 2752 -> serverDo(mc, V18Test::kill);
+            case 2760 -> serverDo(mc, V18Test::check);
+            case 2764 -> next(11);
             default -> {
             }
         }

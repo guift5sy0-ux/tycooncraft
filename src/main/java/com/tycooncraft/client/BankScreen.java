@@ -272,6 +272,12 @@ public class BankScreen extends Screen {
         super.render(g, mx, my, pt);
         int x = left, y = top;
         g.renderItem(new ItemStack(com.tycooncraft.registry.ModItems.GOLD_BAR_1M.get()), x + 5, y + 4);
+        Button at = tabs.get(tab);
+        g.fill(at.getX() + 2, at.getY() + at.getHeight(), at.getX() + at.getWidth() - 2, at.getY() + at.getHeight() + 2, GOLD);
+        if (tab == 2) {
+            Button am = auctionMode == 0 ? browseButton : sellButton;
+            g.fill(am.getX() + 2, am.getY() + am.getHeight(), am.getX() + am.getWidth() - 2, am.getY() + am.getHeight() + 1, GOLD);
+        }
         g.drawString(font, title, x + 24, y + 8, GOLD, false);
         long balance = BankClient.last == null ? 0 : BankClient.last.balance();
         long wallet = minecraft != null && minecraft.player != null ? Coins.wallet(minecraft.player) : 0;
@@ -297,12 +303,13 @@ public class BankScreen extends Screen {
     private void drawAccount(GuiGraphics g, int x, int y, long balance, long wallet) {
         money(g, Component.translatable("gui.tycooncraft.bank.balance"), balance, x + 10, y + 30, 132, GOLD);
         money(g, Component.translatable("gui.tycooncraft.bank.wallet"), wallet, x + 10, y + 40, 132, TEXT);
-        g.drawString(font, Component.translatable("gui.tycooncraft.bank.interest", Coins.format(Bank.INTEREST_CAP)), x + 10, y + 142, DIM, false);
-        g.drawString(font, Component.translatable("gui.tycooncraft.bank.denoms"), x + 10, y + 154, DIM, false);
+        g.drawString(font, Component.translatable("gui.tycooncraft.bank.interest"), x + 10, y + 140, DIM, false);
+        g.drawString(font, Component.translatable("gui.tycooncraft.bank.interest_cap", Coins.format(Bank.INTEREST_CAP)), x + 10, y + 150, DIM, false);
+        g.drawString(font, Component.translatable("gui.tycooncraft.bank.denoms"), x + 10, y + 160, DIM, false);
         // 화폐 단위 아이콘
         int i = 0;
         for (var c : Coins.denominations()) {
-            g.renderItem(new ItemStack(c), x + 10 + (Coins.denominations().size() - 1 - i) * 14, y + 164);
+            g.renderItem(new ItemStack(c), x + 8 + (Coins.denominations().size() - 1 - i) * 13, y + 170);
             i++;
         }
         // 거래 내역

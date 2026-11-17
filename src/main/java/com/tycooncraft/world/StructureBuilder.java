@@ -23,6 +23,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.ItemCost;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.block.Block;
@@ -166,16 +167,22 @@ public final class StructureBuilder {
         }
     }
 
-    private <T extends Mob> void spawnMob(EntityType<T> type, int x, int y, int z) {
+    private <T extends Mob> T spawnMob(EntityType<T> type, int x, int y, int z) {
+        return spawnMob(type, x, y, z, null);
+    }
+
+    private <T extends Mob> T spawnMob(EntityType<T> type, int x, int y, int z, java.util.function.Consumer<T> before) {
         BlockPos p = at(x, y, z);
         float yaw = random.nextFloat() * 360;
-        if (!inside(p)) return;
+        if (!inside(p)) return null;
         T mob = type.create(level.getLevel());
-        if (mob == null) return;
+        if (mob == null) return null;
         mob.moveTo(p.getX() + 0.5, p.getY(), p.getZ() + 0.5, yaw, 0);
         mob.finalizeSpawn(level, level.getCurrentDifficultyAt(p), MobSpawnType.STRUCTURE, null);
         mob.setPersistenceRequired();
+        if (before != null) before.accept(mob);
         level.addFreshEntityWithPassengers(mob);      // 트럭처럼 승무원을 태운 몹도 함께
+        return mob;
     }
 
     private static MerchantOffer offer(Item cost, int costCount, Item result, int count) {
@@ -197,6 +204,7 @@ public final class StructureBuilder {
         v.setVillagerData(v.getVillagerData().setProfession(profession).setLevel(5));
         v.setVillagerXp(250);
         com.tycooncraft.economy.VillagerCoins.setOffers(v, offers);   // overrideOffers 는 클라이언트용(서버에선 아무것도 안 함)
+        v.getPersistentData().putLong("tycooncraft_stock_day", level.getLevel().getDayTime() / 24000L);
         v.setNoAi(true);
         v.setInvulnerable(true);
         v.setSilent(true);
@@ -313,6 +321,44 @@ public final class StructureBuilder {
         b.spawnMob(EntityType.SKELETON, 6, 0, 12);
         b.spawnMob(EntityType.SPIDER, 12, 0, 10);
         b.spawnMob(EntityType.HUSK, 20, 0, 9);
+
+        // 지하실 (40%): 사다리로 내려가면 파괴수 골렘이 기다림
+        if (forceBasement || r.nextFloat() < BASEMENT_CHANCE) b.basement(r);
+    }
+
+    public static final float BASEMENT_CHANCE = 0.4f;
+    public static boolean forceBasement;
+
+    private void basement(RandomSource r) {
+        if (origin.getY() - 14 <= level.getMinBuildHeight()) return;   // 땅이 너무 얕음 (평지 월드 등)
+        hollow(2, -13, 1, 20, -5, 13, Blocks.DEEPSLATE_BRICKS);
+        fill(3, -12, 2, 19, -6, 12, Blocks.AIR);
+        fill(3, -13, 2, 19, -13, 12, Blocks.POLISHED_DEEPSLATE);
+        for (int i = 0; i < 30; i++) set(3 + r.nextInt(17), -13, 2 + r.nextInt(11), r.nextBoolean() ? Blocks.CRACKED_DEEPSLATE_BRICKS : Blocks.COBBLED_DEEPSLATE);
+        for (int i = 0; i < 25; i++) {
+            int side = r.nextInt(4);
+            int x = side < 2 ? 2 + r.nextInt(19) : (side == 2 ? 2 : 20);
+            int z = side < 2 ? (side == 0 ? 1 : 13) : 1 + r.nextInt(13);
+            set(x, -12 + r.nextInt(7), z, Blocks.CRACKED_DEEPSLATE_BRICKS);
+        }
+        // 기둥 + 조명
+        for (int[] c : new int[][]{{6, 5}, {16, 5}, {6, 9}, {16, 9}}) {
+            fill(c[0], -12, c[1], c[0], -6, c[1], Blocks.DEEPSLATE_TILES);
+            set(c[0], -12, c[1] + (c[1] < 7 ? -1 : 1), Blocks.LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, false));
+        }
+        for (int i = 0; i < 12; i++) set(3 + r.nextInt(17), -7 + r.nextInt(2), 2 + r.nextInt(11), Blocks.COBWEB);
+        // 사다리 통로: 1층 바닥 (19, -1, 12) → 지하
+        fill(19, -12, 12, 19, -1, 12, Blocks.AIR);
+        for (int y = -12; y <= -1; y++)
+            set(19, y, 12, Blocks.LADDER.defaultBlockState().setValue(net.minecraft.world.level.block.LadderBlock.FACING, Direction.NORTH));
+        fill(19, -12, 13, 19, -1, 13, Blocks.DEEPSLATE_BRICKS);
+        // 잔해와 상자 1개
+        set(4, -12, 3, ModBlocks.BROKEN_MACHINE.get());
+        set(5, -12, 3, ModBlocks.BROKEN_MACHINE.get());
+        chest(4, -12, 11, Direction.EAST, RUIN_CHEST);
+        // 그 골렘
+        spawnMob(com.tycooncraft.registry.ModEntities.DESTROYER_GOLEM.get(), 11, -12, 7,
+                g -> g.getPersistentData().putBoolean(com.tycooncraft.mob.DestroyerGolem.BASEMENT_TAG, true));
     }
 
     private void spawner(int x, int y, int z, EntityType<?> type) {
@@ -355,16 +401,16 @@ public final class StructureBuilder {
 
     /** 상인 5명 (월드 생성 때는 청크가 실제로 로딩될 때 따로 배치) */
     private void traders() {
-        trader(12, 0, 12, "trader.tycooncraft.food", VillagerProfession.FARMER, traderOffers("trader.tycooncraft.food"));
-        trader(20, 0, 12, "trader.tycooncraft.builder", VillagerProfession.MASON, traderOffers("trader.tycooncraft.builder"));
-        trader(12, 0, 20, "trader.tycooncraft.gear", VillagerProfession.ARMORER, traderOffers("trader.tycooncraft.gear"));
-        trader(20, 0, 20, "trader.tycooncraft.machines", VillagerProfession.TOOLSMITH, traderOffers("trader.tycooncraft.machines"));
-        trader(16, 0, 11, "trader.tycooncraft.buyer", VillagerProfession.CLERIC, traderOffers("trader.tycooncraft.buyer"));
+        trader(12, 0, 12, "trader.tycooncraft.food", VillagerProfession.FARMER, traderStock("trader.tycooncraft.food", random));
+        trader(20, 0, 12, "trader.tycooncraft.builder", VillagerProfession.MASON, traderStock("trader.tycooncraft.builder", random));
+        trader(12, 0, 20, "trader.tycooncraft.gear", VillagerProfession.ARMORER, traderStock("trader.tycooncraft.gear", random));
+        trader(20, 0, 20, "trader.tycooncraft.machines", VillagerProfession.TOOLSMITH, traderStock("trader.tycooncraft.machines", random));
+        trader(16, 0, 11, "trader.tycooncraft.buyer", VillagerProfession.CLERIC, traderStock("trader.tycooncraft.buyer", random));
     }
 
     /**
-     * 상인별 거래 목록 (v0.17.1: 사는 값 2배 — 돈이 더 많이 쓰이게). 1철화=10원, 1금화=100원, 1에메랄드화=1000원.
-     * 불러올 때 바닐라 거래로 바뀌어도 VillagerCoins 가 이 목록으로 되돌린다.
+     * 상인별 상품 후보 전체 (v0.18: 매일 이 중에서 무작위로 골라 진열). 사는 값은 v0.17.1 기준 2배.
+     * 1동화=1원, 1철화=10원, 1금화=100원, 1에메랄드화=1000원.
      */
     public static List<MerchantOffer> traderOffers(String key) {
         Item cu = ModItems.COIN_COPPER.get(), ir = ModItems.COIN_IRON.get(), go = ModItems.COIN_GOLD.get(), em = ModItems.COIN_EMERALD.get();
@@ -372,30 +418,83 @@ public final class StructureBuilder {
             case "trader.tycooncraft.food" -> List.of(
                     offer(ir, 2, Items.BREAD, 2), offer(ir, 2, Items.APPLE, 3), offer(ir, 4, Items.COOKED_BEEF, 4),
                     offer(go, 1, Items.GOLDEN_CARROT, 4), offer(ir, 2, Items.WHEAT_SEEDS, 16), offer(ir, 2, Items.CARROT, 8),
-                    offer(ir, 4, Items.COCOA_BEANS, 8), offer(ir, 4, Items.EGG, 8));
+                    offer(ir, 4, Items.COCOA_BEANS, 8), offer(ir, 4, Items.EGG, 8), offer(ir, 4, Items.COOKED_PORKCHOP, 4),
+                    offer(ir, 3, Items.COOKED_CHICKEN, 4), offer(ir, 2, Items.BAKED_POTATO, 6), offer(ir, 3, Items.PUMPKIN_PIE, 2),
+                    offer(ir, 8, Items.CAKE, 1), offer(ir, 4, Items.HONEY_BOTTLE, 2), offer(ir, 2, Items.MELON_SLICE, 12),
+                    offer(ir, 2, Items.SWEET_BERRIES, 12), offer(ir, 4, Items.COOKED_SALMON, 4), offer(em, 1, Items.GOLDEN_APPLE, 1),
+                    offer(ir, 3, Items.SUGAR_CANE, 8), offer(ir, 2, Items.POTATO, 8), offer(ir, 2, Items.BEETROOT_SEEDS, 16),
+                    offer(ir, 3, Items.MELON_SEEDS, 8), offer(ir, 3, Items.PUMPKIN_SEEDS, 8), offer(ir, 3, Items.MUSHROOM_STEW, 1));
             case "trader.tycooncraft.builder" -> List.of(
                     offer(ir, 2, Items.STONE_BRICKS, 16), offer(ir, 2, Items.BRICKS, 16), offer(ir, 2, Items.SMOOTH_STONE, 16),
                     offer(ir, 4, cu, 8, Items.GLASS, 16), offer(ir, 2, Items.OAK_PLANKS, 32), offer(ir, 2, Items.TORCH, 16),
-                    offer(ir, 6, Items.LANTERN, 4), offer(ir, 4, Items.WHITE_WOOL, 8));
+                    offer(ir, 6, Items.LANTERN, 4), offer(ir, 4, Items.WHITE_WOOL, 8), offer(ir, 2, Items.SPRUCE_PLANKS, 32),
+                    offer(ir, 10, Items.QUARTZ_BLOCK, 8), offer(ir, 3, Items.TERRACOTTA, 16), offer(ir, 4, Items.WHITE_CONCRETE, 16),
+                    offer(ir, 4, Items.GRAY_CONCRETE, 16), offer(ir, 4, Items.BLACK_CONCRETE, 16), offer(ir, 6, Items.IRON_BARS, 16),
+                    offer(ir, 4, Items.DEEPSLATE_TILES, 16), offer(ir, 2, Items.POLISHED_ANDESITE, 16), offer(ir, 3, Items.OAK_LOG, 16),
+                    offer(ir, 8, Items.GLOWSTONE, 8), offer(go, 1, Items.SEA_LANTERN, 4), offer(ir, 2, Items.LADDER, 16),
+                    offer(ir, 3, Items.SCAFFOLDING, 16), offer(ir, 4, Items.CHAIN, 8), offer(ir, 2, Items.SANDSTONE, 16),
+                    offer(ir, 2, Items.OAK_DOOR, 2));
             case "trader.tycooncraft.gear" -> List.of(
                     offer(ir, 10, Items.IRON_PICKAXE, 1), offer(ir, 10, Items.IRON_SWORD, 1), offer(ir, 8, Items.IRON_HELMET, 1),
                     offer(ir, 16, Items.IRON_CHESTPLATE, 1), offer(ir, 14, Items.IRON_LEGGINGS, 1), offer(ir, 8, Items.IRON_BOOTS, 1),
-                    offer(ir, 6, Items.SHIELD, 1), offer(go, 6, Items.DIAMOND_PICKAXE, 1),
+                    offer(ir, 6, Items.SHIELD, 1), offer(go, 6, Items.DIAMOND_PICKAXE, 1), offer(go, 6, Items.DIAMOND_SWORD, 1),
                     offer(ir, 6, ModItems.LIGHT_AMMO.get(), 16), offer(ir, 8, ModItems.HEAVY_AMMO.get(), 8),
-                    offer(ir, 6, ModItems.SHOTGUN_SHELL.get(), 8), offer(go, 12, ModItems.PISTOL.get(), 1));
+                    offer(ir, 6, ModItems.SHOTGUN_SHELL.get(), 8), offer(go, 12, ModItems.PISTOL.get(), 1),
+                    offer(go, 30, ModItems.SMG.get(), 1), offer(go, 28, ModItems.SHOTGUN.get(), 1), offer(em, 5, ModItems.RIFLE.get(), 1),
+                    offer(ir, 8, Items.CROSSBOW, 1), offer(ir, 6, Items.BOW, 1), offer(ir, 4, Items.ARROW, 16), offer(ir, 10, Items.IRON_AXE, 1),
+                    offer(ir, 6, Items.IRON_SHOVEL, 1), offer(ir, 4, Items.SHEARS, 1), offer(ir, 8, Items.SPYGLASS, 1),
+                    offer(go, 8, ModItems.VEST_1.get(), 1), offer(go, 5, ModItems.HELMET_1.get(), 1), offer(go, 5, ModItems.PANTS_1.get(), 1),
+                    offer(go, 4, ModItems.BOOTS_1.get(), 1));
             case "trader.tycooncraft.machines" -> List.of(
                     offer(ir, 4, ModItems.CONVEYOR.get(), 8), offer(ir, 6, ModItems.LIFT_UP.get(), 2), offer(ir, 6, ModItems.LIFT_DOWN.get(), 2),
                     offer(ir, 12, ModItems.SELL_STATION.get(), 1), offer(ir, 12, ModItems.machineItem(MachineType.CRUSHER), 1),
                     offer(ir, 12, ModItems.machineItem(MachineType.SMELTER), 1), offer(ir, 16, ModItems.machineItem(MachineType.PRESS), 1),
                     offer(go, 4, ModItems.machineItem(MachineType.ALLOY_FURNACE), 1), offer(go, 4, ModItems.machineItem(MachineType.WIRE_DRAWER), 1),
                     offer(go, 4, ModItems.machineItem(MachineType.LATHE), 1), offer(em, 4, ModItems.machineItem(MachineType.ASSEMBLER), 1),
-                    offer(go, 10, ModItems.machineItem(MachineType.CHEMICAL_REACTOR), 1), offer(go, 10, ModItems.machineItem(MachineType.ELECTROLYZER), 1));
+                    offer(go, 10, ModItems.machineItem(MachineType.CHEMICAL_REACTOR), 1), offer(go, 10, ModItems.machineItem(MachineType.ELECTROLYZER), 1),
+                    offer(ir, 8, Items.HOPPER, 1), offer(ir, 2, Items.CHEST, 2), offer(ir, 2, Items.BARREL, 2), offer(ir, 4, Items.REDSTONE, 16),
+                    offer(ir, 6, Items.PISTON, 2), offer(ir, 6, Items.OBSERVER, 2), offer(ir, 4, Items.REPEATER, 2), offer(ir, 6, Items.COMPARATOR, 1),
+                    offer(ir, 4, Items.RAIL, 16), offer(go, 1, Items.POWERED_RAIL, 8), offer(ir, 8, Items.MINECART, 1),
+                    offer(ir, 6, ModItems.FUEL_CANISTER.get(), 1), offer(ir, 6, ModItems.STEEL_PLATE.get(), 4), offer(ir, 4, ModItems.IRON_GEAR.get(), 4),
+                    offer(ir, 3, ModItems.COPPER_WIRE.get(), 8));
             case "trader.tycooncraft.buyer" -> List.of(   // 상인이 사 주는 값은 그대로
                     offer(Items.ROTTEN_FLESH, 16, cu, 4), offer(Items.BONE, 8, cu, 5), offer(Items.STRING, 8, cu, 6),
                     offer(Items.SPIDER_EYE, 4, cu, 4), offer(Items.FEATHER, 16, cu, 5), offer(Items.LEATHER, 4, ir, 1),
-                    offer(Items.GUNPOWDER, 4, ir, 1), offer(Items.SLIME_BALL, 4, ir, 1), offer(Items.ENDER_PEARL, 2, ir, 3));
+                    offer(Items.GUNPOWDER, 4, ir, 1), offer(Items.SLIME_BALL, 4, ir, 1), offer(Items.ENDER_PEARL, 2, ir, 3),
+                    offer(Items.PHANTOM_MEMBRANE, 2, ir, 1), offer(Items.BLAZE_ROD, 2, ir, 4), offer(Items.GHAST_TEAR, 1, ir, 5),
+                    offer(Items.PRISMARINE_SHARD, 8, ir, 1), offer(Items.INK_SAC, 8, cu, 6), offer(Items.RABBIT_HIDE, 4, cu, 6),
+                    offer(Items.GLOW_INK_SAC, 4, ir, 1), offer(Items.MAGMA_CREAM, 2, ir, 2), offer(Items.NAUTILUS_SHELL, 1, ir, 6),
+                    offer(Items.HONEYCOMB, 4, ir, 1));
             default -> null;
         };
+    }
+
+    /** 오늘의 진열: 후보 중 무작위 몇 개, 값은 ±(0.85~1.25배) 흔들림. 후보 순서는 유지. */
+    public static List<MerchantOffer> traderStock(String key, net.minecraft.util.RandomSource rnd) {
+        List<MerchantOffer> pool = traderOffers(key);
+        if (pool == null) return null;
+        int n = Math.min(pool.size(), key.endsWith("gear") || key.endsWith("machines") ? 10 : 8);
+        List<Integer> idx = new java.util.ArrayList<>();
+        for (int i = 0; i < pool.size(); i++) idx.add(i);
+        net.minecraft.Util.shuffle(idx, rnd);
+        idx = new java.util.ArrayList<>(idx.subList(0, n));
+        java.util.Collections.sort(idx);
+        boolean buyer = key.endsWith("buyer");
+        List<MerchantOffer> out = new java.util.ArrayList<>();
+        for (int i : idx) {
+            MerchantOffer o = pool.get(i);
+            float f = 0.85f + rnd.nextFloat() * 0.4f;
+            if (buyer) {   // 사 주는 값(결과 동전 수)이 흔들림
+                ItemStack r = o.getResult().copy();
+                r.setCount(Mth.clamp(Math.round(r.getCount() * (2.1f - f)), 1, 64));
+                out.add(new MerchantOffer(o.getItemCostA(), o.getItemCostB(), r, Integer.MAX_VALUE, 0, 0f));
+            } else {
+                ItemCost a = o.getItemCostA();
+                ItemCost na = new ItemCost(a.item(), Mth.clamp(Math.round(a.count() * f), 1, 64));
+                out.add(new MerchantOffer(na, o.getItemCostB(), o.getResult().copy(), Integer.MAX_VALUE, 0, 0f));
+            }
+        }
+        return out;
     }
 
     /** 테스트·명령어용: 갱단 아지트를 지금 바로 짓는다 */

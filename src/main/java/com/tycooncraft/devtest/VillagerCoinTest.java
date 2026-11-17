@@ -57,7 +57,18 @@ public final class VillagerCoinTest {
         VillagerCoins.setOffers(tr, bad);
         VillagerCoins.convertAll(tr);
         System.out.println("[AUTOTEST] v17 villagers emeraldTrades=" + emer + "/" + total + " wanderer=" + wEmer + "/" + wTotal
-                + " traderRestored=" + (tr.getOffers().size() == 8 && tr.getOffers().get(0).getResult().is(Items.BREAD)) + " first=" + describe(tr.getOffers().get(0)));
+                + " traderRestored=" + (tr.getOffers().size() == 8 && VillagerCoins.fromPool(tr.getOffers(), com.tycooncraft.world.StructureBuilder.traderOffers("trader.tycooncraft.food"))
+                        && emeraldTrades(tr) == 0) + " first=" + describe(tr.getOffers().get(0)));
+        // 진열 무작위: 같은 상인을 5번 뽑아 서로 다른 상품 구성 수
+        java.util.Set<String> sets = new java.util.HashSet<>();
+        for (int i = 0; i < 5; i++) {
+            StringBuilder b = new StringBuilder();
+            for (MerchantOffer o : com.tycooncraft.world.StructureBuilder.traderStock("trader.tycooncraft.gear", level.random)) b.append(describe(o)).append(',');
+            sets.add(b.toString());
+        }
+        int pool = 0;
+        for (String k : new String[]{"food", "builder", "gear", "machines", "buyer"}) pool += com.tycooncraft.world.StructureBuilder.traderOffers("trader.tycooncraft." + k).size();
+        System.out.println("[AUTOTEST] v18 traderStock distinct=" + sets.size() + "/5 poolTotal=" + pool + " sample=" + sets.iterator().next());
     }
 
     private VillagerCoinTest() {}

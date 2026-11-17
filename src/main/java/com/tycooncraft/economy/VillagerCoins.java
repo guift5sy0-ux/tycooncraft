@@ -27,7 +27,7 @@ import java.util.Optional;
  */
 public final class VillagerCoins {
     public static final int PAY_PER_EMERALD = 100, GET_PER_EMERALD = 20;
-    public static int CONVERTED, RESTORED;
+    public static int CONVERTED, RESTORED, RESTOCKED;
 
     // ── 금액 → 코인 (한 칸 64개 이하가 되는 가장 큰 단위) ──
     static Item[] coinItems() {
@@ -97,10 +97,17 @@ public final class VillagerCoins {
         if (v.level().isClientSide) return;
         String key = traderKey(v);
         if (key != null) {
-            List<MerchantOffer> mine = StructureBuilder.traderOffers(key);
-            if (mine != null && !sameItems(v.getOffers(), mine)) {
-                setOffers(v, mine);
-                RESTORED++;
+            List<MerchantOffer> pool = StructureBuilder.traderOffers(key);
+            if (pool == null) return;
+            // 하루(마크 하루)마다 진열 상품을 새로 뽑음 + 바닐라 거래로 바뀌었으면 되돌림
+            long day = v.level().getDayTime() / 24000L;
+            var tag = v.getPersistentData();
+            boolean stale = !tag.contains("tycooncraft_stock_day") || tag.getLong("tycooncraft_stock_day") != day;
+            if (stale || !fromPool(v.getOffers(), pool)) {
+                setOffers(v, StructureBuilder.traderStock(key, v.getRandom()));
+                tag.putLong("tycooncraft_stock_day", day);
+                if (!stale) RESTORED++;
+                RESTOCKED++;
             }
             return;
         }
@@ -122,6 +129,18 @@ public final class VillagerCoins {
         if (v.getCustomName() != null && v.getCustomName().getContents() instanceof TranslatableContents tc && tc.getKey().startsWith("trader.tycooncraft."))
             return tc.getKey();
         return null;
+    }
+
+    /** 모든 거래가 이 상인의 후보 목록에 있는 것인지 */
+    public static boolean fromPool(MerchantOffers a, List<MerchantOffer> pool) {
+        if (a.isEmpty()) return false;
+        outer:
+        for (MerchantOffer o : a) {
+            for (MerchantOffer p : pool)
+                if (ItemStack.isSameItem(o.getResult(), p.getResult()) && o.getItemCostA().item() == p.getItemCostA().item()) continue outer;
+            return false;
+        }
+        return true;
     }
 
     static boolean sameItems(MerchantOffers a, List<MerchantOffer> b) {

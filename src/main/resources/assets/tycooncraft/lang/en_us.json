@@ -477,7 +477,7 @@
   "gui.tycooncraft.bank.balance": "Bank balance",
   "gui.tycooncraft.bank.balance_short": "Balance",
   "gui.tycooncraft.bank.wallet": "Cash on hand",
-  "gui.tycooncraft.bank.interest": "Interest: 0.1%% daily (max ₩%s)",
+  "gui.tycooncraft.bank.interest": "Interest: 0.1%% per day (20 min)",
   "gui.tycooncraft.bank.denoms": "Money: ₩1 to ₩1,000,000",
   "gui.tycooncraft.bank.history": "History",
   "gui.tycooncraft.bank.no_history": "No transactions yet",
@@ -550,5 +550,10 @@
   "bank.tycooncraft.cancelled": "Cancelled %s",
   "bank.tycooncraft.nothing_to_claim": "Nothing to collect",
   "bank.tycooncraft.claimed": "Collected %s item(s)",
-  "bank.tycooncraft.claims_waiting": "[Bank] %s auction item(s) waiting (Inventory → Bank)"
+  "bank.tycooncraft.claims_waiting": "[Bank] %s auction item(s) waiting (Inventory → Bank)",
+  "tooltip.tycooncraft.gun.mode_scope": "Mode: scoped (hold to aim) — F to switch",
+  "tooltip.tycooncraft.gun.mode_hip": "Mode: hip fire (no scope) — F to switch",
+  "message.tycooncraft.gun.mode_scope": "Scoped fire",
+  "message.tycooncraft.gun.mode_hip": "Hip fire",
+  "gui.tycooncraft.bank.interest_cap": "Up to ₩%s per day"
 }
