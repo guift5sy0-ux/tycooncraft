@@ -99,7 +99,7 @@ public class ShipRenderer extends EntityRenderer<ShipEntity> {
                 for (int side = -1; side <= 1; side += 2) {      // -1: 오른손(서쪽 -x), +1: 왼손
                     double a = Math.toRadians((side < 0 ? 180 : 0) + wa);
                     float gx = HUB_X + (float) (Math.cos(a) * 4.6), gy = HUB_Y + (float) (Math.sin(a) * 4.6), gz = HUB_Z - 0.7f;
-                    float sx = 8 + side * 5f, sy = 17.6f, sz = 5.0f;
+                    float sx = 8 + side * 6.5f, sy = 13.5f, sz = 3.5f;   // 어깨: 눈보다 아래·약간 뒤 → 화면 아래쪽에서 올라옴
                     org.joml.Vector3f dir = new org.joml.Vector3f(gx - sx, gy - sy, gz - sz);
                     var arm = side < 0 ? model.rightArm : model.leftArm;
                     var sleeve = side < 0 ? model.rightSleeve : model.leftSleeve;
@@ -115,6 +115,7 @@ public class ShipRenderer extends EntityRenderer<ShipEntity> {
                     // 팔 상자는 어깨(위 2px)에서 손(아래 10px)으로: 손끝이 테에 닿게 길이를 맞춤
                     float len = dir.length();
                     pose.translate(0, (len - 10f) / 16f, 0);   // ModelPart 는 이미 1/16 단위로 그림
+                    pose.scale(0.75f, 1f, 0.75f);
                     arm.render(pose, avc, light, OverlayTexture.NO_OVERLAY);
                     sleeve.render(pose, avc, light, OverlayTexture.NO_OVERLAY);
                     pose.popPose();
