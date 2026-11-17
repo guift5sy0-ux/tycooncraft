@@ -85,7 +85,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     /** 클라이언트 타륜 각도(도) */
     public float wheelAngle, wheelAngleO;
     private static final EntityDataAccessor<CompoundTag> TURRETS = SynchedEntityData.defineId(ShipEntity.class, EntityDataSerializers.COMPOUND_TAG);
-    private float inF, inT, inV;
+    private float inF, inT, inV, rudder;
     /** 셀 위치 → 번호 */
     private final Map<Long, Integer> index = new HashMap<>();
     private boolean hasConveyor, hasTurret, falling;
@@ -297,7 +297,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         if (helm < 0) return position().add(0, sizeY, 0);
         Cell h = cells.get(helm);
         Direction f = h.state.hasProperty(HorizontalDirectionalBlock.FACING) ? h.state.getValue(HorizontalDirectionalBlock.FACING) : Direction.SOUTH;
-        return rot(h.x + 0.5 - f.getStepX() * 0.22, h.z + 0.5 - f.getStepZ() * 0.22, yaw).add(position()).add(0, h.y, 0);
+        return rot(h.x + 0.5 - f.getStepX() * 0.28, h.z + 0.5 - f.getStepZ() * 0.28, yaw).add(position()).add(0, h.y, 0);
     }
 
     // ── 실린 상자 열기 ──────────────────────────────────────────────
@@ -380,6 +380,39 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         Cell h = cells.get(helm);
         Direction f = h.state.hasProperty(HorizontalDirectionalBlock.FACING) ? h.state.getValue(HorizontalDirectionalBlock.FACING) : Direction.SOUTH;
         return rot(h.x + 0.5 - f.getStepX() * 1.0, h.z + 0.5 - f.getStepZ() * 1.0, yaw).add(position()).add(0, h.y, 0);
+    }
+
+    /** 조종석 주변에서 발밑이 있고(선체·지형) 몸이 끼지 않는 자리 — 뒤, 옆, 대각선, 앞, 조종석 위 순서 */
+    @Nullable
+    Vec3 safeDismount(Entity who) {
+        if (helm < 0) return null;
+        Cell h = cells.get(helm);
+        Direction f = h.state.hasProperty(HorizontalDirectionalBlock.FACING) ? h.state.getValue(HorizontalDirectionalBlock.FACING) : Direction.SOUTH;
+        Direction l = f.getCounterClockWise();
+        int[][] offs = {{-1, 0}, {0, 1}, {0, -1}, {-1, 1}, {-1, -1}, {1, 1}, {1, -1}, {-2, 0}, {0, 2}, {0, -2}, {2, 0}};
+        double w = who.getBbWidth() / 2, hgt = who.getBbHeight();
+        for (int dy = 0; dy <= 1; dy++)
+            for (int[] o : offs) {
+                double lx = h.x + 0.5 + f.getStepX() * o[0] + l.getStepX() * o[1];
+                double lz = h.z + 0.5 + f.getStepZ() * o[0] + l.getStepZ() * o[1];
+                Vec3 p = rot(lx, lz, yaw).add(position()).add(0, h.y + dy, 0);
+                // 발밑 높이: 그 칸 아래쪽 선체 상자 윗면(또는 지형)
+                double floor = Double.NEGATIVE_INFINITY;
+                AABB foot = new AABB(p.x - w, p.y - 1.1, p.z - w, p.x + w, p.y + 0.6, p.z + w);
+                for (AABB b : boxes) if (b != null && b.intersects(foot) && b.maxY <= p.y + 0.6) floor = Math.max(floor, b.maxY);
+                if (floor == Double.NEGATIVE_INFINITY) {
+                    BlockPos bp = BlockPos.containing(p.x, p.y - 0.5, p.z);
+                    var sh = level().getBlockState(bp).getCollisionShape(level(), bp);
+                    if (!sh.isEmpty()) floor = bp.getY() + sh.max(Direction.Axis.Y);
+                }
+                if (floor == Double.NEGATIVE_INFINITY || floor < p.y - 0.6) continue;   // 같은 높이에서 디딜 곳만
+                AABB body = new AABB(p.x - w, floor + 0.01, p.z - w, p.x + w, floor + hgt, p.z + w);
+                boolean blocked = false;
+                for (AABB b : boxes) if (b != null && b.intersects(body)) { blocked = true; break; }
+                if (blocked || !level().noCollision(body)) continue;
+                return new Vec3(p.x, floor + 0.01, p.z);
+            }
+        return null;
     }
 
     /** 조종석이 바라보는 월드 방향(도) */
@@ -471,8 +504,8 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         if (hasTurret) clientTurrets();
         // 타륜: 누르는 동안 감기고, 놓으면 천천히 가운데로 (A=왼쪽 → 반시계)
         wheelAngleO = wheelAngle;
-        float wt = entityData.get(WHEEL) * 170f;
-        wheelAngle += (wt - wheelAngle) * (wt == 0 ? 0.08f : 0.15f);
+        float wt = entityData.get(WHEEL) * 270f;           // 끝까지 감으면 3/4 바퀴
+        wheelAngle += (wt - wheelAngle) * 0.3f;
         for (Entity p : getPassengers()) lockBody(p);
         if (empTicks() > 0 && tickCount % 2 == 0) {
             Cell c = cells.get(random.nextInt(cells.size()));
@@ -503,11 +536,14 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         double target = !powered ? 0 : inF > 0 ? vmax * inF : inF < 0 ? vmax * 0.4 * inF : 0;
         speed += (target - speed) * (target == 0 ? 0.02 : boosters > 0 ? 0.06 : 0.035);
         if (Math.abs(speed) < 1e-4) speed = 0;
+        // 방향타: 키를 누르면 타륜이 천천히 감기고(약 2초에 끝까지), 놓으면 더 천천히 풀림 → 배처럼 묵직한 조향
+        float rTarget = powered ? inT : 0;
+        rudder += Mth.clamp(rTarget - rudder, -0.025f, 0.025f) * (rTarget == 0 ? 0.6f : 1f);
+        if (Math.abs(rudder) < 0.005f && rTarget == 0) rudder = 0;
         float turn = 0;
-        if (powered && inT != 0) {
+        if (powered && rudder != 0) {
             double flow = Math.min(1, Math.abs(speed) / Math.max(vmax, 0.01));
-            turn = (float) (inT * (0.5 + 1.8 * flow) * Math.sqrt(60.0 / Math.max(60, n)));
-            if (Math.abs(turn) < 0.3f) turn = Math.signum(turn) * 0.3f;
+            turn = (float) (rudder * (0.25 + 1.1 * flow) * Math.sqrt(60.0 / Math.max(60, n)));
         }
         // 부유체: 위(Space)/아래(Ctrl). 연료가 없거나 EMP 면 천천히 가라앉는다
         boolean airborne = air && !resting();
@@ -588,7 +624,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             }
         }
         entityData.set(SPEED, (float) speed);
-        if (Math.abs(entityData.get(WHEEL) - inT) > 0.01f) entityData.set(WHEEL, inT);
+        if (Math.abs(entityData.get(WHEEL) - rudder) > 0.01f) entityData.set(WHEEL, rudder);
         if (hasTurret && level() instanceof ServerLevel tl) tickTurrets(tl, emp == 0);
         if (hasConveyor && emp == 0)
             for (Entity e : level().getEntities(this, bounds.inflate(0.5, 2, 0.5), e -> !(e instanceof Player) && !(e instanceof ShipEntity) && !e.isPassenger()))
@@ -1297,7 +1333,8 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
 
     @Override
     public Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
-        return behindSeat().add(0, 0.05, 0);
+        Vec3 spot = safeDismount(passenger);
+        return spot != null ? spot : seatWorld().add(0, 1.05, 0);
     }
 
     // ── 기타 엔티티 성질 ───────────────────────────────────────────

@@ -599,6 +599,8 @@ public final class AutoTestClient {
                 mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
                 serverDo(mc, sp -> sp.stopRiding());
             }
+            case 2569 -> serverDo(mc, sp -> System.out.printf("[AUTOTEST] v16 dismount onDeck=%s y=%.2f shipY=%.2f%n",
+                    AirshipTest.seatShip != null && AirshipTest.seatShip.standingOn(sp, 0.3), sp.getY(), AirshipTest.seatShip == null ? 0 : AirshipTest.seatShip.getY()));
             case 2570 -> next(11);
             default -> {
             }

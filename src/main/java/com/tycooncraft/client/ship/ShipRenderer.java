@@ -68,7 +68,7 @@ public class ShipRenderer extends EntityRenderer<ShipEntity> {
     }
 
     /** 타륜 허브 위치(px, 남쪽 바라보는 기본 방향) */
-    private static final float HUB_X = 8, HUB_Y = 16.5f, HUB_Z = 13.0f;
+    private static final float HUB_X = 8, HUB_Y = 15f, HUB_Z = 13.2f;
 
     /** 조종석: 의자·기둥 + 조향에 따라 도는 타륜, 1인칭 조종사는 두 손으로 타륜을 잡은 팔까지 */
     private void renderHelm(ShipEntity ship, ShipEntity.Cell c, PoseStack pose, MultiBufferSource buffers, int light, float pt) {
@@ -98,8 +98,8 @@ public class ShipRenderer extends EntityRenderer<ShipEntity> {
                 var avc = buffers.getBuffer(net.minecraft.client.renderer.RenderType.entityCutoutNoCull(skin));
                 for (int side = -1; side <= 1; side += 2) {      // -1: 오른손(서쪽 -x), +1: 왼손
                     double a = Math.toRadians((side < 0 ? 180 : 0) + wa);
-                    float gx = HUB_X + (float) (Math.cos(a) * 4.6), gy = HUB_Y + (float) (Math.sin(a) * 4.6), gz = HUB_Z - 0.7f;
-                    float sx = 8 + side * 6.5f, sy = 13.5f, sz = 3.5f;   // 어깨: 눈보다 아래·약간 뒤 → 화면 아래쪽에서 올라옴
+                    float gx = HUB_X + (float) (Math.cos(a) * 3.8), gy = HUB_Y + (float) (Math.sin(a) * 3.8), gz = HUB_Z - 0.6f;
+                    float sx = 8 + side * 6.0f, sy = 12.0f, sz = 2.5f;   // 어깨: 눈보다 아래·약간 뒤 → 화면 아래쪽에서 올라옴
                     org.joml.Vector3f dir = new org.joml.Vector3f(gx - sx, gy - sy, gz - sz);
                     var arm = side < 0 ? model.rightArm : model.leftArm;
                     var sleeve = side < 0 ? model.rightSleeve : model.leftSleeve;
@@ -115,7 +115,7 @@ public class ShipRenderer extends EntityRenderer<ShipEntity> {
                     // 팔 상자는 어깨(위 2px)에서 손(아래 10px)으로: 손끝이 테에 닿게 길이를 맞춤
                     float len = dir.length();
                     pose.translate(0, (len - 10f) / 16f, 0);   // ModelPart 는 이미 1/16 단위로 그림
-                    pose.scale(0.75f, 1f, 0.75f);
+                    pose.scale(0.6f, 1f, 0.6f);
                     arm.render(pose, avc, light, OverlayTexture.NO_OVERLAY);
                     sleeve.render(pose, avc, light, OverlayTexture.NO_OVERLAY);
                     pose.popPose();

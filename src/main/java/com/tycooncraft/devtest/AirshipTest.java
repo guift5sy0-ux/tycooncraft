@@ -297,6 +297,7 @@ public final class AirshipTest {
     public static void clientSeat(net.minecraft.server.level.ServerPlayer sp, int gy) {
         ServerLevel level = sp.serverLevel();
         BlockPos helm = build(level, 40, gy, -100, 1);
+        level.setBlockAndUpdate(helm.offset(0, -1, -1), Blocks.AIR.defaultBlockState());   // 조종석 바로 뒤 갑판에 구멍 (내리는 자리 찾기 확인)
         seatShip = ShipAssembler.assemble(level, helm, null);
         if (seatShip != null) {
             seatShip.setFuel(30_000);
