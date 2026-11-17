@@ -655,8 +655,8 @@ public final class AutoTestClient {
             case 2667 -> {
                 mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
                 serverDo(mc, sp -> {
-                    for (var s : net.minecraft.world.entity.EquipmentSlot.values())
-                        if (s.isArmor()) sp.setItemSlot(s, net.minecraft.world.item.ItemStack.EMPTY);
+                    for (var slot : net.minecraft.world.entity.EquipmentSlot.values())
+                        if (slot.isArmor()) sp.setItemSlot(slot, net.minecraft.world.item.ItemStack.EMPTY);
                     sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.ItemStack.EMPTY);
                 });
             }
