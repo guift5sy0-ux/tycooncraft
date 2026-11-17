@@ -801,10 +801,10 @@ public final class VanillaBossBuffs {
         List<ItemStack> extra = new ArrayList<>();
         if (e instanceof WitherBoss) {
             extra.add(new ItemStack(Items.NETHERITE_SCRAP, 3));
-            extra.add(new ItemStack(ModItems.COIN_DIAMOND.get(), 2));
+            extra.add(new ItemStack(ModItems.COIN_EMERALD.get(), 3));
         } else if (e instanceof EnderDragon) {
             extra.add(new ItemStack(Items.NETHERITE_INGOT, 2));
-            extra.add(new ItemStack(ModItems.COIN_DIAMOND.get(), 5));
+            extra.add(new ItemStack(ModItems.COIN_DIAMOND.get(), 1));
             extra.add(new ItemStack(Items.ELYTRA));
         }
         for (ItemStack s : extra)

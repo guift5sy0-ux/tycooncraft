@@ -214,7 +214,7 @@ public class DestroyerGolem extends Monster {
         spawnAtLocation(new ItemStack(ModItems.STEEL_INGOT.get(), 4 + random.nextInt(5)));
         spawnAtLocation(new ItemStack(ModItems.HEAVY_AMMO.get(), 16 + random.nextInt(17)));
         spawnAtLocation(new ItemStack(ModItems.ROCKET.get(), 2 + random.nextInt(3)));
-        spawnAtLocation(new ItemStack(ModItems.COIN_EMERALD.get(), 1 + random.nextInt(2)));
+        spawnAtLocation(new ItemStack(ModItems.COIN_GOLD.get(), 3 + random.nextInt(4)));
     }
 
     @Override

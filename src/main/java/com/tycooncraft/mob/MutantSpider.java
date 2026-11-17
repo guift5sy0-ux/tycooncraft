@@ -113,7 +113,7 @@ public class MutantSpider extends Spider {
     @Override
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
         super.dropCustomDeathLoot(level, source, recentlyHit);
-        spawnAtLocation(new ItemStack(ModItems.COIN_GOLD.get(), 2 + random.nextInt(4)));
+        spawnAtLocation(new ItemStack(ModItems.COIN_GOLD.get(), 1 + random.nextInt(3)));
         spawnAtLocation(new ItemStack(Items.STRING, 8 + random.nextInt(8)));
         spawnAtLocation(new ItemStack(Items.SPIDER_EYE, 2));
     }

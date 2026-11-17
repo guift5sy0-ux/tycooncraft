@@ -268,7 +268,7 @@ public class StormWyvern extends FlyingMob implements Enemy {
         spawnAtLocation(new ItemStack(ModItems.STORM_SCALE.get()));
         spawnAtLocation(new ItemStack(Items.PHANTOM_MEMBRANE, 3 + random.nextInt(4)));
         spawnAtLocation(new ItemStack(Items.LIGHTNING_ROD, 2));
-        spawnAtLocation(new ItemStack(ModItems.COIN_DIAMOND.get(), 1));
+        spawnAtLocation(new ItemStack(ModItems.COIN_EMERALD.get(), 2));
     }
 
     @Override

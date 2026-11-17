@@ -311,7 +311,7 @@ public class Behemoth extends Monster {
         spawnAtLocation(new ItemStack(ModItems.BEHEMOTH_HEART.get()));
         spawnAtLocation(new ItemStack(Items.NETHERITE_SCRAP, 1 + random.nextInt(3)));
         spawnAtLocation(new ItemStack(Items.MAGMA_CREAM, 4 + random.nextInt(5)));
-        spawnAtLocation(new ItemStack(ModItems.COIN_DIAMOND.get(), 1));
+        spawnAtLocation(new ItemStack(ModItems.COIN_EMERALD.get(), 2));
     }
 
     @Override
