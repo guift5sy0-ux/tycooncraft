@@ -28,7 +28,12 @@ public final class ModItems {
     public static final DeferredItem<CoinItem> COIN_IRON = coin("coin_iron", 10);
     public static final DeferredItem<CoinItem> COIN_GOLD = coin("coin_gold", 100);
     public static final DeferredItem<CoinItem> COIN_EMERALD = coin("coin_emerald", 1_000);
+    public static final DeferredItem<CoinItem> COIN_SILVER = coin("coin_silver", 500);
     public static final DeferredItem<CoinItem> COIN_DIAMOND = coin("coin_diamond", 10_000);
+    public static final DeferredItem<CoinItem> BILL_5K = coin("bill_5k", 5_000);
+    public static final DeferredItem<CoinItem> BILL_50K = coin("bill_50k", 50_000);
+    public static final DeferredItem<CoinItem> CHECK_100K = coin("check_100k", 100_000);
+    public static final DeferredItem<CoinItem> GOLD_BAR_1M = coin("gold_bar_1m", 1_000_000);
 
     // ── 1차: 가루 ──
     public static final DeferredItem<Item> IRON_DUST = ITEMS.registerSimpleItem("iron_dust");

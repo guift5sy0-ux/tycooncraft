@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "tycooncraft:gold_bar_1m"
+    }
+  ],
+  "result": {
+    "id": "tycooncraft:check_100k",
+    "count": 10
+  }
+}

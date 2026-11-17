@@ -31,9 +31,13 @@ public final class VillagerCoins {
 
     // ── 금액 → 코인 (한 칸 64개 이하가 되는 가장 큰 단위) ──
     static Item[] coinItems() {
-        return new Item[]{ModItems.COIN_DIAMOND.get(), ModItems.COIN_EMERALD.get(), ModItems.COIN_GOLD.get(), ModItems.COIN_IRON.get(), ModItems.COIN_COPPER.get()};
+        return Coins.denominations().toArray(new Item[0]);
     }
-    static final int[] VALUE = {10_000, 1_000, 100, 10, 1};
+    static final int[] VALUE = {1_000_000, 100_000, 50_000, 10_000, 5_000, 1_000, 500, 100, 10, 1};
+
+    public static ItemStack[] coinsForTest(int won) {
+        return coins(won);
+    }
 
     /** 금액을 (주 동전, 보조 동전) 두 칸 이하로 */
     static ItemStack[] coins(int won) {

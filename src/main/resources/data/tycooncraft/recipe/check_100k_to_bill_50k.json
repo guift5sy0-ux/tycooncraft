@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "tycooncraft:check_100k"
+    }
+  ],
+  "result": {
+    "id": "tycooncraft:bill_50k",
+    "count": 2
+  }
+}

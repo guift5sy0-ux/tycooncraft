@@ -660,7 +660,25 @@ public final class AutoTestClient {
                     sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.ItemStack.EMPTY);
                 });
             }
-            case 2670 -> next(11);
+            // ── v0.18: 은행 (저축·송금·경매) ──
+            case 2670 -> serverDo(mc, BankTest::run);
+            case 2674 -> mc.setScreen(new net.minecraft.client.gui.screens.inventory.InventoryScreen(mc.player));
+            case 2684 -> shot(mc, "72_inventory_bank_button");
+            case 2686 -> com.tycooncraft.client.BankClient.open();
+            case 2690 -> { if (mc.screen instanceof com.tycooncraft.client.BankScreen b) b.demo(0, 0); }
+            case 2698 -> shot(mc, "73_bank_account");
+            case 2700 -> { if (mc.screen instanceof com.tycooncraft.client.BankScreen b) b.demo(1, 0); }
+            case 2706 -> shot(mc, "74_bank_transfer");
+            case 2708 -> { if (mc.screen instanceof com.tycooncraft.client.BankScreen b) b.demo(2, 0); }
+            case 2716 -> shot(mc, "75_bank_auction");
+            case 2718 -> { if (mc.screen instanceof com.tycooncraft.client.BankScreen b) b.demo(2, 1); }
+            case 2726 -> shot(mc, "76_bank_auction_sell");
+            case 2728 -> {
+                System.out.println("[AUTOTEST] v18 screen=" + (mc.screen == null ? "none" : mc.screen.getClass().getSimpleName())
+                        + " synced=" + (com.tycooncraft.client.BankClient.last != null) + " auctions=" + (com.tycooncraft.client.BankClient.last == null ? -1 : com.tycooncraft.client.BankClient.last.auctions().size()));
+                mc.setScreen(null);
+            }
+            case 2732 -> next(11);
             default -> {
             }
         }

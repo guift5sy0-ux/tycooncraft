@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "tycooncraft:bill_5k"
+    }
+  ],
+  "result": {
+    "id": "tycooncraft:coin_emerald",
+    "count": 5
+  }
+}

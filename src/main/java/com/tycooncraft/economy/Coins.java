@@ -13,7 +13,8 @@ public final class Coins {
 
     /** 큰 단위부터 */
     public static List<CoinItem> denominations() {
-        return List.of(ModItems.COIN_DIAMOND.get(), ModItems.COIN_EMERALD.get(), ModItems.COIN_GOLD.get(),
+        return List.of(ModItems.GOLD_BAR_1M.get(), ModItems.CHECK_100K.get(), ModItems.BILL_50K.get(), ModItems.COIN_DIAMOND.get(),
+                ModItems.BILL_5K.get(), ModItems.COIN_EMERALD.get(), ModItems.COIN_SILVER.get(), ModItems.COIN_GOLD.get(),
                 ModItems.COIN_IRON.get(), ModItems.COIN_COPPER.get());
     }
 
@@ -51,6 +52,26 @@ public final class Coins {
     public static Item coinFor(long value) {
         for (CoinItem coin : denominations()) if (coin.getValue() == value) return coin;
         return ModItems.COIN_COPPER.get();
+    }
+
+    /** 인벤토리(가방+왼손)의 현금 합계 */
+    public static long wallet(Player player) {
+        var inv = player.getInventory();
+        long total = 0;
+        for (int i = 0; i < inv.items.size(); i++) total += valueOf(inv.items.get(i));
+        for (ItemStack s : inv.offhand) total += valueOf(s);
+        return total;
+    }
+
+    /** 현금을 전부 걷어서 합계를 돌려준다 */
+    public static long takeAll(Player player) {
+        var inv = player.getInventory();
+        long total = 0;
+        for (int i = 0; i < inv.items.size(); i++)
+            if (isCoin(inv.items.get(i))) { total += valueOf(inv.items.get(i)); inv.items.set(i, ItemStack.EMPTY); }
+        for (int i = 0; i < inv.offhand.size(); i++)
+            if (isCoin(inv.offhand.get(i))) { total += valueOf(inv.offhand.get(i)); inv.offhand.set(i, ItemStack.EMPTY); }
+        return total;
     }
 
     public static String format(long amount) {
