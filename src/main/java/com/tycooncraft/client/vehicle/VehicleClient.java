@@ -64,6 +64,7 @@ public final class VehicleClient {
         // 바닐라 보스 외형 교체
         event.registerEntityRenderer(net.minecraft.world.entity.EntityType.WITHER, com.tycooncraft.client.mob.AbyssalWither.Renderer::new);
         event.registerEntityRenderer(net.minecraft.world.entity.EntityType.ENDER_DRAGON, com.tycooncraft.client.mob.VoidDragon.Renderer::new);
+        event.registerEntityRenderer(ModEntities.GANG_TRUCK.get(), GangTruckRenderer::new);
         event.registerEntityRenderer(ModEntities.SHIP.get(), com.tycooncraft.client.ship.ShipRenderer::new);
         com.tycooncraft.client.ship.ShipClient.init();
         event.registerEntityRenderer(ModEntities.GRENADE.get(), ctx -> new net.minecraft.client.renderer.entity.ThrownItemRenderer<>(ctx, 0.75f, false));

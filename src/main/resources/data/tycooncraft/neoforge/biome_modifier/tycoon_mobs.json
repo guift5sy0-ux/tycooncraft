@@ -31,6 +31,12 @@
       "weight": 3,
       "minCount": 1,
       "maxCount": 1
+    },
+    {
+      "type": "tycooncraft:gang_truck",
+      "weight": 2,
+      "minCount": 1,
+      "maxCount": 1
     }
   ]
 }

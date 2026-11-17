@@ -300,5 +300,7 @@
   "message.tycooncraft.emp.no_charge": "Right click with a redstone block to charge",
   "message.tycooncraft.emp.cooldown": "⚡ Recharging… %ss",
   "message.tycooncraft.emp.armed": "⚠ EMP generator armed! Pulse in 3s",
-  "message.tycooncraft.emp.fired": "⚡ EMP pulse — %s vehicles disabled"
+  "message.tycooncraft.emp.fired": "⚡ EMP pulse — %s vehicles disabled",
+  "entity.tycooncraft.gang_truck": "Cartel Technical",
+  "item.tycooncraft.gang_truck_spawn_egg": "Cartel Technical Spawn Egg"
 }

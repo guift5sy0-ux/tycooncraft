@@ -148,6 +148,8 @@ public final class ModItems {
     public static final DeferredItem<DeferredSpawnEggItem> BOSS_EGG = ITEMS.register("cartel_boss_spawn_egg",
             () -> new DeferredSpawnEggItem(ModEntities.CARTEL_BOSS, 0xE8E6DE, 0xAA1A1E, new Item.Properties()));
 
+    public static final DeferredItem<DeferredSpawnEggItem> GANG_TRUCK_EGG = ITEMS.register("gang_truck_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.GANG_TRUCK, 0x1E1D1C, 0xA81414, new Item.Properties()));
     public static final DeferredItem<DeferredSpawnEggItem> GOLEM_EGG = ITEMS.register("destroyer_golem_spawn_egg",
             () -> new DeferredSpawnEggItem(ModEntities.DESTROYER_GOLEM, 0x565C64, 0xE0B020, new Item.Properties()));
     // 보스 전리품 (판매용)

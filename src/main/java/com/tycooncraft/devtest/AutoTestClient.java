@@ -501,7 +501,23 @@ public final class AutoTestClient {
             });
             case 2141 -> shot(mc, "55_bullets_rockets");
             case 2143 -> V15Test.logClientFx();
-            case 2150 -> next(11);
+            // ── v0.16: 갱단 무장 트럭 ──
+            case 2150 -> serverDo(mc, sp -> {
+                var sl = sp.serverLevel();
+                V16Test.clientTruck = com.tycooncraft.registry.ModEntities.GANG_TRUCK.get().spawn(sl, new net.minecraft.core.BlockPos(-20, (int) g, 22), net.minecraft.world.entity.MobSpawnType.MOB_SUMMONED);
+                V16Test.clientTarget = AutoTest.dummyAt(sl, -20.5, 50.5);
+                sp.teleportTo(sl, -2.5, g + 4, 30.5, 110f, 18f);
+            });
+            case 2165 -> shot(mc, "56_gang_truck");
+            case 2166, 2180, 2200, 2220 -> serverDo(mc, sp -> {
+                if (V16Test.clientTruck != null && V16Test.clientTruck.isAlive()) V16Test.clientTruck.setTarget(V16Test.clientTarget);
+            });
+            case 2205 -> shot(mc, "57_gang_truck_chase");
+            case 2235 -> shot(mc, "58_gang_truck_firing");
+            case 2240 -> serverDo(mc, sp -> {
+                if (V16Test.clientTruck != null) V16Test.clientTruck.discard();
+            });
+            case 2250 -> next(11);
             default -> {
             }
         }

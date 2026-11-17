@@ -300,5 +300,7 @@
   "message.tycooncraft.emp.no_charge": "레드스톤 블록을 들고 우클릭해 충전하세요",
   "message.tycooncraft.emp.cooldown": "⚡ 재충전 중… %s초",
   "message.tycooncraft.emp.armed": "⚠ EMP 발생기 가동! 3초 뒤 방출",
-  "message.tycooncraft.emp.fired": "⚡ EMP 방출 — 탈것 %s대 먹통"
+  "message.tycooncraft.emp.fired": "⚡ EMP 방출 — 탈것 %s대 먹통",
+  "entity.tycooncraft.gang_truck": "갱단 무장 트럭",
+  "item.tycooncraft.gang_truck_spawn_egg": "갱단 무장 트럭 생성 알"
 }

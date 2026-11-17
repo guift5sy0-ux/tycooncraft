@@ -58,6 +58,10 @@ public final class AutoTest {
     static com.tycooncraft.mob.DestroyerGolem golem;
     static net.minecraft.world.entity.LivingEntity golemDummy, beastDummy;
 
+    public static net.minecraft.world.entity.LivingEntity dummyAt(ServerLevel level, double x, double z) {
+        return dummy(level, x, z);
+    }
+
     private static net.minecraft.world.entity.LivingEntity dummy(ServerLevel level, double x, double z) {
         var h = net.minecraft.world.entity.EntityType.HUSK.create(level);
         h.moveTo(x, gy, z, 0, 0);
@@ -256,6 +260,7 @@ public final class AutoTest {
         if (t == 36) v13Setup(level);
         if (t == 1500) v14Setup(level);
         V15Test.tick(level, t, gy);
+        V16Test.tick(level, t, gy);
         if (t == 1700) {
             if (wither != null && wither.isAlive()) wither.setHealth(wither.getMaxHealth() * 0.45f);
             if (dragon != null && dragon.isAlive()) dragon.setHealth(dragon.getMaxHealth() * 0.45f);

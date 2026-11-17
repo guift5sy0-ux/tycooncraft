@@ -67,6 +67,9 @@ public final class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> GANGSTER = mob("gangster", GunnerEntity::gangster);
     public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> MERCENARY = mob("mercenary", GunnerEntity::mercenary);
     public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> OUTLAW = mob("outlaw", GunnerEntity::outlaw);
+    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.mob.GangTruck>> GANG_TRUCK = ENTITIES.register("gang_truck",
+            () -> EntityType.Builder.<com.tycooncraft.mob.GangTruck>of(com.tycooncraft.mob.GangTruck::new, MobCategory.MONSTER)
+                    .sized(2.4f, 2.0f).eyeHeight(1.8f).passengerAttachments(2.0f).clientTrackingRange(10).build("gang_truck"));
     public static final DeferredHolder<EntityType<?>, EntityType<CartelBoss>> CARTEL_BOSS = ENTITIES.register("cartel_boss",
             () -> EntityType.Builder.<CartelBoss>of(CartelBoss::new, MobCategory.MONSTER)
                     .sized(0.84f, 2.7f).eyeHeight(2.3f).clientTrackingRange(10).fireImmune().build("cartel_boss"));
