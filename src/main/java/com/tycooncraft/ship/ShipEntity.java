@@ -515,7 +515,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     }
 
     // ── 셀 찾기 ───────────────────────────────────────────────────
-    static long key(int x, int y, int z) {
+    public static long key(int x, int y, int z) {
         return ((long) (x & 0x1FFFFF) << 42) | ((long) (y & 0x1FFFFF) << 21) | (z & 0x1FFFFF);
     }
 
@@ -523,6 +523,34 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     Cell cellAt(int x, int y, int z) {
         Integer i = index.get(key(x, y, z));
         return i == null ? null : cells.get(i);
+    }
+
+    /** 월드 좌표의 점이 들어 있는 셀 (없으면 null) */
+    @Nullable
+    public Cell cellAtWorld(Vec3 w) {
+        Vec3 l = toLocal(w);
+        return cellAt(Mth.floor(l.x), Mth.floor(l.y), Mth.floor(l.z));
+    }
+
+    /** 곡괭이로 캘 수 있나 (부유체·엔진만, 곡괭이 필요) */
+    public static boolean minable(Cell c, ItemStack tool) {
+        return fragile(c) && tool.is(net.minecraft.tags.ItemTags.PICKAXES);
+    }
+
+    public static int MINED;
+
+    /** 서버: 플레이어가 캐낸 셀 — 거리·도구 확인 후 제거 (아이템은 반드시 드롭) */
+    public boolean mineCell(ServerPlayer sp, long k) {
+        Integer i = index.get(k);
+        if (i == null) return false;
+        Cell c = cells.get(i);
+        ItemStack tool = sp.getMainHandItem();
+        if (!minable(c, tool) || sp.getEyePosition().distanceTo(cellCenter(c)) > sp.blockInteractionRange() + 2.5) return false;
+        level().playSound(null, sp.blockPosition(), c.state.getSoundType().getBreakSound(), SoundSource.BLOCKS, 1f, 0.8f);
+        tool.hurtAndBreak(1, sp, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
+        removeCells(new ArrayList<>(List.of(i)), 1f);
+        MINED++;
+        return true;
     }
 
     /** 월드 좌표 → 원점 기준 로컬 좌표 */

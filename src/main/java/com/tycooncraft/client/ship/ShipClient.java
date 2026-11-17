@@ -13,6 +13,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -65,6 +66,56 @@ public final class ShipClient {
             pl.setYRot(pl.getYRot() + dy);
             pl.setYHeadRot(pl.getYHeadRot() + dy);
             s.clearCarry();
+        }
+    }
+
+    // ── 곡괭이로 움직이는 운송기의 부유체·엔진 캐기 ──
+    private static int mineShip = -1;
+    private static long mineKey;
+    private static float mineProgress;
+
+    @SubscribeEvent
+    public static void onMineTick(ClientTickEvent.Post event) {
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer pl = mc.player;
+        if (pl == null || mc.level == null || mc.screen != null || !mc.options.keyAttack.isDown() || pl.getVehicle() instanceof ShipEntity) {
+            mineShip = -1;
+            return;
+        }
+        Vec3 eye = pl.getEyePosition();
+        Vec3 dir = pl.getViewVector(1f);
+        double reach = pl.blockInteractionRange();
+        var hit = ShipCollisions.clip(mc.level, eye, eye.add(dir.scale(reach)));
+        HitResult hr = mc.hitResult;
+        if (hit == null || (hr != null && hr.getType() != HitResult.Type.MISS && hr.getLocation().distanceToSqr(eye) + 1e-4 < hit.point().distanceToSqr(eye))) {
+            mineShip = -1;
+            return;
+        }
+        ShipEntity s = hit.ship();
+        ShipEntity.Cell c = s.cellAtWorld(hit.point().add(dir.scale(0.02)));
+        ItemStack tool = pl.getMainHandItem();
+        if (c == null || !ShipEntity.minable(c, tool)) {
+            mineShip = -1;
+            return;
+        }
+        long k = ShipEntity.key(c.x(), c.y(), c.z());
+        if (s.getId() != mineShip || k != mineKey) {
+            mineShip = s.getId();
+            mineKey = k;
+            mineProgress = 0;
+        }
+        // 바닐라 채굴 속도: 도구 속도(효율·성급함 포함) / 단단함 / 30
+        float hardness = Math.max(0.1f, c.state().getDestroySpeed(mc.level, net.minecraft.core.BlockPos.ZERO));
+        mineProgress += pl.getDigSpeed(c.state(), null) / hardness / 30f;
+        pl.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+        if (pl.tickCount % 4 == 0) {
+            Vec3 p = hit.point();
+            mc.level.addParticle(new net.minecraft.core.particles.BlockParticleOption(net.minecraft.core.particles.ParticleTypes.BLOCK, c.state()), p.x, p.y, p.z, 0, 0.05, 0);
+            mc.level.playLocalSound(p.x, p.y, p.z, c.state().getSoundType().getHitSound(), net.minecraft.sounds.SoundSource.BLOCKS, 0.5f, 0.6f, false);
+        }
+        if (mineProgress >= 1f) {
+            PacketDistributor.sendToServer(new ShipPayloads.Mine(mineShip, mineKey));
+            mineShip = -1;
         }
     }
 

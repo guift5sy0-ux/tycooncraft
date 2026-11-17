@@ -23,6 +23,8 @@
     "tycooncraft:chemical_reactor",
     "tycooncraft:electrolyzer",
     "tycooncraft:ship_float",
-    "tycooncraft:ciws"
+    "tycooncraft:ciws",
+    "tycooncraft:ship_motor",
+    "tycooncraft:ship_helm"
   ]
 }

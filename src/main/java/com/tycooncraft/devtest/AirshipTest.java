@@ -205,6 +205,21 @@ public final class AirshipTest {
             long iron = armor.cells().stream().filter(c -> c.state().is(Blocks.IRON_BLOCK)).count();
             System.out.println("[AUTOTEST] v16 armor exposedFloatSurvived=" + exposed + " shieldedFloatSurvived=" + shielded
                     + " ironLeft=" + iron + "/6 shieldedRays=" + ShipEntity.SHIELDED);
+            // 곡괭이로 엔진 캐기: 맨손은 거부, 곡괭이는 성공 + 아이템 드롭
+            var fp = net.neoforged.neoforge.common.util.FakePlayerFactory.getMinecraft(level);
+            var eng = armor.cells().stream().filter(c -> c.state().getBlock() instanceof com.tycooncraft.ship.ShipMotorBlock).findFirst().orElseThrow();
+            Vec3 ec = armor.cellCenter(eng);
+            fp.setPos(ec.x, ec.y - 1.62 + 1.5, ec.z - 2);
+            long k = ShipEntity.key(eng.x(), eng.y(), eng.z());
+            fp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+            boolean bare = armor.mineCell(fp, k);
+            fp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_PICKAXE));
+            boolean pick = armor.mineCell(fp, k);
+            var plank = armor.cells().stream().filter(c -> c.state().is(Blocks.SPRUCE_PLANKS)).findFirst().orElseThrow();
+            boolean hull = armor.mineCell(fp, ShipEntity.key(plank.x(), plank.y(), plank.z()));
+            long drops = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(ec, ec).inflate(3),
+                    e -> e.getItem().is(com.tycooncraft.registry.ModItems.SHIP_MOTOR.get())).size();
+            System.out.println("[AUTOTEST] v16 mine bareHand=" + bare + " pickaxe=" + pick + " hullPlank=" + hull + " motorsLeft=" + armor.motorCount() + " motorItemDropped=" + drops);
             armor.disassemble(null);
             armor = null;
         }
