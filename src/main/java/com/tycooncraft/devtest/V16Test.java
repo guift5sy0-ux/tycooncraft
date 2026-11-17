@@ -20,6 +20,7 @@ public final class V16Test {
         if (t == 290) for (int cx = 8; cx <= 9; cx++) for (int cz = 6; cz <= 10; cz++) level.setChunkForced(cx, cz, true);
         if (t == 300) {
             truck = ModEntities.GANG_TRUCK.get().spawn(level, new BlockPos(140, gy, 104), MobSpawnType.MOB_SUMMONED);
+            if (truck != null) truck.setPersistenceRequired();   // 플레이어와 128칸 넘게 떨어져 있어 즉시 디스폰되는 것 방지
             target = AutoTest.dummyAt(level, 140.5, 150.5);
             System.out.println("[AUTOTEST] v16 truck spawned=" + (truck != null) + " crew=" + (truck == null ? 0 : truck.getPassengers().size())
                     + (truck == null ? "" : " types=" + truck.getPassengers().stream().map(e -> e.getType().toShortString()).toList()));
@@ -48,7 +49,7 @@ public final class V16Test {
     public static void diag(String tag, ServerLevel level, GangTruck tr) {
         if (crew0.isEmpty()) crew0.addAll(tr.getPassengers());
         StringBuilder sb = new StringBuilder("[AUTOTEST] v16 diag " + tag + " removed=" + tr.getRemovalReason() + " ticks=" + tr.tickCount
-                + " entTicking=" + level.isPositionEntityTicking(tr.blockPosition()) + " y=" + String.format("%.2f", tr.getY())
+                + " entTicking=" + level.isPositionEntityTicking(tr.blockPosition()) + String.format(" pos=%.1f,%.2f,%.1f", tr.getX(), tr.getY(), tr.getZ())
                 + " inWall=" + tr.isInWall() + " noAi=" + tr.isNoAi() + " diff=" + level.getDifficulty() + " target=" + tr.getTarget() + " crew:");
         for (var e : crew0) sb.append(' ').append(e.getType().toShortString()).append(e.isPassenger() ? "@ride" : "@off").append('/').append(e.getRemovalReason())
                 .append(e instanceof LivingEntity le ? "/hp" + (int) le.getHealth() : "");
