@@ -759,6 +759,13 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         if (cells.isEmpty()) discard();
     }
 
+    /** 테스트·명령어용: 조건에 맞는 셀을 부순다 */
+    public void breakWhere(java.util.function.Predicate<Cell> p) {
+        List<Integer> idx = new ArrayList<>();
+        for (int i = 0; i < cells.size(); i++) if (p.test(cells.get(i))) idx.add(i);
+        if (!idx.isEmpty()) removeCells(idx, 1f);
+    }
+
     /** 클라이언트: 서버가 알려 준 셀 제거 */
     public void removeCellsClient(List<Long> keys) {
         java.util.Set<Long> ks = new java.util.HashSet<>(keys);

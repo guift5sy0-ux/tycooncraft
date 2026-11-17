@@ -114,7 +114,13 @@ public final class AirshipTest {
         }
         if (war == null) return;
         if (t > 1240 && t < 1262) war.testInput(0, 0, 1);       // 1.5칸쯤 띄움
-        else if (t >= 1262 && t < 1400) war.testInput(0, 0, 0);
+        else if (t >= 1262 && t < 1350) war.testInput(0, 0, 0);
+        else if (t >= 1350 && t < 1385) war.testInput(0, 0, 1);
+        if (t == 1385) {   // 6칸쯤 띄운 뒤 부유체 전부 파괴 → 추락·충돌
+            System.out.printf("[AUTOTEST] v16 war before cut y+%.2f%n", war.getY() - gy);
+            war.breakWhere(c -> c.state().getBlock() instanceof com.tycooncraft.ship.ShipFloatBlock);
+            System.out.println("[AUTOTEST] v16 war floats cut canFly=" + war.canFly());
+        }
         if (t == 1265) {   // 컨베이어 첫 칸에 중탄약 → 포탑으로 굴러가 장전
             var c0 = war.cellCenter(war.cells().stream().filter(c -> c.state().getBlock() instanceof com.tycooncraft.block.ConveyorBlock)
                     .min(java.util.Comparator.comparingInt(ShipEntity.Cell::x)).orElseThrow());
@@ -146,9 +152,12 @@ public final class AirshipTest {
             }
             System.out.println("[AUTOTEST] v16 war blast2 cells=" + war.cells().size() + " floats=" + war.floatCount() + " canFly=" + war.canFly() + " removed=" + war.isRemoved());
         }
-        if (t == 1400) {
-            System.out.println("[AUTOTEST] v16 war end removed=" + war.isRemoved() + " crashes=" + ShipEntity.CRASHES
-                    + (war.isRemoved() ? "" : String.format(" y+%.2f falling", war.getY() - gy)));
+        if (t == 1440) {
+            int planks = 0;
+            for (BlockPos p : BlockPos.betweenClosed(x0 - 4, gy - 1, z0 - 4, x0 + 10, gy + 10, z0 + 10))
+                if (level.getBlockState(p).is(Blocks.SPRUCE_PLANKS)) planks++;
+            System.out.println("[AUTOTEST] v16 war end removed=" + war.isRemoved() + " crashes=" + ShipEntity.CRASHES + " planksOnGround=" + planks
+                    + (war.isRemoved() ? "" : String.format(" y+%.2f", war.getY() - gy)));
             war = null;
         }
     }
