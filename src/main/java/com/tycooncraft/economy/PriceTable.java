@@ -40,8 +40,6 @@ public final class PriceTable {
             p.put(ModItems.COAL_DUST.get(), 1.5);
             p.put(ModItems.SULFUR.get(), 3.0);
             p.put(ModItems.DESTROYER_CORE.get(), 300.0);
-            p.put(ModItems.BEHEMOTH_HEART.get(), 1500.0);
-            p.put(ModItems.STORM_SCALE.get(), 1200.0);
             p.put(ModItems.COPPER_DUST.get(), 1.5);
             p.put(ModItems.IRON_DUST.get(), 3.5);
             p.put(ModItems.GOLD_DUST.get(), 8.0);

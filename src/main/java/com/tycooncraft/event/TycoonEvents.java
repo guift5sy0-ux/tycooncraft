@@ -57,8 +57,6 @@ public final class TycoonEvents {
 
     // ── 몹 코인 드랍 ──
     private static final Map<EntityType<?>, Object[]> BOSS_DROPS = Map.of(
-            EntityType.WITHER, new Object[]{1_000, 2, 4},
-            EntityType.ENDER_DRAGON, new Object[]{1_000, 5, 8},
             EntityType.WARDEN, new Object[]{1_000, 1, 2},
             EntityType.ELDER_GUARDIAN, new Object[]{100, 3, 6},
             EntityType.EVOKER, new Object[]{100, 1, 2},

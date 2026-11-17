@@ -325,38 +325,6 @@
       }
     ]
   },
-  "mob.behemoth.roar": {
-    "sounds": [
-      {
-        "name": "tycooncraft:mob/behemoth_roar",
-        "attenuation_distance": 96
-      }
-    ]
-  },
-  "mob.behemoth.stomp": {
-    "sounds": [
-      {
-        "name": "tycooncraft:mob/behemoth_stomp",
-        "attenuation_distance": 64
-      }
-    ]
-  },
-  "mob.storm_wyvern.screech": {
-    "sounds": [
-      {
-        "name": "tycooncraft:mob/wyvern_screech",
-        "attenuation_distance": 96
-      }
-    ]
-  },
-  "mob.storm_wyvern.orb": {
-    "sounds": [
-      {
-        "name": "tycooncraft:mob/storm_orb",
-        "attenuation_distance": 32
-      }
-    ]
-  },
   "gun.bullet.whiz": {
     "subtitle": "subtitles.tycooncraft.bullet_whiz",
     "sounds": [

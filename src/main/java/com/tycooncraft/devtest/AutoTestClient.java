@@ -339,10 +339,6 @@ public final class AutoTestClient {
             // ── v0.13: 보스 3종 관찰 ──
             case 1022 -> serverDo(mc, sp -> view(sp, AutoTest.golem, 9, 4, g));
             case 1060 -> shot(mc, "34_golem");
-            case 1064 -> serverDo(mc, sp -> view(sp, AutoTest.behemoth, 13, 5, g));
-            case 1100 -> shot(mc, "35_behemoth");
-            case 1104 -> serverDo(mc, sp -> view(sp, AutoTest.wyvern, 14, 2, g));
-            case 1140 -> shot(mc, "36_wyvern");
             // ── 총 쥐는 자세: 1인칭 팔 + 3인칭 ──
             case 1146 -> serverDo(mc, sp -> {
                 sp.getAbilities().flying = false;

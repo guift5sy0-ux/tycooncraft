@@ -107,8 +107,8 @@ public final class VanillaBossBuffs {
     public static final float BOSS_DAMAGE = 0.6f;
 
     public static boolean isBoss(Entity e) {
-        return e instanceof WitherBoss || e instanceof EnderDragon || e instanceof com.tycooncraft.mob.Behemoth
-                || e instanceof com.tycooncraft.mob.DestroyerGolem || e instanceof com.tycooncraft.mob.StormWyvern
+        return e instanceof WitherBoss || e instanceof EnderDragon
+                || e instanceof com.tycooncraft.mob.DestroyerGolem
                 || e instanceof com.tycooncraft.mob.MutantSpider;
     }
 

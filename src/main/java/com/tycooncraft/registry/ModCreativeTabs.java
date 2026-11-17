@@ -67,8 +67,8 @@ public final class ModCreativeTabs {
                         out.accept(ModItems.SILENCER_ADVANCED.get());
                         for (var v : java.util.List.of(ModItems.VEST_1, ModItems.VEST_2, ModItems.VEST_3, ModItems.HELMET_1, ModItems.HELMET_2, ModItems.HELMET_3, ModItems.HELMET_4, ModItems.VEST_4, ModItems.JUGGERNAUT_LEGGINGS, ModItems.COMBAT_BOOTS)) out.accept(v.get());
                         out.accept(ModItems.CARTEL_FLARE.get());
-                        for (var v : java.util.List.of(ModItems.GANGSTER_EGG, ModItems.MERCENARY_EGG, ModItems.OUTLAW_EGG, ModItems.SPIDER_EGG, ModItems.BOSS_EGG, ModItems.GOLEM_EGG, ModItems.BEHEMOTH_EGG, ModItems.WYVERN_EGG,
-                                ModItems.DESTROYER_CORE, ModItems.BEHEMOTH_HEART, ModItems.STORM_SCALE)) out.accept(v.get());
+                        for (var v : java.util.List.of(ModItems.GANGSTER_EGG, ModItems.MERCENARY_EGG, ModItems.OUTLAW_EGG, ModItems.SPIDER_EGG, ModItems.BOSS_EGG, ModItems.GOLEM_EGG,
+                                ModItems.DESTROYER_CORE)) out.accept(v.get());
                     })
                     .build());
 

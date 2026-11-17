@@ -150,15 +150,8 @@ public final class ModItems {
 
     public static final DeferredItem<DeferredSpawnEggItem> GOLEM_EGG = ITEMS.register("destroyer_golem_spawn_egg",
             () -> new DeferredSpawnEggItem(ModEntities.DESTROYER_GOLEM, 0x565C64, 0xE0B020, new Item.Properties()));
-    public static final DeferredItem<DeferredSpawnEggItem> BEHEMOTH_EGG = ITEMS.register("behemoth_spawn_egg",
-            () -> new DeferredSpawnEggItem(ModEntities.BEHEMOTH, 0x2E282A, 0xFF7A18, new Item.Properties()));
-    public static final DeferredItem<DeferredSpawnEggItem> WYVERN_EGG = ITEMS.register("storm_wyvern_spawn_egg",
-            () -> new DeferredSpawnEggItem(ModEntities.STORM_WYVERN, 0x22344A, 0x6ED8FF, new Item.Properties()));
     // 보스 전리품 (판매용)
     public static final DeferredItem<Item> DESTROYER_CORE = ITEMS.register("destroyer_core", () -> new Item(new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON)));
-    public static final DeferredItem<Item> BEHEMOTH_HEART = ITEMS.register("behemoth_heart", () -> new Item(new Item.Properties().rarity(net.minecraft.world.item.Rarity.EPIC).fireResistant()));
-    public static final DeferredItem<Item> STORM_SCALE = ITEMS.register("storm_scale", () -> new Item(new Item.Properties().rarity(net.minecraft.world.item.Rarity.EPIC)));
-    public static final DeferredItem<Item> STORM_ORB = ITEMS.registerSimpleItem("storm_orb");
 
     // ── 탈것 & 연료 ──
     public static final DeferredItem<Item> FUEL_CANISTER = ITEMS.registerSimpleItem("fuel_canister");

@@ -73,16 +73,6 @@ public final class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.mob.DestroyerGolem>> DESTROYER_GOLEM = ENTITIES.register("destroyer_golem",
             () -> EntityType.Builder.<com.tycooncraft.mob.DestroyerGolem>of(com.tycooncraft.mob.DestroyerGolem::new, MobCategory.MONSTER)
                     .sized(2.2f, 3.4f).clientTrackingRange(10).build("destroyer_golem"));
-    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.mob.Behemoth>> BEHEMOTH = ENTITIES.register("behemoth",
-            () -> EntityType.Builder.<com.tycooncraft.mob.Behemoth>of(com.tycooncraft.mob.Behemoth::new, MobCategory.MONSTER)
-                    .sized(3.6f, 3.0f).fireImmune().clientTrackingRange(12).build("behemoth"));
-    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.mob.StormWyvern>> STORM_WYVERN = ENTITIES.register("storm_wyvern",
-            () -> EntityType.Builder.<com.tycooncraft.mob.StormWyvern>of(com.tycooncraft.mob.StormWyvern::new, MobCategory.MONSTER)
-                    .sized(3.0f, 1.6f).clientTrackingRange(14).build("storm_wyvern"));
-    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.entity.BossOrb>> BOSS_ORB = ENTITIES.register("boss_orb",
-            () -> EntityType.Builder.<com.tycooncraft.entity.BossOrb>of(com.tycooncraft.entity.BossOrb::new, MobCategory.MISC)
-                    .sized(0.5f, 0.5f).clientTrackingRange(8).updateInterval(1).build("boss_orb"));
-
     public static final DeferredHolder<EntityType<?>, EntityType<MutantSpider>> MUTANT_SPIDER = ENTITIES.register("mutant_spider",
             () -> EntityType.Builder.<MutantSpider>of(MutantSpider::new, MobCategory.MONSTER)
                     .sized(4.2f, 2.7f).clientTrackingRange(10).build("mutant_spider"));
