@@ -99,7 +99,6 @@ public final class MpTest {
                     }
                 System.out.println("[MPTEST] ores 5x5 chunks bauxite=" + baux + " rockSalt=" + salt);
             }
-            if (dt == 1700 && hideout != null) view(hideout, 15);
             if (dt == 1840 && hideout != null) {
                 var l = tester.serverLevel();
                 int gy = l.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, hideout.getX(), hideout.getZ());

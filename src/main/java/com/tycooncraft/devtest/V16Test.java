@@ -27,6 +27,7 @@ public final class V16Test {
         if (t == 800) com.tycooncraft.world.StructureBuilder.hideout(level, new BlockPos(128, gy, 140));
         if (t == 840) inspectHideout(level, new BlockPos(128, gy, 140));
         if (truck == null) return;
+        if (t == 302 || t == 330 || t == 380) diag("server t=" + t, level, truck);
         if (t > 300 && t < 720 && truck.isAlive() && target.isAlive()) truck.setTarget(target);
         if (t == 400 || t == 520 || t == 640)
             System.out.printf("[AUTOTEST] v16 truck t=%d pos=%.1f,%.1f dist=%.1f crew=%d shots=%d deploys=%d rams=%d targetHp=%.0f mgYaw=%.0f%n",
@@ -41,6 +42,17 @@ public final class V16Test {
             System.out.println("[AUTOTEST] v16 truck destroyed=" + !truck.isAlive() + " drops=" + drops);
             truck = null;
         }
+    }
+
+    static java.util.List<net.minecraft.world.entity.Entity> crew0 = new java.util.ArrayList<>();
+    public static void diag(String tag, ServerLevel level, GangTruck tr) {
+        if (crew0.isEmpty()) crew0.addAll(tr.getPassengers());
+        StringBuilder sb = new StringBuilder("[AUTOTEST] v16 diag " + tag + " removed=" + tr.getRemovalReason() + " ticks=" + tr.tickCount
+                + " entTicking=" + level.isPositionEntityTicking(tr.blockPosition()) + " y=" + String.format("%.2f", tr.getY())
+                + " inWall=" + tr.isInWall() + " noAi=" + tr.isNoAi() + " diff=" + level.getDifficulty() + " target=" + tr.getTarget() + " crew:");
+        for (var e : crew0) sb.append(' ').append(e.getType().toShortString()).append(e.isPassenger() ? "@ride" : "@off").append('/').append(e.getRemovalReason())
+                .append(e instanceof LivingEntity le ? "/hp" + (int) le.getHealth() : "");
+        System.out.println(sb);
     }
 
     public static void inspectHideout(ServerLevel level, BlockPos o) {
