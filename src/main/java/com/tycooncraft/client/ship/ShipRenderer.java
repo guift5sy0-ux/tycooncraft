@@ -114,8 +114,7 @@ public class ShipRenderer extends EntityRenderer<ShipEntity> {
                     pose.mulPose(new org.joml.Quaternionf().rotationTo(0, 1, 0, dir.x, dir.y, dir.z));
                     // 팔 상자는 어깨(위 2px)에서 손(아래 10px)으로: 손끝이 테에 닿게 길이를 맞춤
                     float len = dir.length();
-                    pose.translate(0, (len - 10f) / 16f, 0);
-                    pose.scale(1 / 16f, 1 / 16f, 1 / 16f);
+                    pose.translate(0, (len - 10f) / 16f, 0);   // ModelPart 는 이미 1/16 단위로 그림
                     arm.render(pose, avc, light, OverlayTexture.NO_OVERLAY);
                     sleeve.render(pose, avc, light, OverlayTexture.NO_OVERLAY);
                     pose.popPose();

@@ -218,13 +218,9 @@ public final class AirshipTest {
         if (t == 1750) {
             boolean exposed = false, shielded = false;
             Vec3 o = armor.position();
-            for (var c : armor.cells())
-                if (c.state().getBlock() instanceof com.tycooncraft.ship.ShipMotorBlock) {
-                    Vec3 w = armor.cellCenter(c);
-                    if (w.z > z0 + 2) continue;          // 뒤쪽 원래 엔진
-                    if (w.x < x0 + 2) exposed = true;
-                    else shielded = true;
-                }
+            // 폭발에 밀려 운송기가 움직였을 수 있으니 위치가 아니라 셀 키로 확인
+            exposed = armor.cellCenterByKeyForTest(exposedKey) != null;
+            shielded = armor.cellCenterByKeyForTest(shieldKey) != null;
             long iron = armor.cells().stream().filter(c -> c.state().is(Blocks.IRON_BLOCK)).count();
             System.out.println("[AUTOTEST] v16 armor exposedEngineSurvived=" + exposed + " shieldedEngineSurvived=" + shielded + " floats=" + armor.floatCount()
                     + " ironLeft=" + iron + "/6 shieldedRays=" + ShipEntity.SHIELDED);
