@@ -605,7 +605,62 @@ public final class AutoTestClient {
             case 2571 -> serverDo(mc, sp -> sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.RPG.get())));
             case 2580 -> serverDo(mc, sp -> System.out.println("[AUTOTEST] v16 offhand rpgStillInOffhand=" + sp.getOffhandItem().is(com.tycooncraft.registry.ModItems.RPG.get())
                     + " rpgInBag=" + sp.getInventory().contains(new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.RPG.get())) + " blocked=" + com.tycooncraft.gun.GunEvents.OFFHAND_BLOCKED));
-            case 2585 -> next(11);
+            // ── v0.17: 총기 파츠 모습 + 바지·전투화 ──
+            case 2585 -> serverDo(mc, sp -> {
+                var sl = sp.serverLevel();
+                int y = (int) g, z = -52;
+                Object[][] guns = {{com.tycooncraft.registry.ModItems.RIFLE.get(), new com.tycooncraft.gun.GunPart[]{com.tycooncraft.gun.GunPart.SCOPE, com.tycooncraft.gun.GunPart.VERTICAL_GRIP, com.tycooncraft.gun.GunPart.EXTENDED_MAG, com.tycooncraft.gun.GunPart.HEAVY_BARREL, com.tycooncraft.gun.GunPart.BRASS_CATCHER}},
+                        {com.tycooncraft.registry.ModItems.SMG.get(), new com.tycooncraft.gun.GunPart[]{com.tycooncraft.gun.GunPart.RED_DOT, com.tycooncraft.gun.GunPart.VERTICAL_GRIP, com.tycooncraft.gun.GunPart.MAG_COUPLER}},
+                        {com.tycooncraft.registry.ModItems.PISTOL.get(), new com.tycooncraft.gun.GunPart[]{com.tycooncraft.gun.GunPart.RED_DOT, com.tycooncraft.gun.GunPart.EXTENDED_MAG, com.tycooncraft.gun.GunPart.RAPID_TRIGGER}},
+                        {com.tycooncraft.registry.ModItems.SHOTGUN.get(), new com.tycooncraft.gun.GunPart[]{com.tycooncraft.gun.GunPart.RED_DOT, com.tycooncraft.gun.GunPart.EXTENDED_MAG, com.tycooncraft.gun.GunPart.HEAVY_BARREL}},
+                        {com.tycooncraft.registry.ModItems.SNIPER.get(), new com.tycooncraft.gun.GunPart[]{com.tycooncraft.gun.GunPart.VERTICAL_GRIP, com.tycooncraft.gun.GunPart.EXTENDED_MAG, com.tycooncraft.gun.GunPart.BRASS_CATCHER}},
+                        {com.tycooncraft.registry.ModItems.RIFLE.get(), new com.tycooncraft.gun.GunPart[]{}}};
+                for (int i = 0; i < guns.length; i++) {
+                    var wall = new net.minecraft.core.BlockPos(-24 + (i % 3) * 2, y + 2 - (i / 3) * 2, z);
+                    sl.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.SMOOTH_STONE.defaultBlockState());
+                    var st = new net.minecraft.world.item.ItemStack((net.minecraft.world.item.Item) guns[i][0]);
+                    for (var p : (com.tycooncraft.gun.GunPart[]) guns[i][1]) com.tycooncraft.gun.GunParts.install(st, p);
+                    var frame = new net.minecraft.world.entity.decoration.ItemFrame(sl, wall.south(), net.minecraft.core.Direction.SOUTH);
+                    frame.setItem(st, false);
+                    sl.addFreshEntity(frame);
+                }
+                sp.teleportTo(sl, -21.5, g + 1.8, z + 3.6, 180f, 8f);
+            });
+            case 2605 -> shot(mc, "68_gun_parts_wall");
+            case 2607 -> serverDo(mc, sp -> {
+                var st = new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.RIFLE.get());
+                for (var p : new com.tycooncraft.gun.GunPart[]{com.tycooncraft.gun.GunPart.SCOPE, com.tycooncraft.gun.GunPart.VERTICAL_GRIP, com.tycooncraft.gun.GunPart.EXTENDED_MAG, com.tycooncraft.gun.GunPart.HEAVY_BARREL})
+                    com.tycooncraft.gun.GunParts.install(st, p);
+                sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, st);
+                sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.HELMET_3.get()));
+                sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.VEST_3.get()));
+                sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.LEGS, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.PANTS_3.get()));
+                sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.FEET, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.BOOTS_3.get()));
+                sp.teleportTo(sp.serverLevel(), -21.5, g + 1, -45.5, 0f, 10f);
+            });
+            case 2620 -> shot(mc, "69_parts_first_person");
+            case 2622 -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
+            case 2640 -> shot(mc, "70_armor_set3_third_person");
+            case 2642 -> {
+                mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+                serverDo(mc, sp -> {
+                    sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.LEGS, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.PANTS_1.get()));
+                    sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.FEET, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.BOOTS_2.get()));
+                    sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.VEST_1.get()));
+                    sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.HELMET_1.get()));
+                });
+            }
+            case 2645 -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
+            case 2665 -> shot(mc, "71_armor_set1_third_person");
+            case 2667 -> {
+                mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+                serverDo(mc, sp -> {
+                    for (var s : net.minecraft.world.entity.EquipmentSlot.values())
+                        if (s.isArmor()) sp.setItemSlot(s, net.minecraft.world.item.ItemStack.EMPTY);
+                    sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.ItemStack.EMPTY);
+                });
+            }
+            case 2670 -> next(11);
             default -> {
             }
         }

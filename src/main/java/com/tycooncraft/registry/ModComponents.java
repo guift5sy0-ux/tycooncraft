@@ -19,6 +19,13 @@ public final class ModComponents {
                     .networkSynchronized(ByteBufCodecs.VAR_INT)
                     .build());
 
+    /** 총기 파츠 (슬롯 → 파츠 id) */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<net.minecraft.nbt.CompoundTag>> GUN_PARTS =
+            COMPONENTS.register("gun_parts", () -> DataComponentType.<net.minecraft.nbt.CompoundTag>builder()
+                    .persistent(net.minecraft.nbt.CompoundTag.CODEC)
+                    .networkSynchronized(ByteBufCodecs.COMPOUND_TAG)
+                    .build());
+
     /** 소음기 장착 여부 */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Boolean>> SILENCED =
             COMPONENTS.register("silenced", () -> DataComponentType.<Boolean>builder()

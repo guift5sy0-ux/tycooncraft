@@ -78,6 +78,12 @@ public final class ModItems {
             new GunStats(26f, 1, 0.05f, 160, 5, 30, 60, false, true, 8f, HEAVY_AMMO, ModSounds.SNIPER_FIRE, ModSounds.SNIPER_RELOAD)));
 
     // ── 총기 부착물 & 드론 ──
+    /** v0.17 총기 파츠 10종 */
+    public static final java.util.Map<com.tycooncraft.gun.GunPart, DeferredItem<com.tycooncraft.gun.GunPartItem>> GUN_PART_ITEMS = new java.util.EnumMap<>(com.tycooncraft.gun.GunPart.class);
+    static {
+        for (com.tycooncraft.gun.GunPart p : com.tycooncraft.gun.GunPart.values())
+            GUN_PART_ITEMS.put(p, ITEMS.register("part_" + p.id, () -> new com.tycooncraft.gun.GunPartItem(p, new Item.Properties().stacksTo(16))));
+    }
     public static final DeferredItem<Item> SILENCER = ITEMS.register("silencer", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final DeferredItem<DroneItem> DRONE = ITEMS.register("drone", () -> new DroneItem(new Item.Properties(), 1));
     public static final DeferredItem<DroneItem> DRONE_MK2 = ITEMS.register("drone_mk2", () -> new DroneItem(new Item.Properties(), 2));
@@ -111,6 +117,13 @@ public final class ModItems {
     public static final DeferredItem<GearItem> HELMET_1 = gear("helmet_1", ModArmorMaterials.TACTICAL_LIGHT, ArmorItem.Type.HELMET, 15, "tooltip.tycooncraft.helmet", 20);
     public static final DeferredItem<GearItem> HELMET_2 = gear("helmet_2", ModArmorMaterials.TACTICAL_MEDIUM, ArmorItem.Type.HELMET, 25, "tooltip.tycooncraft.helmet", 35);
     public static final DeferredItem<GearItem> HELMET_3 = gear("helmet_3", ModArmorMaterials.TACTICAL_HEAVY, ArmorItem.Type.HELMET, 35, "tooltip.tycooncraft.helmet", 50);
+    // v0.17: 전술 바지·전투화 1~3단계
+    public static final DeferredItem<GearItem> PANTS_1 = gear("pants_1", ModArmorMaterials.TACTICAL_LIGHT, ArmorItem.Type.LEGGINGS, 15, "tooltip.tycooncraft.pants", 3);
+    public static final DeferredItem<GearItem> PANTS_2 = gear("pants_2", ModArmorMaterials.TACTICAL_MEDIUM, ArmorItem.Type.LEGGINGS, 25, "tooltip.tycooncraft.pants", 5);
+    public static final DeferredItem<GearItem> PANTS_3 = gear("pants_3", ModArmorMaterials.TACTICAL_HEAVY, ArmorItem.Type.LEGGINGS, 35, "tooltip.tycooncraft.pants", 6);
+    public static final DeferredItem<GearItem> BOOTS_1 = gear("boots_1", ModArmorMaterials.TACTICAL_LIGHT, ArmorItem.Type.BOOTS, 15, "tooltip.tycooncraft.boots", 2, 10);
+    public static final DeferredItem<GearItem> BOOTS_2 = gear("boots_2", ModArmorMaterials.TACTICAL_MEDIUM, ArmorItem.Type.BOOTS, 25, "tooltip.tycooncraft.boots", 3, 20);
+    public static final DeferredItem<GearItem> BOOTS_3 = gear("boots_3", ModArmorMaterials.TACTICAL_HEAVY, ArmorItem.Type.BOOTS, 35, "tooltip.tycooncraft.boots", 4, 30);
     // 중장갑 세트 (4종)
     public static final DeferredItem<GearItem> HELMET_4 = gear("helmet_4", ModArmorMaterials.JUGGERNAUT, ArmorItem.Type.HELMET, 45, "tooltip.tycooncraft.helmet", 65);
     public static final DeferredItem<GearItem> VEST_4 = gear("vest_4", ModArmorMaterials.JUGGERNAUT, ArmorItem.Type.CHESTPLATE, 45, "tooltip.tycooncraft.vest", 45);
@@ -251,7 +264,7 @@ public final class ModItems {
     }
 
     private static DeferredItem<GearItem> gear(String name, net.minecraft.core.Holder<net.minecraft.world.item.ArmorMaterial> mat, ArmorItem.Type type,
-                                               int durability, String tip, int pct) {
+                                               int durability, String tip, Object... pct) {
         return ITEMS.register(name, () -> new GearItem(mat, type, new Item.Properties().durability(type.getDurability(durability)), tip, pct));
     }
 

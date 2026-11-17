@@ -19,8 +19,11 @@ public final class JuggernautEvents {
     @SubscribeEvent
     public static void onDamage(LivingIncomingDamageEvent event) {
         LivingEntity e = event.getEntity();
-        if (event.getSource().is(DamageTypeTags.IS_FALL) && e.getItemBySlot(EquipmentSlot.FEET).is(ModItems.COMBAT_BOOTS.get()))
-            event.setAmount(event.getAmount() * 0.6f);
+        if (event.getSource().is(DamageTypeTags.IS_FALL)) {
+            var ft = e.getItemBySlot(EquipmentSlot.FEET);
+            float m = ft.is(ModItems.COMBAT_BOOTS.get()) ? 0.6f : ft.is(ModItems.BOOTS_3.get()) ? 0.7f : ft.is(ModItems.BOOTS_2.get()) ? 0.8f : ft.is(ModItems.BOOTS_1.get()) ? 0.9f : 1f;
+            event.setAmount(event.getAmount() * m);
+        }
         if (event.getSource().is(DamageTypeTags.IS_EXPLOSION) && fullSet(e))
             event.setAmount(event.getAmount() * 0.75f);
     }

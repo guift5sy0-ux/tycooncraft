@@ -65,8 +65,9 @@ public final class Ballistics {
             float mult = 1 + (headMult - 1) * (1 - HELMET_BONUS_CUT[h]);
             return base * mult * (1 - HELMET_CUT[h]);
         }
-        float legs = le.getItemBySlot(EquipmentSlot.LEGS).is(ModItems.JUGGERNAUT_LEGGINGS.get()) ? 0.92f : 1f;
-        float boots = le.getItemBySlot(EquipmentSlot.FEET).is(ModItems.COMBAT_BOOTS.get()) ? 0.95f : 1f;
+        ItemStack lg = le.getItemBySlot(EquipmentSlot.LEGS), ft = le.getItemBySlot(EquipmentSlot.FEET);
+        float legs = lg.is(ModItems.JUGGERNAUT_LEGGINGS.get()) ? 0.92f : lg.is(ModItems.PANTS_3.get()) ? 0.94f : lg.is(ModItems.PANTS_2.get()) ? 0.95f : lg.is(ModItems.PANTS_1.get()) ? 0.97f : 1f;
+        float boots = ft.is(ModItems.COMBAT_BOOTS.get()) ? 0.95f : ft.is(ModItems.BOOTS_3.get()) ? 0.96f : ft.is(ModItems.BOOTS_2.get()) ? 0.97f : ft.is(ModItems.BOOTS_1.get()) ? 0.98f : 1f;
         return base * (1 - VEST_CUT[vestTier(le)]) * legs * boots;
     }
 

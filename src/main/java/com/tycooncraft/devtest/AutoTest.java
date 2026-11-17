@@ -269,6 +269,7 @@ public final class AutoTest {
         CiwsTest.tick(level, t, gy);
         DroneDiveTest.tick(level, t, gy);
         SetterTest.tick(level, t, gy);
+        GunPartTest.tick(level, t);
         if (t == 1700) {
             if (wither != null && wither.isAlive()) wither.setHealth(wither.getMaxHealth() * 0.45f);
             if (dragon != null && dragon.isAlive()) dragon.setHealth(dragon.getMaxHealth() * 0.45f);

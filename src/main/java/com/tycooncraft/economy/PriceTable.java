@@ -90,6 +90,11 @@ public final class PriceTable {
             p.put(ModItems.SNIPER.get(), 1600.0);
             p.put(ModItems.FUEL_CANISTER.get(), 12.0);
             p.put(ModItems.SILENCER.get(), 120.0);
+            for (var e : java.util.Map.of(com.tycooncraft.gun.GunPart.HEAVY_BARREL, 260.0, com.tycooncraft.gun.GunPart.RED_DOT, 180.0,
+                    com.tycooncraft.gun.GunPart.SCOPE, 320.0, com.tycooncraft.gun.GunPart.VERTICAL_GRIP, 90.0, com.tycooncraft.gun.GunPart.EXTENDED_MAG, 140.0,
+                    com.tycooncraft.gun.GunPart.MAG_COUPLER, 110.0, com.tycooncraft.gun.GunPart.RAPID_TRIGGER, 220.0, com.tycooncraft.gun.GunPart.AP_ROUNDS, 200.0,
+                    com.tycooncraft.gun.GunPart.INCENDIARY_ROUNDS, 190.0, com.tycooncraft.gun.GunPart.BRASS_CATCHER, 80.0).entrySet())
+                p.put(ModItems.GUN_PART_ITEMS.get(e.getKey()).get(), e.getValue());
             p.put(ModItems.DRONE.get(), 450.0);
             p.put(ModItems.DRONE_MK2.get(), 1100.0);
             p.put(ModItems.SILENCER_ADVANCED.get(), 300.0);
@@ -104,6 +109,12 @@ public final class PriceTable {
             p.put(ModItems.HELMET_1.get(), 80.0);
             p.put(ModItems.HELMET_2.get(), 300.0);
             p.put(ModItems.HELMET_3.get(), 900.0);
+            p.put(ModItems.PANTS_1.get(), 100.0);
+            p.put(ModItems.PANTS_2.get(), 380.0);
+            p.put(ModItems.PANTS_3.get(), 1000.0);
+            p.put(ModItems.BOOTS_1.get(), 70.0);
+            p.put(ModItems.BOOTS_2.get(), 260.0);
+            p.put(ModItems.BOOTS_3.get(), 700.0);
             p.put(ModItems.PARACHUTE.get(), 150.0);
             p.put(ModItems.HELMET_4.get(), 2200.0);
             p.put(ModItems.VEST_4.get(), 2800.0);

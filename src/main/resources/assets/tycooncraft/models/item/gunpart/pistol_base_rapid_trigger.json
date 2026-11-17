@@ -1,0 +1,80 @@
+{
+ "texture_size": [
+  64,
+  64
+ ],
+ "textures": {
+  "0": "tycooncraft:item/gunpart/pistol_rapid_trigger",
+  "particle": "tycooncraft:item/gunpart/pistol_rapid_trigger"
+ },
+ "elements": [
+  {
+   "from": [
+    7.7875,
+    7.7,
+    7.6125
+   ],
+   "to": [
+    8.2125,
+    9.0,
+    8.2125
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      0.0,
+      0.0,
+      0.5,
+      1.5
+     ],
+     "texture": "#0"
+    },
+    "south": {
+     "uv": [
+      0.75,
+      0.0,
+      1.25,
+      1.5
+     ],
+     "texture": "#0"
+    },
+    "east": {
+     "uv": [
+      1.5,
+      0.0,
+      2.25,
+      1.5
+     ],
+     "texture": "#0"
+    },
+    "west": {
+     "uv": [
+      2.5,
+      0.0,
+      3.25,
+      1.5
+     ],
+     "texture": "#0"
+    },
+    "up": {
+     "uv": [
+      3.5,
+      0.0,
+      4.0,
+      0.75
+     ],
+     "texture": "#0"
+    },
+    "down": {
+     "uv": [
+      4.25,
+      0.0,
+      4.75,
+      0.75
+     ],
+     "texture": "#0"
+    }
+   }
+  }
+ ]
+}

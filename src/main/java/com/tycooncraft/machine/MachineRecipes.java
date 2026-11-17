@@ -102,6 +102,17 @@ public final class MachineRecipes {
             case ASSEMBLER -> {
                 r.add(MachineRecipe.of(ModItems.CIWS.get(), 1).in(ModItems.TURRET.get()).in(ModItems.GUN_BARREL.get(), 6).in(ModItems.ELECTRIC_MOTOR.get())
                         .in(ModItems.ADVANCED_CIRCUIT.get(), 2).in(ModItems.CONTROL_BOARD.get()).in(ModItems.STEEL_PLATE.get(), 4).build());
+                // ── v0.17 총기 파츠 ──
+                r.add(MachineRecipe.of(part(com.tycooncraft.gun.GunPart.SCOPE), 1).in(ModItems.ALUMINUM_PLATE.get(), 2).in(Items.GLASS_PANE, 2).in(ModItems.STEEL_ROD.get()).in(ModItems.CIRCUIT.get()).build());
+                r.add(MachineRecipe.of(part(com.tycooncraft.gun.GunPart.RED_DOT), 1).in(ModItems.ALUMINUM_PLATE.get()).in(Items.GLASS_PANE).in(Items.REDSTONE).in(ModItems.BATTERY_CELL.get()).in(ModItems.CIRCUIT.get()).build());
+                r.add(MachineRecipe.of(part(com.tycooncraft.gun.GunPart.HEAVY_BARREL), 1).in(ModItems.GUN_BARREL.get()).in(ModItems.STEEL_PLATE.get(), 2).in(ModItems.ALUMINUM_PLATE.get()).build());
+                r.add(MachineRecipe.of(part(com.tycooncraft.gun.GunPart.RAPID_TRIGGER), 1).in(ModItems.STEEL_ROD.get()).in(ModItems.MECHANISM.get()).in(Items.GOLD_INGOT).build());
+                r.add(MachineRecipe.of(part(com.tycooncraft.gun.GunPart.EXTENDED_MAG), 1).in(ModItems.STEEL_PLATE.get(), 2).in(ModItems.PLASTIC_PELLET.get(), 3).build());
+                r.add(MachineRecipe.of(part(com.tycooncraft.gun.GunPart.MAG_COUPLER), 1).in(ModItems.PLASTIC_PELLET.get(), 2).in(ModItems.RUBBER.get(), 2).in(ModItems.STEEL_PLATE.get()).build());
+                r.add(MachineRecipe.of(part(com.tycooncraft.gun.GunPart.VERTICAL_GRIP), 1).in(ModItems.PLASTIC_PELLET.get(), 4).in(ModItems.ALUMINUM_PLATE.get()).in(ModItems.RUBBER.get()).build());
+                r.add(MachineRecipe.of(part(com.tycooncraft.gun.GunPart.AP_ROUNDS), 1).in(ModItems.HEAVY_AMMO.get(), 8).in(ModItems.STEEL_INGOT.get(), 2).in(ModItems.COKE.get()).build());
+                r.add(MachineRecipe.of(part(com.tycooncraft.gun.GunPart.INCENDIARY_ROUNDS), 1).in(ModItems.LIGHT_AMMO.get(), 8).in(ModItems.SULFUR.get(), 4).in(Items.BLAZE_POWDER).build());
+                r.add(MachineRecipe.of(part(com.tycooncraft.gun.GunPart.BRASS_CATCHER), 1).in(Items.LEATHER, 3).in(ModItems.ALUMINUM_PLATE.get()).in(Items.STRING, 2).build());
                 // ── 산업 완제품·부품 (신규 재료가 들어가 기존 레시피와 겹치지 않음) ──
                 r.add(MachineRecipe.of(ModItems.INDUSTRIAL_ROBOT_ARM.get(), 1).in(ModItems.ELECTRIC_MOTOR.get(), 3).in(ModItems.GEARBOX.get(), 2).in(ModItems.CONTROL_BOARD.get()).in(ModItems.HYDRAULIC_CYLINDER.get(), 2).in(ModItems.ALUMINUM_PLATE.get(), 4).in(ModItems.BOLT.get(), 8).build());
                 r.add(MachineRecipe.of(ModItems.TRANSFORMER.get(), 1).in(ModItems.COPPER_COIL.get(), 2).in(ModItems.STEEL_PLATE.get(), 4).in(ModItems.FIBERGLASS.get(), 2).in(ModItems.INSULATED_CABLE.get(), 2).build());
@@ -146,6 +157,13 @@ public final class MachineRecipes {
                 r.add(MachineRecipe.of(ModItems.SILENCER_ADVANCED.get(), 1)
                         .in(ModItems.SILENCER.get()).in(ModItems.STEEL_PLATE.get(), 2).in(Items.BLACK_WOOL, 2).in(ModItems.GOLD_PLATE.get()).build());
                 // 방탄 장비 & 낙하산 & 신호탄
+                // v0.17 전술 바지·전투화 (상위 단계 = 하위 + 재료)
+                r.add(MachineRecipe.of(ModItems.PANTS_3.get(), 1).in(ModItems.PANTS_2.get()).in(ModItems.STEEL_PLATE.get(), 5).in(ModItems.ALUMINUM_PLATE.get(), 2).build());
+                r.add(MachineRecipe.of(ModItems.PANTS_2.get(), 1).in(ModItems.PANTS_1.get()).in(ModItems.STEEL_PLATE.get(), 3).in(ModItems.RUBBER.get()).build());
+                r.add(MachineRecipe.of(ModItems.PANTS_1.get(), 1).in(ModItems.IRON_PLATE.get(), 2).in(Items.LEATHER, 3).in(ModItems.RUBBER.get()).build());
+                r.add(MachineRecipe.of(ModItems.BOOTS_3.get(), 1).in(ModItems.BOOTS_2.get()).in(ModItems.STEEL_PLATE.get(), 2).in(ModItems.ALUMINUM_PLATE.get()).build());
+                r.add(MachineRecipe.of(ModItems.BOOTS_2.get(), 1).in(ModItems.BOOTS_1.get()).in(ModItems.STEEL_PLATE.get()).in(ModItems.RUBBER.get()).build());
+                r.add(MachineRecipe.of(ModItems.BOOTS_1.get(), 1).in(Items.LEATHER, 2).in(ModItems.RUBBER.get(), 2).in(ModItems.IRON_PLATE.get()).build());
                 r.add(MachineRecipe.of(ModItems.VEST_3.get(), 1).in(ModItems.VEST_2.get()).in(ModItems.STEEL_PLATE.get(), 8).in(Items.DIAMOND, 2).build());
                 r.add(MachineRecipe.of(ModItems.VEST_2.get(), 1).in(ModItems.VEST_1.get()).in(ModItems.STEEL_PLATE.get(), 4).in(Items.LEATHER, 2).build());
                 r.add(MachineRecipe.of(ModItems.VEST_1.get(), 1).in(ModItems.IRON_PLATE.get(), 4).in(Items.LEATHER, 4).in(Items.STRING, 2).build());
@@ -220,4 +238,8 @@ public final class MachineRecipes {
     }
 
     private MachineRecipes() {}
+
+    private static net.minecraft.world.item.Item part(com.tycooncraft.gun.GunPart p) {
+        return ModItems.GUN_PART_ITEMS.get(p).get();
+    }
 }

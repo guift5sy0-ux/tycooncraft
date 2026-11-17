@@ -57,7 +57,7 @@ public class GunItem extends Item {
         return stack.getOrDefault(ModComponents.AMMO.get(), 0);
     }
 
-    private static void setAmmo(ItemStack stack, int n) {
+    public static void setAmmo(ItemStack stack, int n) {
         stack.set(ModComponents.AMMO.get(), n);
     }
 
@@ -99,7 +99,7 @@ public class GunItem extends Item {
     }
 
     private float precision(ItemStack stack) {
-        return 1 - 0.25f * GunEnchants.level(stack, GunEnchants.PRECISION);
+        return (1 - 0.25f * GunEnchants.level(stack, GunEnchants.PRECISION)) * GunParts.spreadMult(stack);
     }
 
     // ── 인챈트 가능 ──
@@ -179,7 +179,7 @@ public class GunItem extends Item {
 
     private void shoot(Level level, Player player, ItemStack stack) {
         int tier = silencerTier(stack);
-        float recoil = stats.recoil() * (1 - 0.2f * GunEnchants.level(stack, GunEnchants.PRECISION)) * (tier == 2 ? 0.75f : tier == 1 ? 0.85f : 1f);
+        float recoil = stats.recoil() * (1 - 0.2f * GunEnchants.level(stack, GunEnchants.PRECISION)) * (tier == 2 ? 0.75f : tier == 1 ? 0.85f : 1f) * GunParts.recoilMult(stack);
         if (level.isClientSide) {
             // 반동: 화면이 살짝 위로
             player.setXRot(player.getXRot() - recoil);
@@ -227,7 +227,7 @@ public class GunItem extends Item {
 
     public boolean isScoped(ItemStack stack) {
         if (stack.is(ModItems.VSS.get())) return fireMode(stack) == 0;
-        return stats.scoped();
+        return stats.scoped() || GunParts.has(stack, GunPart.SCOPE);
     }
 
     public boolean isDual() {
@@ -330,5 +330,8 @@ public class GunItem extends Item {
             tooltip.add(Component.translatable(fireMode(stack) == 1 ? "tooltip.tycooncraft.gun.mode_auto" : "tooltip.tycooncraft.gun.mode_semi").withStyle(ChatFormatting.YELLOW));
         }
         else if (st > 0) tooltip.add(Component.translatable(st == 2 ? "tooltip.tycooncraft.gun.silenced2" : "tooltip.tycooncraft.gun.silenced").withStyle(ChatFormatting.AQUA));
+        for (GunPart p : GunParts.installed(stack))
+            tooltip.add(Component.literal("⚙ ").append(Component.translatable("item.tycooncraft.part_" + p.id)).withStyle(ChatFormatting.GREEN));
+        if (!GunParts.supported(stack).isEmpty()) tooltip.add(Component.translatable("tooltip.tycooncraft.gun.parts_hint").withStyle(ChatFormatting.DARK_GRAY));
     }
 }

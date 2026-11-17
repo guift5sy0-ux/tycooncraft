@@ -68,8 +68,9 @@ public final class ModCreativeTabs {
                         out.accept(ModItems.SULFUR_ORE.get());
                         out.accept(ModItems.DEEPSLATE_SULFUR_ORE.get());
                         out.accept(ModItems.SILENCER.get());
+                        for (var p : ModItems.GUN_PART_ITEMS.values()) out.accept(p.get());
                         out.accept(ModItems.SILENCER_ADVANCED.get());
-                        for (var v : java.util.List.of(ModItems.VEST_1, ModItems.VEST_2, ModItems.VEST_3, ModItems.HELMET_1, ModItems.HELMET_2, ModItems.HELMET_3, ModItems.HELMET_4, ModItems.VEST_4, ModItems.JUGGERNAUT_LEGGINGS, ModItems.COMBAT_BOOTS)) out.accept(v.get());
+                        for (var v : java.util.List.of(ModItems.VEST_1, ModItems.VEST_2, ModItems.VEST_3, ModItems.HELMET_1, ModItems.HELMET_2, ModItems.HELMET_3, ModItems.PANTS_1, ModItems.PANTS_2, ModItems.PANTS_3, ModItems.BOOTS_1, ModItems.BOOTS_2, ModItems.BOOTS_3, ModItems.HELMET_4, ModItems.VEST_4, ModItems.JUGGERNAUT_LEGGINGS, ModItems.COMBAT_BOOTS)) out.accept(v.get());
                         out.accept(ModItems.CARTEL_FLARE.get());
                         for (var v : java.util.List.of(ModItems.GANGSTER_EGG, ModItems.MERCENARY_EGG, ModItems.OUTLAW_EGG, ModItems.SPIDER_EGG, ModItems.BOSS_EGG, ModItems.GANG_TRUCK_EGG, ModItems.GOLEM_EGG,
                                 ModItems.DESTROYER_CORE)) out.accept(v.get());

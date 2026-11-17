@@ -31,10 +31,11 @@ public final class GunEnchants {
 
     /** 레지스트리 없이(클라이언트 내구도 바 등에서도) 레벨 읽기 */
     public static int level(ItemStack stack, ResourceKey<Enchantment> key) {
+        int part = GunParts.bonus(stack, key);   // v0.17: 총기 파츠가 인챈트를 대신함
         for (Object2IntMap.Entry<Holder<Enchantment>> e : stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY).entrySet()) {
-            if (e.getKey().is(key)) return e.getIntValue();
+            if (e.getKey().is(key)) return Math.max(part, e.getIntValue());
         }
-        return 0;
+        return part;
     }
 
     private GunEnchants() {}

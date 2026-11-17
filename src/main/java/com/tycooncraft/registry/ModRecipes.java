@@ -12,6 +12,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public final class ModRecipes {
     public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, TycoonCraft.MODID);
 
+    public static final DeferredHolder<RecipeSerializer<?>, SimpleCraftingRecipeSerializer<com.tycooncraft.gun.GunPartRecipe>> GUN_PART =
+            SERIALIZERS.register("gun_part", () -> new SimpleCraftingRecipeSerializer<>(com.tycooncraft.gun.GunPartRecipe::new));
     public static final DeferredHolder<RecipeSerializer<?>, SimpleCraftingRecipeSerializer<SilencerRecipe>> SILENCER =
             SERIALIZERS.register("silencer", () -> new SimpleCraftingRecipeSerializer<>(SilencerRecipe::new));
 

@@ -17,9 +17,9 @@ import java.util.List;
 public final class ModArmorMaterials {
     public static final DeferredRegister<ArmorMaterial> MATERIALS = DeferredRegister.create(Registries.ARMOR_MATERIAL, TycoonCraft.MODID);
 
-    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> TACTICAL_LIGHT = tactical("tactical_light", 2, 5, 0f, 0f);
-    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> TACTICAL_MEDIUM = tactical("tactical_medium", 3, 7, 1.5f, 0.05f);
-    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> TACTICAL_HEAVY = tactical("tactical_heavy", 3, 8, 3f, 0.1f);
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> TACTICAL_LIGHT = tactical("tactical_light", 2, 5, 2, 1, 0f, 0f);
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> TACTICAL_MEDIUM = tactical("tactical_medium", 3, 7, 4, 2, 1.5f, 0.05f);
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> TACTICAL_HEAVY = tactical("tactical_heavy", 3, 8, 5, 2, 3f, 0.1f);
     public static final DeferredHolder<ArmorMaterial, ArmorMaterial> PARACHUTE = MATERIALS.register("parachute", () -> new ArmorMaterial(
             Util.make(new EnumMap<>(ArmorItem.Type.class), m -> {
                 for (ArmorItem.Type t : ArmorItem.Type.values()) m.put(t, 0);
@@ -37,13 +37,13 @@ public final class ModArmorMaterials {
             }), 12, SoundEvents.ARMOR_EQUIP_NETHERITE, () -> Ingredient.of(ModItems.STEEL_PLATE.get()),
             List.of(new ArmorMaterial.Layer(TycoonCraft.id("juggernaut"))), 3.5f, 0.15f));
 
-    private static DeferredHolder<ArmorMaterial, ArmorMaterial> tactical(String name, int helmet, int chest, float toughness, float kb) {
+    private static DeferredHolder<ArmorMaterial, ArmorMaterial> tactical(String name, int helmet, int chest, int legs, int boots, float toughness, float kb) {
         return MATERIALS.register(name, () -> new ArmorMaterial(
                 Util.make(new EnumMap<>(ArmorItem.Type.class), m -> {
                     m.put(ArmorItem.Type.HELMET, helmet);
                     m.put(ArmorItem.Type.CHESTPLATE, chest);
-                    m.put(ArmorItem.Type.LEGGINGS, 0);
-                    m.put(ArmorItem.Type.BOOTS, 0);
+                    m.put(ArmorItem.Type.LEGGINGS, legs);
+                    m.put(ArmorItem.Type.BOOTS, boots);
                     m.put(ArmorItem.Type.BODY, 0);
                 }), 10, SoundEvents.ARMOR_EQUIP_IRON, () -> Ingredient.of(ModItems.STEEL_PLATE.get()),
                 List.of(new ArmorMaterial.Layer(TycoonCraft.id(name))), toughness, kb));
