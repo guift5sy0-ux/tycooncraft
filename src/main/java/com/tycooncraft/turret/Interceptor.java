@@ -107,7 +107,7 @@ public final class Interceptor {
             st.rounds += heavy ? 4 : 2;
         }
         st.rounds--;
-        st.cooldown = 1;
+        st.cooldown = 0;   // 매 틱 사격 (분당 1200발)
         SHOTS++;
         Vec3 aim = target.getBoundingBox().getCenter().add(target.getDeltaMovement());
         double dist = aim.distanceTo(m);
@@ -119,9 +119,9 @@ public final class Interceptor {
         } finally {
             ShipCollisions.IGNORE.remove();
         }
-        if (SHOTS % 2 == 0) sl.playSound(null, m.x, m.y, m.z, ModSounds.RIFLE_FIRE.get(), SoundSource.BLOCKS, 1.4f, 1.9f);
+        if (SHOTS % 3 == 0) sl.playSound(null, m.x, m.y, m.z, ModSounds.RIFLE_FIRE.get(), SoundSource.BLOCKS, 1.4f, 1.9f);
         // 명중 확률: 가까울수록 높음
-        double p = Math.max(0.12, 0.35 - dist * 0.007);
+        double p = Math.max(0.15, 0.40 - dist * 0.007);
         if (sl.random.nextDouble() < p) {
             kill(sl, target);
             st.target = -1;
