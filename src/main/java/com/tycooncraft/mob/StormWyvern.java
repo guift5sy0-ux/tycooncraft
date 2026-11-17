@@ -247,7 +247,10 @@ public class StormWyvern extends FlyingMob implements Enemy {
                         }
                         for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, new net.minecraft.world.phys.AABB(s.x - 2.5, gy - 1, s.z - 2.5, s.x + 2.5, gy + 4, s.z + 2.5))) {
                             if (e == this) continue;
-                            e.hurt(damageSources().lightningBolt(), 10f);
+                            // 와이번이 낸 번개로 기록 → 보스 피해 하향(×0.6)이 적용된다
+                            e.hurt(new net.minecraft.world.damagesource.DamageSource(level().registryAccess()
+                                    .registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
+                                    .getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.LIGHTNING_BOLT), this), 10f);
                             e.igniteForSeconds(2);
                         }
                     }
