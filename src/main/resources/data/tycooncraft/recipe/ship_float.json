@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "ARA",
+    "RGR",
+    "ARA"
+  ],
+  "key": {
+    "A": {
+      "item": "tycooncraft:aluminum_plate"
+    },
+    "R": {
+      "item": "tycooncraft:rubber"
+    },
+    "G": {
+      "item": "tycooncraft:gas_cylinder"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:ship_float",
+    "count": 1
+  }
+}

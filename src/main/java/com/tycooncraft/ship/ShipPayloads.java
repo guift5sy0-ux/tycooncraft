@@ -11,10 +11,10 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 /** 배 조종 입력(W/S, A/D)과 조종기 사용(우클릭/웅크리고 우클릭) */
 public final class ShipPayloads {
-    public record Input(float forward, float turn) implements CustomPacketPayload {
+    public record Input(float forward, float turn, float vertical) implements CustomPacketPayload {
         public static final Type<Input> TYPE = new Type<>(TycoonCraft.id("ship_input"));
         public static final StreamCodec<ByteBuf, Input> CODEC = StreamCodec.composite(
-                ByteBufCodecs.FLOAT, Input::forward, ByteBufCodecs.FLOAT, Input::turn, Input::new);
+                ByteBufCodecs.FLOAT, Input::forward, ByteBufCodecs.FLOAT, Input::turn, ByteBufCodecs.FLOAT, Input::vertical, Input::new);
 
         @Override
         public Type<? extends CustomPacketPayload> type() {
@@ -35,7 +35,7 @@ public final class ShipPayloads {
 
     public static void register(PayloadRegistrar r) {
         r.playToServer(Input.TYPE, Input.CODEC, (p, ctx) -> ctx.enqueueWork(() -> {
-            if (ctx.player().getVehicle() instanceof ShipEntity s) s.input(ctx.player(), p.forward(), p.turn());
+            if (ctx.player().getVehicle() instanceof ShipEntity s) s.input(ctx.player(), p.forward(), p.turn(), p.vertical());
         }));
         r.playToServer(Use.TYPE, Use.CODEC, (p, ctx) -> ctx.enqueueWork(() -> use(p, ctx)));
     }

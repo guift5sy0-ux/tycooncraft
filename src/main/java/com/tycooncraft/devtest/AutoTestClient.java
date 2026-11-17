@@ -560,7 +560,20 @@ public final class AutoTestClient {
             case 2350 -> shot(mc, "60_industry_items");
             case 2352 -> serverDo(mc, sp -> sp.teleportTo(sp.serverLevel(), -19.5, g + 1.6, -36.5, 180f, 10f));
             case 2370 -> shot(mc, "61_industry_machines");
-            case 2375 -> next(11);
+            // ── v0.16: 부유체 운송기 (땅 위에서 떠오름) ──
+            case 2375 -> serverDo(mc, sp -> {
+                AirshipTest.clientBuild(sp.serverLevel(), (int) g);
+                sp.teleportTo(sp.serverLevel(), 31.5, g + 4, -52.5, 150f, 8f);
+            });
+            case 2378, 2390, 2400, 2410, 2420, 2430 -> serverDo(mc, sp -> AirshipTest.clientInput(0, 1));
+            case 2380 -> shot(mc, "62_airship_ground");
+            case 2440 -> serverDo(mc, sp -> AirshipTest.clientInput(0, 0));
+            case 2441 -> serverDo(mc, sp -> sp.teleportTo(sp.serverLevel(), 33.5, g + 3, -50.5, 148f, -12f));
+            case 2445 -> shot(mc, "63_airship_flying");
+            case 2450 -> serverDo(mc, sp -> {
+                if (AirshipTest.clientShip != null) System.out.printf("[AUTOTEST] v16 clientair y=%.2f fuel=%d%n", AirshipTest.clientShip.getY() - g, AirshipTest.clientShip.fuel());
+            });
+            case 2455 -> next(11);
             default -> {
             }
         }

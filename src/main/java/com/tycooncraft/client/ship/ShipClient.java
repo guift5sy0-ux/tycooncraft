@@ -21,7 +21,7 @@ import java.util.Optional;
 /** 배: 조종 입력 전송, 갑판 위 내 캐릭터 실어 나르기, 조종기 클릭 */
 @EventBusSubscriber(modid = TycoonCraft.MODID, value = Dist.CLIENT)
 public final class ShipClient {
-    private static float lastF = 9, lastT = 9;
+    private static float lastF = 9, lastT = 9, lastV = 9;
     private static int sendAge;
 
     static {
@@ -40,14 +40,17 @@ public final class ShipClient {
         // 조종 입력
         if (pl.getVehicle() instanceof ShipEntity ship && ship.pilot() == pl) {
             float f = pl.input.forwardImpulse, t = pl.input.leftImpulse;
-            if (f != lastF || t != lastT || ++sendAge >= 5) {
-                PacketDistributor.sendToServer(new ShipPayloads.Input(f, t));
+            // 부유체 운송기: Space 상승 / Ctrl(달리기 키) 하강
+            float v = pl.input.jumping ? 1 : mc.options.keySprint.isDown() ? -1 : 0;
+            if (f != lastF || t != lastT || v != lastV || ++sendAge >= 5) {
+                PacketDistributor.sendToServer(new ShipPayloads.Input(f, t, v));
                 lastF = f;
                 lastT = t;
+                lastV = v;
                 sendAge = 0;
             }
         } else {
-            lastF = lastT = 9;
+            lastF = lastT = lastV = 9;
         }
         // 갑판 위: 배가 움직인 만큼 함께 이동·회전 (모든 엔티티 틱이 끝난 뒤라 화면이 부드럽다)
         for (ShipEntity s : ShipCollisions.ships(mc.level)) {

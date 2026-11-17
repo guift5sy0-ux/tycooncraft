@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "tycooncraft:block/ship_float_top",
+    "side": "tycooncraft:block/ship_float_side"
+  }
+}

@@ -43,6 +43,29 @@ public final class ShipAssembler {
                 || s.is(BlockTags.TERRACOTTA) || s.is(Blocks.OBSIDIAN) || s.is(BlockTags.COAL_ORES) || s.is(BlockTags.IRON_ORES));
     }
 
+    /** 엔진에서 이어진 구조물 전체: {엔진 수, 연료 합, 용량, 부유체 수, 블록 수} */
+    public static int[] structureFuel(ServerLevel level, BlockPos start) {
+        ArrayDeque<BlockPos> q = new ArrayDeque<>();
+        Set<BlockPos> seen = new HashSet<>();
+        int[] r = new int[5];
+        q.add(start);
+        while (!q.isEmpty() && r[4] <= MAX_BLOCKS) {
+            BlockPos p = q.poll();
+            if (!seen.add(p)) continue;
+            BlockState s = level.getBlockState(p);
+            if (!partOfShip(s)) continue;
+            r[4]++;
+            if (s.getBlock() instanceof ShipMotorBlock) {
+                r[0]++;
+                r[2] += ShipFuel.MOTOR_CAPACITY;
+                if (level.getBlockEntity(p) instanceof ShipMotorBlockEntity m) r[1] += m.fuel();
+            }
+            if (s.getBlock() instanceof ShipFloatBlock) r[3]++;
+            for (Direction d : Direction.values()) q.add(p.relative(d));
+        }
+        return r;
+    }
+
     @Nullable
     public static ShipEntity assemble(ServerLevel level, BlockPos helmPos, @Nullable Player player) {
         BlockState helmState = level.getBlockState(helmPos);
@@ -70,14 +93,22 @@ public final class ShipAssembler {
             minZ = Math.min(minZ, p.getZ());
         }
         if (motors == 0) return fail(player, "no_motor");
-        // 바닥줄 일부가 물에 닿아 있어야 함
+        int floats = 0, fuel = 0;
+        for (BlockPos p : found) {
+            if (level.getBlockState(p).getBlock() instanceof ShipFloatBlock) floats++;
+            if (level.getBlockEntity(p) instanceof ShipMotorBlockEntity m) fuel += m.fuel();
+        }
+        boolean air = floats > 0 && floats * ShipFuel.LIFT_PER_FLOAT >= found.size();
+        if (floats > 0 && !air) return fail(player, "not_enough_floats", floats, floats * ShipFuel.LIFT_PER_FLOAT, found.size(),
+                (found.size() + ShipFuel.LIFT_PER_FLOAT - 1) / ShipFuel.LIFT_PER_FLOAT);
+        // 바닥줄 일부가 물에 닿아 있어야 함 (부유체가 충분하면 어디서든)
         int bottom = 0, wet = 0;
         for (BlockPos p : found) {
             if (p.getY() != minY) continue;
             bottom++;
             if (level.getFluidState(p).is(FluidTags.WATER) || level.getFluidState(p.below()).is(FluidTags.WATER)) wet++;
         }
-        if (wet == 0 || wet * 5 < bottom) return fail(player, "no_water");
+        if (!air && (wet == 0 || wet * 5 < bottom)) return fail(player, "no_water");
 
         List<ShipEntity.Cell> cells = new ArrayList<>(found.size());
         for (BlockPos p : found) {
@@ -85,6 +116,7 @@ public final class ShipAssembler {
             CompoundTag be = null;
             BlockEntity bent = level.getBlockEntity(p);
             if (bent != null) be = bent.saveWithFullMetadata(level.registryAccess());
+            if (be != null && bent instanceof ShipMotorBlockEntity) be.putInt("Fuel", 0);   // 연료는 운송기 탱크 하나로 합친다
             if (s.hasProperty(BlockStateProperties.WATERLOGGED)) s = s.setValue(BlockStateProperties.WATERLOGGED, false);
             cells.add(new ShipEntity.Cell(p.getX() - minX, p.getY() - minY, p.getZ() - minZ, s, be));
         }
@@ -107,10 +139,13 @@ public final class ShipAssembler {
         ship.init(cells, f.toYRot());
         ship.setPos(minX + ship.pivotX(), minY, minZ + ship.pivotZ());
         ship.init(cells, f.toYRot());
+        ship.setFuel(fuel);
         level.addFreshEntity(ship);
         level.playSound(null, helmPos, SoundEvents.CHAIN_BREAK, SoundSource.BLOCKS, 1.5f, 0.7f);
         if (player != null) {
-            player.displayClientMessage(Component.translatable("message.tycooncraft.ship.assembled", cells.size(), motors).withStyle(ChatFormatting.AQUA), false);
+            player.displayClientMessage(Component.translatable(air ? "message.tycooncraft.ship.assembled_air" : "message.tycooncraft.ship.assembled",
+                    cells.size(), motors, ShipEntity.fuelText(fuel), floats).withStyle(ChatFormatting.AQUA), false);
+            if (fuel <= 0) player.displayClientMessage(Component.translatable("message.tycooncraft.ship.no_fuel").withStyle(ChatFormatting.RED), false);
             player.startRiding(ship, true);
         }
         return ship;

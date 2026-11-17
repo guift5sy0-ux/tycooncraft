@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "tycooncraft:block/ship_float"
+    }
+  }
+}

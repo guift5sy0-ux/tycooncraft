@@ -81,7 +81,10 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     public float yaw, yawO;
     private float lastDyaw;
     private double speed;
-    private float inF, inT;
+    private float inF, inT, inV;
+    private double vspeed, fuelAcc;
+    private int fuel, floats;
+    private boolean air;
     private int inAge, soundT;
     private int lerpSteps;
     private double lerpX, lerpY, lerpZ;
@@ -187,6 +190,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     void rebuild() {
         int mx = 0, mz = 0, my = 0;
         motors = 0;
+        floats = 0;
         helm = -1;
         for (int i = 0; i < cells.size(); i++) {
             Cell c = cells.get(i);
@@ -194,8 +198,10 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             mz = Math.max(mz, c.z);
             my = Math.max(my, c.y);
             if (c.state.getBlock() instanceof ShipMotorBlock) motors++;
+            if (c.state.getBlock() instanceof ShipFloatBlock) floats++;
             if (c.state.getBlock() instanceof ShipHelmBlock) helm = i;
         }
+        air = floats > 0 && floats * ShipFuel.LIFT_PER_FLOAT >= cells.size();
         pivotX = (mx + 1) / 2.0;
         pivotZ = (mz + 1) / 2.0;
         sizeY = my + 1;
@@ -346,13 +352,16 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         if (++inAge > 10) {
             inF = 0;
             inT = 0;
+            inV = 0;
         }
         Player pilot = pilot();
         if (pilot == null && !autopilot) {
             inF = 0;
             inT = 0;
+            inV = 0;
         }
-        boolean powered = motors > 0 && emp == 0;
+        if (tickCount % 20 == 0) refuelFromHoppers();
+        boolean powered = motors > 0 && emp == 0 && fuel > 0;
         int n = Math.max(1, cells.size());
         double vmax = Math.min(0.6, 0.12 + 0.16 * Math.sqrt(motors) * Math.sqrt(80.0 / Math.max(80, n)));
         double target = !powered ? 0 : inF > 0 ? vmax * inF : inF < 0 ? vmax * 0.4 * inF : 0;
@@ -364,18 +373,48 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             turn = (float) (inT * (0.5 + 1.8 * flow) * Math.sqrt(60.0 / Math.max(60, n)));
             if (Math.abs(turn) < 0.3f) turn = Math.signum(turn) * 0.3f;
         }
+        // 부유체: 위(Space)/아래(Ctrl). 연료가 없거나 EMP 면 천천히 가라앉는다
+        boolean airborne = air && !resting();
+        if (air) {
+            double vt = !powered ? (airborne ? -0.05 : 0) : inV > 0 ? 0.14 : inV < 0 ? -0.12 : 0;
+            vspeed += (vt - vspeed) * 0.12;
+            if (Math.abs(vspeed) < 1e-3 && vt == 0) vspeed = 0;
+        } else vspeed = 0;
+        // 연료 소모: 클수록 많이
+        if (powered) {
+            double use = Math.abs(speed) / Math.max(vmax, 0.01) * ShipFuel.thrustUse(n);
+            if (airborne || vspeed > 0.01) use += ShipFuel.liftUse(n) * (vspeed > 0.01 ? 1.5 : 1.0);
+            fuelAcc += use;
+            int whole = (int) fuelAcc;
+            if (whole > 0) {
+                fuel = Math.max(0, fuel - whole);
+                fuelAcc -= whole;
+                FUEL_USED += whole;
+            }
+        }
         float newYaw = yaw - turn;
         Vec3 fwd = new Vec3(-Mth.sin(newYaw * Mth.DEG_TO_RAD), 0, Mth.cos(newYaw * Mth.DEG_TO_RAD)).scale(speed);
         Vec3 from = position();
-        Vec3 to = from.add(fwd);
+        Vec3 to = from.add(fwd).add(0, vspeed, 0);
         lastDyaw = 0;
-        if (speed != 0 || turn != 0) {
+        if (speed != 0 || turn != 0 || vspeed != 0) {
             if (!canBeAt(to, newYaw)) {
-                if (Math.abs(speed) > 0.12)
-                    level().playSound(null, getX(), getY(), getZ(), SoundEvents.WOOD_BREAK, SoundSource.NEUTRAL, 1.2f, 0.6f);
-                speed *= -0.25;
-                to = from;
-                if (!canBeAt(from, newYaw)) newYaw = yaw;
+                Vec3 flat = from.add(fwd), vert = from.add(0, vspeed, 0);
+                if (vspeed != 0 && canBeAt(flat, newYaw)) {          // 위아래가 막힘 → 수평만
+                    to = flat;
+                    vspeed = 0;
+                } else if (vspeed != 0 && canBeAt(vert, yaw)) {     // 앞이 막힘 → 위아래만
+                    to = vert;
+                    newYaw = yaw;
+                    speed *= -0.25;
+                } else {
+                    if (Math.abs(speed) > 0.12)
+                        level().playSound(null, getX(), getY(), getZ(), SoundEvents.WOOD_BREAK, SoundSource.NEUTRAL, 1.2f, 0.6f);
+                    speed *= -0.25;
+                    vspeed = 0;
+                    to = from;
+                    if (!canBeAt(from, newYaw)) newYaw = yaw;
+                }
             }
             float dy = Mth.wrapDegrees(newYaw - yaw);
             if (dy != 0 || to.distanceToSqr(from) > 0) {
@@ -393,26 +432,128 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
                     e.setPos(np.x, np.y, np.z);
                     e.setYRot(e.getYRot() + dy);
                     e.setYHeadRot(e.getYHeadRot() + dy);
+                    e.resetFallDistance();
                     CARRIED++;
                 }
                 MOVED_TICKS++;
             }
         }
         entityData.set(SPEED, (float) speed);
-        // 서 있는 플레이어가 '공중에 떠 있다'고 쫓겨나지 않도록
-        for (Player p : level().players()) if (p instanceof ServerPlayer sp && standingOn(sp, 0.6)) resetFlying(sp);
-        // 프로펠러 물보라 · 소리
-        if (Math.abs(speed) > 0.03 && level() instanceof ServerLevel sl) {
+        // 서 있는 플레이어가 '공중에 떠 있다'고 쫓겨나지 않도록 + 낙하 피해 방지
+        for (Player p : level().players())
+            if (p instanceof ServerPlayer sp && standingOn(sp, 0.6)) {
+                resetFlying(sp);
+                sp.resetFallDistance();
+            }
+        // 조종사 계기판
+        if (pilot instanceof ServerPlayer sp && tickCount % 10 == 0) {
+            int cap = Math.max(1, motors * ShipFuel.MOTOR_CAPACITY);
+            Component msg = Component.translatable(air ? "message.tycooncraft.ship.hud_air" : "message.tycooncraft.ship.hud",
+                    fuel * 100 / cap, fuelText(fuel), String.format("%.1f", Math.abs(speed) * 20), (int) Math.floor(getY()));
+            sp.displayClientMessage(msg.copy().withStyle(fuel <= 0 ? ChatFormatting.RED : fuel * 10 < cap ? ChatFormatting.YELLOW : ChatFormatting.AQUA), true);
+        }
+        // 프로펠러 물보라 · 배기 · 소리
+        if ((Math.abs(speed) > 0.03 || (airborne && powered)) && level() instanceof ServerLevel sl) {
+            boolean water = !airborne;
             if (tickCount % 2 == 0)
                 for (Cell c : cells) {
                     if (!(c.state.getBlock() instanceof ShipMotorBlock)) continue;
                     Vec3 w = rot(c.x + 0.5, c.z + 0.5, yaw).add(position());
-                    sl.sendParticles(ParticleTypes.BUBBLE, w.x, getY() + c.y + 0.3, w.z, 4, 0.4, 0.2, 0.4, 0.05);
-                    sl.sendParticles(ParticleTypes.SPLASH, w.x, getY() + c.y + 0.9, w.z, 3, 0.4, 0.1, 0.4, 0.1);
+                    if (water && Math.abs(speed) > 0.03) {
+                        sl.sendParticles(ParticleTypes.BUBBLE, w.x, getY() + c.y + 0.3, w.z, 4, 0.4, 0.2, 0.4, 0.05);
+                        sl.sendParticles(ParticleTypes.SPLASH, w.x, getY() + c.y + 0.9, w.z, 3, 0.4, 0.1, 0.4, 0.1);
+                    } else sl.sendParticles(ParticleTypes.SMOKE, w.x, getY() + c.y + 0.6, w.z, 2, 0.25, 0.1, 0.25, 0.01);
                 }
-            if (++soundT % 14 == 0)
-                level().playSound(null, getX(), getY(), getZ(), SoundEvents.BOAT_PADDLE_WATER, SoundSource.NEUTRAL, 1.0f, 0.7f + (float) Math.abs(speed));
+            if (++soundT % 14 == 0) {
+                if (water) level().playSound(null, getX(), getY(), getZ(), SoundEvents.BOAT_PADDLE_WATER, SoundSource.NEUTRAL, 1.0f, 0.7f + (float) Math.abs(speed));
+                else level().playSound(null, getX(), getY(), getZ(), SoundEvents.MINECART_RIDING, SoundSource.NEUTRAL, 0.35f, 0.6f + (float) Math.abs(speed));
+            }
         }
+    }
+
+    // ── 연료 ──────────────────────────────────────────────────────
+    public static long FUEL_USED;
+
+    public int fuel() {
+        return fuel;
+    }
+
+    public void setFuel(int f) {
+        fuel = Math.max(0, Math.min(Math.max(1, motors) * ShipFuel.MOTOR_CAPACITY, f));
+    }
+
+    public int floatCount() {
+        return floats;
+    }
+
+    public boolean canFly() {
+        return air;
+    }
+
+    public double verticalSpeed() {
+        return vspeed;
+    }
+
+    public static String fuelText(int f) {
+        return f >= 10_000 ? String.format("%.1fk", f / 1000.0) : Integer.toString(f);
+    }
+
+    /** 운송기에 실린 호퍼 안의 연료를 탱크로 (호퍼로도 연료 공급) */
+    void refuelFromHoppers() {
+        int cap = motors * ShipFuel.MOTOR_CAPACITY;
+        for (Cell c : cells) {
+            if (fuel >= cap) return;
+            if (c.be == null || !c.state.is(Blocks.HOPPER) || !c.be.contains("Items")) continue;
+            ListTag items = c.be.getList("Items", Tag.TAG_COMPOUND);
+            for (int i = 0; i < items.size(); i++) {
+                CompoundTag it = items.getCompound(i);
+                ItemStack st = ItemStack.parseOptional(level().registryAccess(), it);
+                int v = ShipFuel.value(st);
+                if (v <= 0 || fuel + v > cap) continue;
+                int k = Math.min(st.getCount(), (cap - fuel) / v);
+                fuel += k * v;
+                st.shrink(k);
+                REFUELS += k;
+                if (st.isEmpty()) items.remove(i--);
+                else {
+                    CompoundTag slot = new CompoundTag();
+                    slot.putByte("Slot", it.getByte("Slot"));
+                    items.set(i, st.save(level().registryAccess(), slot));
+                }
+            }
+        }
+    }
+
+    public static int REFUELS;
+
+    /** 조종기에 연료를 들고 우클릭 → 바로 주입 */
+    boolean refuelFromHand(ServerPlayer player) {
+        ItemStack hand = player.getMainHandItem();
+        int v = ShipFuel.value(hand);
+        if (v <= 0) return false;
+        int cap = motors * ShipFuel.MOTOR_CAPACITY;
+        int k = Math.min(hand.getCount(), (cap - fuel) / v);
+        if (k > 0) {
+            fuel += k * v;
+            if (!player.getAbilities().instabuild) hand.shrink(k);
+            level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BUCKET_FILL_LAVA, SoundSource.PLAYERS, 0.8f, 1.2f);
+        }
+        player.displayClientMessage(Component.translatable("message.tycooncraft.ship.refueled", fuelText(fuel), fuelText(cap)).withStyle(ChatFormatting.GOLD), true);
+        return true;
+    }
+
+    /** 바닥이 땅·물에 얹혀 있나 (그러면 부양 연료를 안 쓴다) */
+    boolean resting() {
+        BlockPos.MutableBlockPos bp = new BlockPos.MutableBlockPos();
+        for (Cell c : cells) {
+            if (c.y != 0) continue;
+            Vec3 w = rot(c.x + 0.5, c.z + 0.5, yaw).add(position());
+            bp.set(Mth.floor(w.x), Mth.floor(getY() - 0.05), Mth.floor(w.z));
+            BlockState st = level().getBlockState(bp);
+            if (!st.getCollisionShape(level(), bp).isEmpty() || level().getFluidState(bp).is(FluidTags.WATER)
+                    || level().getFluidState(bp.above()).is(FluidTags.WATER)) return true;
+        }
+        return false;
     }
 
     private static java.lang.reflect.Field flyField;
@@ -428,23 +569,36 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         }
     }
 
-    /** 그 위치·방향에 블록이 겹치지 않고, 바닥 일부가 물 위에 있어야 갈 수 있다 */
+    /**
+     * 그 위치·방향에 블록이 겹치지 않아야 갈 수 있다.
+     * 배: 바닥 일부가 물 위 / 부유체 운송기: 어디든 (단 바닥줄 위로는 물에 잠기면 안 됨 — 물에 내려앉으면 뜬다)
+     */
     boolean canBeAt(Vec3 pos, float yawDeg) {
         int bottom = 0, wet = 0;
         BlockPos.MutableBlockPos bp = new BlockPos.MutableBlockPos();
+        if (air && (pos.y < level().getMinBuildHeight() || pos.y + sizeY > level().getMaxBuildHeight())) return false;
         for (Cell c : cells) {
             Vec3 w = rot(c.x + 0.5, c.z + 0.5, yawDeg).add(pos);
-            bp.set(Mth.floor(w.x), Mth.floor(pos.y + c.y + 0.5), Mth.floor(w.z));
-            if (!level().isLoaded(bp)) return false;
-            BlockState st = level().getBlockState(bp);
-            if (!st.isAir() && !(st.getBlock() instanceof LiquidBlock) && !st.is(Blocks.LILY_PAD)
-                    && !st.getCollisionShape(level(), bp).isEmpty()) return false;
+            int y0 = Mth.floor(pos.y + c.y + 0.5), y1 = y0;
+            if (air) {            // 세로로 걸칠 수 있다
+                y0 = Mth.floor(pos.y + c.y + 0.02);
+                y1 = Mth.floor(pos.y + c.y + 0.98);
+            }
+            for (int y = y0; y <= y1; y++) {
+                bp.set(Mth.floor(w.x), y, Mth.floor(w.z));
+                if (!level().isLoaded(bp)) return false;
+                BlockState st = level().getBlockState(bp);
+                if (!st.isAir() && !(st.getBlock() instanceof LiquidBlock) && !st.is(Blocks.LILY_PAD)
+                        && !st.getCollisionShape(level(), bp).isEmpty()) return false;
+                if (air && c.y > 0 && y == y1 && level().getFluidState(bp).is(FluidTags.WATER)) return false;
+            }
             if (c.y == 0) {
                 bottom++;
+                bp.set(Mth.floor(w.x), Mth.floor(pos.y + 0.5), Mth.floor(w.z));
                 if (level().getFluidState(bp).is(FluidTags.WATER) || level().getFluidState(bp.below()).is(FluidTags.WATER)) wet++;
             }
         }
-        return wet > 0 && wet * 5 >= bottom;
+        return air || (wet > 0 && wet * 5 >= bottom);
     }
 
     @Nullable
@@ -456,23 +610,30 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     public boolean autopilot;
 
     public void testInput(float f, float t) {
+        testInput(f, t, 0);
+    }
+
+    public void testInput(float f, float t, float v) {
         inF = f;
         inT = t;
+        inV = v;
         inAge = 0;
     }
 
-    public void input(Player from, float f, float t) {
+    public void input(Player from, float f, float t, float v) {
         if (from != pilot()) return;
         inF = Mth.clamp(f, -1, 1);
         inT = Mth.clamp(t, -1, 1);
+        inV = Mth.clamp(v, -1, 1);
         inAge = 0;
     }
 
     // ── 조종기 상호작용 (클라이언트가 레이캐스트 → 패킷) ─────────────────
     public void useHelm(ServerPlayer player, boolean sneak) {
         if (player.distanceToSqr(helmWorld()) > 49) return;
+        if (!sneak && refuelFromHand(player)) return;
         if (sneak) {
-            if (Math.abs(speed) > 0.08) {
+            if (Math.abs(speed) > 0.08 || Math.abs(vspeed) > 0.03) {
                 player.displayClientMessage(Component.translatable("message.tycooncraft.ship.stop_first").withStyle(ChatFormatting.YELLOW), true);
                 return;
             }
@@ -484,7 +645,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             return;
         }
         player.startRiding(this, true);
-        player.displayClientMessage(Component.translatable("message.tycooncraft.ship.controls").withStyle(ChatFormatting.AQUA), true);
+        player.displayClientMessage(Component.translatable(air ? "message.tycooncraft.ship.controls_air" : "message.tycooncraft.ship.controls").withStyle(ChatFormatting.AQUA), true);
     }
 
     /** 정박: 가장 가까운 직각 방향으로 맞춰 블록으로 되돌린다 */
@@ -500,6 +661,10 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             default -> Rotation.NONE;
         };
         float snapped = yaw0 + k * 90f;
+        if (getY() != Math.floor(getY())) {   // 공중·걸친 높이 → 가까운 정수 칸으로 (위쪽이 비어 있으면 위로)
+            double up = Math.ceil(getY()), down = Math.floor(getY());
+            setPos(getX(), canBeAt(new Vec3(getX(), down, getZ()), snapped) && getY() - down < 0.5 ? down : up, getZ());
+        }
         List<Cell> order = new ArrayList<>(cells);
         order.sort(Comparator.<Cell>comparingInt(c -> c.state.isCollisionShapeFullBlock(EmptyBlockGetter.INSTANCE, BlockPos.ZERO) ? 0 : 1).thenComparingInt(Cell::y));
         Level lv = level();
@@ -527,6 +692,10 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
                 dropped++;
             }
         }
+        // 남은 연료를 엔진들에 고르게 되돌린다 (다음 출발 때 다시 합쳐짐)
+        List<ShipMotorBlockEntity> engines = new ArrayList<>();
+        for (BlockPos bp : placed) if (lv.getBlockEntity(bp) instanceof ShipMotorBlockEntity m) engines.add(m);
+        for (int i = 0; i < engines.size(); i++) engines.get(i).setFuel(fuel / engines.size() + (i < fuel % engines.size() ? 1 : 0));
         for (BlockPos bp : placed) lv.blockUpdated(bp, lv.getBlockState(bp).getBlock());
         lv.playSound(null, getX(), getY(), getZ(), SoundEvents.CHAIN_PLACE, SoundSource.BLOCKS, 1.5f, 0.6f);
         if (player != null)
@@ -608,6 +777,8 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         tag.put("Cells", list);
         tag.putFloat("ShipYaw", yaw);
         tag.putFloat("Yaw0", yaw0);
+        tag.putInt("Fuel", fuel);
+        tag.putDouble("VSpeed", vspeed);
     }
 
     @Override
@@ -623,6 +794,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         yaw = yawO = tag.getFloat("ShipYaw");
         entityData.set(YAW, yaw);
         rebuild();
+        fuel = tag.getInt("Fuel");
     }
 
     @Override

@@ -119,6 +119,7 @@ public final class V15Test {
         if (t == 60) buildShip(level);
         if (t == 70) {
             ship = ShipAssembler.assemble(level, new BlockPos(110, gy, 108), null);
+            if (ship != null) ship.setFuel(60_000);
             System.out.println("[AUTOTEST] v15 ship assembled=" + (ship != null)
                     + (ship == null ? "" : " cells=" + ship.cells().size() + " motors=" + ship.motorCount() + " boxes=" + ship.boxes().length
                     + String.format(" pos=%.2f,%.2f,%.2f", ship.getX(), ship.getY(), ship.getZ()))
@@ -194,6 +195,7 @@ public final class V15Test {
 
     public static void assembleClientShip(ServerLevel level) {
         clientShip = ShipAssembler.assemble(level, new BlockPos(110, gy, 108), null);
+        if (clientShip != null) clientShip.setFuel(60_000);
         if (clientShip != null) clientShip.autopilot = true;
         System.out.println("[AUTOTEST] v15 clientship assembled=" + (clientShip != null));
     }
