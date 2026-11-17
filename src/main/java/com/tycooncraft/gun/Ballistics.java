@@ -99,6 +99,11 @@ public final class Ballistics {
         BlockHitResult blockHit = level.clip(new ClipContext(from, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE,
                 shooter == null ? net.minecraft.world.phys.shapes.CollisionContext.empty() : net.minecraft.world.phys.shapes.CollisionContext.of(shooter)));
         if (blockHit.getType() != HitResult.Type.MISS) end = blockHit.getLocation();
+        var shipHit = com.tycooncraft.ship.ShipCollisions.clip(level, from, end);
+        if (shipHit != null) {   // 운송기 선체에 막힘 (블록 판정으로 취급)
+            end = shipHit.point();
+            blockHit = new BlockHitResult(end, net.minecraft.core.Direction.UP, net.minecraft.core.BlockPos.containing(end), false);
+        }
         final Vec3 rayEnd = end;
         AABB box = new AABB(from, end).inflate(1.0);
         List<EntityHitResult> hits = new ArrayList<>();

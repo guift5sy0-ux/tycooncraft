@@ -33,7 +33,22 @@ public final class ShipPayloads {
         }
     }
 
+    /** 서버 → 클라이언트: 폭발 등으로 부서진 셀 */
+    public record Damage(int ship, java.util.List<Long> cells) implements CustomPacketPayload {
+        public static final Type<Damage> TYPE = new Type<>(TycoonCraft.id("ship_damage"));
+        public static final StreamCodec<ByteBuf, Damage> CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, Damage::ship, ByteBufCodecs.VAR_LONG.apply(ByteBufCodecs.list()), Damage::cells, Damage::new);
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+    }
+
     public static void register(PayloadRegistrar r) {
+        r.playToClient(Damage.TYPE, Damage.CODEC, (p, ctx) -> ctx.enqueueWork(() -> {
+            if (ctx.player().level().getEntity(p.ship()) instanceof ShipEntity s) s.removeCellsClient(p.cells());
+        }));
         r.playToServer(Input.TYPE, Input.CODEC, (p, ctx) -> ctx.enqueueWork(() -> {
             if (ctx.player().getVehicle() instanceof ShipEntity s) s.input(ctx.player(), p.forward(), p.turn(), p.vertical());
         }));

@@ -65,6 +65,11 @@ public class ConveyorBlock extends HorizontalDirectionalBlock {
         return SHAPE;
     }
 
+    /** 운송기 위에서도 같은 속도로 밀기 위해 */
+    public static double pushSpeed(BlockState state) {
+        return SPEEDS[state.getValue(SPEED_LEVEL)] * FRICTION_COMP;
+    }
+
     @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (entity.getY() < pos.getY() + BELT_TOP - 0.1 || entity.isShiftKeyDown() || entity.isSpectator()) return;

@@ -53,6 +53,12 @@ public class RocketEntity extends Projectile {
         super.tick();
         Vec3 v = getDeltaMovement();
         HitResult hit = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
+        var shipHit = level().isClientSide ? null : com.tycooncraft.ship.ShipCollisions.clip(level(), position(), position().add(v));
+        if (shipHit != null && (hit.getType() == HitResult.Type.MISS || shipHit.point().distanceToSqr(position()) < hit.getLocation().distanceToSqr(position()))) {
+            setPos(shipHit.point().x, shipHit.point().y, shipHit.point().z);
+            explode();
+            return;
+        }
         if (hit.getType() != HitResult.Type.MISS) {
             setPos(hit.getLocation().x, hit.getLocation().y, hit.getLocation().z);
             explode();

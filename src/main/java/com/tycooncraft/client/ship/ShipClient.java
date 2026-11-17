@@ -52,6 +52,10 @@ public final class ShipClient {
         } else {
             lastF = lastT = lastV = 9;
         }
+        // 실린 컨베이어 위의 나 (몹·아이템은 서버가 민다)
+        if (!pl.isPassenger())
+            for (ShipEntity s : ShipCollisions.ships(mc.level))
+                if (s.worldBounds().inflate(1, 2, 1).contains(pl.position()) && s.conveyorPush(pl)) break;
         // 갑판 위: 배가 움직인 만큼 함께 이동·회전 (모든 엔티티 틱이 끝난 뒤라 화면이 부드럽다)
         for (ShipEntity s : ShipCollisions.ships(mc.level)) {
             if (s.carryFromForClient() == null) continue;

@@ -55,5 +55,41 @@ public final class ShipCollisions {
         return out == null ? base : out;
     }
 
+    /** 이번 사격에서 무시할 배 (자기 배의 포탑이 쏠 때) */
+    public static final ThreadLocal<ShipEntity> IGNORE = new ThreadLocal<>();
+
+    /** 선분이 배 선체 상자에 처음 닿는 곳 (없으면 null) */
+    @org.jetbrains.annotations.Nullable
+    public static ShipHit clip(Level level, net.minecraft.world.phys.Vec3 from, net.minecraft.world.phys.Vec3 to) {
+        Set<ShipEntity> set = set(level.isClientSide);
+        if (set.isEmpty()) return null;
+        ShipEntity ignore = IGNORE.get();
+        AABB seg = new AABB(from, to);
+        ShipHit best = null;
+        double bd = Double.MAX_VALUE;
+        for (ShipEntity s : set) {
+            if (s == ignore || s.level() != level || s.isRemoved() || !s.worldBounds().intersects(seg)) continue;
+            for (AABB b : s.boxes()) {
+                if (b == null) continue;
+                var hit = b.clip(from, to);
+                if (hit.isPresent() && hit.get().distanceToSqr(from) < bd) {
+                    bd = hit.get().distanceToSqr(from);
+                    best = new ShipHit(s, hit.get());
+                }
+            }
+        }
+        return best;
+    }
+
+    public record ShipHit(ShipEntity ship, net.minecraft.world.phys.Vec3 point) {}
+
+    /** 폭발이 근처 배에 피해 (블록을 부수지 않는 '몹 사망 폭발' 류는 제외) */
+    public static void onDetonate(net.neoforged.neoforge.event.level.ExplosionEvent.Detonate event) {
+        var ex = event.getExplosion();
+        boolean projectile = ex.getDirectSourceEntity() instanceof net.minecraft.world.entity.projectile.Projectile;
+        if (ex.getBlockInteraction() == net.minecraft.world.level.Explosion.BlockInteraction.KEEP && !projectile) return;
+        for (ShipEntity s : ships(event.getLevel())) s.blast(ex);
+    }
+
     private ShipCollisions() {}
 }

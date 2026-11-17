@@ -81,7 +81,18 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     public float yaw, yawO;
     private float lastDyaw;
     private double speed;
+    private static final EntityDataAccessor<CompoundTag> TURRETS = SynchedEntityData.defineId(ShipEntity.class, EntityDataSerializers.COMPOUND_TAG);
     private float inF, inT, inV;
+    /** 셀 위치 → 번호 */
+    private final Map<Long, Integer> index = new HashMap<>();
+    private boolean hasConveyor, hasTurret, falling;
+    /** 실려 있는 포탑의 상태 (셀 위치 키) */
+    public static final class Turret {
+        int target = -1, cooldown, search;
+        public float yaw, yawO, pitch, pitchO;
+    }
+    final Map<Long, Turret> turrets = new HashMap<>();
+    public static int TURRET_SHOTS, BLAST_CELLS, CONVEYOR_PUSHES, CRASHES;
     private double vspeed, fuelAcc;
     private int fuel, floats;
     private boolean air;
@@ -129,6 +140,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         b.define(YAW, 0f);
         b.define(EMP, 0);
         b.define(SPEED, 0f);
+        b.define(TURRETS, new CompoundTag());
     }
 
     public int empTicks() {
@@ -188,7 +200,14 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     }
 
     void rebuild() {
+        rebuild(false);
+    }
+
+    /** keepPivot: 블록이 부서져 빠질 때 — 피벗(엔티티 위치 기준점)이 바뀌면 운송기가 순간이동하므로 유지 */
+    void rebuild(boolean keepPivot) {
         int mx = 0, mz = 0, my = 0;
+        index.clear();
+        hasConveyor = hasTurret = false;
         motors = 0;
         floats = 0;
         helm = -1;
@@ -199,11 +218,16 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             my = Math.max(my, c.y);
             if (c.state.getBlock() instanceof ShipMotorBlock) motors++;
             if (c.state.getBlock() instanceof ShipFloatBlock) floats++;
+            if (c.state.getBlock() instanceof com.tycooncraft.block.ConveyorBlock) hasConveyor = true;
+            if (c.state.getBlock() instanceof com.tycooncraft.turret.TurretBlock) hasTurret = true;
+            index.put(key(c.x, c.y, c.z), i);
             if (c.state.getBlock() instanceof ShipHelmBlock) helm = i;
         }
         air = floats > 0 && floats * ShipFuel.LIFT_PER_FLOAT >= cells.size();
-        pivotX = (mx + 1) / 2.0;
-        pivotZ = (mz + 1) / 2.0;
+        if (!keepPivot) {
+            pivotX = (mx + 1) / 2.0;
+            pivotZ = (mz + 1) / 2.0;
+        }
         sizeY = my + 1;
         radius = 0;
         Map<Long, List<Cell>> cols = new HashMap<>();
@@ -339,6 +363,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             carryTo = now;
             carryYaw = lastDyaw;
         }
+        if (hasTurret) clientTurrets();
         if (empTicks() > 0 && tickCount % 2 == 0) {
             Cell c = cells.get(random.nextInt(cells.size()));
             Vec3 w = rot(c.x + 0.5, c.z + 0.5, yaw).add(now);
@@ -375,6 +400,19 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         }
         // 부유체: 위(Space)/아래(Ctrl). 연료가 없거나 EMP 면 천천히 가라앉는다
         boolean airborne = air && !resting();
+        // 부유체·바닥을 잃어 지탱이 안 되면 추락 → 부딪히면 부서지며 블록으로 흩어진다
+        falling = !air && !canBeAt(position(), yaw);
+        if (falling) {
+            vspeed = Math.max(vspeed - 0.04, -1.2);
+            Vec3 down = position().add(0, vspeed, 0);
+            if (free(down, yaw)) {
+                setPos(down.x, down.y, down.z);
+                updateBoxes();
+                for (Entity e : level().getEntities(this, bounds.inflate(0.5, 2, 0.5), e -> !(e instanceof ShipEntity) && !e.isPassenger() && standingOn(e, 0.6 - vspeed)))
+                    e.setPos(e.getX(), e.getY() + vspeed, e.getZ());
+            } else crash();
+            return;
+        }
         if (air) {
             double vt = !powered ? (airborne ? -0.05 : 0) : inV > 0 ? 0.14 : inV < 0 ? -0.12 : 0;
             vspeed += (vt - vspeed) * 0.12;
@@ -439,6 +477,10 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             }
         }
         entityData.set(SPEED, (float) speed);
+        if (hasTurret && level() instanceof ServerLevel tl) tickTurrets(tl, emp == 0);
+        if (hasConveyor && emp == 0)
+            for (Entity e : level().getEntities(this, bounds.inflate(0.5, 2, 0.5), e -> !(e instanceof Player) && !(e instanceof ShipEntity) && !e.isPassenger()))
+                if (conveyorPush(e)) CONVEYOR_PUSHES++;
         // 서 있는 플레이어가 '공중에 떠 있다'고 쫓겨나지 않도록 + 낙하 피해 방지
         for (Player p : level().players())
             if (p instanceof ServerPlayer sp && standingOn(sp, 0.6)) {
@@ -469,6 +511,277 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
                 else level().playSound(null, getX(), getY(), getZ(), SoundEvents.MINECART_RIDING, SoundSource.NEUTRAL, 0.35f, 0.6f + (float) Math.abs(speed));
             }
         }
+    }
+
+    // ── 셀 찾기 ───────────────────────────────────────────────────
+    static long key(int x, int y, int z) {
+        return ((long) (x & 0x1FFFFF) << 42) | ((long) (y & 0x1FFFFF) << 21) | (z & 0x1FFFFF);
+    }
+
+    @Nullable
+    Cell cellAt(int x, int y, int z) {
+        Integer i = index.get(key(x, y, z));
+        return i == null ? null : cells.get(i);
+    }
+
+    /** 월드 좌표 → 원점 기준 로컬 좌표 */
+    public Vec3 toLocal(Vec3 w) {
+        Vec3 v = new Vec3(w.x - getX(), 0, w.z - getZ()).yRot((yaw - yaw0) * Mth.DEG_TO_RAD);
+        return new Vec3(v.x + pivotX, w.y - getY(), v.z + pivotZ);
+    }
+
+    public Vec3 cellCenter(Cell c) {
+        return rot(c.x + 0.5, c.z + 0.5, yaw).add(position()).add(0, c.y + 0.5, 0);
+    }
+
+    // ── 컨베이어: 실린 컨베이어도 위의 물건을 민다 (방향은 운송기와 함께 돈다) ──
+    public boolean conveyorPush(Entity e) {
+        if (e.isShiftKeyDown() || e.isSpectator()) return false;
+        Vec3 l = toLocal(e.position());
+        int lx = Mth.floor(l.x), lz = Mth.floor(l.z), ly = Mth.floor(l.y - 0.3);
+        Cell c = cellAt(lx, ly, lz);
+        if (c == null || !(c.state.getBlock() instanceof com.tycooncraft.block.ConveyorBlock)) return false;
+        if (l.y < c.y + 0.4 || l.y > c.y + 0.9) return false;
+        Direction dir = c.state.getValue(HorizontalDirectionalBlock.FACING);
+        double sp = com.tycooncraft.block.ConveyorBlock.pushSpeed(c.state);
+        double vx, vz;
+        if (dir.getAxis() == Direction.Axis.X) {
+            vx = dir.getStepX() * sp;
+            vz = (lz + 0.5 - l.z) * 0.2;
+        } else {
+            vz = dir.getStepZ() * sp;
+            vx = (lx + 0.5 - l.x) * 0.2;
+        }
+        Vec3 w = new Vec3(vx, 0, vz).yRot(-(yaw - yaw0) * Mth.DEG_TO_RAD);
+        e.setDeltaMovement(w.x, e.getDeltaMovement().y, w.z);
+        return true;
+    }
+
+    // ── 포탑: 실린 포탑도 적을 찾아 쏜다 (탄약은 그 포탑 블록에 들어 있던 것 + 위로 굴러온 탄약) ──
+    private Vec3 turretMuzzle(Cell c) {
+        return rot(c.x + 0.5, c.z + 0.5, yaw).add(position()).add(0, c.y + 0.7 + 0.45, 0);
+    }
+
+    private boolean turretSees(Vec3 from, Entity e) {
+        if (!e.isAlive() || !(e instanceof net.minecraft.world.entity.monster.Enemy) || e.distanceToSqr(from) > 24 * 24) return false;
+        Vec3 eye = e.getBoundingBox().getCenter().add(0, e.getBbHeight() * 0.25, 0);
+        Vec3 st = from.add(eye.subtract(from).normalize().scale(0.8));
+        return level().clip(new net.minecraft.world.level.ClipContext(st, eye, net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                net.minecraft.world.level.ClipContext.Fluid.NONE, net.minecraft.world.phys.shapes.CollisionContext.empty())).getType()
+                == net.minecraft.world.phys.HitResult.Type.MISS;
+    }
+
+    private void tickTurrets(ServerLevel sl, boolean powered) {
+        boolean changed = false;
+        for (Cell c : cells) {
+            if (!(c.state.getBlock() instanceof com.tycooncraft.turret.TurretBlock)) continue;
+            long k = key(c.x, c.y, c.z);
+            Turret t = turrets.computeIfAbsent(k, kk -> new Turret());
+            Vec3 m = turretMuzzle(c);
+            absorbAmmo(sl, c, m);
+            if (t.cooldown > 0) t.cooldown--;
+            Entity target = t.target >= 0 ? sl.getEntity(t.target) : null;
+            if (target == null || !turretSees(m, target)) {
+                target = null;
+                if (--t.search <= 0) {
+                    t.search = 10;
+                    double bd = Double.MAX_VALUE;
+                    for (Entity e : sl.getEntities(this, new AABB(m, m).inflate(24), e -> e instanceof net.minecraft.world.entity.monster.Enemy)) {
+                        double d = e.distanceToSqr(m);
+                        if (d < bd && turretSees(m, e)) {
+                            bd = d;
+                            target = e;
+                        }
+                    }
+                }
+                int id = target == null ? -1 : target.getId();
+                if (id != t.target) {
+                    t.target = id;
+                    changed = true;
+                }
+            }
+            if (!powered || target == null || t.cooldown > 0) continue;
+            Boolean heavy = takeAmmo(c);
+            if (heavy == null) continue;
+            t.cooldown = 3;
+            Vec3 aim = target.getBoundingBox().getCenter().add(0, target.getBbHeight() * 0.15, 0);
+            Vec3 dir = aim.subtract(m).normalize().add(sl.random.nextGaussian() * 0.02, sl.random.nextGaussian() * 0.02, sl.random.nextGaussian() * 0.02).normalize();
+            ShipCollisions.IGNORE.set(this);
+            try {
+                com.tycooncraft.gun.Ballistics.shoot(sl, null, m.add(dir.scale(0.9)), dir, 28, heavy ? 7f : 5f, 0, 1.5f, false, true,
+                        sl.damageSources().generic(), e -> !(e instanceof Player));
+            } finally {
+                ShipCollisions.IGNORE.remove();
+            }
+            TURRET_SHOTS++;
+            sl.playSound(null, m.x, m.y, m.z, com.tycooncraft.registry.ModSounds.RIFLE_FIRE.get(), SoundSource.BLOCKS, 1.6f, 1.25f + sl.random.nextFloat() * 0.1f);
+        }
+        if (changed) {
+            CompoundTag tag = new CompoundTag();
+            turrets.forEach((k, t) -> tag.putInt(Long.toString(k), t.target));
+            entityData.set(TURRETS, tag);
+        }
+    }
+
+    /** 포탑 셀의 탄약 목록에서 1발. 중탄 우선. 없으면 null */
+    @Nullable
+    private Boolean takeAmmo(Cell c) {
+        if (c.be == null || !c.be.contains("Ammo")) return null;
+        ListTag list = c.be.getList("Ammo", Tag.TAG_COMPOUND);
+        int pick = -1;
+        boolean heavy = false;
+        for (int i = 0; i < list.size(); i++) {
+            ItemStack s = ItemStack.parseOptional(level().registryAccess(), list.getCompound(i));
+            if (s.is(com.tycooncraft.registry.ModItems.HEAVY_AMMO.get())) {
+                pick = i;
+                heavy = true;
+                break;
+            }
+            if (pick < 0 && s.is(com.tycooncraft.registry.ModItems.LIGHT_AMMO.get())) pick = i;
+        }
+        if (pick < 0) return null;
+        ItemStack s = ItemStack.parseOptional(level().registryAccess(), list.getCompound(pick));
+        s.shrink(1);
+        if (s.isEmpty()) list.remove(pick);
+        else list.set(pick, s.save(level().registryAccess()));
+        return heavy;
+    }
+
+    /** 컨베이어로 굴러온 탄약이 포탑에 닿으면 넣는다 */
+    private void absorbAmmo(ServerLevel sl, Cell c, Vec3 muzzle) {
+        if (tickCount % 4 != 0) return;
+        Vec3 ctr = cellCenter(c);
+        for (net.minecraft.world.entity.item.ItemEntity it : sl.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new AABB(ctr, ctr).inflate(1.0, 1.0, 1.0))) {
+            ItemStack s = it.getItem();
+            if (!s.is(com.tycooncraft.registry.ModItems.HEAVY_AMMO.get()) && !s.is(com.tycooncraft.registry.ModItems.LIGHT_AMMO.get())) continue;
+            CompoundTag be = c.be;
+            if (be == null) continue;
+            ListTag list = be.getList("Ammo", Tag.TAG_COMPOUND);
+            if (list.size() >= 9) continue;
+            list.add(s.save(level().registryAccess()));
+            be.put("Ammo", list);
+            it.discard();
+        }
+    }
+
+    /** 클라이언트: 포탑 몸통이 목표를 향해 돈다 */
+    private void clientTurrets() {
+        CompoundTag tag = entityData.get(TURRETS);
+        for (Cell c : cells) {
+            if (!(c.state.getBlock() instanceof com.tycooncraft.turret.TurretBlock)) continue;
+            long k = key(c.x, c.y, c.z);
+            Turret t = turrets.computeIfAbsent(k, kk -> new Turret());
+            t.yawO = t.yaw;
+            t.pitchO = t.pitch;
+            int id = tag.contains(Long.toString(k)) ? tag.getInt(Long.toString(k)) : -1;
+            Entity target = id >= 0 ? level().getEntity(id) : null;
+            float ty, tp;
+            if (target != null) {
+                Vec3 d = target.getBoundingBox().getCenter().subtract(turretMuzzle(c));
+                ty = (float) Mth.atan2(-d.x, -d.z);
+                tp = (float) Mth.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z));
+            } else {
+                ty = t.yaw + 0.01f;
+                tp = 0;
+            }
+            float dy = Mth.wrapDegrees((ty - t.yaw) * Mth.RAD_TO_DEG) * Mth.DEG_TO_RAD;
+            t.yaw += Mth.clamp(dy, -0.25f, 0.25f);
+            t.pitch += Mth.clamp(tp - t.pitch, -0.15f, 0.15f);
+        }
+    }
+
+    @Nullable
+    public Turret turretAt(Cell c) {
+        return turrets.get(key(c.x, c.y, c.z));
+    }
+
+    // ── 피격: 폭발에 선체 블록이 부서지고 운송기가 흔들린다 ──────────────
+    public void blast(net.minecraft.world.level.Explosion ex) {
+        if (isRemoved() || cells.isEmpty()) return;
+        Vec3 c = ex.center();
+        float r = ex.radius();
+        if (!bounds.inflate(r * 2 + 1).contains(c)) return;
+        List<Integer> broken = new ArrayList<>();
+        double nearest = Double.MAX_VALUE;
+        for (int i = 0; i < cells.size(); i++) {
+            Cell cell = cells.get(i);
+            double d = cellCenter(cell).distanceTo(c);
+            nearest = Math.min(nearest, d);
+            if (d > r * 2) continue;
+            float res = cell.state.getBlock().getExplosionResistance();
+            // 바닐라 폭발 광선과 같은 감쇠: 세기 r·(0.7~1.3) − 거리·0.75 − (저항+0.3)·0.3
+            double f = r * (0.7 + random.nextDouble() * 0.6) - d * 0.75 - (res + 0.3) * 0.3;
+            if (f > 0 && cell.state.getDestroySpeed(level(), BlockPos.ZERO) >= 0) broken.add(i);
+        }
+        if (nearest > r * 2) return;
+        // 충격: 폭발 반대쪽으로 밀리고 기울어짐
+        double k = Math.max(0, 1 - nearest / (r * 2)) * r * 0.06;
+        Vec3 push = position().add(0, sizeY / 2.0, 0).subtract(c).normalize().scale(k);
+        Vec3 fwd = new Vec3(-Mth.sin(yaw * Mth.DEG_TO_RAD), 0, Mth.cos(yaw * Mth.DEG_TO_RAD));
+        speed += push.dot(fwd);
+        if (air) vspeed += push.y;
+        float jolt = (float) ((random.nextDouble() - 0.5) * k * 40);
+        if (canBeAt(position(), yaw + jolt)) {
+            yaw += jolt;
+            entityData.set(YAW, yaw);
+            updateBoxes();
+        }
+        if (!broken.isEmpty()) removeCells(broken, r);
+    }
+
+    /** 셀 제거 (서버): 드롭·연료 손실·동기화 */
+    void removeCells(List<Integer> idx, float power) {
+        idx.sort(java.util.Collections.reverseOrder());
+        List<Long> keys = new ArrayList<>();
+        int motorsBefore = motors;
+        for (int i : idx) {
+            Cell c = cells.get(i);
+            Vec3 w = cellCenter(c);
+            BlockPos bp = BlockPos.containing(w);
+            if (random.nextFloat() < 1f / Math.max(1f, power)) Block.popResource(level(), bp, new ItemStack(c.state.getBlock().asItem()));
+            if (c.be != null)
+                for (String list : new String[]{"Items", "Ammo"})
+                    for (Tag t : c.be.getList(list, Tag.TAG_COMPOUND))
+                        Block.popResource(level(), bp, ItemStack.parseOptional(level().registryAccess(), (CompoundTag) t));
+            if (level() instanceof ServerLevel sl)
+                sl.sendParticles(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK, c.state), w.x, w.y, w.z, 8, 0.3, 0.3, 0.3, 0.1);
+            keys.add(key(c.x, c.y, c.z));
+            turrets.remove(key(c.x, c.y, c.z));
+            cells.remove(i);
+            BLAST_CELLS++;
+        }
+        boolean helmLost = helm >= 0 && idx.contains(helm);
+        rebuild(true);
+        if (motors < motorsBefore && motorsBefore > 0) fuel = (int) ((long) fuel * motors / motorsBefore);   // 엔진과 함께 탱크도 날아감
+        setFuel(fuel);
+        net.neoforged.neoforge.network.PacketDistributor.sendToPlayersTrackingEntity(this, new ShipPayloads.Damage(getId(), keys));
+        if (helmLost) ejectPassengers();
+        if (cells.isEmpty()) discard();
+    }
+
+    /** 클라이언트: 서버가 알려 준 셀 제거 */
+    public void removeCellsClient(List<Long> keys) {
+        java.util.Set<Long> ks = new java.util.HashSet<>(keys);
+        cells.removeIf(c -> ks.contains(key(c.x, c.y, c.z)));
+        rebuild(true);
+    }
+
+    /** 추락해 땅에 부딪힘: 충격으로 일부가 부서지고 나머지는 블록으로 내려앉는다 */
+    private void crash() {
+        double v = -vspeed;
+        vspeed = 0;
+        if (v < 0.35) {        // 살짝 내려앉음 → 그대로 블록으로
+            disassemble(null);
+            return;
+        }
+        CRASHES++;
+        level().playSound(null, getX(), getY(), getZ(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 2f, 0.7f);
+        if (level() instanceof ServerLevel sl) sl.sendParticles(ParticleTypes.EXPLOSION, getX(), getY(), getZ(), 6, radius / 2, 1, radius / 2, 0);
+        List<Integer> broken = new ArrayList<>();
+        double chance = Math.min(0.6, v * 0.35);
+        for (int i = 0; i < cells.size(); i++) if (i != helm && random.nextDouble() < chance) broken.add(i);
+        if (!broken.isEmpty() && broken.size() < cells.size()) removeCells(broken, 3f);
+        if (!isRemoved()) disassemble(null);
     }
 
     // ── 연료 ──────────────────────────────────────────────────────
@@ -574,6 +887,15 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
      * 배: 바닥 일부가 물 위 / 부유체 운송기: 어디든 (단 바닥줄 위로는 물에 잠기면 안 됨 — 물에 내려앉으면 뜬다)
      */
     boolean canBeAt(Vec3 pos, float yawDeg) {
+        return check(pos, yawDeg, air);
+    }
+
+    /** 물 조건 없이 블록에만 안 겹치면 됨 (추락용) */
+    boolean free(Vec3 pos, float yawDeg) {
+        return check(pos, yawDeg, true);
+    }
+
+    private boolean check(Vec3 pos, float yawDeg, boolean air) {
         int bottom = 0, wet = 0;
         BlockPos.MutableBlockPos bp = new BlockPos.MutableBlockPos();
         if (air && (pos.y < level().getMinBuildHeight() || pos.y + sizeY > level().getMaxBuildHeight())) return false;
@@ -590,7 +912,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
                 BlockState st = level().getBlockState(bp);
                 if (!st.isAir() && !(st.getBlock() instanceof LiquidBlock) && !st.is(Blocks.LILY_PAD)
                         && !st.getCollisionShape(level(), bp).isEmpty()) return false;
-                if (air && c.y > 0 && y == y1 && level().getFluidState(bp).is(FluidTags.WATER)) return false;
+                if (air && !falling && c.y > 0 && y == y1 && level().getFluidState(bp).is(FluidTags.WATER)) return false;
             }
             if (c.y == 0) {
                 bottom++;

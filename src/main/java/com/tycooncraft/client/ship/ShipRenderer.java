@@ -41,6 +41,20 @@ public class ShipRenderer extends EntityRenderer<ShipEntity> {
             pose.pushPose();
             pose.translate(c.x() - ship.pivotX(), c.y(), c.z() - ship.pivotZ());
             br.renderSingleBlock(c.state(), pose, buffers, light, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null);
+            ShipEntity.Turret t = c.state().getBlock() instanceof com.tycooncraft.turret.TurretBlock ? ship.turretAt(c) : null;
+            if (t != null) {   // 실린 포탑: 월드 기준 방향 → 운송기 회전만큼 되돌려 그림
+                var vc = com.tycooncraft.client.vehicle.VehicleModels.cutout(buffers);
+                float ty = Mth.rotLerp(pt, t.yawO * Mth.RAD_TO_DEG, t.yaw * Mth.RAD_TO_DEG) + (yaw - ship.yaw0());
+                float tp = Mth.lerp(pt, t.pitchO, t.pitch) * Mth.RAD_TO_DEG;
+                pose.pushPose();
+                pose.translate(0.5, 14 / 32.0, 0.5);
+                pose.mulPose(Axis.YP.rotationDegrees(ty));
+                com.tycooncraft.client.vehicle.VehicleModels.part(pose, vc, com.tycooncraft.client.vehicle.VehicleModels.TURRET_HEAD, 1f, light);
+                pose.translate(0, 6 / 32.0, 0);
+                pose.mulPose(Axis.XP.rotationDegrees(tp));
+                com.tycooncraft.client.vehicle.VehicleModels.part(pose, vc, com.tycooncraft.client.vehicle.VehicleModels.TURRET_GUN, 1f, light);
+                pose.popPose();
+            }
             pose.popPose();
         }
         pose.popPose();
