@@ -142,6 +142,8 @@ public final class AirshipTest {
             Vec3 p = war.cellCenter(m).add(0, 0, -1.2);
             level.explode(null, p.x, p.y, p.z, 3f, net.minecraft.world.level.Level.ExplosionInteraction.TNT);
             System.out.println("[AUTOTEST] v16 war blast1 cells " + before + "->" + war.cells().size() + " broken=" + ShipEntity.BLAST_CELLS
+                    + " hullIntact=" + (war.cells().stream().filter(c -> !(c.state().getBlock() instanceof com.tycooncraft.ship.ShipFloatBlock)
+                    && !(c.state().getBlock() instanceof com.tycooncraft.ship.ShipMotorBlock)).count() == before - 6)
                     + " motors=" + war.motorCount() + " fuel=" + war.fuel() + " canFly=" + war.canFly());
         }
         if (t == 1345) {   // 부유체 쪽을 크게 → 양력 상실 → 추락

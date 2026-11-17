@@ -727,7 +727,8 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             float res = cell.state.getBlock().getExplosionResistance();
             // 바닐라 폭발 광선과 같은 감쇠: 세기 r·(0.7~1.3) − 거리·0.75 − (저항+0.3)·0.3
             double f = r * (0.7 + random.nextDouble() * 0.6) - d * 0.75 - (res + 0.3) * 0.3;
-            if (f > 0 && cell.state.getDestroySpeed(level(), BlockPos.ZERO) >= 0) broken.add(i);
+            // 선체(기체)는 안 부서짐 — 부유체·엔진만 파괴될 수 있다
+            if (f > 0 && fragile(cell)) broken.add(i);
         }
         if (nearest > r * 2) return;
         // 충격: 폭발 반대쪽으로 밀리고 기울어짐
@@ -743,6 +744,11 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             updateBoxes();
         }
         if (!broken.isEmpty()) removeCells(broken, r);
+    }
+
+    /** 피격·추락으로 부서질 수 있는 셀: 부유체와 엔진뿐 (플레이어가 지은 선체는 보호) */
+    static boolean fragile(Cell c) {
+        return c.state.getBlock() instanceof ShipFloatBlock || c.state.getBlock() instanceof ShipMotorBlock;
     }
 
     /** 셀 제거 (서버): 드롭·연료 손실·동기화 */
@@ -803,7 +809,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         if (level() instanceof ServerLevel sl) sl.sendParticles(ParticleTypes.EXPLOSION, getX(), getY(), getZ(), 6, radius / 2, 1, radius / 2, 0);
         List<Integer> broken = new ArrayList<>();
         double chance = Math.min(0.6, v * 0.35);
-        for (int i = 0; i < cells.size(); i++) if (i != helm && random.nextDouble() < chance) broken.add(i);
+        for (int i = 0; i < cells.size(); i++) if (fragile(cells.get(i)) && random.nextDouble() < chance) broken.add(i);
         if (!broken.isEmpty() && broken.size() < cells.size()) removeCells(broken, 3f);
         if (!isRemoved()) disassemble(null);
     }
