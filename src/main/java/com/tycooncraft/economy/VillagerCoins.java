@@ -95,15 +95,20 @@ public final class VillagerCoins {
         if (key != null) {
             List<MerchantOffer> mine = StructureBuilder.traderOffers(key);
             if (mine != null && !sameItems(v.getOffers(), mine)) {
-                MerchantOffers list = new MerchantOffers();
-                list.addAll(mine);
-                v.overrideOffers(list);
+                setOffers(v, mine);
                 RESTORED++;
             }
             return;
         }
         MerchantOffers offers = v.getOffers();
         for (int i = 0; i < offers.size(); i++) offers.set(i, convert(offers.get(i)));
+    }
+
+    /** 서버에서 거래 목록 교체 (바닐라 overrideOffers 는 서버에선 무시됨) */
+    public static void setOffers(AbstractVillager v, List<MerchantOffer> offers) {
+        MerchantOffers o = v.getOffers();
+        o.clear();
+        for (MerchantOffer m : offers) o.add(m.copy());
     }
 
     /** 상인 마을 상인: 이름표의 번역 키 (trader.tycooncraft.*) */

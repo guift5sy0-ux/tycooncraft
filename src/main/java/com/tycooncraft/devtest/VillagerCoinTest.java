@@ -54,7 +54,7 @@ public final class VillagerCoinTest {
         tr.setCustomName(Component.translatable("trader.tycooncraft.food"));
         MerchantOffers bad = new MerchantOffers();
         bad.add(new MerchantOffer(new ItemCost(Items.WHEAT, 20), Optional.empty(), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
-        tr.overrideOffers(bad);
+        VillagerCoins.setOffers(tr, bad);
         VillagerCoins.convertAll(tr);
         System.out.println("[AUTOTEST] v17 villagers emeraldTrades=" + emer + "/" + total + " wanderer=" + wEmer + "/" + wTotal
                 + " traderRestored=" + (tr.getOffers().size() == 8 && tr.getOffers().get(0).getResult().is(Items.BREAD)) + " first=" + describe(tr.getOffers().get(0)));

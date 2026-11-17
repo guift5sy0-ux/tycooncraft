@@ -196,9 +196,7 @@ public final class StructureBuilder {
         v.moveTo(p.getX() + 0.5, p.getY(), p.getZ() + 0.5, 0, 0);
         v.setVillagerData(v.getVillagerData().setProfession(profession).setLevel(5));
         v.setVillagerXp(250);
-        MerchantOffers list = new MerchantOffers();
-        list.addAll(offers);
-        v.overrideOffers(list);
+        com.tycooncraft.economy.VillagerCoins.setOffers(v, offers);   // overrideOffers 는 클라이언트용(서버에선 아무것도 안 함)
         v.setNoAi(true);
         v.setInvulnerable(true);
         v.setSilent(true);
