@@ -220,26 +220,36 @@ public final class V185Test {
     }
 
     static net.minecraft.world.entity.boss.enderdragon.EnderDragon restDragon;
+    static net.minecraft.world.entity.npc.Villager restBait;
+    static int rush0;
 
     /** 드래곤: 큰 기술 뒤 숨 고르기 */
     static void dragonRest(ServerPlayer sp) {
         var sl = sp.serverLevel();
         double gy = sp.getY();
         double x = sp.getX(), z = sp.getZ();
-        AutoTest.dummyVillagerAt(sl, x, z - 50);
-        for (var v : sl.getEntitiesOfClass(net.minecraft.world.entity.npc.Villager.class, new net.minecraft.world.phys.AABB(x - 3, gy - 5, z - 53, x + 3, gy + 5, z - 47))) v.addTag("tc_dummy");
+        var v = EntityType.VILLAGER.create(sl);
+        v.moveTo(x, gy, z - 50, 0, 0);
+        v.setNoAi(true);
+        v.setInvulnerable(true);
+        v.addTag("tc_dummy");
+        sl.addFreshEntity(v);
+        restBait = v;
         restDragon = EntityType.ENDER_DRAGON.create(sl);
         restDragon.moveTo(x, gy + 25, z - 20, 0, 0);
         sl.addFreshEntity(restDragon);
         restDragon.getPhaseManager().setPhase(net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase.HOLDING_PATTERN);
         com.tycooncraft.mob.VanillaBossBuffs.forceMove(restDragon, 1);
+        rush0 = com.tycooncraft.mob.VanillaBossBuffs.DSTATS[0];
     }
 
     static void dragonRestCheck(ServerPlayer sp) {
         double ground = sp.getY();
-        System.out.println(String.format("[AUTOTEST] v188 dragonRest rests=%d heightAboveGround=%.1f",
-                com.tycooncraft.mob.VanillaBossBuffs.REST_COUNT, restDragon.getY() - ground));
+        System.out.println(String.format("[AUTOTEST] v188 dragonRest rests=%d heightAboveGround=%.1f rushes=%d phase=%s baitAlive=%s",
+                com.tycooncraft.mob.VanillaBossBuffs.REST_COUNT, restDragon.getY() - ground, com.tycooncraft.mob.VanillaBossBuffs.DSTATS[0] - rush0,
+                restDragon.getPhaseManager().getCurrentPhase().getPhase(), restBait.isAlive()));
         restDragon.discard();
+        restBait.discard();
     }
 
     private V185Test() {}
