@@ -287,7 +287,9 @@ public final class V185Test {
         var sl = sp.serverLevel();
         Zombie z = EntityType.ZOMBIE.create(sl);
         z.moveTo(sp.getX() + 3, sp.getY(), sp.getZ(), 0, 0); sl.addFreshEntity(z);
-        StringBuilder out = new StringBuilder("[AUTOTEST] v189 vehicleArmor");
+        StringBuilder out = new StringBuilder("[AUTOTEST] v189 vehicleArmor mode=" + sp.gameMode.getGameModeForPlayer());
+        var prevMode = sp.gameMode.getGameModeForPlayer();
+        sp.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         for (var type : java.util.List.of(ModEntities.CAR.get(), ModEntities.TANK.get())) {
             var v = type.create(sl);
             v.moveTo(sp.getX(), sp.getY(), sp.getZ(), 0, 0); sl.addFreshEntity(v);
@@ -300,6 +302,7 @@ public final class V185Test {
             sp.stopRiding(); v.discard();
         }
         z.discard();
+        sp.setGameMode(prevMode);
         sp.setHealth(20f);
         System.out.println(out);
     }
