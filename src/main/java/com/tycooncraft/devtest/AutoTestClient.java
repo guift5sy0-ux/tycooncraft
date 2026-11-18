@@ -743,7 +743,8 @@ public final class AutoTestClient {
             case 3300 -> serverDo(mc, V185Test::dragonRestCheck);
             // ── v0.18.9: CCTV ──
             case 3306 -> serverDo(mc, V185Test::cctv);
-            case 3316 -> { mc.getToasts().clear(); shot(mc, "89_cctv_screen_block"); }
+            case 3316 -> { mc.getToasts().clear(); shot(mc, "89_cctv_screen_block");
+                System.out.println("[AUTOTEST] v189 clientScreen=" + mc.level.getBlockState(V185Test.cctvScreen) + " at " + V185Test.cctvScreen + " player=" + mc.player.blockPosition() + " yaw=" + mc.player.getYRot()); }
             case 3318 -> com.tycooncraft.client.cctv.CctvView.open(V185Test.cctvScreen, V185Test.cctvLinks);
             case 3326 -> shot(mc, "90_cctv_cam1");
             case 3328 -> com.tycooncraft.client.cctv.CctvView.select(1);
