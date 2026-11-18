@@ -387,6 +387,8 @@ public final class VanillaBossBuffs {
 
     static final class DState {
         int move, mt, stab, chain, moveCd = 100, groundCd = 50, boltCd = 160, eruptCd = 120, fireCd = 140, transition = -1;
+        int rest, lastMove, airTicks;   // v0.18.8: 기술 뒤 숨 고르기(딜 타임), 오래 날면 착지
+        Vec3 restAt = Vec3.ZERO;
         Vec3 anchor = Vec3.ZERO, dir = Vec3.ZERO, mark = Vec3.ZERO;
         float sweepYaw;
         final java.util.Set<Entity> hit = new java.util.HashSet<>();
@@ -394,6 +396,12 @@ public final class VanillaBossBuffs {
     }
 
     private static final Map<Entity, DState> DSTATES = new WeakHashMap<>();
+    public static int REST_COUNT, LAND_COUNT;
+    /** 큰 기술(돌진·급강하·휩쓸기)을 쓴 뒤 땅 가까이 내려와 숨을 고르는 시간 (공격할 틈) */
+    public static final int DRAGON_REST = 100;
+    /** 이만큼 날아다니면 강제로 착지 (착지 중에는 근접 공격 가능) */
+    public static final int DRAGON_LAND_AFTER = 600;
+
     /** 드래곤 패턴 밀쳐내기 배율 (v0.18.3: 너무 세서 40%로) */
     public static final double DRAGON_KB = 0.2;
 
@@ -576,6 +584,8 @@ public final class VanillaBossBuffs {
         // ── 착지 중: 꼬리 휩쓸기 · 엄니 찌르기 · 포효 ──
         if (sitting) {
             s.move = M_NONE;
+            s.lastMove = M_NONE;
+            s.airTicks = 0;
             if (s.stab > 0) {                                   // 엄니 찌르기 예고 진행 중
                 s.stab--;
                 Vec3 h = d.head.position();
@@ -617,13 +627,13 @@ public final class VanillaBossBuffs {
                         sl.sendParticles(ParticleTypes.CLOUD, p.x, p.y - 0.8, p.z, 3, 0.3, 0.1, 0.3, 0.05);
                     }
                     smash(sl, d, back, 9, powered ? 18f : 14f, 3.0);
-                    s.groundCd = (int) (50 / speed);
+                    s.groundCd = (int) (75 / speed);
                 } else if (dot > 0.3 && dist < 18) {               // 엄니 찌르기 (정면) — 예고 후 발동
                     DSTATS[6]++;
                     s.dir = rel.normalize();
                     s.stab = powered ? 12 : 18;
                     sl.playSound(null, d.getX(), d.getY(), d.getZ(), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 5f, 1.4f);
-                    s.groundCd = (int) (60 / speed);
+                    s.groundCd = (int) (85 / speed);
                 } else {                                         // 포효: 밀쳐내고 둔화
                     DSTATS[7]++;
                     Vec3 c = d.position();
@@ -641,7 +651,7 @@ public final class VanillaBossBuffs {
                         e.push(p.x * 2.4 * DRAGON_KB, 0.35, p.z * 2.4 * DRAGON_KB);
                         e.hurtMarked = true;
                     }
-                    s.groundCd = (int) (70 / speed);
+                    s.groundCd = (int) (95 / speed);
                 }
             }
             return;
@@ -649,6 +659,30 @@ public final class VanillaBossBuffs {
 
         // ── 비행 중 ──
         if (s.move != M_NONE && !airborne(d)) s.move = M_NONE;
+        if (s.lastMove != M_NONE && s.move == M_NONE && airborne(d)) {   // 큰 기술이 끝남 → 지쳐서 내려옴
+            s.rest = DRAGON_REST;
+            s.restAt = new Vec3(d.getX(), ground(sl, d.getX(), d.getZ()) + 3.5, d.getZ());
+            REST_COUNT++;
+        }
+        s.lastMove = s.move;
+        if (s.rest > 0 && airborne(d) && s.move == M_NONE) {
+            s.rest--;
+            hold(d, d.position().lerp(s.restAt, 0.12));
+            face(d, tgt.position().subtract(d.position()));
+            if (s0.t % 4 == 0) {
+                Vec3 h = d.head.position();
+                sl.sendParticles(ParticleTypes.LARGE_SMOKE, h.x, h.y, h.z, 3, 0.4, 0.3, 0.4, 0.02);
+                sl.sendParticles(ParticleTypes.CLOUD, d.getX(), d.getY(), d.getZ(), 4, 2.5, 0.3, 2.5, 0.01);
+            }
+            if (s.rest == DRAGON_REST - 1) announce(sl, d, "message.tycooncraft.dragon.tired", ChatFormatting.YELLOW);
+            return;
+        }
+        if (airborne(d) && s.move == M_NONE && ++s.airTicks > DRAGON_LAND_AFTER) {   // 너무 오래 날면 착지하러 감
+            s.airTicks = 0;
+            d.getPhaseManager().setPhase(EnderDragonPhase.LANDING_APPROACH);
+            LAND_COUNT++;
+            return;
+        }
         if (s.move == M_NONE && airborne(d)) {
             if (--s.moveCd <= 0 && d.distanceTo(tgt) < 90) {
                 int r = sl.random.nextInt(7);

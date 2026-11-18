@@ -629,5 +629,6 @@
   "message.tycooncraft.factory_kit.height": "여기는 높이가 맞지 않아요",
   "message.tycooncraft.factory_kit.preview": "초록 테두리 자리에 공장이 세워져요. 우클릭하면 설치",
   "tooltip.tycooncraft.police_shield2": "오른손에 든 채 Q: 돌진 — 사람 크기 대상은 날아가고 0.5초 기절, 피해 6 (재사용 4초)",
-  "tooltip.tycooncraft.police_shield3": "방패로 때리기: 피해 6 · 강철판으로 수리"
+  "tooltip.tycooncraft.police_shield3": "방패로 때리기: 피해 6 · 강철판으로 수리",
+  "message.tycooncraft.dragon.tired": "공허의 군주가 지쳐 숨을 고릅니다 — 지금 공격!"
 }

@@ -629,5 +629,6 @@
   "message.tycooncraft.factory_kit.height": "Not enough height here",
   "message.tycooncraft.factory_kit.preview": "The factory will go inside the green outline. Right-click to build",
   "tooltip.tycooncraft.police_shield2": "Main hand + Q: charge — person-sized targets are flung and stunned 0.5s, 6 damage (4s cooldown)",
-  "tooltip.tycooncraft.police_shield3": "Shield strike: 6 damage · repair with steel plates"
+  "tooltip.tycooncraft.police_shield3": "Shield strike: 6 damage · repair with steel plates",
+  "message.tycooncraft.dragon.tired": "The Void Lord is catching its breath — strike now!"
 }

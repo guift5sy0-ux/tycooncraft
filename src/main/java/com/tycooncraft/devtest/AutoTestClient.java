@@ -435,7 +435,8 @@ public final class AutoTestClient {
             case 1800 -> serverDo(mc, sp -> com.tycooncraft.mob.VanillaBossBuffs.forceMove((net.minecraft.world.entity.boss.enderdragon.EnderDragon) display, 1));
             case 1836 -> shot(mc, "48_dragon_p2_rush");
             case 1860 -> {
-                serverDo(mc, sp -> System.out.println("[AUTOTEST] dragon moves dstats=" + java.util.Arrays.toString(com.tycooncraft.mob.VanillaBossBuffs.DSTATS)));
+                serverDo(mc, sp -> System.out.println("[AUTOTEST] dragon moves dstats=" + java.util.Arrays.toString(com.tycooncraft.mob.VanillaBossBuffs.DSTATS)
+                        + " rests=" + com.tycooncraft.mob.VanillaBossBuffs.REST_COUNT + " landings=" + com.tycooncraft.mob.VanillaBossBuffs.LAND_COUNT));
                 if (display != null) serverDo(mc, sp -> display.discard());
             }
             // ── v0.15: 공장(높인 컨베이어·투입구) 촬영 ──
