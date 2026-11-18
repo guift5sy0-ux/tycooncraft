@@ -391,5 +391,38 @@ public final class V185Test {
         // 회수 테스트
     }
 
+    static com.tycooncraft.vehicle.LocomotiveEntity loco;
+    static double locoZ0;
+    static int locoT0;
+
+    /** v0.19.0: 기관차 최고 속력 1.8배 확인 — 직선 선로에서 계속 가속 */
+    static void locoSetup(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        int y = 120;
+        for (int z = 0; z < 400; z++) {
+            sl.setBlock(new BlockPos(300, y - 1, z), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(), 2);
+            sl.setBlock(new BlockPos(300, y, z), net.minecraft.world.level.block.Blocks.RAIL.defaultBlockState(), 2);
+        }
+        loco = ModEntities.LOCOMOTIVE.get().create(sl);
+        loco.moveTo(300.5, y + 0.0625, 2.5, 0, 0);
+        loco.setFuel(loco.maxFuel());
+        sl.addFreshEntity(loco);
+        sp.teleportTo(sl, 300.5, y + 1, 2.5, 0, 0);
+        sp.startRiding(loco, true);
+    }
+
+    static void locoPush(ServerPlayer sp) {
+        if (loco == null) return;
+        loco.setDeltaMovement(0, 0, 4.0);   // 상한에 걸리도록 크게
+        if (locoT0 == 0) { locoZ0 = loco.getZ(); locoT0 = sp.server.getTickCount(); }
+    }
+
+    static void locoCheck(ServerPlayer sp) {
+        double v = (loco.getZ() - locoZ0) / Math.max(1, sp.server.getTickCount() - locoT0);
+        System.out.printf("[AUTOTEST] v190 loco avgSpeed=%.2f b/t (%.0f km/h) cap=%.2f riding=%s%n", v, v * 20 * 3.6, loco.getMaxSpeedWithRail(), sp.getVehicle() == loco);
+        sp.stopRiding();
+        loco.discard();
+    }
+
     private V185Test() {}
 }

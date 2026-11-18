@@ -144,6 +144,16 @@ public final class AutoTestClient {
         });
     }
 
+    /** serverDo 와 같지만 탑승 상태를 유지 */
+    private static void serverKeep(Minecraft mc, java.util.function.Consumer<net.minecraft.server.level.ServerPlayer> f) {
+        var srv = mc.getSingleplayerServer();
+        var id = mc.player.getUUID();
+        if (srv != null) srv.execute(() -> {
+            var sp = srv.getPlayerList().getPlayer(id);
+            if (sp != null) f.accept(sp);
+        });
+    }
+
     private static void lookAt(Minecraft mc, double x, double y, double z) {
         var p = mc.player;
         double dx = x - p.getX(), dy = y - p.getEyeY(), dz = z - p.getZ();
@@ -163,7 +173,7 @@ public final class AutoTestClient {
         int s = phaseT;
         double g = -60;
         if (s > 3226 && s < 3300 && s % 2 == 0) serverDo(mc, V185Test::keepAirborne);
-        if (s >= 3374 && s <= 3394 && s % 2 == 0) serverDo(mc, V185Test::protoFire);   // 바닐라 착지 방지 (오버월드엔 수정이 없어 자꾸 내려앉음)
+        if (s >= 3374 && s <= 3394 && s % 2 == 0) serverKeep(mc, V185Test::protoFire);   // 바닐라 착지 방지 (오버월드엔 수정이 없어 자꾸 내려앉음)
         switch (s) {
             case 1 -> {
                 o.setCameraType(CameraType.FIRST_PERSON);
@@ -763,16 +773,19 @@ public final class AutoTestClient {
             case 3362 -> o.setCameraType(CameraType.THIRD_PERSON_BACK);
             case 3372 -> { mc.getToasts().clear(); shot(mc, "93_proto_ride"); }
             case 3386 -> shot(mc, "94_proto_fire");
-            case 3396 -> serverDo(mc, V185Test::protoRockets);
+            case 3396 -> serverKeep(mc, V185Test::protoRockets);
             case 3404 -> shot(mc, "95_proto_rockets");
-            case 3430 -> serverDo(mc, V185Test::protoSlam);
+            case 3430 -> serverKeep(mc, V185Test::protoSlam);
             case 3440 -> shot(mc, "96_proto_slam");
-            case 3456 -> serverDo(mc, V185Test::protoCheck);
+            case 3456 -> serverKeep(mc, V185Test::protoCheck);
             case 3460 -> { o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::protoShowcase); }
             case 3474 -> shot(mc, "97_proto_front");
             case 3476 -> serverDo(mc, V185Test::protoShowcase2);
             case 3486 -> shot(mc, "98_proto_back");
-            case 3490 -> next(11);
+            case 3490 -> serverDo(mc, V185Test::locoSetup);
+            case 3496, 3500, 3504, 3508, 3512, 3516, 3520, 3524 -> serverKeep(mc, V185Test::locoPush);
+            case 3526 -> serverKeep(mc, V185Test::locoCheck);
+            case 3530 -> next(11);
             default -> {
             }
         }

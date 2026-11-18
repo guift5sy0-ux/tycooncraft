@@ -157,7 +157,7 @@ public final class ProtoClient {
         if (m == null || mc.options.hideGui) return;
         GuiGraphics g = e.getGuiGraphics();
         int w = g.guiWidth(), h = g.guiHeight();
-        int x = w / 2 - 91, y = h - 72;
+        int x = 8, y = h - 44;   // 왼쪽 아래 (체력 하트·핫바와 겹치지 않게)
         var font = mc.font;
         g.fill(x - 4, y - 4, x + 186, y + 30, 0x90000000);
         g.drawString(font, Component.translatable("entity.tycooncraft.proto_destroyer"), x, y - 1, 0xFFE0A050);

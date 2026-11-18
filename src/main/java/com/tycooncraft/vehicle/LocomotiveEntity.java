@@ -94,7 +94,7 @@ public class LocomotiveEntity extends AbstractMinecart implements FueledVehicle 
             if (p.zza > 0) {
                 Vec3 look = p.getLookAngle();
                 Vec3 dir = new Vec3(look.x, 0, look.z);
-                if (dir.lengthSqr() > 1.0E-4) setDeltaMovement(dm.add(dir.normalize().scale(0.04)));
+                if (dir.lengthSqr() > 1.0E-4) setDeltaMovement(dm.add(dir.normalize().scale(0.06)));
             } else if (p.zza < 0) {
                 setDeltaMovement(dm.scale(0.85));
             }
@@ -107,7 +107,7 @@ public class LocomotiveEntity extends AbstractMinecart implements FueledVehicle 
     /** 연료가 있고 사람이 타고 있으면 일반 카트보다 빠르게 */
     @Override
     public double getMaxSpeedWithRail() {
-        return engineRunning() ? 1.2 : super.getMaxSpeedWithRail();
+        return engineRunning() ? 1.2 * 1.8 : super.getMaxSpeedWithRail();   // v0.19.0: 최고 속력 1.8배
     }
 
     @Override
