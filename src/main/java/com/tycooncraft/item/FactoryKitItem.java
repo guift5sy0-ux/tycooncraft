@@ -54,7 +54,7 @@ public class FactoryKitItem extends Item {
     public static boolean build(ServerPlayer p) {
         ServerLevel sl = p.serverLevel();
         BlockPos o = originFor(p);
-        if (o.getY() - 6 <= sl.getMinBuildHeight() || o.getY() + 8 >= sl.getMaxBuildHeight()) {
+        if (o.getY() - 2 <= sl.getMinBuildHeight() || o.getY() + 8 >= sl.getMaxBuildHeight()) {
             p.displayClientMessage(Component.translatable("message.tycooncraft.factory_kit.height").withStyle(ChatFormatting.RED), true);
             return false;
         }

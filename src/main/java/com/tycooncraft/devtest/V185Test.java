@@ -197,7 +197,9 @@ public final class V185Test {
         sp.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         sp.teleportTo(sl, -90.5, sp.getY(), -150.5, 180f, 0f);   // 북쪽을 봄
         sp.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.POLICE_SHIELD.get()));
-        double atk = sp.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+        double atk = 1;
+        for (var e : ModItems.POLICE_SHIELD.get().getDefaultAttributeModifiers().modifiers())
+            if (e.attribute().is(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE)) atk += e.modifier().amount();
         bashTarget = EntityType.ZOMBIE.create(sl);
         bashTarget.moveTo(-90.5, sp.getY(), -153.5, 0, 0);
         bashTarget.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
