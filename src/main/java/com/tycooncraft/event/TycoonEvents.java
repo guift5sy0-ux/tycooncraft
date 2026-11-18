@@ -91,9 +91,9 @@ public final class TycoonEvents {
         double r = random.nextDouble();
         Item coin = null;
         int count = 0;
-        if (r < 0.01) { coin = ModItems.COIN_GOLD.get(); count = 1; }
-        else if (r < 0.09) { coin = ModItems.COIN_IRON.get(); count = 1 + random.nextInt(2); }
-        else if (r < 0.44) { coin = ModItems.COIN_COPPER.get(); count = 1 + random.nextInt(6); }
+        if (r < 0.005) { coin = ModItems.COIN_GOLD.get(); count = 1; }
+        else if (r < 0.055) { coin = ModItems.COIN_IRON.get(); count = 1 + random.nextInt(2); }
+        else if (r < 0.35) { coin = ModItems.COIN_COPPER.get(); count = 1 + random.nextInt(6); }
         if (coin != null) entity.spawnAtLocation(new ItemStack(coin, count));
     }
 

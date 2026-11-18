@@ -469,7 +469,36 @@ public final class StructureBuilder {
         };
     }
 
-    public static final double TRADER_MARKUP = 2.5, TRADER_PAY = 0.8;
+    public static final double TRADER_MARKUP = 3.0, TRADER_PAY = 0.8;
+
+    /** 핵심 장비는 "손노동 몇 시간어치"로 값을 매김 (권총 = 1시간) */
+    static double hours(Item it) {
+        if (it == ModItems.PISTOL.get()) return 1;
+        if (it == ModItems.DUAL_PISTOLS.get()) return 1.5;
+        if (it == ModItems.SMG.get() || it == ModItems.SHOTGUN.get()) return 2;
+        if (it == ModItems.RIFLE.get()) return 3;
+        if (it == ModItems.VSS.get()) return 4;
+        if (it == ModItems.SNIPER.get() || it == ModItems.RPG.get()) return 5;
+        if (it == ModItems.POLICE_SHIELD.get()) return 1;
+        if (it == ModItems.VEST_1.get()) return 0.6;
+        if (it == ModItems.HELMET_1.get() || it == ModItems.PANTS_1.get()) return 0.4;
+        if (it == ModItems.BOOTS_1.get()) return 0.3;
+        if (it == ModItems.SELL_STATION.get()) return 0.2;
+        if (it == ModItems.machineItem(MachineType.CRUSHER) || it == ModItems.machineItem(MachineType.SMELTER)) return 0.6;
+        if (it == ModItems.machineItem(MachineType.PRESS)) return 1;
+        if (it == ModItems.machineItem(MachineType.WIRE_DRAWER) || it == ModItems.machineItem(MachineType.LATHE) || it == ModItems.machineItem(MachineType.ALLOY_FURNACE)) return 1.5;
+        if (it == ModItems.machineItem(MachineType.ASSEMBLER)) return 4;
+        if (it == ModItems.machineItem(MachineType.CHEMICAL_REACTOR) || it == ModItems.machineItem(MachineType.ELECTROLYZER)) return 5;
+        return 0;
+    }
+
+    /** 자동 시험용: 흔들림 없이 이 상품을 파는 값 (원) */
+    public static long stockOf(String trader, MerchantOffer o) {
+        Item it = o.getResult().getItem();
+        double h = hours(it);
+        if (h > 0) return Math.round(h * com.tycooncraft.economy.PriceTable.MANUAL_HOUR * o.getResult().getCount());
+        return Math.round(com.tycooncraft.economy.PriceTable.basePrice(it) * o.getResult().getCount() * TRADER_MARKUP);
+    }
 
     /** 금액을 한 칸(64개 이하)의 동전으로 */
     private static ItemStack oneStack(long won) {
@@ -499,7 +528,16 @@ public final class StructureBuilder {
             float f = 0.85f + rnd.nextFloat() * 0.4f;
             double price = buyer ? com.tycooncraft.economy.PriceTable.basePrice(o.getItemCostA().item().value())
                     : com.tycooncraft.economy.PriceTable.basePrice(o.getResult().getItem());
-            if (price > 0) {   // v0.18.5: 가격표 기준 (상인은 기준가의 2.5배에 팔고, 0.8배에 사 줌)
+            double hrs = buyer ? 0 : hours(o.getResult().getItem());
+            if (hrs > 0) {   // 시간 기준 장비 (±흔들림 포함)
+                long won = Math.round(hrs * com.tycooncraft.economy.PriceTable.MANUAL_HOUR * o.getResult().getCount() * f);
+                ItemStack[] c = com.tycooncraft.economy.VillagerCoins.coinsForTest((int) won);
+                out.add(new MerchantOffer(new ItemCost(c[0].getItem(), c[0].getCount()),
+                        c.length > 1 ? Optional.of(new ItemCost(c[1].getItem(), c[1].getCount())) : Optional.empty(),
+                        o.getResult().copy(), Integer.MAX_VALUE, 0, 0f));
+                continue;
+            }
+            if (price > 0) {   // 가격표 기준 (상인은 기준가의 3배에 팔고, 0.8배에 사 줌)
                 if (buyer) {
                     long won = Math.max(1, Math.round(price * o.getItemCostA().count() * TRADER_PAY * (2.1f - f)));
                     out.add(new MerchantOffer(o.getItemCostA(), Optional.empty(), oneStack(won), Integer.MAX_VALUE, 0, 0f));

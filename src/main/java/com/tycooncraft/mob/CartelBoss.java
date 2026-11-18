@@ -69,7 +69,7 @@ public class CartelBoss extends GunnerEntity {
     @Override
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
         super.dropCustomDeathLoot(level, source, recentlyHit);
-        spawnAtLocation(new ItemStack(ModItems.COIN_EMERALD.get(), 2 + random.nextInt(3)));
+        spawnAtLocation(new ItemStack(ModItems.COIN_EMERALD.get(), 1 + random.nextInt(2)));
         spawnAtLocation(new ItemStack(ModItems.ROCKET.get(), 4));
         ItemStack loot = new ItemStack(random.nextBoolean() ? ModItems.VSS.get() : ModItems.RPG.get());
         spawnAtLocation(loot);

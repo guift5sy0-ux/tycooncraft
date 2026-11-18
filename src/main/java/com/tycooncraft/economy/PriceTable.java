@@ -11,11 +11,16 @@ import java.util.Map;
  * 판매 기준가 (₩).
  * v0.18.5: 원자재·바닐라 아이템만 손으로 정하고, 모드 아이템은 전부 제작법에서 자동 계산한다.
  *   가격 = (재료 가격 합 ÷ 나오는 개수) × 가공 배율
- *   가공 배율: 기계 1.25, 작업대 1.20, 총기 제작대 1.30  → 가공 단계마다 꾸준히 비싸지고, 재료보다 싸게 팔리는 일이 없음.
+ *   가공 배율: 기계 1.6, 작업대 1.15, 총기 제작대 1.25 (기계 가공이 돈이 되게 → 공장을 지어야 함)
+ *   원자재는 RAW_SCALE(0.25)배: 손으로 캐서 파는 것만으로는 시간당 약 500원  → 가공 단계마다 꾸준히 비싸지고, 재료보다 싸게 팔리는 일이 없음.
  * 계산은 서버 시작·레시피 동기화 때 한 번. 제작법이 없는 것은 아래 표 값을 그대로 쓴다.
  */
 public final class PriceTable {
-    public static final double MACHINE_MARKUP = 1.25, CRAFT_MARKUP = 1.20, GUN_MARKUP = 1.30;
+    public static final double MACHINE_MARKUP = 1.6, CRAFT_MARKUP = 1.15, GUN_MARKUP = 1.25;
+    /** 손으로 캐고 파는 원자재·바닐라 값 배율 (v0.18.6: 손노동 수입 ≈ 시간당 500원) */
+    public static final double RAW_SCALE = 0.25;
+    /** 기준: 공장 없이 손으로 1시간 벌면 이 정도 */
+    public static final long MANUAL_HOUR = 500;
     private static Map<Item, Double> prices;
     private static Map<Item, Double> computed;
 
@@ -26,7 +31,7 @@ public final class PriceTable {
     /** 제작법으로 모드 아이템 가격을 다시 계산 */
     public static synchronized void compute(net.minecraft.world.item.crafting.RecipeManager rm, net.minecraft.core.HolderLookup.Provider reg) {
         Map<Item, Double> p = new LinkedHashMap<>(table());
-        for (Item c : Coins.denominations()) p.put(c, (double) ((CoinItem) c).getValue());   // 재료로 쓰인 동전은 액면가
+        for (Item c : Coins.denominations()) p.put(c, 0.0001);   // 제작법에 든 동전은 설치비(되팔아도 돌려받지 못함)
         record R(Map<Item, Integer> in, Item out, int count, double markup) {}
         java.util.List<R> rs = new java.util.ArrayList<>();
         for (com.tycooncraft.machine.MachineType t : com.tycooncraft.machine.MachineType.values())
@@ -321,6 +326,7 @@ public final class PriceTable {
             p.put(Items.COOKIE, 1.5);
             p.put(Items.PUMPKIN_PIE, 8.0);
             p.put(Items.CAKE, 40.0);
+            p.replaceAll((k, v) -> v * RAW_SCALE);
             prices = p;
         }
         return prices;

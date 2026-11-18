@@ -27,7 +27,7 @@ public final class Bank {
     public static final long MAX_AMOUNT = 1_000_000_000_000L;
     public static final int MAX_LISTINGS = 8, MAX_AUCTIONS = 400;
     public static final long[] DURATIONS = {10 * 60_000L, 60 * 60_000L, 6 * 60 * 60_000L, 24 * 60 * 60_000L};
-    public static final long INTEREST_PERIOD = 24_000, INTEREST_CAP = 5_000;
+    public static final long INTEREST_PERIOD = 24_000, INTEREST_CAP = 300;
     public static final long SNIPE_GUARD = 30_000;
 
     public static long transferFee(long amount) {

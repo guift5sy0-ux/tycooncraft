@@ -24,10 +24,10 @@ import java.util.UUID;
 
 /**
  * 동맹 시스템. 같은 동맹끼리는 포탑이 쏘지 않고, 요격 포대도 서로의 로켓·드론을 요격하지 않는다.
- * 창설비 ₩10,000 (통장에서), 최대 10명. /alliance (= /동맹)
+ * 창설비 ₩2,000 (통장에서), 최대 10명. /alliance (= /동맹)
  */
 public final class Alliances {
-    public static final long CREATE_COST = 10_000;
+    public static final long CREATE_COST = 2_000;
     public static final int MAX_MEMBERS = 10;
 
     public record Result(boolean ok, Component msg) {

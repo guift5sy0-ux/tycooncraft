@@ -216,7 +216,7 @@ public class DestroyerGolem extends Monster {
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
         super.dropCustomDeathLoot(level, source, recentlyHit);
         if (getPersistentData().getBoolean(BASEMENT_TAG)) {   // 폐공장 지하실 골렘: 코인 + 총 1자루
-            spawnAtLocation(new ItemStack(ModItems.COIN_EMERALD.get(), 2 + random.nextInt(4)));
+            spawnAtLocation(new ItemStack(ModItems.COIN_EMERALD.get(), 1 + random.nextInt(2)));
             spawnAtLocation(new ItemStack(ModItems.COIN_GOLD.get(), 5 + random.nextInt(11)));
             net.minecraft.world.item.Item[] guns = {ModItems.PISTOL.get(), ModItems.SMG.get(), ModItems.SHOTGUN.get(), ModItems.RIFLE.get(), ModItems.SNIPER.get()};
             spawnAtLocation(new ItemStack(guns[random.nextInt(guns.length)]));
