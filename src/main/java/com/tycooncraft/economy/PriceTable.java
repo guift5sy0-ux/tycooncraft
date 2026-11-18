@@ -11,11 +11,11 @@ import java.util.Map;
  * 판매 기준가 (₩).
  * v0.18.5: 원자재·바닐라 아이템만 손으로 정하고, 모드 아이템은 전부 제작법에서 자동 계산한다.
  *   가격 = (재료 가격 합 ÷ 나오는 개수) × 가공 배율
- *   가공 배율: 기계 1.15, 작업대 1.10, 총기 제작대 1.20  → 가공 단계마다 꾸준히 비싸지고, 재료보다 싸게 팔리는 일이 없음.
+ *   가공 배율: 기계 1.25, 작업대 1.20, 총기 제작대 1.30  → 가공 단계마다 꾸준히 비싸지고, 재료보다 싸게 팔리는 일이 없음.
  * 계산은 서버 시작·레시피 동기화 때 한 번. 제작법이 없는 것은 아래 표 값을 그대로 쓴다.
  */
 public final class PriceTable {
-    public static final double MACHINE_MARKUP = 1.15, CRAFT_MARKUP = 1.10, GUN_MARKUP = 1.20;
+    public static final double MACHINE_MARKUP = 1.25, CRAFT_MARKUP = 1.20, GUN_MARKUP = 1.30;
     private static Map<Item, Double> prices;
     private static Map<Item, Double> computed;
 
@@ -26,6 +26,7 @@ public final class PriceTable {
     /** 제작법으로 모드 아이템 가격을 다시 계산 */
     public static synchronized void compute(net.minecraft.world.item.crafting.RecipeManager rm, net.minecraft.core.HolderLookup.Provider reg) {
         Map<Item, Double> p = new LinkedHashMap<>(table());
+        for (Item c : Coins.denominations()) p.put(c, (double) ((CoinItem) c).getValue());   // 재료로 쓰인 동전은 액면가
         record R(Map<Item, Integer> in, Item out, int count, double markup) {}
         java.util.List<R> rs = new java.util.ArrayList<>();
         for (com.tycooncraft.machine.MachineType t : com.tycooncraft.machine.MachineType.values())
@@ -77,6 +78,7 @@ public final class PriceTable {
             }
             if (!changed) break;
         }
+        for (Item c : Coins.denominations()) p.remove(c);
         p.replaceAll((k, v) -> round(v));
         computed = p;
         SOURCE_RECIPES = rs.size() + crafts.size();
@@ -87,7 +89,7 @@ public final class PriceTable {
     /** 바닐라 아이템과 동전은 표 값 고정, 모드 아이템만 계산 */
     private static boolean derivable(Item it) {
         var id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(it);
-        return id.getNamespace().equals(com.tycooncraft.TycoonCraft.MODID) && !(it instanceof CoinItem) && it != ModItems.DESTROYER_CORE.get()
+        return id.getNamespace().equals(com.tycooncraft.TycoonCraft.MODID) && !(it instanceof CoinItem) && it != ModItems.DESTROYER_CORE.get() && it != ModItems.VENOM_SPIT.get()
                 && it != ModItems.RAW_BAUXITE.get() && it != ModItems.ROCK_SALT.get() && it != ModItems.SULFUR.get();
     }
 
@@ -262,6 +264,50 @@ public final class PriceTable {
             p.put(ModItems.TRANSFORMER.get(), 395.0);
             p.put(ModItems.INDUSTRIAL_ROBOT_ARM.get(), 4345.0);
             p.put(Items.CALCITE, 0.6);
+            // 제작 재료로 쓰이는 바닐라 아이템 (v0.18.5)
+            p.put(Items.IRON_NUGGET, 0.9);
+            p.put(Items.GOLD_NUGGET, 2.2);
+            p.put(Items.IRON_ORE, 5.0);
+            p.put(Items.DEEPSLATE_IRON_ORE, 5.0);
+            p.put(Items.COPPER_ORE, 2.0);
+            p.put(Items.DEEPSLATE_COPPER_ORE, 2.0);
+            p.put(Items.GOLD_ORE, 12.0);
+            p.put(Items.DEEPSLATE_GOLD_ORE, 12.0);
+            p.put(Items.FLINT, 0.5);
+            p.put(Items.STRING, 1.0);
+            p.put(Items.LEATHER, 3.0);
+            p.put(Items.PAPER, 0.6);
+            p.put(Items.GUNPOWDER, 3.0);
+            p.put(Items.SLIME_BALL, 3.0);
+            p.put(Items.BONE, 1.0);
+            p.put(Items.BONE_MEAL, 0.4);
+            p.put(Items.BLAZE_POWDER, 6.0);
+            p.put(Items.GLOWSTONE_DUST, 2.0);
+            p.put(Items.WHITE_WOOL, 2.0);
+            p.put(Items.BLACK_WOOL, 2.5);
+            p.put(Items.RED_WOOL, 2.5);
+            p.put(Items.BLACK_DYE, 1.0);
+            p.put(Items.GLASS_PANE, 0.4);
+            p.put(Items.GLASS_BOTTLE, 1.0);
+            p.put(Items.BRICKS, 4.0);
+            p.put(Items.DRIED_KELP_BLOCK, 2.0);
+            p.put(Items.CRAFTING_TABLE, 1.3);
+            p.put(Items.FURNACE, 1.0);
+            p.put(Items.CHEST, 2.6);
+            p.put(Items.STONECUTTER, 10.0);
+            p.put(Items.PISTON, 12.0);
+            p.put(Items.DISPENSER, 6.0);
+            p.put(Items.COMPARATOR, 12.0);
+            p.put(Items.REDSTONE_BLOCK, 27.0);
+            p.put(Items.HOPPER, 43.0);
+            p.put(Items.CAULDRON, 56.0);
+            p.put(Items.TNT, 20.0);
+            p.put(Items.SPYGLASS, 30.0);
+            p.put(Items.NETHERITE_SCRAP, 200.0);
+            p.put(Items.NETHERITE_INGOT, 900.0);
+            p.put(Items.BEACON, 2500.0);
+            p.put(Items.DRAGON_EGG, 20000.0);
+            p.put(ModItems.VENOM_SPIT.get(), 5.0);
             // 농산물·식품
             p.put(Items.WHEAT, 1.0);
             p.put(Items.POTATO, 0.8);
