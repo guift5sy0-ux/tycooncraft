@@ -97,6 +97,7 @@ public class GunnerEntity extends Monster implements RangedAttackMob {
         targetSelector.addGoal(1, new HurtByTargetGoal(this, GunnerEntity.class));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
         targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
+        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, DestroyerGolem.class, false));   // 갱단 ↔ 디스트로이어 적대
     }
 
     protected Item weapon() {

@@ -26,6 +26,13 @@ import net.minecraft.world.level.Level;
  * 패턴 2 맹독 침: 잠깐 몸을 웅크려 예고한 뒤 독침 5발을 부채꼴로 발사 (독 II + 위더 + 멀미)
  */
 public class MutantSpider extends Spider {
+    /** 거미 여왕 ↔ 디스트로이어 적대 (밤낮 상관없이) */
+    @Override
+    protected void registerGoals() {
+        super.registerGoals();
+        targetSelector.addGoal(2, new net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal<>(this, DestroyerGolem.class, false));
+    }
+
     private int webCd = 60, venomCd = 120, venomCharge;
     public static int webShots, venomShots;
 

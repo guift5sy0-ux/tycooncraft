@@ -107,6 +107,7 @@ public class GangTruck extends Monster {
         });
         targetSelector.addGoal(1, new HurtByTargetGoal(this, GunnerEntity.class, GangTruck.class));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, DestroyerGolem.class, false));
     }
 
     /** 운전석(첫 번째 좌석)에 갱단원이 있어야 움직인다 */
