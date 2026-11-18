@@ -32,7 +32,7 @@ public final class V185Test {
     static int shots0;
     static DestroyerGolem golem;
     static BlockPos turret;
-    static net.minecraft.world.entity.Mob gang, queen;
+    static net.minecraft.world.entity.Mob gang, queen, warden;
 
     static String price(Item it) {
         return net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(it).getPath() + "=" + PriceTable.basePrice(it);
@@ -87,6 +87,7 @@ public final class V185Test {
         if (cow != null) cow.setNoAi(true);
         gang = ModEntities.GANGSTER.get().spawn(sl, gp.offset(-12, 0, 0), MobSpawnType.MOB_SUMMONED);
         queen = ModEntities.MUTANT_SPIDER.get().spawn(sl, gp.offset(0, 0, 12), MobSpawnType.MOB_SUMMONED);
+        warden = EntityType.WARDEN.spawn(sl, gp.offset(10, 0, 10), MobSpawnType.MOB_SUMMONED);
 
         // ── 물가 ──
         StringBuilder b = new StringBuilder();
@@ -143,7 +144,9 @@ public final class V185Test {
                 shots, dummyHp - dummy.getHealth(), TurretAI.COOLDOWN, TurretAI.LOCK_DELAY, TurretAI.SPREAD));
         System.out.println("[AUTOTEST] v185 destroyer target=" + (golem == null || golem.getTarget() == null ? "none" : golem.getTarget().getType().toShortString()));
         System.out.println("[AUTOTEST] v186 vsDestroyer gangTarget=" + (gang == null || gang.getTarget() == null ? "none" : gang.getTarget().getType().toShortString())
-                + " queenTarget=" + (queen == null || queen.getTarget() == null ? "none" : queen.getTarget().getType().toShortString()));
+                + " queenTarget=" + (queen == null || queen.getTarget() == null ? "none" : queen.getTarget().getType().toShortString())
+                + " wardenAngry=" + (warden instanceof net.minecraft.world.entity.monster.warden.Warden w && golem != null ? w.getAngerManagement().getActiveAnger(golem) : -1));
+        if (warden != null) warden.discard();
         if (gang != null) gang.discard();
         if (queen != null) queen.discard();
         dummy.discard();

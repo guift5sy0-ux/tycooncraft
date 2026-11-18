@@ -127,11 +127,30 @@ public final class VanillaBossBuffs {
         if (e instanceof net.minecraft.world.entity.Mob m && m.isNoAi()) return;
         if (e instanceof WitherBoss w) tickWither(sl, w, st(w));
         else if (e instanceof EnderDragon d) tickDragon(sl, d, st(d));
+        if (e.tickCount % 20 == 0) huntDestroyer(sl, e);
+    }
+
+    /** 보스들(위더·워든·엘더 가디언)은 디스트로이어와 적대: 플레이어를 노리고 있지 않으면 디스트로이어를 노림 */
+    private static void huntDestroyer(ServerLevel sl, Entity e) {
+        if (!(e instanceof WitherBoss || e instanceof net.minecraft.world.entity.monster.warden.Warden || e instanceof net.minecraft.world.entity.monster.ElderGuardian)) return;
+        var m = (net.minecraft.world.entity.Mob) e;
+        if (m.getTarget() instanceof Player p && p.isAlive()) return;
+        double r = e instanceof net.minecraft.world.entity.monster.ElderGuardian ? 16 : 32;
+        DestroyerGolem best = null;
+        double bd = Double.MAX_VALUE;
+        for (DestroyerGolem g : sl.getEntitiesOfClass(DestroyerGolem.class, e.getBoundingBox().inflate(r), LivingEntity::isAlive)) {
+            double d = g.distanceToSqr(e);
+            if (d < bd) { bd = d; best = g; }
+        }
+        if (best == null) return;
+        if (e instanceof net.minecraft.world.entity.monster.warden.Warden w) w.increaseAngerAt(best, 100, false);
+        else m.setTarget(best);
     }
 
     private static List<LivingEntity> foes(ServerLevel sl, Entity boss, double range) {
         List<LivingEntity> out = new ArrayList<>(sl.getEntitiesOfClass(Player.class, boss.getBoundingBox().inflate(range),
                 p -> p.isAlive() && !p.isCreative() && !p.isSpectator()));
+        out.addAll(sl.getEntitiesOfClass(DestroyerGolem.class, boss.getBoundingBox().inflate(range), LivingEntity::isAlive));   // 디스트로이어도 적
         if (out.isEmpty())
             out.addAll(sl.getEntitiesOfClass(LivingEntity.class, boss.getBoundingBox().inflate(range), x -> x.isAlive() && x.getTags().contains("tc_dummy")));
         return out;
