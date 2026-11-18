@@ -29,11 +29,12 @@ import java.util.function.Predicate;
  * 방탄조끼(몸통 피해 감소)·방탄모(헤드샷 추가 피해 감소)를 여기서 반영한다.
  */
 public final class Ballistics {
+    public static int BLOCKED;
     /** 방탄조끼 등급별 몸통 총알 피해 감소 */
-    private static final float[] VEST_CUT = {0f, 0.15f, 0.25f, 0.35f, 0.45f};
+    private static final float[] VEST_CUT = {0f, 0.20f, 0.25f, 0.30f, 0.35f};
     /** 방탄모 등급별 헤드샷 '추가' 피해 감소 + 머리 피해 자체 감소 */
-    private static final float[] HELMET_BONUS_CUT = {0f, 0.2f, 0.35f, 0.5f, 0.65f};
-    private static final float[] HELMET_CUT = {0f, 0.05f, 0.08f, 0.1f, 0.15f};
+    private static final float[] HELMET_BONUS_CUT = {0f, 0.30f, 0.38f, 0.46f, 0.54f};
+    private static final float[] HELMET_CUT = {0f, 0.06f, 0.08f, 0.10f, 0.12f};
 
     public static int vestTier(LivingEntity e) {
         ItemStack s = e.getItemBySlot(EquipmentSlot.CHEST);
@@ -66,7 +67,7 @@ public final class Ballistics {
             return base * mult * (1 - HELMET_CUT[h]);
         }
         ItemStack lg = le.getItemBySlot(EquipmentSlot.LEGS), ft = le.getItemBySlot(EquipmentSlot.FEET);
-        float legs = lg.is(ModItems.JUGGERNAUT_LEGGINGS.get()) ? 0.92f : lg.is(ModItems.PANTS_3.get()) ? 0.94f : lg.is(ModItems.PANTS_2.get()) ? 0.95f : lg.is(ModItems.PANTS_1.get()) ? 0.97f : 1f;
+        float legs = lg.is(ModItems.JUGGERNAUT_LEGGINGS.get()) ? 0.93f : lg.is(ModItems.PANTS_3.get()) ? 0.94f : lg.is(ModItems.PANTS_2.get()) ? 0.95f : lg.is(ModItems.PANTS_1.get()) ? 0.96f : 1f;
         float boots = ft.is(ModItems.COMBAT_BOOTS.get()) ? 0.95f : ft.is(ModItems.BOOTS_3.get()) ? 0.96f : ft.is(ModItems.BOOTS_2.get()) ? 0.97f : ft.is(ModItems.BOOTS_1.get()) ? 0.98f : 1f;
         return base * (1 - VEST_CUT[vestTier(le)]) * legs * boots;
     }
@@ -137,6 +138,11 @@ public final class Ballistics {
             }
             level.sendParticles(fire ? ParticleTypes.FLAME : ParticleTypes.CRIT, impact.x, impact.y, impact.z, 6, 0.1, 0.1, 0.1, 0.2);
             n++;
+            if (target instanceof net.minecraft.world.entity.LivingEntity le && le.isBlocking() && le.isDamageSourceBlocked(src)) {   // 방패에 막힘 → 관통 없음
+                BLOCKED++;
+                level.playSound(null, impact.x, impact.y, impact.z, SoundEvents.SHIELD_BLOCK, SoundSource.PLAYERS, 0.8f, 1.3f);
+                break;
+            }
         }
         Vec3 first = n > 0 ? hits.get(0).getLocation() : impact;
         // 눈에 보이는 총알 (탄착 파편·소리는 총알이 도착할 때 클라이언트가 만든다)

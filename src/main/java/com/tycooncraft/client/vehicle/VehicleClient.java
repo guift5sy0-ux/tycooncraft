@@ -35,6 +35,8 @@ public final class VehicleClient {
             for (Item gun : new Item[]{ModItems.PISTOL.get(), ModItems.SMG.get(), ModItems.RIFLE.get(), ModItems.SHOTGUN.get(), ModItems.SNIPER.get()}) {
                 ItemProperties.register(gun, TycoonCraft.id("silenced"), (stack, level, entity, seed) -> GunItem.silencerTier(stack) / 2f);
             }
+            ItemProperties.register(ModItems.POLICE_SHIELD.get(), net.minecraft.resources.ResourceLocation.withDefaultNamespace("blocking"),
+                    (stack, level, entity, seed) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1f : 0f);
         });
     }
 

@@ -444,7 +444,7 @@ public final class StructureBuilder {
                     offer(ir, 8, Items.CROSSBOW, 1), offer(ir, 6, Items.BOW, 1), offer(ir, 4, Items.ARROW, 16), offer(ir, 10, Items.IRON_AXE, 1),
                     offer(ir, 6, Items.IRON_SHOVEL, 1), offer(ir, 4, Items.SHEARS, 1), offer(ir, 8, Items.SPYGLASS, 1),
                     offer(go, 8, ModItems.VEST_1.get(), 1), offer(go, 5, ModItems.HELMET_1.get(), 1), offer(go, 5, ModItems.PANTS_1.get(), 1),
-                    offer(go, 4, ModItems.BOOTS_1.get(), 1));
+                    offer(go, 4, ModItems.BOOTS_1.get(), 1), offer(go, 18, ModItems.POLICE_SHIELD.get(), 1));
             case "trader.tycooncraft.machines" -> List.of(
                     offer(ir, 4, ModItems.CONVEYOR.get(), 8), offer(ir, 6, ModItems.LIFT_UP.get(), 2), offer(ir, 6, ModItems.LIFT_DOWN.get(), 2),
                     offer(ir, 12, ModItems.SELL_STATION.get(), 1), offer(ir, 12, ModItems.machineItem(MachineType.CRUSHER), 1),

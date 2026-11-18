@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "PGP",
+    "PPP",
+    "PIP"
+  ],
+  "key": {
+    "P": {
+      "item": "tycooncraft:steel_plate"
+    },
+    "G": {
+      "item": "minecraft:glass_pane"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:police_shield",
+    "count": 1
+  }
+}

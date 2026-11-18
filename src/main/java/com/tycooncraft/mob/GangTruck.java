@@ -94,9 +94,24 @@ public class GangTruck extends Monster {
     protected void registerGoals() {
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(2, new ChaseGoal(this));
-        goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.55));
+        goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.55) {
+            @Override
+            public boolean canUse() {
+                return hasDriver() && super.canUse();
+            }
+
+            @Override
+            public boolean canContinueToUse() {
+                return hasDriver() && super.canContinueToUse();
+            }
+        });
         targetSelector.addGoal(1, new HurtByTargetGoal(this, GunnerEntity.class, GangTruck.class));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+    }
+
+    /** 운전석(첫 번째 좌석)에 갱단원이 있어야 움직인다 */
+    public boolean hasDriver() {
+        return !getPassengers().isEmpty() && getPassengers().get(0).isAlive();
     }
 
     /** 몸통(운전) AI 는 트럭 자신이 — 탄 갱단원이 조종하지 않게 */
@@ -320,7 +335,8 @@ public class GangTruck extends Monster {
 
         @Override
         public void tick() {
-            if (operation != Operation.MOVE_TO) {
+            if (operation != Operation.MOVE_TO || (mob instanceof GangTruck g && !g.hasDriver())) {
+                operation = Operation.WAIT;
                 mob.setZza(0);
                 mob.setSpeed(0);
                 return;
@@ -354,7 +370,12 @@ public class GangTruck extends Monster {
 
         @Override
         public boolean canUse() {
-            return truck.getTarget() != null && truck.getTarget().isAlive();
+            return truck.hasDriver() && truck.getTarget() != null && truck.getTarget().isAlive();
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            return canUse();
         }
 
         @Override

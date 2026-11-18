@@ -120,6 +120,10 @@ public class GunItem extends Item {
         ItemStack stack = player.getItemInHand(hand);
         if (hand == InteractionHand.OFF_HAND) return InteractionResultHolder.fail(stack);   // 왼손 사격 금지
         if (player.getCooldowns().isOnCooldown(this)) return InteractionResultHolder.fail(stack);
+        if (isDual() && !player.getOffhandItem().isEmpty()) {   // 쌍권총은 왼손이 비어 있어야
+            if (!level.isClientSide) player.displayClientMessage(Component.translatable("message.tycooncraft.gun.dual_offhand").withStyle(ChatFormatting.RED), true);
+            return InteractionResultHolder.fail(stack);
+        }
 
         if (player.isShiftKeyDown()) {
             reload(level, player, stack);
@@ -178,6 +182,7 @@ public class GunItem extends Item {
     // ── 발사 ──
 
     private void shoot(Level level, Player player, ItemStack stack) {
+        if (isDual() && !player.getOffhandItem().isEmpty()) return;
         int tier = silencerTier(stack);
         float recoil = stats.recoil() * (1 - 0.2f * GunEnchants.level(stack, GunEnchants.PRECISION)) * (tier == 2 ? 0.75f : tier == 1 ? 0.85f : 1f) * GunParts.recoilMult(stack);
         if (level.isClientSide) {

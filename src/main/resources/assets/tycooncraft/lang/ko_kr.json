@@ -269,7 +269,7 @@
   "item.tycooncraft.juggernaut_leggings": "중장갑 각반",
   "item.tycooncraft.combat_boots": "중장갑 전투화",
   "tooltip.tycooncraft.jugg_legs": "몸통 총알 피해 추가 -%s%% · 세트: 폭발 피해 -25%%",
-  "tooltip.tycooncraft.jugg_boots": "몸통 총알 피해 추가 -%s%% · 낙하 피해 -40%%",
+  "tooltip.tycooncraft.jugg_boots": "몸통 총알 피해 추가 -%s%% · 낙하 피해 -30%%",
   "block.tycooncraft.transmission": "변속기",
   "block.tycooncraft.ship_motor": "운송기 엔진",
   "block.tycooncraft.ship_helm": "운송기 조종기",
@@ -563,5 +563,8 @@
   "gui.tycooncraft.gun_workbench.hint": "아이콘에 마우스를 올리면 재료가 보여요",
   "tooltip.tycooncraft.gun_workbench_only": "총기 제작대에서 제작",
   "tooltip.tycooncraft.gun_workbench": "총기와 탄약을 만드는 전용 작업대",
-  "gui.tycooncraft.gun_workbench.any_planks": "판자 (아무 나무)"
+  "gui.tycooncraft.gun_workbench.any_planks": "판자 (아무 나무)",
+  "item.tycooncraft.police_shield": "경찰 방패",
+  "tooltip.tycooncraft.police_shield": "진압 방패 · 내구도 1200 · 막는 동안 밀려나지 않음 · 막은 총알은 관통 못 함 · 강철판으로 수리",
+  "message.tycooncraft.gun.dual_offhand": "쌍권총은 왼손을 비워야 쏠 수 있어요"
 }

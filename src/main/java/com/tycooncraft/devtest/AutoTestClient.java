@@ -690,7 +690,13 @@ public final class AutoTestClient {
             case 2770 -> mc.getToasts().clear();
             case 2774 -> shot(mc, "78_gun_workbench");
             case 2776 -> { if (mc.player != null) mc.player.closeContainer(); }
-            case 2780 -> next(11);
+            // ── v0.18.3: 트럭 운전수, 쌍권총, 경찰 방패 ──
+            case 2780 -> serverDo(mc, V183Test::setup);
+            case 2860 -> serverDo(mc, V183Test::check);
+            case 2868 -> mc.getToasts().clear();
+            case 2872 -> shot(mc, "79_police_shield");
+            case 2874 -> serverDo(mc, V183Test::cleanup);
+            case 2878 -> next(11);
             default -> {
             }
         }

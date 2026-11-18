@@ -269,7 +269,7 @@
   "item.tycooncraft.juggernaut_leggings": "Juggernaut Leggings",
   "item.tycooncraft.combat_boots": "Juggernaut Combat Boots",
   "tooltip.tycooncraft.jugg_legs": "Extra body bullet damage -%s%% · Full set: explosion damage -25%%",
-  "tooltip.tycooncraft.jugg_boots": "Extra body bullet damage -%s%% · Fall damage -40%%",
+  "tooltip.tycooncraft.jugg_boots": "Extra body bullet damage -%s%% · Fall damage -30%%",
   "block.tycooncraft.transmission": "Transmission",
   "block.tycooncraft.ship_motor": "Transporter Engine",
   "block.tycooncraft.ship_helm": "Transporter Helm",
@@ -563,5 +563,8 @@
   "gui.tycooncraft.gun_workbench.hint": "Hover an icon to see its ingredients",
   "tooltip.tycooncraft.gun_workbench_only": "Crafted at a Gun Workbench",
   "tooltip.tycooncraft.gun_workbench": "Workbench for guns and ammo",
-  "gui.tycooncraft.gun_workbench.any_planks": "Planks (any wood)"
+  "gui.tycooncraft.gun_workbench.any_planks": "Planks (any wood)",
+  "item.tycooncraft.police_shield": "Police Riot Shield",
+  "tooltip.tycooncraft.police_shield": "Riot shield · 1200 durability · no knockback while blocking · blocked bullets cannot pierce · repair with steel plates",
+  "message.tycooncraft.gun.dual_offhand": "Empty your off hand to use dual pistols"
 }

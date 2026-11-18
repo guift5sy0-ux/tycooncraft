@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PGP",
+    "PMP",
+    " G "
+  ],
+  "key": {
+    "P": {
+      "item": "tycooncraft:steel_plate"
+    },
+    "G": {
+      "item": "tycooncraft:steel_gear"
+    },
+    "M": {
+      "item": "tycooncraft:mechanism"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:engine",
+    "count": 1
+  }
+}

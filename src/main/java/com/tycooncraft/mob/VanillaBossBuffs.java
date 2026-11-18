@@ -356,6 +356,8 @@ public final class VanillaBossBuffs {
     }
 
     private static final Map<Entity, DState> DSTATES = new WeakHashMap<>();
+    /** 드래곤 패턴 밀쳐내기 배율 (v0.18.3: 너무 세서 40%로) */
+    public static final double DRAGON_KB = 0.4;
 
     /** 테스트용: 기술 강제 시작 */
     public static void forceMove(EnderDragon d, int move) {
@@ -398,7 +400,7 @@ public final class VanillaBossBuffs {
             if (e.hurt(d.damageSources().mobAttack(d), dmg * f)) DSTATS[9]++;
             Vec3 push = e.position().subtract(c).multiply(1, 0, 1);
             push = push.lengthSqr() < 1e-3 ? new Vec3(1, 0, 0) : push.normalize();
-            e.push(push.x * kb * f, 0.5 + 0.4 * kb * f, push.z * kb * f);
+            e.push(push.x * kb * f * DRAGON_KB, 0.3 + 0.15 * kb * f, push.z * kb * f * DRAGON_KB);
             e.hurtMarked = true;
         }
     }
@@ -554,7 +556,7 @@ public final class VanillaBossBuffs {
                         double along = rel.dot(f), side = rel.subtract(f.scale(along)).length();
                         if (along > -1 && along < 12 && side < 2.8) {
                             if (e.hurt(d.damageSources().mobAttack(d), powered ? 24f : 20f)) DSTATS[9]++;
-                            e.push(f.x * 2.6, 0.7, f.z * 2.6);
+                            e.push(f.x * 2.6 * DRAGON_KB, 0.4, f.z * 2.6 * DRAGON_KB);
                             e.hurtMarked = true;
                         }
                     }
@@ -598,7 +600,7 @@ public final class VanillaBossBuffs {
                         e.hurt(d.damageSources().mobAttack(d), 6f);
                         e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 1), d);
                         Vec3 p = e.position().subtract(c).normalize();
-                        e.push(p.x * 2.4, 0.6, p.z * 2.4);
+                        e.push(p.x * 2.4 * DRAGON_KB, 0.35, p.z * 2.4 * DRAGON_KB);
                         e.hurtMarked = true;
                     }
                     s.groundCd = (int) (70 / speed);
@@ -673,7 +675,7 @@ public final class VanillaBossBuffs {
         for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, d.getBoundingBox().inflate(2.5))) {
             if (e == d || !s.hit.add(e)) continue;
             if (e.hurt(d.damageSources().mobAttack(d), powered ? 22f : 17f)) DSTATS[9]++;
-            e.push(s.dir.x * 3, 1.0, s.dir.z * 3);
+            e.push(s.dir.x * 3 * DRAGON_KB, 0.5, s.dir.z * 3 * DRAGON_KB);
             e.hurtMarked = true;
             sl.playSound(null, e.getX(), e.getY(), e.getZ(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.HOSTILE, 3f, 1.2f);
         }
