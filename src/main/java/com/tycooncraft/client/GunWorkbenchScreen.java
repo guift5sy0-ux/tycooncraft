@@ -110,14 +110,14 @@ public class GunWorkbenchScreen extends AbstractContainerScreen<GunWorkbenchMenu
                 for (int n = 0; n < e.getValue() && slot < 9; n++, slot++) {
                     int sx = x + GunWorkbenchMenu.GRID_X + (slot % 3) * 18, sy = y + GunWorkbenchMenu.GRID_Y + (slot / 3) * 18;
                     g.renderItem(new ItemStack(e.getKey()), sx, sy);
-                    g.fill(sx, sy, sx + 16, sy + 16, 0xB0161A1F);
+                    g.fill(sx, sy, sx + 16, sy + 16, 0xA0424852);
                 }
             }
             ItemStack out = all.get(selected).result();
             int rx = x + GunWorkbenchMenu.RESULT_X, ry = y + GunWorkbenchMenu.RESULT_Y;
             if (menu.getSlot(0).getItem().isEmpty()) {
                 g.renderItem(out, rx, ry);
-                g.fill(rx, ry, rx + 16, ry + 16, 0xB0161A1F);
+                g.fill(rx, ry, rx + 16, ry + 16, 0xA0424852);
             }
         }
         // 아래 정보칸
