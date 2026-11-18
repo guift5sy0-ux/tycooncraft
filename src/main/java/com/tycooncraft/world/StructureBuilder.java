@@ -469,6 +469,19 @@ public final class StructureBuilder {
         };
     }
 
+    public static final double TRADER_MARKUP = 2.5, TRADER_PAY = 0.8;
+
+    /** 금액을 한 칸(64개 이하)의 동전으로 */
+    private static ItemStack oneStack(long won) {
+        var ds = new java.util.ArrayList<>(com.tycooncraft.economy.Coins.denominations());
+        java.util.Collections.reverse(ds);   // 작은 단위부터: 64개 안에 들어가는 가장 작은 단위 = 가장 정확
+        for (Item c : ds) {
+            long v = ((com.tycooncraft.economy.CoinItem) c).getValue();
+            if (won >= v && won / v <= 64) return new ItemStack(c, (int) Math.max(1, Math.round((double) won / v)));
+        }
+        return new ItemStack(ModItems.COIN_COPPER.get(), (int) Math.min(64, won));
+    }
+
     /** 오늘의 진열: 후보 중 무작위 몇 개, 값은 ±(0.85~1.25배) 흔들림. 후보 순서는 유지. */
     public static List<MerchantOffer> traderStock(String key, net.minecraft.util.RandomSource rnd) {
         List<MerchantOffer> pool = traderOffers(key);
@@ -484,6 +497,21 @@ public final class StructureBuilder {
         for (int i : idx) {
             MerchantOffer o = pool.get(i);
             float f = 0.85f + rnd.nextFloat() * 0.4f;
+            double price = buyer ? com.tycooncraft.economy.PriceTable.basePrice(o.getItemCostA().item().value())
+                    : com.tycooncraft.economy.PriceTable.basePrice(o.getResult().getItem());
+            if (price > 0) {   // v0.18.5: 가격표 기준 (상인은 기준가의 2.5배에 팔고, 0.8배에 사 줌)
+                if (buyer) {
+                    long won = Math.max(1, Math.round(price * o.getItemCostA().count() * TRADER_PAY * (2.1f - f)));
+                    out.add(new MerchantOffer(o.getItemCostA(), Optional.empty(), oneStack(won), Integer.MAX_VALUE, 0, 0f));
+                } else {
+                    long won = Math.max(1, Math.round(price * o.getResult().getCount() * TRADER_MARKUP * f));
+                    ItemStack[] c = com.tycooncraft.economy.VillagerCoins.coinsForTest((int) Math.min(Integer.MAX_VALUE, won));
+                    out.add(new MerchantOffer(new ItemCost(c[0].getItem(), c[0].getCount()),
+                            c.length > 1 ? Optional.of(new ItemCost(c[1].getItem(), c[1].getCount())) : Optional.empty(),
+                            o.getResult().copy(), Integer.MAX_VALUE, 0, 0f));
+                }
+                continue;
+            }
             if (buyer) {   // 사 주는 값(결과 동전 수)이 흔들림
                 ItemStack r = o.getResult().copy();
                 r.setCount(Mth.clamp(Math.round(r.getCount() * (2.1f - f)), 1, 64));

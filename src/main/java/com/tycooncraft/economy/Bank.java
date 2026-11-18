@@ -72,10 +72,35 @@ public final class Bank {
             case BankPayloads.OP_BUYOUT -> buyout(p.server, p.getUUID(), p.getGameProfile().getName(), act.id());
             case BankPayloads.OP_CANCEL -> cancel(p, act.id());
             case BankPayloads.OP_CLAIM -> claim(p);
+            case BankPayloads.OP_ALLY_CREATE -> ally(com.tycooncraft.alliance.Alliances.create(p, act.s()));
+            case BankPayloads.OP_ALLY_INVITE -> ally(com.tycooncraft.alliance.Alliances.invite(p, act.s()));
+            case BankPayloads.OP_ALLY_ACCEPT -> ally(com.tycooncraft.alliance.Alliances.accept(p, act.s()));
+            case BankPayloads.OP_ALLY_DECLINE -> ally(com.tycooncraft.alliance.Alliances.decline(p, act.s()));
+            case BankPayloads.OP_ALLY_LEAVE -> ally(com.tycooncraft.alliance.Alliances.leave(p));
+            case BankPayloads.OP_ALLY_KICK -> ally(com.tycooncraft.alliance.Alliances.kick(p, act.s()));
+            case BankPayloads.OP_ALLY_DISBAND -> ally(com.tycooncraft.alliance.Alliances.disband(p));
             default -> null;
         };
         if (r != null && r.ok()) p.level().playSound(null, p.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.4f, 1.6f);
         sync(p, r);
+    }
+
+    private static Result ally(com.tycooncraft.alliance.Alliances.Result r) {
+        return new Result(r.ok(), r.msg());
+    }
+
+    static BankPayloads.Ally allyView(ServerPlayer p) {
+        var d = com.tycooncraft.alliance.AllianceData.get(p.server);
+        var a = d.of(p.getUUID());
+        List<String> inv = new ArrayList<>(d.invites.getOrDefault(p.getUUID(), java.util.Set.of()));
+        if (a == null) return new BankPayloads.Ally("", "", false, List.of(), List.of(), inv);
+        List<String> mem = new ArrayList<>();
+        List<Boolean> on = new ArrayList<>();
+        for (UUID m : a.members) {
+            mem.add(d.nameOf(m));
+            on.add(p.server.getPlayerList().getPlayer(m) != null);
+        }
+        return new BankPayloads.Ally(a.name, d.nameOf(a.leader), a.leader.equals(p.getUUID()), mem, on, inv);
     }
 
     public static void sync(ServerPlayer p, Result r) {
@@ -88,7 +113,7 @@ public final class Bank {
                 a.id, a.item, a.sellerName, a.start, a.bid, a.buyout, Math.max(0, a.end - now), a.bidderName,
                 p.getUUID().equals(a.seller), p.getUUID().equals(a.bidder))));
         PacketDistributor.sendToPlayer(p, new BankPayloads.Sync(acc.balance, d.claimCount(p.getUUID()), List.copyOf(log), views,
-                r == null ? Component.empty() : r.msg(), r == null || r.ok()));
+                r == null ? Component.empty() : r.msg(), r == null || r.ok(), allyView(p)));
     }
 
     static BankData.Account touch(BankData d, ServerPlayer p) {

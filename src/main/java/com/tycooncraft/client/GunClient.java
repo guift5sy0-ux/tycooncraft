@@ -36,15 +36,6 @@ public final class GunClient {
         };
         event.registerItem(aim, ModItems.PISTOL.get(), ModItems.SMG.get(), ModItems.RIFLE.get(),
                 ModItems.SHOTGUN.get(), ModItems.SNIPER.get(), ModItems.VSS.get(), ModItems.DUAL_PISTOLS.get(), ModItems.RPG.get(), ModItems.JUDGE.get());
-        event.registerItem(new IClientItemExtensions() {
-            private net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer r;
-
-            @Override
-            public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (r == null) r = new com.tycooncraft.client.gear.PoliceShieldRenderer();
-                return r;
-            }
-        }, ModItems.POLICE_SHIELD.get());
     }
 
     @SubscribeEvent

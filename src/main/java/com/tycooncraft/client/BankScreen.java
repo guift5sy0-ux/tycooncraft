@@ -32,6 +32,9 @@ public class BankScreen extends Screen {
     private Component status = Component.empty();
     private boolean statusOk = true;
 
+    private final List<AbstractWidget> allyNoneW = new ArrayList<>(), allyInW = new ArrayList<>(), allyLeadW = new ArrayList<>();
+    private final List<Button> inviteAccept = new ArrayList<>(), inviteDecline = new ArrayList<>(), kickButtons = new ArrayList<>();
+    private EditBox allyNameBox, allyInviteBox;
     private final List<AbstractWidget> accountW = new ArrayList<>(), transferW = new ArrayList<>(),
             browseW = new ArrayList<>(), sellW = new ArrayList<>(), auctionW = new ArrayList<>();
     private final List<Button> tabs = new ArrayList<>(), playerButtons = new ArrayList<>();
@@ -82,17 +85,20 @@ public class BankScreen extends Screen {
         String keepAmount = amountBox == null ? "" : amountBox.getValue(), keepName = nameBox == null ? "" : nameBox.getValue(),
                 keepSend = sendBox == null ? "" : sendBox.getValue(), keepStart = startBox == null ? "" : startBox.getValue(),
                 keepBuy = buyoutBox == null ? "" : buyoutBox.getValue();
-        for (List<AbstractWidget> l : List.of(accountW, transferW, browseW, sellW, auctionW)) l.clear();
+        for (List<AbstractWidget> l : List.of(accountW, transferW, browseW, sellW, auctionW, allyNoneW, allyInW, allyLeadW)) l.clear();
+        inviteAccept.clear();
+        inviteDecline.clear();
+        kickButtons.clear();
         tabs.clear();
         playerButtons.clear();
         left = (width - W) / 2;
         top = (height - H) / 2;
         int x = left, y = top;
 
-        String[] tabKeys = {"gui.tycooncraft.bank.tab.account", "gui.tycooncraft.bank.tab.transfer", "gui.tycooncraft.bank.tab.auction"};
-        for (int i = 0; i < 3; i++) {
+        String[] tabKeys = {"gui.tycooncraft.bank.tab.account", "gui.tycooncraft.bank.tab.transfer", "gui.tycooncraft.bank.tab.auction", "gui.tycooncraft.bank.tab.alliance"};
+        for (int i = 0; i < 4; i++) {
             int t = i;
-            tabs.add(button(tabKeys[i], x + 112 + i * 62, y + 4, 60, null, b -> {
+            tabs.add(button(tabKeys[i], x + 98 + i * 50, y + 4, 48, null, b -> {
                 tab = t;
                 layout();
             }));
@@ -180,8 +186,71 @@ public class BankScreen extends Screen {
             }
         });
 
+        // ── 동맹 ──
+        allyNameBox = new EditBox(font, x + 10, y + 62, 136, 16, Component.literal("ally"));
+        allyNameBox.setMaxLength(16);
+        allyNameBox.setHint(Component.translatable("gui.tycooncraft.bank.ally.name_hint").withStyle(ChatFormatting.DARK_GRAY));
+        addRenderableWidget(allyNameBox);
+        allyNoneW.add(allyNameBox);
+        button("gui.tycooncraft.bank.ally.create", x + 10, y + 82, 136, allyNoneW, b -> {
+            if (!allyNameBox.getValue().isBlank()) send(BankPayloads.OP_ALLY_CREATE, 0, 0, 0, 0, allyNameBox.getValue().trim());
+        });
+        for (int i = 0; i < 5; i++) {
+            int k = i;
+            Button acc = Button.builder(Component.translatable("gui.tycooncraft.bank.ally.accept"), b -> {
+                var inv = ally().invites();
+                if (k < inv.size()) send(BankPayloads.OP_ALLY_ACCEPT, 0, 0, 0, 0, inv.get(k));
+            }).bounds(x + 222, y + 48 + i * 20, 34, 18).build();
+            Button dec = Button.builder(Component.translatable("gui.tycooncraft.bank.ally.decline"), b -> {
+                var inv = ally().invites();
+                if (k < inv.size()) send(BankPayloads.OP_ALLY_DECLINE, 0, 0, 0, 0, inv.get(k));
+            }).bounds(x + 258, y + 48 + i * 20, 34, 18).build();
+            addRenderableWidget(acc);
+            addRenderableWidget(dec);
+            inviteAccept.add(acc);
+            inviteDecline.add(dec);
+        }
+        allyInviteBox = new EditBox(font, x + 10, y + 78, 100, 16, Component.literal("invite"));
+        allyInviteBox.setMaxLength(16);
+        allyInviteBox.setHint(Component.translatable("gui.tycooncraft.bank.name_hint").withStyle(ChatFormatting.DARK_GRAY));
+        addRenderableWidget(allyInviteBox);
+        allyLeadW.add(allyInviteBox);
+        button("gui.tycooncraft.bank.ally.invite", x + 112, y + 77, 36, allyLeadW, b -> {
+            if (!allyInviteBox.getValue().isBlank()) send(BankPayloads.OP_ALLY_INVITE, 0, 0, 0, 0, allyInviteBox.getValue().trim());
+        });
+        button("gui.tycooncraft.bank.ally.leave", x + 10, y + 150, 68, allyInW, b -> send(BankPayloads.OP_ALLY_LEAVE, 0, 0, 0, 0, ""));
+        button("gui.tycooncraft.bank.ally.disband", x + 80, y + 150, 68, allyLeadW, b -> send(BankPayloads.OP_ALLY_DISBAND, 0, 0, 0, 0, ""));
+        for (int i = 0; i < 10; i++) {
+            int k = i;
+            Button kb = Button.builder(Component.literal("✕"), b -> {
+                var m = ally().members();
+                if (k < m.size()) send(BankPayloads.OP_ALLY_KICK, 0, 0, 0, 0, m.get(k));
+            }).bounds(x + 280, y + 44 + i * 13, 12, 12).build();
+            addRenderableWidget(kb);
+            kickButtons.add(kb);
+        }
+
         if (BankClient.last != null) onSync(BankClient.last);
         layout();
+    }
+
+    private BankPayloads.Ally ally() {
+        return BankClient.last == null ? BankPayloads.Ally.NONE : BankClient.last.ally();
+    }
+
+    private void updateAlly() {
+        BankPayloads.Ally a = ally();
+        boolean in = !a.name().isEmpty();
+        for (AbstractWidget w : allyNoneW) w.visible = tab == 3 && !in;
+        for (AbstractWidget w : allyInW) w.visible = tab == 3 && in;
+        for (AbstractWidget w : allyLeadW) w.visible = tab == 3 && in && a.amLeader();
+        for (int i = 0; i < inviteAccept.size(); i++) {
+            boolean v = tab == 3 && !in && i < a.invites().size();
+            inviteAccept.get(i).visible = v;
+            inviteDecline.get(i).visible = v;
+        }
+        for (int i = 0; i < kickButtons.size(); i++)
+            kickButtons.get(i).visible = tab == 3 && in && a.amLeader() && i < a.members().size() && !a.members().get(i).equals(a.leader());
     }
 
     private void layout() {
@@ -191,6 +260,7 @@ public class BankScreen extends Screen {
         for (AbstractWidget w : browseW) w.visible = tab == 2 && auctionMode == 0;
         for (AbstractWidget w : sellW) w.visible = tab == 2 && auctionMode == 1;
         for (int i = 0; i < tabs.size(); i++) tabs.get(i).active = tab != i;
+        updateAlly();
         browseButton.active = auctionMode != 0;
         sellButton.active = auctionMode != 1;
         updatePlayers();
@@ -244,6 +314,7 @@ public class BankScreen extends Screen {
         }
         page = Math.min(page, pages() - 1);
         if (claimButton != null) updateAuctionButtons();
+        if (allyNameBox != null) updateAlly();
     }
 
     @Override
@@ -285,6 +356,7 @@ public class BankScreen extends Screen {
         switch (tab) {
             case 0 -> drawAccount(g, x, y, balance, wallet);
             case 1 -> drawTransfer(g, x, y, balance);
+            case 3 -> drawAlliance(g, x, y, balance);
             default -> hover = auctionMode == 0 ? drawBrowse(g, x, y, mx, my, balance) : drawSell(g, x, y, mx, my, balance);
         }
         if (!status.getString().isEmpty()) {
@@ -345,6 +417,34 @@ public class BankScreen extends Screen {
         g.drawString(font, Component.translatable("gui.tycooncraft.bank.online"), x + 166, y + 36, GOLD, false);
         if (playerButtons.stream().noneMatch(b -> b.visible))
             g.drawString(font, Component.translatable("gui.tycooncraft.bank.nobody"), x + 166, y + 52, DIM, false);
+    }
+
+    private void drawAlliance(GuiGraphics g, int x, int y, long balance) {
+        BankPayloads.Ally a = ally();
+        g.fill(x + 156, y + 28, x + 157, y + 186, LINE);
+        if (a.name().isEmpty()) {
+            g.drawString(font, Component.translatable("gui.tycooncraft.bank.ally.none"), x + 10, y + 32, GOLD, false);
+            g.drawString(font, Component.translatable("gui.tycooncraft.bank.ally.create_label"), x + 10, y + 50, DIM, false);
+            money(g, Component.translatable("gui.tycooncraft.bank.ally.cost"), com.tycooncraft.alliance.Alliances.CREATE_COST, x + 10, y + 104, 136, MINUS);
+            money(g, Component.translatable("gui.tycooncraft.bank.balance_short"), balance, x + 10, y + 114, 136, GOLD);
+            g.drawString(font, Component.translatable("gui.tycooncraft.bank.ally.invites"), x + 164, y + 32, GOLD, false);
+            if (a.invites().isEmpty()) g.drawString(font, Component.translatable("gui.tycooncraft.bank.ally.no_invites"), x + 164, y + 52, DIM, false);
+            for (int i = 0; i < Math.min(5, a.invites().size()); i++)
+                g.drawString(font, font.plainSubstrByWidth(a.invites().get(i), 54), x + 164, y + 53 + i * 20, TEXT, false);
+        } else {
+            g.drawString(font, Component.literal("⚑ " + a.name()), x + 10, y + 32, GOLD, false);
+            g.drawString(font, Component.translatable("gui.tycooncraft.bank.ally.leader", a.leader()), x + 10, y + 44, DIM, false);
+            if (a.amLeader()) g.drawString(font, Component.translatable("gui.tycooncraft.bank.ally.invite_label"), x + 10, y + 66, DIM, false);
+            g.drawString(font, Component.translatable("gui.tycooncraft.bank.ally.members", a.members().size(), com.tycooncraft.alliance.Alliances.MAX_MEMBERS), x + 164, y + 32, GOLD, false);
+            for (int i = 0; i < a.members().size(); i++) {
+                int ry = y + 46 + i * 13;
+                boolean on = i < a.online().size() && a.online().get(i);
+                g.fill(x + 164, ry + 2, x + 168, ry + 6, on ? PLUS : 0xFF5A616C);
+                String n = a.members().get(i) + (a.members().get(i).equals(a.leader()) ? " ★" : "");
+                g.drawString(font, font.plainSubstrByWidth(n, 104), x + 172, ry, on ? TEXT : DIM, false);
+            }
+        }
+        g.drawWordWrap(font, Component.translatable("gui.tycooncraft.bank.ally.info"), x + 10, y + 170, 140, DIM);
     }
 
     private static String time(long ms) {

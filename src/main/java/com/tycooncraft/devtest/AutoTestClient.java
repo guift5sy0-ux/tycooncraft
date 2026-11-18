@@ -710,7 +710,26 @@ public final class AutoTestClient {
             case 2888 -> mc.getToasts().clear();
             case 2892 -> shot(mc, "79_police_shield");
             case 2894 -> serverDo(mc, V183Test::cleanup);
-            case 2898 -> next(11);
+            // ── v0.18.5: 동맹·포탑·디스트로이어·물가·진압용 방패 ──
+            case 2900 -> serverDo(mc, V185Test::setup);
+            case 2912 -> { mc.getToasts().clear(); if (mc.player != null) mc.player.getInventory().selected = 0; }
+            case 2916 -> shot(mc, "82_riot_shield_fp");
+            case 2918 -> net.minecraft.client.KeyMapping.set(mc.options.keyUse.getKey(), true);
+            case 2930 -> shot(mc, "83_riot_shield_block_fp");
+            case 2932 -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
+            case 2940 -> shot(mc, "84_riot_shield_block_3p");
+            case 2942 -> {
+                net.minecraft.client.KeyMapping.set(mc.options.keyUse.getKey(), false);
+                mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK);
+            }
+            case 2950 -> shot(mc, "85_riot_shield_3p_back");
+            case 2952 -> mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            case 2960 -> serverDo(mc, V185Test::check);
+            case 2962 -> com.tycooncraft.client.BankClient.open();
+            case 2966 -> { if (mc.screen instanceof com.tycooncraft.client.BankScreen b) b.demo(3, 0); }
+            case 2972 -> shot(mc, "86_bank_alliance");
+            case 2974 -> mc.setScreen(null);
+            case 2978 -> next(11);
             default -> {
             }
         }

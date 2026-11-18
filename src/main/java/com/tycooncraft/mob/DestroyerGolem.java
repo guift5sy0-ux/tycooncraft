@@ -70,6 +70,9 @@ public class DestroyerGolem extends Monster {
         targetSelector.addGoal(1, new HurtByTargetGoal(this));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
         targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, true));
+        // 디스트로이어는 모든 몹에게 적대적 (다른 디스트로이어·갑옷 거치대 제외)
+        targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, net.minecraft.world.entity.Mob.class, 10, true, false,
+                e -> !(e instanceof DestroyerGolem) && e.isAlive()));
     }
 
     @Override

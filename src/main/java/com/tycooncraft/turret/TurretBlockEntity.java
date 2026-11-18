@@ -60,6 +60,9 @@ public class TurretBlockEntity extends BlockEntity implements MenuProvider {
     };
     private final IItemHandler handler = new InvWrapper(ammo);
     private UUID owner;
+    /** 침입자 모드: 주인·동맹이 아닌 플레이어도 쏨 (웅크리고 우클릭으로 전환) */
+    private boolean intruders = true;
+    private int lock;
     private int targetId = -1;
     private int cooldown, searchCooldown;
     /** 클라이언트 표시 */
@@ -75,6 +78,21 @@ public class TurretBlockEntity extends BlockEntity implements MenuProvider {
 
     public IItemHandler getItemHandler() {
         return handler;
+    }
+
+    public static int SHOTS;
+
+    public UUID owner() {
+        return owner;
+    }
+
+    public boolean intruders() {
+        return intruders;
+    }
+
+    public void toggleIntruders() {
+        intruders = !intruders;
+        setChanged();
     }
 
     public void setOwner(UUID id) {
@@ -97,9 +115,15 @@ public class TurretBlockEntity extends BlockEntity implements MenuProvider {
                 Entity found = t.findTarget(sl);
                 t.setTarget(found == null ? -1 : found.getId());
                 target = found;
+                t.lock = TurretAI.LOCK_DELAY;
             }
         }
-        if (target == null || t.cooldown > 0) return;
+        if (target == null) return;
+        if (t.lock > 0) {   // 조준하는 시간
+            t.lock--;
+            return;
+        }
+        if (t.cooldown > 0) return;
         int slot = -1;
         boolean heavy = false;
         for (int i = 0; i < 9; i++) {
@@ -114,19 +138,22 @@ public class TurretBlockEntity extends BlockEntity implements MenuProvider {
         if (slot < 0) return;
         t.ammo.getItem(slot).shrink(1);
         t.ammo.setChanged();
-        t.cooldown = 3;
+        t.cooldown = TurretAI.COOLDOWN;
         Vec3 from = t.muzzle().add(0, 0.45, 0);
         Vec3 aim = target.getBoundingBox().getCenter().add(0, target.getBbHeight() * 0.15, 0);
-        Vec3 dir = aim.subtract(from).normalize().add(sl.random.nextGaussian() * 0.02, sl.random.nextGaussian() * 0.02, sl.random.nextGaussian() * 0.02).normalize();
-        Ballistics.shoot(sl, null, from.add(dir.scale(0.9)), dir, RANGE + 4, heavy ? 7f : 5f, 0, 1.5f, false, true,
-                sl.damageSources().generic(), e -> !(e instanceof Player));
+        double sp = TurretAI.SPREAD;
+        Vec3 dir = aim.subtract(from).normalize().add(sl.random.nextGaussian() * sp, sl.random.nextGaussian() * sp, sl.random.nextGaussian() * sp).normalize();
+        UUID own = t.owner;
+        Ballistics.shoot(sl, null, from.add(dir.scale(0.9)), dir, RANGE + 4, heavy ? TurretAI.DMG_HEAVY : TurretAI.DMG_LIGHT, 0, 1.5f, false, true,
+                sl.damageSources().generic(), e -> TurretAI.canHit(sl, e, own));
+        SHOTS++;
         sl.playSound(null, from.x, from.y, from.z, ModSounds.RIFLE_FIRE.get(), SoundSource.BLOCKS, 1.6f, 1.25f + sl.random.nextFloat() * 0.1f);
         Vec3 flash = from.add(dir.scale(1.0));
         sl.sendParticles(ParticleTypes.FLAME, flash.x, flash.y, flash.z, 1, 0.02, 0.02, 0.02, 0.005);
     }
 
     private boolean valid(Entity e) {
-        if (!e.isAlive() || !(e instanceof Enemy) || e.distanceToSqr(muzzle()) > RANGE * RANGE) return false;
+        if (!(level instanceof ServerLevel sl) || !TurretAI.targetable(sl, e, owner, intruders) || e.distanceToSqr(muzzle()) > RANGE * RANGE) return false;
         Vec3 eye = e instanceof LivingEntity le ? le.getBoundingBox().getCenter().add(0, le.getBbHeight() * 0.25, 0) : e.position();
         // 포탑 블록 자체에 막히지 않게 블록 바깥(위쪽·목표 방향)에서 시야 검사
         Vec3 from = muzzle().add(0, 0.45, 0);
@@ -138,7 +165,7 @@ public class TurretBlockEntity extends BlockEntity implements MenuProvider {
     private Entity findTarget(ServerLevel level) {
         Entity best = null;
         double bd = Double.MAX_VALUE;
-        for (Entity e : level.getEntities((Entity) null, new AABB(worldPosition).inflate(RANGE), e -> e instanceof Enemy)) {
+        for (Entity e : level.getEntities((Entity) null, new AABB(worldPosition).inflate(RANGE), e -> TurretAI.targetable(level, e, owner, intruders))) {
             double d = e.distanceToSqr(muzzle());
             if (d < bd && valid(e)) {
                 bd = d;
@@ -180,6 +207,7 @@ public class TurretBlockEntity extends BlockEntity implements MenuProvider {
         super.saveAdditional(tag, registries);
         tag.put("Ammo", ammo.createTag(registries));
         if (owner != null) tag.putUUID("Owner", owner);
+        tag.putBoolean("Intruders", intruders);
         tag.putInt("Target", targetId);
     }
 
@@ -188,6 +216,7 @@ public class TurretBlockEntity extends BlockEntity implements MenuProvider {
         super.loadAdditional(tag, registries);
         ammo.fromTag(tag.getList("Ammo", 10), registries);
         if (tag.hasUUID("Owner")) owner = tag.getUUID("Owner");
+        intruders = !tag.contains("Intruders") || tag.getBoolean("Intruders");
         targetId = tag.contains("Target") ? tag.getInt("Target") : -1;
     }
 

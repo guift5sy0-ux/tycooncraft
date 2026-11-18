@@ -50,6 +50,8 @@ public class TycoonCraft {
         NeoForge.EVENT_BUS.register(TycoonEvents.class);
         NeoForge.EVENT_BUS.register(com.tycooncraft.economy.VillagerCoins.class);
         NeoForge.EVENT_BUS.register(com.tycooncraft.economy.Bank.class);
+        NeoForge.EVENT_BUS.register(com.tycooncraft.alliance.Alliances.class);
+        NeoForge.EVENT_BUS.register(com.tycooncraft.economy.PriceTable.class);
         NeoForge.EVENT_BUS.register(com.tycooncraft.gear.PoliceShieldItem.class);
         NeoForge.EVENT_BUS.addListener(com.tycooncraft.ship.ShipCollisions::onDetonate);
         NeoForge.EVENT_BUS.register(TycoonCommands.class);

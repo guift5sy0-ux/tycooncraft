@@ -51,9 +51,7 @@ public final class Interceptor {
     static boolean friendly(ServerLevel sl, Entity e, @Nullable UUID owner) {
         UUID s = shooterOf(e);
         if (s == null || owner == null) return false;
-        if (s.equals(owner)) return true;
-        Player a = sl.getPlayerByUUID(owner), b = sl.getPlayerByUUID(s);
-        return a != null && b != null && a.isAlliedTo(b);
+        return com.tycooncraft.alliance.Alliances.friendly(sl.getServer(), owner, s);   // 본인·동맹·팀
     }
 
     /** 이쪽으로 오는 중인가 (지나쳐 가는 것·멀어지는 것은 무시). 드론은 범위 안이면 위협 */

@@ -91,7 +91,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     private boolean hasConveyor, hasTurret, falling;
     /** 실려 있는 포탑의 상태 (셀 위치 키) */
     public static final class Turret {
-        int target = -1, cooldown, search;
+        int target = -1, cooldown, search, lock;
         public float yaw, yawO, pitch, pitchO;
     }
     final Map<Long, Turret> turrets = new HashMap<>();
@@ -738,8 +738,8 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         return rot(c.x + 0.5, c.z + 0.5, yaw).add(position()).add(0, c.y + 0.7 + 0.45, 0);
     }
 
-    private boolean turretSees(Vec3 from, Entity e) {
-        if (!e.isAlive() || !(e instanceof net.minecraft.world.entity.monster.Enemy) || e.distanceToSqr(from) > 24 * 24) return false;
+    private boolean turretSees(Vec3 from, Entity e, java.util.UUID owner, boolean intruders) {
+        if (!(level() instanceof ServerLevel sl) || !com.tycooncraft.turret.TurretAI.targetable(sl, e, owner, intruders) || e.distanceToSqr(from) > 24 * 24) return false;
         Vec3 eye = e.getBoundingBox().getCenter().add(0, e.getBbHeight() * 0.25, 0);
         Vec3 st = from.add(eye.subtract(from).normalize().scale(0.8));
         return level().clip(new net.minecraft.world.level.ClipContext(st, eye, net.minecraft.world.level.ClipContext.Block.COLLIDER,
@@ -770,15 +770,17 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             Vec3 m = turretMuzzle(c);
             absorbAmmo(sl, c, m);
             if (t.cooldown > 0) t.cooldown--;
+            java.util.UUID tOwner = c.be != null && c.be.hasUUID("Owner") ? c.be.getUUID("Owner") : null;
+            boolean intr = c.be == null || !c.be.contains("Intruders") || c.be.getBoolean("Intruders");
             Entity target = t.target >= 0 ? sl.getEntity(t.target) : null;
-            if (target == null || !turretSees(m, target)) {
+            if (target == null || !turretSees(m, target, tOwner, intr)) {
                 target = null;
                 if (--t.search <= 0) {
                     t.search = 10;
                     double bd = Double.MAX_VALUE;
-                    for (Entity e : sl.getEntities(this, new AABB(m, m).inflate(24), e -> e instanceof net.minecraft.world.entity.monster.Enemy)) {
+                    for (Entity e : sl.getEntities(this, new AABB(m, m).inflate(24), e -> !getPassengers().contains(e))) {
                         double d = e.distanceToSqr(m);
-                        if (d < bd && turretSees(m, e)) {
+                        if (d < bd && turretSees(m, e, tOwner, intr)) {
                             bd = d;
                             target = e;
                         }
@@ -787,19 +789,28 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
                 int id = target == null ? -1 : target.getId();
                 if (id != t.target) {
                     t.target = id;
+                    t.lock = com.tycooncraft.turret.TurretAI.LOCK_DELAY;
                     changed = true;
                 }
             }
-            if (!powered || target == null || t.cooldown > 0) continue;
+            if (!powered || target == null) continue;
+            if (t.lock > 0) {
+                t.lock--;
+                continue;
+            }
+            if (t.cooldown > 0) continue;
             Boolean heavy = takeAmmo(c);
             if (heavy == null) continue;
-            t.cooldown = 3;
+            t.cooldown = com.tycooncraft.turret.TurretAI.COOLDOWN;
             Vec3 aim = target.getBoundingBox().getCenter().add(0, target.getBbHeight() * 0.15, 0);
-            Vec3 dir = aim.subtract(m).normalize().add(sl.random.nextGaussian() * 0.02, sl.random.nextGaussian() * 0.02, sl.random.nextGaussian() * 0.02).normalize();
+            double sp = com.tycooncraft.turret.TurretAI.SPREAD;
+            Vec3 dir = aim.subtract(m).normalize().add(sl.random.nextGaussian() * sp, sl.random.nextGaussian() * sp, sl.random.nextGaussian() * sp).normalize();
+            final java.util.UUID shotOwner = tOwner;
             ShipCollisions.IGNORE.set(this);
             try {
-                com.tycooncraft.gun.Ballistics.shoot(sl, null, m.add(dir.scale(0.9)), dir, 28, heavy ? 7f : 5f, 0, 1.5f, false, true,
-                        sl.damageSources().generic(), e -> !(e instanceof Player));
+                com.tycooncraft.gun.Ballistics.shoot(sl, null, m.add(dir.scale(0.9)), dir, 28,
+                        heavy ? com.tycooncraft.turret.TurretAI.DMG_HEAVY : com.tycooncraft.turret.TurretAI.DMG_LIGHT, 0, 1.5f, false, true,
+                        sl.damageSources().generic(), e -> !getPassengers().contains(e) && com.tycooncraft.turret.TurretAI.canHit(sl, e, shotOwner));
             } finally {
                 ShipCollisions.IGNORE.remove();
             }

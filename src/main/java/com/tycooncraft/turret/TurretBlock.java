@@ -65,7 +65,13 @@ public class TurretBlock extends BaseEntityBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (!level.isClientSide && level.getBlockEntity(pos) instanceof TurretBlockEntity t) player.openMenu(t);
+        if (!level.isClientSide && level.getBlockEntity(pos) instanceof TurretBlockEntity t) {
+            if (player.isShiftKeyDown() && (t.owner() == null || t.owner().equals(player.getUUID()))) {   // 주인만 모드 전환
+                t.toggleIntruders();
+                player.displayClientMessage(net.minecraft.network.chat.Component.translatable(t.intruders() ? "message.tycooncraft.turret.mode_intruders" : "message.tycooncraft.turret.mode_monsters")
+                        .withStyle(net.minecraft.ChatFormatting.YELLOW), true);
+            } else player.openMenu(t);
+        }
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
 

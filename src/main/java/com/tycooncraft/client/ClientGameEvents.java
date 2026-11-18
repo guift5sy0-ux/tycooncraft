@@ -45,4 +45,11 @@ public final class ClientGameEvents {
     private static final double SCOPE_SENS = 0.22;
 
     private ClientGameEvents() {}
+
+    /** 서버에서 레시피를 받으면 가격표도 같은 규칙으로 계산 (툴팁 기준가) */
+    @SubscribeEvent
+    public static void onRecipes(net.neoforged.neoforge.client.event.RecipesUpdatedEvent event) {
+        var conn = net.minecraft.client.Minecraft.getInstance().getConnection();
+        if (conn != null) com.tycooncraft.economy.PriceTable.compute(event.getRecipeManager(), conn.registryAccess());
+    }
 }

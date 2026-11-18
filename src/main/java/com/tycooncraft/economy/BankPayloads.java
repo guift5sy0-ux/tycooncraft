@@ -18,7 +18,13 @@ import java.util.List;
 /** 은행 창 ↔ 서버 통신 */
 public final class BankPayloads {
     public static final int OP_REFRESH = 0, OP_DEPOSIT = 1, OP_WITHDRAW = 2, OP_TRANSFER = 3, OP_LIST = 4,
-            OP_BID = 5, OP_BUYOUT = 6, OP_CANCEL = 7, OP_CLAIM = 8;
+            OP_BID = 5, OP_BUYOUT = 6, OP_CANCEL = 7, OP_CLAIM = 8,
+            OP_ALLY_CREATE = 20, OP_ALLY_INVITE = 21, OP_ALLY_ACCEPT = 22, OP_ALLY_DECLINE = 23, OP_ALLY_LEAVE = 24, OP_ALLY_KICK = 25, OP_ALLY_DISBAND = 26;
+
+    /** 동맹 정보 (보는 사람 기준). name 이 비어 있으면 소속 없음 */
+    public record Ally(String name, String leader, boolean amLeader, List<String> members, List<Boolean> online, List<String> invites) {
+        public static final Ally NONE = new Ally("", "", false, List.of(), List.of(), List.of());
+    }
 
     /** 클라 → 서버: op, id(경매 번호/칸), x(기간), a·b(금액), s(받는 사람) */
     public record Action(int op, int id, int x, long a, long b, String s) implements CustomPacketPayload {
@@ -41,7 +47,7 @@ public final class BankPayloads {
     public record View(int id, ItemStack item, String seller, long start, long bid, long buyout, long remainMs, String bidder, boolean mine, boolean leading) {}
 
     /** 서버 → 클라: 계좌·경매 상태 + 방금 한 일의 결과 */
-    public record Sync(long balance, int claims, List<BankData.LogEntry> log, List<View> auctions, Component msg, boolean ok) implements CustomPacketPayload {
+    public record Sync(long balance, int claims, List<BankData.LogEntry> log, List<View> auctions, Component msg, boolean ok, Ally ally) implements CustomPacketPayload {
         public static final Type<Sync> TYPE = new Type<>(TycoonCraft.id("bank_sync"));
         public static final StreamCodec<RegistryFriendlyByteBuf, Sync> CODEC = StreamCodec.of((buf, p) -> p.write(buf), Sync::read);
 
@@ -70,6 +76,16 @@ public final class BankPayloads {
             }
             ComponentSerialization.TRUSTED_STREAM_CODEC.encode(buf, msg);
             buf.writeBoolean(ok);
+            buf.writeUtf(ally.name());
+            buf.writeUtf(ally.leader());
+            buf.writeBoolean(ally.amLeader());
+            buf.writeVarInt(ally.members().size());
+            for (int i = 0; i < ally.members().size(); i++) {
+                buf.writeUtf(ally.members().get(i));
+                buf.writeBoolean(ally.online().get(i));
+            }
+            buf.writeVarInt(ally.invites().size());
+            for (String s : ally.invites()) buf.writeUtf(s);
         }
 
         static Sync read(RegistryFriendlyByteBuf buf) {
@@ -85,7 +101,20 @@ public final class BankPayloads {
                         buf.readVarLong(), buf.readVarLong(), buf.readUtf(), buf.readBoolean(), buf.readBoolean()));
             }
             Component msg = ComponentSerialization.TRUSTED_STREAM_CODEC.decode(buf);
-            return new Sync(bal, claims, log, views, msg, buf.readBoolean());
+            boolean ok = buf.readBoolean();
+            String an = buf.readUtf(), al = buf.readUtf();
+            boolean lead = buf.readBoolean();
+            int m = buf.readVarInt();
+            List<String> mem = new ArrayList<>();
+            List<Boolean> on = new ArrayList<>();
+            for (int i = 0; i < m; i++) {
+                mem.add(buf.readUtf());
+                on.add(buf.readBoolean());
+            }
+            int k = buf.readVarInt();
+            List<String> inv = new ArrayList<>();
+            for (int i = 0; i < k; i++) inv.add(buf.readUtf());
+            return new Sync(bal, claims, log, views, msg, ok, new Ally(an, al, lead, mem, on, inv));
         }
 
         @Override

@@ -8,13 +8,96 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * 판매 기준가 (₩). 가공할수록 비싸게:
- * 원석 < 가루(2배 생산) < 주괴 < 판·선·봉 < 기어 < 조립품
+ * 판매 기준가 (₩).
+ * v0.18.5: 원자재·바닐라 아이템만 손으로 정하고, 모드 아이템은 전부 제작법에서 자동 계산한다.
+ *   가격 = (재료 가격 합 ÷ 나오는 개수) × 가공 배율
+ *   가공 배율: 기계 1.15, 작업대 1.10, 총기 제작대 1.20  → 가공 단계마다 꾸준히 비싸지고, 재료보다 싸게 팔리는 일이 없음.
+ * 계산은 서버 시작·레시피 동기화 때 한 번. 제작법이 없는 것은 아래 표 값을 그대로 쓴다.
  */
 public final class PriceTable {
+    public static final double MACHINE_MARKUP = 1.15, CRAFT_MARKUP = 1.10, GUN_MARKUP = 1.20;
     private static Map<Item, Double> prices;
+    private static Map<Item, Double> computed;
 
     public static Map<Item, Double> all() {
+        return computed != null ? computed : table();
+    }
+
+    /** 제작법으로 모드 아이템 가격을 다시 계산 */
+    public static synchronized void compute(net.minecraft.world.item.crafting.RecipeManager rm, net.minecraft.core.HolderLookup.Provider reg) {
+        Map<Item, Double> p = new LinkedHashMap<>(table());
+        record R(Map<Item, Integer> in, Item out, int count, double markup) {}
+        java.util.List<R> rs = new java.util.ArrayList<>();
+        for (com.tycooncraft.machine.MachineType t : com.tycooncraft.machine.MachineType.values())
+            for (var r : t.recipes()) rs.add(new R(r.inputs(), r.output(), r.outputCount(), MACHINE_MARKUP));
+        for (var r : com.tycooncraft.gun.GunCrafting.all()) rs.add(new R(r.needs(), r.result().getItem(), r.result().getCount(), GUN_MARKUP));
+        // 작업대 제작법 (이 모드 것만; 재료 선택지가 여럿이면 가장 싼 것)
+        java.util.List<java.util.Map.Entry<java.util.List<net.minecraft.world.item.crafting.Ingredient>, net.minecraft.world.item.ItemStack>> crafts = new java.util.ArrayList<>();
+        for (var h : rm.getAllRecipesFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING)) {
+            if (!h.id().getNamespace().equals(com.tycooncraft.TycoonCraft.MODID)) continue;
+            var out = h.value().getResultItem(reg);
+            if (out.isEmpty() || Coins.isCoin(out)) continue;
+            crafts.add(java.util.Map.entry(h.value().getIngredients(), out));
+        }
+        for (int pass = 0; pass < 20; pass++) {
+            Map<Item, Double> best = new java.util.HashMap<>();
+            for (R r : rs) {
+                if (!derivable(r.out())) continue;
+                double sum = 0;
+                boolean ok = true;
+                for (var e : r.in().entrySet()) {
+                    Double v = p.get(e.getKey());
+                    if (v == null || v <= 0) { ok = false; break; }
+                    sum += v * e.getValue();
+                }
+                if (ok) best.merge(r.out(), sum / r.count() * r.markup(), Math::min);
+            }
+            for (var c : crafts) {
+                Item out = c.getValue().getItem();
+                if (!derivable(out)) continue;
+                double sum = 0;
+                boolean ok = true;
+                for (var ing : c.getKey()) {
+                    if (ing.isEmpty()) continue;
+                    double b = Double.MAX_VALUE;
+                    for (var st : ing.getItems()) {
+                        Double v = p.get(st.getItem());
+                        if (v != null && v > 0) b = Math.min(b, v);
+                    }
+                    if (b == Double.MAX_VALUE) { ok = false; break; }
+                    sum += b;
+                }
+                if (ok) best.merge(out, sum / c.getValue().getCount() * CRAFT_MARKUP, Math::min);
+            }
+            boolean changed = false;
+            for (var e : best.entrySet()) {
+                Double old = p.get(e.getKey());
+                if (old == null || Math.abs(old - e.getValue()) > 1e-6) changed = true;
+                p.put(e.getKey(), e.getValue());
+            }
+            if (!changed) break;
+        }
+        p.replaceAll((k, v) -> round(v));
+        computed = p;
+        SOURCE_RECIPES = rs.size() + crafts.size();
+    }
+
+    public static int SOURCE_RECIPES;
+
+    /** 바닐라 아이템과 동전은 표 값 고정, 모드 아이템만 계산 */
+    private static boolean derivable(Item it) {
+        var id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(it);
+        return id.getNamespace().equals(com.tycooncraft.TycoonCraft.MODID) && !(it instanceof CoinItem) && it != ModItems.DESTROYER_CORE.get()
+                && it != ModItems.RAW_BAUXITE.get() && it != ModItems.ROCK_SALT.get() && it != ModItems.SULFUR.get();
+    }
+
+    static double round(double v) {
+        if (v < 10) return Math.round(v * 10) / 10.0;
+        if (v < 1000) return Math.round(v);
+        return Math.round(v / 10) * 10.0;
+    }
+
+    private static Map<Item, Double> table() {
         if (prices == null) {
             Map<Item, Double> p = new LinkedHashMap<>();
             // 원자재
@@ -195,6 +278,11 @@ public final class PriceTable {
             prices = p;
         }
         return prices;
+    }
+
+    @net.neoforged.bus.api.SubscribeEvent
+    public static void onServerStart(net.neoforged.neoforge.event.server.ServerAboutToStartEvent e) {
+        compute(e.getServer().getRecipeManager(), e.getServer().registryAccess());
     }
 
     /** 0이면 판매 불가 */
