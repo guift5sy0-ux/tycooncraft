@@ -2,9 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "NSN",
-    "GCR",
-    "NSN"
+    "SNS",
+    "GCG",
+    "N N"
   ],
   "key": {
     "N": {
@@ -18,9 +18,6 @@
     },
     "C": {
       "item": "tycooncraft:destroyer_core"
-    },
-    "R": {
-      "item": "tycooncraft:rpg"
     }
   },
   "result": {

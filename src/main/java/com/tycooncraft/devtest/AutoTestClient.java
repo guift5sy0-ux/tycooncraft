@@ -775,8 +775,11 @@ public final class AutoTestClient {
             case 3386 -> shot(mc, "94_proto_fire");
             case 3396 -> serverKeep(mc, V185Test::protoRockets);
             case 3404 -> shot(mc, "95_proto_rockets");
+            case 3410 -> o.setCameraType(CameraType.FIRST_PERSON);
+            case 3418 -> shot(mc, "95b_proto_firstperson");
+            case 3420 -> o.setCameraType(CameraType.THIRD_PERSON_BACK);
             case 3430 -> serverKeep(mc, V185Test::protoSlam);
-            case 3440 -> shot(mc, "96_proto_slam");
+            case 3450 -> shot(mc, "96_proto_slam");
             case 3456 -> serverKeep(mc, V185Test::protoCheck);
             case 3460 -> { o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::protoShowcase); }
             case 3474 -> shot(mc, "97_proto_front");

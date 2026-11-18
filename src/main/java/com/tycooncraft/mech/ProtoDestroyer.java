@@ -39,15 +39,17 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 /**
- * v0.19.0 프로토 디스트로이어: 플레이어가 타는 야수형 기계.
- * 조작: WASD 이동 · 마우스 방향 · 좌클릭(누르고 있기) 개틀링 · 우클릭 로켓 3연발 · 스페이스 내려찍기 · Shift 내리기
+ * v0.19.1 프로토 디스트로이어: 플레이어가 타는 역관절 보행 병기.
+ * 조작: WASD 이동(묵직·느림) · 마우스 방향 · 좌클릭(누르고 있기) 양팔 개틀링 [중탄 소모]
+ *       · 스페이스 점프 (높이 떨어지면 착지 충격파) · Shift 내리기
  * 주인(과 동맹)만 탈 수 있음. 주인이 웅크리고 빈손 우클릭 → 아이템으로 회수 (체력 유지). 철/강철 주괴로 수리.
  */
 public class ProtoDestroyer extends PathfinderMob {
     public static final int IDLE = 0, FIRING = 1, ROCKETS = 2, SLAM = 3;
-    public static final int ACT_FIRE = 1, ACT_ROCKETS = 2, ACT_SLAM = 3;
-    public static final int MAX_HEAT = 100, ROCKET_CD = 120, SLAM_CD = 70;
-    public static final float GUN_DMG = 3.5f;
+    public static final int ACT_FIRE = 1, ACT_ROCKETS = 2, ACT_JUMP = 4;
+    public static final int MAX_HEAT = 100, ROCKET_CD = 120, SLAM_CD = 40;
+    public static final float GUN_DMG = 4.5f;
+    public static final double JUMP_VEL = 0.62;
     private static final EntityDataAccessor<Integer> ATTACK = SynchedEntityData.defineId(ProtoDestroyer.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> HEAT = SynchedEntityData.defineId(ProtoDestroyer.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> OVERHEAT = SynchedEntityData.defineId(ProtoDestroyer.class, EntityDataSerializers.BOOLEAN);
@@ -56,7 +58,8 @@ public class ProtoDestroyer extends PathfinderMob {
     @Nullable private UUID owner;
     private int attackT, gunCd, lastFire = -100;
     public int animT, lastAttack;
-    public static int shots, rockets, slams;
+    public static int shots, rockets, slams, dryFires;
+    private int rocketsLeft;
 
     public ProtoDestroyer(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
@@ -65,7 +68,7 @@ public class ProtoDestroyer extends PathfinderMob {
 
     public static AttributeSupplier.Builder attributes() {
         return PathfinderMob.createMobAttributes().add(Attributes.MAX_HEALTH, 320).add(Attributes.ARMOR, 18).add(Attributes.ARMOR_TOUGHNESS, 8)
-                .add(Attributes.MOVEMENT_SPEED, 0.27).add(Attributes.KNOCKBACK_RESISTANCE, 1.0).add(Attributes.STEP_HEIGHT, 1.6)
+                .add(Attributes.MOVEMENT_SPEED, 0.2).add(Attributes.KNOCKBACK_RESISTANCE, 1.0).add(Attributes.STEP_HEIGHT, 1.1)
                 .add(Attributes.SAFE_FALL_DISTANCE, 12).add(Attributes.FOLLOW_RANGE, 0);
     }
 
@@ -146,7 +149,7 @@ public class ProtoDestroyer extends PathfinderMob {
         super.tickRidden(rider, input);
         float yaw = rider.getYRot();
         float d = Mth.wrapDegrees(yaw - getYRot());
-        setYRot(getYRot() + Mth.clamp(d, -14f, 14f));   // 육중하게 천천히 돎
+        setYRot(getYRot() + Mth.clamp(d, -7f, 7f));   // 육중하게 천천히 돎
         yRotO = getYRot();
         yBodyRot = yHeadRot = getYRot();
         setXRot(rider.getXRot() * 0.5f);
@@ -166,7 +169,7 @@ public class ProtoDestroyer extends PathfinderMob {
 
     @Override
     protected Vec3 getPassengerAttachmentPoint(Entity passenger, EntityDimensions dims, float scale) {
-        return new Vec3(0, 2.72, 0.05).yRot(-yBodyRot * Mth.DEG_TO_RAD);
+        return new Vec3(0, 2.45, 0.55).yRot(-yBodyRot * Mth.DEG_TO_RAD);   // 조종석 안 (기수 뒤)
     }
 
     @Override
@@ -198,23 +201,31 @@ public class ProtoDestroyer extends PathfinderMob {
         if (getControllingPassenger() != rider || !isAlive()) return;
         switch (act) {
             case ACT_FIRE -> fire(rider);
-            case ACT_ROCKETS -> {
-                if (rocketCd() > 0 || attack() == SLAM) return;
-                setAttack(ROCKETS);
-                entityData.set(ROCKET_T, ROCKET_CD);
-            }
-            case ACT_SLAM -> {
-                if (slamCd() > 0 || !onGround()) return;
-                setAttack(SLAM);
-                entityData.set(SLAM_T, SLAM_CD);
-                playSound(SoundEvents.RAVAGER_ROAR, 2f, 0.7f);
-            }
+            case ACT_JUMP -> playSound(SoundEvents.PISTON_EXTEND, 1.6f, 0.5f);   // 점프 자체는 조종하는 클라이언트가 처리
             default -> {}
         }
     }
 
+    public static int count(Player p, net.minecraft.world.item.Item it) {
+        int n = 0;
+        for (ItemStack st : p.getInventory().items) if (st.is(it)) n += st.getCount();
+        return n;
+    }
+
+    private static boolean take(Player p, net.minecraft.world.item.Item it) {
+        if (p.getAbilities().instabuild) return true;
+        for (ItemStack st : p.getInventory().items) if (st.is(it)) { st.shrink(1); return true; }
+        return false;
+    }
+
+    private void dry() {
+        dryFires++;
+        playSound(SoundEvents.DISPENSER_FAIL, 1f, 0.6f);
+    }
+
     private void fire(ServerPlayer rider) {
-        if (gunCd > 0 || overheated() || attack() == SLAM) return;
+        if (gunCd > 0 || overheated()) return;
+        if (!take(rider, ModItems.HEAVY_AMMO.get())) { gunCd = 10; dry(); return; }
         gunCd = 2;
         lastFire = tickCount;
         if (attack() == IDLE) setAttack(FIRING);
@@ -225,13 +236,30 @@ public class ProtoDestroyer extends PathfinderMob {
             playSound(SoundEvents.FIRE_EXTINGUISH, 1.5f, 0.6f);
         }
         ServerLevel sl = (ServerLevel) level();
-        Vec3 muzzle = local(1.2, 2.0, 2.0);
+        Vec3 muzzle = local(shots % 2 == 0 ? 1.75 : -1.75, 3.4, 2.5);   // 오른팔·왼팔 번갈아
         Vec3 aim = aimPoint(rider).subtract(muzzle).normalize();
-        aim = aim.add(random.nextGaussian() * 0.03, random.nextGaussian() * 0.02, random.nextGaussian() * 0.03).normalize();
-        Ballistics.shoot(sl, rider, muzzle, aim, 60, GUN_DMG, 0, 1.3f, false, true, damageSources().playerAttack(rider), e -> e != this && e != rider);
-        sl.sendParticles(ParticleTypes.FLAME, muzzle.x, muzzle.y, muzzle.z, 1, 0.05, 0.05, 0.05, 0.01);
-        playSound(ModSounds.SMG_FIRE.get(), 2.2f, 0.62f + random.nextFloat() * 0.06f);
+        aim = aim.add(random.nextGaussian() * 0.02, random.nextGaussian() * 0.015, random.nextGaussian() * 0.02).normalize();
+        Ballistics.shoot(sl, rider, muzzle, aim, 70, GUN_DMG, 1, 1.3f, false, true, damageSources().playerAttack(rider), e -> e != this && e != rider);
+        sl.sendParticles(ParticleTypes.FLAME, muzzle.x, muzzle.y, muzzle.z, 2, 0.06, 0.06, 0.06, 0.01);
+        sl.sendParticles(ParticleTypes.LARGE_SMOKE, muzzle.x, muzzle.y, muzzle.z, 1, 0.05, 0.05, 0.05, 0.01);
+        playSound(ModSounds.SMG_FIRE.get(), 2.6f, 0.6f + random.nextFloat() * 0.06f);
         shots++;
+    }
+
+    /** 점프 착지: 높이에 비례한 충격파 (조종 클라이언트가 움직여도 서버 move 에서 호출됨) */
+    @Override
+    public boolean causeFallDamage(float dist, float mult, DamageSource src) {
+        if (dist > 1.4f && slamCd() == 0 && !level().isClientSide) {
+            setAttack(SLAM);
+            entityData.set(SLAM_T, SLAM_CD);
+            slamImpact(getControllingPassenger() instanceof Player p ? p : null, Math.min(1.6f, 0.6f + dist * 0.2f));
+        } else if (dist > 0.8f) playSound(SoundEvents.ANVIL_LAND, 0.6f, 0.5f);
+        return false;
+    }
+
+    @Override
+    protected float nextStep() {
+        return moveDist + 1.9f;   // 큰 보폭 → 발소리 간격 넓게
     }
 
     @Override
@@ -254,28 +282,15 @@ public class ProtoDestroyer extends PathfinderMob {
         Player rider = getControllingPassenger() instanceof Player p ? p : null;
         switch (attack()) {
             case FIRING -> { if (tickCount - lastFire > 8) setAttack(IDLE); }
-            case ROCKETS -> {
-                if (rider != null && (attackT == 6 || attackT == 12 || attackT == 18)) {
-                    Vec3 from = local(-1.3, 3.1, 0.6);
-                    Vec3 dir = aimPoint(rider).subtract(from).normalize();
-                    level().addFreshEntity(RocketEntity.create(ModEntities.ROCKET.get(), level(), rider, from.add(dir.scale(1.6)), dir.scale(1.3), RocketEntity.ROCKET, 2.4f));
-                    playSound(ModSounds.RPG_FIRE.get(), 2.5f, 1.0f);
-                    rockets++;
-                }
-                if (attackT >= 24) setAttack(IDLE);
-            }
-            case SLAM -> {
-                if (attackT == 12) slamImpact(rider);
-                if (attackT >= 22) setAttack(IDLE);
-            }
+            case SLAM -> { if (attackT >= 14) setAttack(IDLE); }
             default -> {}
         }
     }
 
-    private void slamImpact(@Nullable Player rider) {
+    private void slamImpact(@Nullable Player rider, float power) {
         slams++;
         ServerLevel sl = (ServerLevel) level();
-        Vec3 c = local(0, 0, 1.8);
+        Vec3 c = position();
         sl.playSound(null, c.x, c.y, c.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 2f, 0.5f);
         sl.playSound(null, c.x, c.y, c.z, SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 1.5f, 0.45f);
         var floor = sl.getBlockState(BlockPos.containing(c.x, c.y - 0.5, c.z));
@@ -287,9 +302,9 @@ public class ProtoDestroyer extends PathfinderMob {
             if (rider != null && e instanceof Player p && sl.getServer() != null && Alliances.friendly(sl.getServer(), rider.getUUID(), p.getUUID())) continue;
             double d = e.position().distanceTo(c);
             if (d > 5.5) continue;
-            e.hurt(src, (float) (16 - d * 1.8));
-            Vec3 push = e.position().subtract(c).normalize().scale(1.3);
-            e.push(push.x, 0.8, push.z);
+            e.hurt(src, (float) (16 - d * 1.8) * power);
+            Vec3 push = e.position().subtract(c).normalize().scale(1.2 * power);
+            e.push(push.x, 0.7 * power, push.z);
             e.hurtMarked = true;
         }
     }
@@ -299,7 +314,6 @@ public class ProtoDestroyer extends PathfinderMob {
     public boolean hurt(DamageSource source, float amount) {
         if (source.getEntity() != null && hasPassenger(source.getEntity())) return false;   // 내 로켓·총알
         if (source.is(DamageTypeTags.IS_EXPLOSION)) amount *= 0.6f;
-        if (source.is(DamageTypeTags.IS_FALL)) return false;
         return super.hurt(source, amount);
     }
 
@@ -333,12 +347,15 @@ public class ProtoDestroyer extends PathfinderMob {
 
     @Override
     protected void playStepSound(BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
-        playSound(SoundEvents.RAVAGER_STEP, 1.4f, 0.6f);
-        if (random.nextInt(3) == 0) playSound(ModSounds.SERVO.get(), 0.6f, 0.8f + random.nextFloat() * 0.2f);
+        playSound(SoundEvents.IRON_GOLEM_STEP, 2.2f, 0.4f);                     // 쿵
+        playSound(SoundEvents.ANVIL_LAND, 0.25f, 0.45f + random.nextFloat() * 0.1f);
+        playSound(ModSounds.SERVO.get(), 0.7f, 0.65f + random.nextFloat() * 0.15f);   // 유압
+        if (level() instanceof ServerLevel sl && !state.isAir())
+            sl.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, state), getX(), getY() + 0.1, getZ(), 14, 1.0, 0.05, 1.0, 0.1);
     }
 
     @Override
-    protected SoundEvent getAmbientSound() { return isVehicle() ? null : SoundEvents.RAVAGER_AMBIENT; }
+    protected SoundEvent getAmbientSound() { return null; }
 
     @Override
     public int getAmbientSoundInterval() { return 400; }
