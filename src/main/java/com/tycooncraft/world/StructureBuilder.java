@@ -254,6 +254,45 @@ public final class StructureBuilder {
         }
     }
 
+    public static final int KIT_W = 15, KIT_D = 11;
+
+    /** 공장 키트: 기본 공장 (분쇄 → 제련 → 압착 → 판매 라인 + 작업 공간). 네 면 모두 출입구 */
+    public static void starterFactory(ServerLevel level, BlockPos origin) {
+        StructureBuilder b = new StructureBuilder(level, origin);
+        int X = KIT_W - 1, Z = KIT_D - 1;
+        b.fill(0, 0, 0, X, 7, Z, Blocks.AIR);
+        b.foundation(0, -5, 0, X, -2, Z, Blocks.STONE_BRICKS);
+        b.hollow(0, -1, 0, X, 5, Z, Blocks.STONE_BRICKS);
+        b.fill(1, -1, 1, X - 1, -1, Z - 1, Blocks.POLISHED_ANDESITE);
+        for (int x = 1; x < X; x++) b.set(x, -1, 4, Blocks.YELLOW_CONCRETE);
+        for (int x = 1; x < X; x++) b.set(x, -1, 6, Blocks.YELLOW_CONCRETE);
+        // 기둥 + 창
+        for (int x : new int[]{0, 7, X}) for (int z : new int[]{0, Z}) b.fill(x, 0, z, x, 4, z, Blocks.DEEPSLATE_BRICKS);
+        for (int z : new int[]{0, 5, Z}) for (int x : new int[]{0, X}) b.fill(x, 0, z, x, 4, z, Blocks.DEEPSLATE_BRICKS);
+        for (int[] seg : new int[][]{{1, 2}, {12, 13}}) for (int z : new int[]{0, Z}) b.fill(seg[0], 2, z, seg[1], 3, z, Blocks.GLASS);
+        for (int z : new int[]{0, Z}) b.fill(8, 2, z, 11, 3, z, Blocks.GLASS);
+        for (int x : new int[]{0, X}) { b.fill(x, 2, 1, x, 3, 3, Blocks.GLASS); b.fill(x, 2, 7, x, 3, 9, Blocks.GLASS); }
+        // 출입구 (앞뒤 넓게, 양옆 작게)
+        for (int z : new int[]{0, Z}) b.fill(3, 0, z, 6, 2, z, Blocks.AIR);
+        for (int x : new int[]{0, X}) b.fill(x, 0, 4, x, 2, 6, Blocks.AIR);
+        b.fill(0, 4, 4, 0, 4, 6, Blocks.STONE_BRICKS);
+        b.fill(X, 4, 4, X, 4, 6, Blocks.STONE_BRICKS);
+        // 지붕 + 조명
+        b.fill(0, 6, 0, X, 6, Z, Blocks.DEEPSLATE_TILE_SLAB);
+        for (int[] p : new int[][]{{3, 2}, {11, 2}, {3, 8}, {11, 8}, {7, 5}}) b.set(p[0], 5, p[1], Blocks.SEA_LANTERN);
+        // 생산 라인: 원석을 첫 벨트에 던지면 → 분쇄 → 제련 → 압착 → 판매
+        Block c = ModBlocks.CONVEYOR.get();
+        b.line(2, 0, 5, c, m(MachineType.CRUSHER), c, m(MachineType.SMELTER), c, m(MachineType.PRESS), c, ModBlocks.SELL_STATION.get());
+        b.set(1, 0, 5, Blocks.AIR);
+        // 작업 공간
+        b.set(2, 0, 1, Blocks.CRAFTING_TABLE);
+        b.set(9, 0, 1, Blocks.FURNACE.defaultBlockState().setValue(net.minecraft.world.level.block.FurnaceBlock.FACING, Direction.SOUTH));
+        b.set(10, 0, 1, Blocks.FURNACE.defaultBlockState().setValue(net.minecraft.world.level.block.FurnaceBlock.FACING, Direction.SOUTH));
+        b.set(12, 0, 1, ModBlocks.EXCHANGE.get());
+        for (int x = 9; x <= 12; x++) b.chest(x, 0, Z - 1, Direction.NORTH, null);
+        b.set(2, 0, Z - 1, Blocks.SMITHING_TABLE);
+    }
+
     private static Block m(MachineType type) {
         return ModBlocks.machine(type);
     }

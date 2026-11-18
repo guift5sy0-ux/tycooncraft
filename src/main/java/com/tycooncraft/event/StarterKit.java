@@ -24,6 +24,7 @@ public final class StarterKit {
 
     private static final String[][] GUIDE = {
             {"타이쿤크래프트", "공장을 짓고, 가공품을 팔아 돈을 벌고, 그 돈으로 더 큰 공장을 만드는 모드예요.\n\n모든 기계는 동력·연료 없이 설치만 하면 작동해요!"},
+            {"0. 공장 키트", "공장 키트를 들고 우클릭하면 바라보는 쪽에 기본 공장이 세워져요.\n\n웅크리고 우클릭: 자리 미리 보기\n\n원석을 첫 벨트에 던지면\n분쇄→제련→압착→판매까지 자동!"},
             {"1. 가공하면 비싸요", "철 원석 1개 ₩5\n→ 분쇄: 가루 2 ₩7\n→ 제련: 주괴 2 ₩16\n→ 압착: 철판 2 ₩28\n→ 절삭: 기어 2 ₩44\n\n/prices : 전체 시세"},
             {"2. 판매소", "빈손 우클릭: 판매소 창\n왼쪽 칸에 물건 → 판매 예정 금액 표시 → [판매]\n[인출]: 번 돈을 동전으로\n\n물건 들고 우클릭: 바로 판매\n벨트로 넣으면 자동 판매\n/sell, /sell all"},
             {"3. 동전 & 환전기", "구리 ₩1 · 철 ₩10\n금 ₩100 · 에메랄드 ₩1,000\n다이아 ₩10,000\n\n환전기 우클릭: 동전을 큰 단위로 정리\n제작대: 큰 동전 1 → 작은 동전 10"},
@@ -72,28 +73,12 @@ public final class StarterKit {
         return book;
     }
 
-    private static List<ItemStack> kit() {
+    /** v0.18.7: 곡괭이·도끼 + 공장 키트 (우클릭하면 기본 공장이 세워짐) */
+    public static List<ItemStack> kit() {
         List<ItemStack> k = new ArrayList<>();
-        k.add(new ItemStack(ModItems.SELL_STATION.get()));
-        k.add(new ItemStack(ModItems.EXCHANGE.get()));
-        k.add(new ItemStack(ModItems.CONVEYOR.get(), 64));
-        k.add(new ItemStack(ModItems.LIFT_UP.get(), 8));
-        k.add(new ItemStack(ModItems.LIFT_DOWN.get(), 8));
-        k.add(new ItemStack(ModItems.machineItem(MachineType.CRUSHER)));
-        k.add(new ItemStack(ModItems.machineItem(MachineType.SMELTER)));
-        k.add(new ItemStack(ModItems.machineItem(MachineType.PRESS)));
-        k.add(new ItemStack(Items.STONE_BRICKS, 64));
-        k.add(new ItemStack(Items.STONE_BRICKS, 64));
-        k.add(new ItemStack(Items.OAK_PLANKS, 64));
-        k.add(new ItemStack(Items.GLASS, 32));
-        k.add(new ItemStack(Items.OAK_LOG, 32));
-        k.add(new ItemStack(Items.TORCH, 32));
-        k.add(new ItemStack(Items.CRAFTING_TABLE));
-        k.add(new ItemStack(Items.FURNACE, 2));
-        k.add(new ItemStack(Items.CHEST, 4));
+        k.add(new ItemStack(ModItems.FACTORY_KIT.get()));
         k.add(new ItemStack(Items.IRON_PICKAXE));
         k.add(new ItemStack(Items.IRON_AXE));
-        k.add(new ItemStack(Items.BREAD, 16));
         return k;
     }
 
@@ -111,7 +96,6 @@ public final class StarterKit {
     public static void give(Player player) {
         Coins.giveStack(player, guideBook());
         for (ItemStack stack : kit()) Coins.giveStack(player, stack);
-        Coins.give(player, 100);
         persisted(player).putBoolean(FLAG, true);
         player.sendSystemMessage(Component.translatable("message.tycooncraft.welcome").withStyle(ChatFormatting.GOLD));
     }

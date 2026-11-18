@@ -729,7 +729,13 @@ public final class AutoTestClient {
             case 2966 -> { if (mc.screen instanceof com.tycooncraft.client.BankScreen b) b.demo(3, 0); }
             case 2972 -> shot(mc, "86_bank_alliance");
             case 2974 -> mc.setScreen(null);
-            case 2978 -> next(11);
+            // ── v0.18.7: 공장 키트 ──
+            case 2978 -> serverDo(mc, V185Test::kit);
+            case 2990 -> mc.getToasts().clear();
+            case 2994 -> shot(mc, "87_factory_kit_inside");
+            case 3200 -> serverDo(mc, V185Test::kitCheck);
+            case 3212 -> shot(mc, "88_factory_kit_outside");
+            case 3216 -> next(11);
             default -> {
             }
         }

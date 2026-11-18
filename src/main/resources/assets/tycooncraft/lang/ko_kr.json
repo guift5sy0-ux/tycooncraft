@@ -620,5 +620,12 @@
   "gui.tycooncraft.bank.ally.leader": "맹주: %s",
   "gui.tycooncraft.bank.ally.invite_label": "플레이어 초대",
   "gui.tycooncraft.bank.ally.members": "구성원 %s/%s",
-  "gui.tycooncraft.bank.ally.info": "동맹끼리는 포탑이 쏘지 않고, 요격 포대도 서로의 로켓·드론을 요격하지 않아요"
+  "gui.tycooncraft.bank.ally.info": "동맹끼리는 포탑이 쏘지 않고, 요격 포대도 서로의 로켓·드론을 요격하지 않아요",
+  "item.tycooncraft.factory_kit": "공장 키트",
+  "tooltip.tycooncraft.factory_kit": "우클릭: 바라보는 쪽에 기본 공장 설치 (분쇄→제련→압착→판매 라인)",
+  "tooltip.tycooncraft.factory_kit2": "웅크리고 우클릭: 자리 미리 보기 · 15×11 블록",
+  "message.tycooncraft.factory_kit.built": "[공장 키트] 기본 공장이 세워졌어요! 원석을 첫 벨트에 던져 보세요",
+  "message.tycooncraft.factory_kit.blocked": "그 자리에 상자·기계 같은 블록이 있어요 (%s, %s, %s)",
+  "message.tycooncraft.factory_kit.height": "여기는 높이가 맞지 않아요",
+  "message.tycooncraft.factory_kit.preview": "초록 테두리 자리에 공장이 세워져요. 우클릭하면 설치"
 }

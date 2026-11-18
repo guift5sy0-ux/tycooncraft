@@ -130,6 +130,8 @@ public final class ModItems {
     public static final DeferredItem<GearItem> BOOTS_2 = gear("boots_2", ModArmorMaterials.TACTICAL_MEDIUM, ArmorItem.Type.BOOTS, 25, "tooltip.tycooncraft.boots", 3, 20);
     public static final DeferredItem<GearItem> BOOTS_3 = gear("boots_3", ModArmorMaterials.TACTICAL_HEAVY, ArmorItem.Type.BOOTS, 35, "tooltip.tycooncraft.boots", 4, 25);
     // 중장갑 세트 (4종)
+    public static final DeferredItem<com.tycooncraft.item.FactoryKitItem> FACTORY_KIT = ITEMS.register("factory_kit",
+            () -> new com.tycooncraft.item.FactoryKitItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON)));
     public static final DeferredItem<com.tycooncraft.gear.PoliceShieldItem> POLICE_SHIELD = ITEMS.register("police_shield",
             () -> new com.tycooncraft.gear.PoliceShieldItem(new Item.Properties().durability(1200)));
     public static final DeferredItem<GearItem> HELMET_4 = gear("helmet_4", ModArmorMaterials.JUGGERNAUT, ArmorItem.Type.HELMET, 45, "tooltip.tycooncraft.helmet", 54);

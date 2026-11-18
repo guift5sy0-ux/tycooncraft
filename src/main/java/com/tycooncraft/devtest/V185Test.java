@@ -154,5 +154,38 @@ public final class V185Test {
         sp.serverLevel().setBlockAndUpdate(turret, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
     }
 
+    /** v0.18.7: 공장 키트 */
+    static void kit(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        sp.getInventory().clearContent();
+        var k = com.tycooncraft.event.StarterKit.kit();
+        StringBuilder names = new StringBuilder();
+        for (ItemStack s : k) names.append(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(s.getItem()).getPath()).append(',');
+        sp.teleportTo(sl, -60.5, sp.getY(), -120.5, 180f, 10f);   // 북쪽을 봄
+        sp.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.FACTORY_KIT.get()));
+        BlockPos o = com.tycooncraft.item.FactoryKitItem.originFor(sp);
+        boolean built = com.tycooncraft.item.FactoryKitItem.build(sp);
+        boolean crusher = sl.getBlockState(o.offset(3, 0, 5)).getBlock() == ModBlocks.machine(com.tycooncraft.machine.MachineType.CRUSHER);
+        boolean sell = sl.getBlockState(o.offset(9, 0, 5)).is(ModBlocks.SELL_STATION.get());
+        boolean again = com.tycooncraft.item.FactoryKitItem.build(sp);   // 같은 자리 다시 → 기계가 있어 거절
+        System.out.println("[AUTOTEST] v187 starterKit=" + names + " built=" + built + " crusher=" + crusher + " sell=" + sell + " rebuildRefused=" + !again
+                + " origin=" + o.toShortString() + " playerZ=" + sp.getZ());
+        // 원석을 첫 벨트에 → 잠시 뒤 판매소까지 가는지
+        var raw = new net.minecraft.world.entity.item.ItemEntity(sl, o.getX() + 2.5, o.getY() + 0.8, o.getZ() + 5.5, new ItemStack(Items.RAW_IRON, 8));
+        sl.addFreshEntity(raw);
+        kitOrigin = o;
+        sp.teleportTo(sl, o.getX() + 7.5, o.getY(), o.getZ() + 1.5, 160f, 25f);
+    }
+
+    static BlockPos kitOrigin;
+
+    static void kitCheck(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        long bal = 0;
+        if (sl.getBlockEntity(kitOrigin.offset(9, 0, 5)) instanceof com.tycooncraft.blockentity.SellStationBlockEntity st) bal = st.balance();
+        System.out.println("[AUTOTEST] v187 factoryLine sellStationBalance=" + bal);
+        sp.teleportTo(sl, kitOrigin.getX() + 7.5, kitOrigin.getY() + 1, kitOrigin.getZ() - 8.5, 0f, 12f);
+    }
+
     private V185Test() {}
 }

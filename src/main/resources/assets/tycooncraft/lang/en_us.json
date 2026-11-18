@@ -620,5 +620,12 @@
   "gui.tycooncraft.bank.ally.leader": "Leader: %s",
   "gui.tycooncraft.bank.ally.invite_label": "Invite a player",
   "gui.tycooncraft.bank.ally.members": "Members %s/%s",
-  "gui.tycooncraft.bank.ally.info": "Allies are never shot by each other's turrets, and CIWS ignores allied rockets and drones"
+  "gui.tycooncraft.bank.ally.info": "Allies are never shot by each other's turrets, and CIWS ignores allied rockets and drones",
+  "item.tycooncraft.factory_kit": "Factory Kit",
+  "tooltip.tycooncraft.factory_kit": "Right-click: build a basic factory ahead (crush → smelt → press → sell line)",
+  "tooltip.tycooncraft.factory_kit2": "Sneak + right-click: preview the 15×11 footprint",
+  "message.tycooncraft.factory_kit.built": "[Factory Kit] Your factory is up! Toss ores onto the first belt",
+  "message.tycooncraft.factory_kit.blocked": "Something is in the way (%s, %s, %s)",
+  "message.tycooncraft.factory_kit.height": "Not enough height here",
+  "message.tycooncraft.factory_kit.preview": "The factory will go inside the green outline. Right-click to build"
 }
