@@ -225,10 +225,11 @@ public final class V185Test {
     static void dragonRest(ServerPlayer sp) {
         var sl = sp.serverLevel();
         double gy = sp.getY();
-        AutoTest.dummyVillagerAt(sl, 200.5, 230.5);
-        for (var v : sl.getEntitiesOfClass(net.minecraft.world.entity.npc.Villager.class, new net.minecraft.world.phys.AABB(190, gy - 5, 220, 210, gy + 5, 240))) v.addTag("tc_dummy");
+        double x = sp.getX(), z = sp.getZ();
+        AutoTest.dummyVillagerAt(sl, x, z - 50);
+        for (var v : sl.getEntitiesOfClass(net.minecraft.world.entity.npc.Villager.class, new net.minecraft.world.phys.AABB(x - 3, gy - 5, z - 53, x + 3, gy + 5, z - 47))) v.addTag("tc_dummy");
         restDragon = EntityType.ENDER_DRAGON.create(sl);
-        restDragon.moveTo(200.5, gy + 25, 200.5, 0, 0);
+        restDragon.moveTo(x, gy + 25, z - 20, 0, 0);
         sl.addFreshEntity(restDragon);
         restDragon.getPhaseManager().setPhase(net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase.HOLDING_PATTERN);
         com.tycooncraft.mob.VanillaBossBuffs.forceMove(restDragon, 1);
