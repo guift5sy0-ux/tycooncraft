@@ -32,6 +32,7 @@ public record HornPayload() implements CustomPacketPayload {
         com.tycooncraft.ship.ShipPayloads.register(registrar);
         com.tycooncraft.economy.BankPayloads.register(registrar);
         com.tycooncraft.gun.GunWorkbenchPayload.register(registrar);
+        com.tycooncraft.gear.ShieldBashPayload.register(registrar);
         registrar.playToClient(TracerPayload.TYPE, TracerPayload.CODEC, (p, ctx) -> ctx.enqueueWork(() -> com.tycooncraft.client.BulletFx.spawn(p)));
     }
 

@@ -565,7 +565,7 @@
   "tooltip.tycooncraft.gun_workbench": "Workbench for guns and ammo",
   "gui.tycooncraft.gun_workbench.any_planks": "Planks (any wood)",
   "item.tycooncraft.police_shield": "Riot Shield",
-  "tooltip.tycooncraft.police_shield": "Clear polycarbonate riot shield · 1200 durability · no knockback while blocking · blocked bullets cannot pierce · repair with steel plates",
+  "tooltip.tycooncraft.police_shield": "Clear polycarbonate · 1200 durability · no knockback while blocking · blocked bullets cannot pierce",
   "message.tycooncraft.gun.dual_offhand": "Empty your off hand to use dual pistols",
   "gui.tycooncraft.gun_workbench.tab.guns": "Guns",
   "gui.tycooncraft.gun_workbench.tab.ammo": "Ammo",
@@ -627,5 +627,7 @@
   "message.tycooncraft.factory_kit.built": "[Factory Kit] Your factory is up! Toss ores onto the first belt",
   "message.tycooncraft.factory_kit.blocked": "Something is in the way (%s, %s, %s)",
   "message.tycooncraft.factory_kit.height": "Not enough height here",
-  "message.tycooncraft.factory_kit.preview": "The factory will go inside the green outline. Right-click to build"
+  "message.tycooncraft.factory_kit.preview": "The factory will go inside the green outline. Right-click to build",
+  "tooltip.tycooncraft.police_shield2": "Main hand + Q: charge — person-sized targets are flung and stunned 0.5s, 6 damage (4s cooldown)",
+  "tooltip.tycooncraft.police_shield3": "Shield strike: 6 damage · repair with steel plates"
 }

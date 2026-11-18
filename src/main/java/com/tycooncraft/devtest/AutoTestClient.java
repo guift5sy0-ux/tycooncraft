@@ -735,7 +735,9 @@ public final class AutoTestClient {
             case 2994 -> shot(mc, "87_factory_kit_inside");
             case 3200 -> serverDo(mc, V185Test::kitCheck);
             case 3212 -> shot(mc, "88_factory_kit_outside");
-            case 3216 -> next(11);
+            case 3216 -> serverDo(mc, V185Test::bash);
+            case 3220 -> serverDo(mc, V185Test::bashCheck);
+            case 3226 -> next(11);
             default -> {
             }
         }

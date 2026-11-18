@@ -187,5 +187,34 @@ public final class V185Test {
         sp.teleportTo(sl, kitOrigin.getX() + 7.5, kitOrigin.getY() + 1, kitOrigin.getZ() - 8.5, 0f, 12f);
     }
 
+    static Zombie bashTarget;
+    static float bashHp;
+    static net.minecraft.world.phys.Vec3 bashStart;
+
+    /** v0.18.8: 진압용 방패 돌진 */
+    static void bash(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        sp.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        sp.teleportTo(sl, -90.5, sp.getY(), -150.5, 180f, 0f);   // 북쪽을 봄
+        sp.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.POLICE_SHIELD.get()));
+        double atk = sp.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+        bashTarget = EntityType.ZOMBIE.create(sl);
+        bashTarget.moveTo(-90.5, sp.getY(), -153.5, 0, 0);
+        bashTarget.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
+        sl.addFreshEntity(bashTarget);
+        bashHp = bashTarget.getHealth();
+        bashStart = bashTarget.position();
+        com.tycooncraft.gear.PoliceShieldItem.bash(sp);
+        System.out.println("[AUTOTEST] v188 shieldAttack=" + atk + " cooldown=" + sp.getCooldowns().isOnCooldown(ModItems.POLICE_SHIELD.get()));
+    }
+
+    static void bashCheck(ServerPlayer sp) {
+        System.out.println(String.format("[AUTOTEST] v188 bash hits=%d dmg=%.1f flung=%.2f stunned=%s slow=%s",
+                com.tycooncraft.gear.PoliceShieldItem.BASH_HITS, bashHp - bashTarget.getHealth(), bashTarget.position().subtract(bashStart).horizontalDistance(),
+                com.tycooncraft.gear.PoliceShieldItem.stunned(bashTarget), bashTarget.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN)));
+        bashTarget.discard();
+        sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+    }
+
     private V185Test() {}
 }

@@ -126,8 +126,27 @@ public final class VanillaBossBuffs {
         if (!(e.level() instanceof ServerLevel sl) || !e.isAlive()) return;
         if (e instanceof net.minecraft.world.entity.Mob m && m.isNoAi()) return;
         if (e instanceof WitherBoss w) tickWither(sl, w, st(w));
-        else if (e instanceof EnderDragon d) tickDragon(sl, d, st(d));
+        else if (e instanceof EnderDragon d) {
+            tickDragon(sl, d, st(d));
+            calmWings(sl, d);
+        }
         if (e.tickCount % 20 == 0) huntDestroyer(sl, e);
+    }
+
+    /** 바닐라 드래곤 날개 밀쳐내기(4블록/틱)도 줄임: 근처 플레이어의 갑작스런 수평 속도를 0.7로 제한 (겉날개 비행 중 제외) */
+    public static final double DRAGON_MAX_PUSH = 0.7;
+
+    private static void calmWings(ServerLevel sl, EnderDragon d) {
+        for (Player p : sl.getEntitiesOfClass(Player.class, d.getBoundingBox().inflate(8))) {
+            if (p.isFallFlying() || p.isSpectator()) continue;
+            Vec3 v = p.getDeltaMovement();
+            double h = Math.sqrt(v.x * v.x + v.z * v.z);
+            if (h > DRAGON_MAX_PUSH) {
+                double k = DRAGON_MAX_PUSH / h;
+                p.setDeltaMovement(v.x * k, Math.min(v.y, 0.5), v.z * k);
+                p.hurtMarked = true;
+            }
+        }
     }
 
     /** 보스들(위더·워든·엘더 가디언)은 디스트로이어와 적대: 플레이어를 노리고 있지 않으면 디스트로이어를 노림 */
@@ -376,7 +395,7 @@ public final class VanillaBossBuffs {
 
     private static final Map<Entity, DState> DSTATES = new WeakHashMap<>();
     /** 드래곤 패턴 밀쳐내기 배율 (v0.18.3: 너무 세서 40%로) */
-    public static final double DRAGON_KB = 0.4;
+    public static final double DRAGON_KB = 0.2;
 
     /** 테스트용: 기술 강제 시작 */
     public static void forceMove(EnderDragon d, int move) {

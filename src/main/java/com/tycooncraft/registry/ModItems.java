@@ -133,7 +133,7 @@ public final class ModItems {
     public static final DeferredItem<com.tycooncraft.item.FactoryKitItem> FACTORY_KIT = ITEMS.register("factory_kit",
             () -> new com.tycooncraft.item.FactoryKitItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON)));
     public static final DeferredItem<com.tycooncraft.gear.PoliceShieldItem> POLICE_SHIELD = ITEMS.register("police_shield",
-            () -> new com.tycooncraft.gear.PoliceShieldItem(new Item.Properties().durability(1200)));
+            () -> new com.tycooncraft.gear.PoliceShieldItem(new Item.Properties().durability(1200).attributes(com.tycooncraft.gear.PoliceShieldItem.attributes())));
     public static final DeferredItem<GearItem> HELMET_4 = gear("helmet_4", ModArmorMaterials.JUGGERNAUT, ArmorItem.Type.HELMET, 45, "tooltip.tycooncraft.helmet", 54);
     public static final DeferredItem<GearItem> VEST_4 = gear("vest_4", ModArmorMaterials.JUGGERNAUT, ArmorItem.Type.CHESTPLATE, 45, "tooltip.tycooncraft.vest", 35);
     public static final DeferredItem<GearItem> JUGGERNAUT_LEGGINGS = gear("juggernaut_leggings", ModArmorMaterials.JUGGERNAUT, ArmorItem.Type.LEGGINGS, 45, "tooltip.tycooncraft.jugg_legs", 7);
