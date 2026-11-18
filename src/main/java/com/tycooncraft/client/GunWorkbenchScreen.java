@@ -18,7 +18,7 @@ import java.util.Map;
 /** 총기 제작대 화면: 작업대 격자 + 왼쪽에 제작법 목록 (마우스를 올리면 재료 표시) */
 public class GunWorkbenchScreen extends AbstractContainerScreen<GunWorkbenchMenu> {
     private static final ResourceLocation BG = ResourceLocation.withDefaultNamespace("textures/gui/container/crafting_table.png");
-    private static final int PANEL_W = 96, COLS = 4;
+    private static final int PANEL_W = 100, COLS = 5, STEP = 18;
 
     public GunWorkbenchScreen(GunWorkbenchMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);
@@ -44,13 +44,14 @@ public class GunWorkbenchScreen extends AbstractContainerScreen<GunWorkbenchMenu
         g.drawString(font, Component.translatable("gui.tycooncraft.gun_workbench.recipes"), px + 6, py + 6, 0x404040, false);
         List<GunCrafting.Recipe> all = GunCrafting.all();
         for (int i = 0; i < all.size(); i++) {
-            int x = px + 6 + (i % COLS) * 21, y = py + 18 + (i / COLS) * 21;
+            int x = px + 6 + (i % COLS) * STEP, y = py + 18 + (i / COLS) * STEP;
             g.fill(x, y, x + 18, y + 18, 0xFF8B8B8B);
             g.fill(x + 1, y + 1, x + 17, y + 17, 0xFF373737);
             g.renderItem(all.get(i).result(), x + 1, y + 1);
             g.renderItemDecorations(font, all.get(i).result(), x + 1, y + 1);
         }
-        g.drawWordWrap(font, Component.translatable("gui.tycooncraft.gun_workbench.hint"), px + 6, py + 18 + ((all.size() + COLS - 1) / COLS) * 21 + 4, PANEL_W - 10, 0x555555);
+        int hy = py + 18 + ((all.size() + COLS - 1) / COLS) * STEP + 3;
+        if (hy + 18 < py + imageHeight) g.drawWordWrap(font, Component.translatable("gui.tycooncraft.gun_workbench.hint"), px + 6, hy, PANEL_W - 10, 0x555555);
     }
 
     @Override
@@ -60,7 +61,7 @@ public class GunWorkbenchScreen extends AbstractContainerScreen<GunWorkbenchMenu
         List<GunCrafting.Recipe> all = GunCrafting.all();
         int px = panelX(), py = topPos;
         for (int i = 0; i < all.size(); i++) {
-            int x = px + 6 + (i % COLS) * 21, y = py + 18 + (i / COLS) * 21;
+            int x = px + 6 + (i % COLS) * STEP, y = py + 18 + (i / COLS) * STEP;
             if (mx >= x && mx < x + 18 && my >= y && my < y + 18) {
                 g.renderComponentTooltip(font, lines(all.get(i)), mx, my);
                 break;

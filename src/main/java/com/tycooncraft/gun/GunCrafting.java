@@ -46,6 +46,18 @@ public final class GunCrafting {
             l.add(r(ModItems.VSS.get(), 1, rec, 1, bar, 1, ModItems.SILENCER.get(), 1, stock, 1, Items.SPYGLASS, 1, ModItems.STEEL_PLATE.get(), 2));
             l.add(r(ModItems.RPG.get(), 1, rec, 1, ModItems.STEEL_PLATE.get(), 4, ModItems.STEEL_ROD.get(), 2, stock, 1, Items.SPYGLASS, 1));
             l.add(r(ModItems.JUDGE.get(), 1, Items.BEACON, 2, Items.NETHERITE_INGOT, 5, Items.DRAGON_EGG, 1, ModItems.PISTOL.get(), 1));
+            // 총기 파츠 (총기 제작대 전용, 한 칸 = 1개라 9칸 안에 들어가게)
+            l.add(r(part(GunPart.SCOPE), 1, ModItems.ALUMINUM_PLATE.get(), 2, Items.GLASS_PANE, 2, ModItems.STEEL_ROD.get(), 1, ModItems.CIRCUIT.get(), 1));
+            l.add(r(part(GunPart.RED_DOT), 1, ModItems.ALUMINUM_PLATE.get(), 1, Items.GLASS_PANE, 1, Items.REDSTONE, 1, ModItems.BATTERY_CELL.get(), 1, ModItems.CIRCUIT.get(), 1));
+            l.add(r(part(GunPart.HEAVY_BARREL), 1, bar, 1, ModItems.STEEL_PLATE.get(), 2, ModItems.ALUMINUM_PLATE.get(), 1));
+            l.add(r(part(GunPart.RAPID_TRIGGER), 1, ModItems.STEEL_ROD.get(), 1, ModItems.MECHANISM.get(), 1, Items.GOLD_INGOT, 1));
+            l.add(r(part(GunPart.EXTENDED_MAG), 1, ModItems.STEEL_PLATE.get(), 2, ModItems.PLASTIC_PELLET.get(), 3));
+            l.add(r(part(GunPart.MAG_COUPLER), 1, ModItems.PLASTIC_PELLET.get(), 2, ModItems.RUBBER.get(), 2, ModItems.STEEL_PLATE.get(), 1));
+            l.add(r(part(GunPart.VERTICAL_GRIP), 1, ModItems.PLASTIC_PELLET.get(), 4, ModItems.ALUMINUM_PLATE.get(), 1, ModItems.RUBBER.get(), 1));
+            l.add(r(part(GunPart.AP_ROUNDS), 1, ModItems.HEAVY_AMMO.get(), 4, ModItems.STEEL_INGOT.get(), 2, ModItems.COKE.get(), 1));
+            l.add(r(part(GunPart.INCENDIARY_ROUNDS), 1, ModItems.LIGHT_AMMO.get(), 4, ModItems.SULFUR.get(), 2, Items.BLAZE_POWDER, 1));
+            l.add(r(part(GunPart.BRASS_CATCHER), 1, Items.LEATHER, 3, ModItems.ALUMINUM_PLATE.get(), 1, Items.STRING, 2));
+            l.add(r(ModItems.SILENCER_ADVANCED.get(), 1, ModItems.SILENCER.get(), 1, ModItems.STEEL_PLATE.get(), 2, Items.BLACK_WOOL, 2, ModItems.GOLD_PLATE.get(), 1));
             // 탄약 (가공 재료로 만들면 더 많이 나옴)
             l.add(r(ModItems.LIGHT_AMMO.get(), 16, ModItems.COPPER_PLATE.get(), 1, Items.GUNPOWDER, 1, ModItems.IRON_ROD.get(), 1));
             l.add(r(ModItems.LIGHT_AMMO.get(), 6, Items.COPPER_INGOT, 1, Items.GUNPOWDER, 1, Items.IRON_NUGGET, 1));
@@ -57,6 +69,10 @@ public final class GunCrafting {
             recipes = List.copyOf(l);
         }
         return recipes;
+    }
+
+    private static Item part(GunPart p) {
+        return ModItems.GUN_PART_ITEMS.get(p).get();
     }
 
     /** 격자 내용과 정확히 맞는 레시피 */

@@ -78,6 +78,11 @@ public final class GunWorkbenchTest {
         boolean recOk = m.getSlot(0).getItem().is(rec);
         fill(m, ModItems.STEEL_PLATE.get(), ModItems.STEEL_ROD.get(), Items.WHITE_WOOL);
         boolean silOk = m.getSlot(0).getItem().is(ModItems.SILENCER.get());
+        fill(m, ModItems.ALUMINUM_PLATE.get(), Items.GLASS_PANE, ModItems.STEEL_ROD.get(), Items.GLASS_PANE, ModItems.CIRCUIT.get(), ModItems.ALUMINUM_PLATE.get());
+        boolean scopeOk = m.getSlot(0).getItem().is(ModItems.GUN_PART_ITEMS.get(com.tycooncraft.gun.GunPart.SCOPE).get());
+        int assemblerParts = 0;
+        for (var r : MachineType.ASSEMBLER.recipes()) if (r.output() instanceof com.tycooncraft.gun.GunPartItem || r.output() == ModItems.SILENCER_ADVANCED.get()) assemblerParts++;
+        System.out.println("[AUTOTEST] v18 workbench gunParts scope=" + scopeOk + " assemblerParts=" + assemblerParts);
         long total = rm.getRecipes().stream().filter(h -> h.id().getNamespace().equals("tycooncraft")).count();
         long known = rm.getRecipes().stream().filter(h -> h.id().getNamespace().equals("tycooncraft") && sp.getRecipeBook().contains(h)).count();
         System.out.println("[AUTOTEST] v18 workbench parts stock=" + stockOk + " barrel=" + barrelOk + " receiver=" + recOk + " silencer=" + silOk
