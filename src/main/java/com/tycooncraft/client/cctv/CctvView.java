@@ -157,6 +157,11 @@ public final class CctvView {
 
     /** 보는 동안 핫바·체력 같은 화면 요소 숨김 */
     @SubscribeEvent
+    public static void onHand(net.neoforged.neoforge.client.event.RenderHandEvent e) {
+        if (active()) e.setCanceled(true);   // 카메라 화면에 손/들고 있는 아이템이 보이지 않게
+    }
+
+    @SubscribeEvent
     public static void onLayer(RenderGuiLayerEvent.Pre e) {
         if (active()) e.setCanceled(true);
     }
