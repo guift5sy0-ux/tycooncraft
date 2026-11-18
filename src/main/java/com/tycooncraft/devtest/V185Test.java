@@ -330,6 +330,7 @@ public final class V185Test {
         sp.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);   // 탄약 소모 확인
         sp.getInventory().clearContent();
         sp.getInventory().add(new ItemStack(ModItems.HEAVY_AMMO.get(), 64));
+        sp.getInventory().add(new ItemStack(ModItems.ROCKET.get(), 2));   // 2발만 → 3연발 중 2발 발사
 
         System.out.println("[AUTOTEST] v190 proto spawned=" + (proto != null) + " mount=" + r + " riding=" + (sp.getVehicle() == proto)
                 + " hp=" + proto.getHealth() + " recipe=" + sl.getRecipeManager().byKey(com.tycooncraft.TycoonCraft.id("proto_destroyer")).isPresent());
@@ -352,6 +353,7 @@ public final class V185Test {
         shotsAfterFire = com.tycooncraft.mech.ProtoDestroyer.shots;
         protoTarget.setHealth(400);
         protoFire(sp);   // 조준만 갱신 (쿨다운 중)
+        proto.action(sp, com.tycooncraft.mech.ProtoDestroyer.ACT_ROCKETS);
 
     }
 
@@ -376,7 +378,7 @@ public final class V185Test {
         armor[1] = mh - proto.getHealth();
         int ammoLeft = com.tycooncraft.mech.ProtoDestroyer.count(sp, ModItems.HEAVY_AMMO.get()), rocketLeft = com.tycooncraft.mech.ProtoDestroyer.count(sp, ModItems.ROCKET.get());
         sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
-        System.out.printf("[AUTOTEST] v191 ammo heavyLeft=%d/64 dry=%d%n", ammoLeft, com.tycooncraft.mech.ProtoDestroyer.dryFires);
+        System.out.printf("[AUTOTEST] v191 ammo heavyLeft=%d/64 rocketsLeft=%d/2 dry=%d%n", ammoLeft, rocketLeft, com.tycooncraft.mech.ProtoDestroyer.dryFires);
         System.out.printf("[AUTOTEST] v190 fire shots=%d targetDmg=%.1f heat=%.0f | rockets=%d targetDmg=%.1f | slams=%d targetDmg=%.1f | riderHit rider=%.1f hull=%.1f%n",
                 shotsAfterFire, 400 - hpAfterFire, heatAfterFire, com.tycooncraft.mech.ProtoDestroyer.rockets, 400 - hpAfterRockets,
                 com.tycooncraft.mech.ProtoDestroyer.slams, 400 - hpAfterSlam, armor[0], armor[1]);

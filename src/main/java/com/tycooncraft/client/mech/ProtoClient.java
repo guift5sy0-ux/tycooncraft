@@ -81,6 +81,7 @@ public final class ProtoClient {
                     b.get("arm_left").z += (age % 2f < 1f) ? 0.5f : 0f;
                     b.get("arm_right").z += (age % 2f >= 1f) ? 0.5f : 0f;
                 }
+                case ProtoDestroyer.ROCKETS -> b.get("pod").xRot -= 0.3f * Math.min(1f, t / 4f);
                 case ProtoDestroyer.SLAM -> {
                     float k = Math.max(0f, 1f - t / 10f);
                     hull.y += 3.5f * k;                                        // 착지 충격으로 주저앉음
@@ -171,6 +172,7 @@ public final class ProtoClient {
         if (m == null || e.isPickBlock()) return;
         e.setCanceled(true);
         e.setSwingHand(false);
+        if (e.isUseItem()) send(m, ProtoDestroyer.ACT_ROCKETS);
     }
 
     @SubscribeEvent
@@ -187,7 +189,7 @@ public final class ProtoClient {
         int w = g.guiWidth(), h = g.guiHeight();
         int x = 8, y = 10;   // 왼쪽 위 (체력 하트·핫바와 겹치지 않게)
         var font = mc.font;
-        g.fill(x - 4, y - 4, x + 200, y + 30, 0x90000000);
+        g.fill(x - 4, y - 4, x + 200, y + 40, 0x90000000);
         g.drawString(font, Component.translatable("entity.tycooncraft.proto_destroyer"), x, y - 1, 0xFFE0A050);
         bar(g, x, y + 9, m.getHealth() / m.getMaxHealth(), 0xFFD03A2A, Component.translatable("hud.tycooncraft.proto.hp", Math.round(m.getHealth())), font);
         int hc = m.overheated() ? ((m.tickCount / 4) % 2 == 0 ? 0xFFFF3020 : 0xFF802010) : 0xFFFF9A30;
@@ -196,7 +198,11 @@ public final class ProtoClient {
         boolean cr = mc.player.getAbilities().instabuild;
         int ammo = ProtoDestroyer.count(mc.player, com.tycooncraft.registry.ModItems.HEAVY_AMMO.get());
         g.drawString(font, Component.translatable("hud.tycooncraft.proto.ammo", cr ? "∞" : String.valueOf(ammo)), x + 96, y + 9, cr || ammo > 0 ? 0xFFFFFFFF : 0xFFFF5040);
-        g.drawString(font, Component.translatable(m.slamCd() > 0 ? "hud.tycooncraft.proto.stomp_wait" : "hud.tycooncraft.proto.stomp"), x + 96, y + 19,
+        int rockets = ProtoDestroyer.count(mc.player, com.tycooncraft.registry.ModItems.ROCKET.get());
+        String rk = m.rocketCd() > 0 ? String.format("%.1fs", m.rocketCd() / 20f) : "READY";
+        g.drawString(font, Component.translatable("hud.tycooncraft.proto.rocket", cr ? "∞" : String.valueOf(rockets), rk), x + 96, y + 19,
+                m.rocketCd() > 0 || (!cr && rockets == 0) ? 0xFF909090 : 0xFF80FF80);
+        g.drawString(font, Component.translatable(m.slamCd() > 0 ? "hud.tycooncraft.proto.stomp_wait" : "hud.tycooncraft.proto.stomp"), x, y + 29,
                 m.slamCd() > 0 ? 0xFF909090 : 0xFF80FF80);
     }
 

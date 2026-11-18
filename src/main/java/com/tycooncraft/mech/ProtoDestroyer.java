@@ -40,7 +40,7 @@ import java.util.UUID;
 
 /**
  * v0.19.1 프로토 디스트로이어: 플레이어가 타는 역관절 보행 병기.
- * 조작: WASD 이동(묵직·느림) · 마우스 방향 · 좌클릭(누르고 있기) 양팔 개틀링 [중탄 소모]
+ * 조작: WASD 이동(묵직·느림) · 마우스 방향 · 좌클릭(누르고 있기) 양팔 개틀링 [중탄 소모] · 우클릭 로켓 3연발 [로켓 소모]
  *       · 스페이스 점프 (높이 떨어지면 착지 충격파) · Shift 내리기
  * 주인(과 동맹)만 탈 수 있음. 주인이 웅크리고 빈손 우클릭 → 아이템으로 회수 (체력 유지). 철/강철 주괴로 수리.
  */
@@ -201,6 +201,14 @@ public class ProtoDestroyer extends PathfinderMob {
         if (getControllingPassenger() != rider || !isAlive()) return;
         switch (act) {
             case ACT_FIRE -> fire(rider);
+            case ACT_ROCKETS -> {
+                if (rocketCd() > 0 || attack() == ROCKETS) return;
+                int have = rider.getAbilities().instabuild ? 3 : Math.min(3, count(rider, ModItems.ROCKET.get()));
+                if (have == 0) { dry(); return; }
+                rocketsLeft = have;
+                setAttack(ROCKETS);
+                entityData.set(ROCKET_T, ROCKET_CD);
+            }
             case ACT_JUMP -> playSound(SoundEvents.PISTON_EXTEND, 1.6f, 0.5f);   // 점프 자체는 조종하는 클라이언트가 처리
             default -> {}
         }
@@ -282,6 +290,17 @@ public class ProtoDestroyer extends PathfinderMob {
         Player rider = getControllingPassenger() instanceof Player p ? p : null;
         switch (attack()) {
             case FIRING -> { if (tickCount - lastFire > 8) setAttack(IDLE); }
+            case ROCKETS -> {
+                if (rider != null && rocketsLeft > 0 && (attackT == 6 || attackT == 12 || attackT == 18) && take(rider, ModItems.ROCKET.get())) {
+                    rocketsLeft--;
+                    Vec3 from = local(-1.75, 4.4, 1.3);
+                    Vec3 dir = aimPoint(rider).subtract(from).normalize();
+                    level().addFreshEntity(RocketEntity.create(ModEntities.ROCKET.get(), level(), rider, from.add(dir.scale(1.6)), dir.scale(1.3), RocketEntity.ROCKET, 2.4f));
+                    playSound(ModSounds.RPG_FIRE.get(), 2.5f, 1.0f);
+                    rockets++;
+                }
+                if (attackT >= 24) setAttack(IDLE);
+            }
             case SLAM -> { if (attackT >= 14) setAttack(IDLE); }
             default -> {}
         }

@@ -646,7 +646,7 @@
   "entity.tycooncraft.proto_destroyer": "Proto Destroyer",
   "item.tycooncraft.proto_destroyer": "Proto Destroyer",
   "tooltip.tycooncraft.proto.1": "Right-click the ground to deploy, right-click to ride",
-  "tooltip.tycooncraft.proto.2": "Hold LMB: twin gatlings [heavy ammo] · Space: jump",
+  "tooltip.tycooncraft.proto.2": "Hold LMB: twin gatlings [heavy ammo] · RMB: 3 rockets · Space: jump",
   "tooltip.tycooncraft.proto.3": "Landing from a jump makes a shockwave · the hull shields the pilot",
   "tooltip.tycooncraft.proto.4": "Sneak + empty hand: pick up · iron/steel ingot: repair",
   "tooltip.tycooncraft.proto.health": "Hull %s / %s",
