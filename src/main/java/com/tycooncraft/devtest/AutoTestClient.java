@@ -688,15 +688,29 @@ public final class AutoTestClient {
             // ── v0.18: 총기 제작대 ──
             case 2764 -> serverDo(mc, GunWorkbenchTest::run);
             case 2770 -> mc.getToasts().clear();
+            case 2766 -> {
+                int rifle = 0;
+                for (int i = 0; i < com.tycooncraft.gun.GunCrafting.all().size(); i++)
+                    if (com.tycooncraft.gun.GunCrafting.all().get(i).result().is(com.tycooncraft.registry.ModItems.RIFLE.get())) rifle = i;
+                com.tycooncraft.client.GunWorkbenchScreen.select(0, rifle);
+            }
             case 2774 -> shot(mc, "78_gun_workbench");
-            case 2776 -> { if (mc.player != null) mc.player.closeContainer(); }
+            case 2775 -> com.tycooncraft.client.GunWorkbenchScreen.select(3, -1);
+            case 2777 -> shot(mc, "78b_gun_workbench_parts");
+            case 2778 -> { if (mc.player != null) mc.player.closeContainer(); }
+            case 2779 -> serverDo(mc, GunWorkbenchTest::showcase);
+            case 2790 -> mc.getToasts().clear();
+            case 2794 -> shot(mc, "80_gun_workbench_block");
+            case 2795 -> serverDo(mc, GunWorkbenchTest::showItems);
+            case 2799 -> shot(mc, "81_new_item_textures");
+            case 2801 -> { if (mc.player != null) mc.player.closeContainer(); }
             // ── v0.18.3: 트럭 운전수, 쌍권총, 경찰 방패 ──
-            case 2780 -> serverDo(mc, V183Test::setup);
-            case 2860 -> serverDo(mc, V183Test::check);
-            case 2868 -> mc.getToasts().clear();
-            case 2872 -> shot(mc, "79_police_shield");
-            case 2874 -> serverDo(mc, V183Test::cleanup);
-            case 2878 -> next(11);
+            case 2803 -> serverDo(mc, V183Test::setup);
+            case 2880 -> serverDo(mc, V183Test::check);
+            case 2888 -> mc.getToasts().clear();
+            case 2892 -> shot(mc, "79_police_shield");
+            case 2894 -> serverDo(mc, V183Test::cleanup);
+            case 2898 -> next(11);
             default -> {
             }
         }

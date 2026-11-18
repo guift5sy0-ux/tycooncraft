@@ -559,12 +559,20 @@
   "block.tycooncraft.gun_workbench": "총기 제작대",
   "container.tycooncraft.gun_workbench": "총기 제작대",
   "gui.tycooncraft.gun_workbench.recipes": "제작법",
-  "gui.tycooncraft.gun_workbench.needs": "재료 (배치 자유):",
-  "gui.tycooncraft.gun_workbench.hint": "아이콘에 마우스를 올리면 재료가 보여요",
+  "gui.tycooncraft.gun_workbench.needs": "필요한 재료 (보유/필요):",
+  "gui.tycooncraft.gun_workbench.hint": "왼쪽에서 만들 것을 고르세요",
   "tooltip.tycooncraft.gun_workbench_only": "총기 제작대에서 제작",
   "tooltip.tycooncraft.gun_workbench": "총기와 탄약을 만드는 전용 작업대",
   "gui.tycooncraft.gun_workbench.any_planks": "판자 (아무 나무)",
   "item.tycooncraft.police_shield": "경찰 방패",
   "tooltip.tycooncraft.police_shield": "진압 방패 · 내구도 1200 · 막는 동안 밀려나지 않음 · 막은 총알은 관통 못 함 · 강철판으로 수리",
-  "message.tycooncraft.gun.dual_offhand": "쌍권총은 왼손을 비워야 쏠 수 있어요"
+  "message.tycooncraft.gun.dual_offhand": "쌍권총은 왼손을 비워야 쏠 수 있어요",
+  "gui.tycooncraft.gun_workbench.tab.guns": "총기",
+  "gui.tycooncraft.gun_workbench.tab.ammo": "탄약",
+  "gui.tycooncraft.gun_workbench.tab.components": "총기 부품",
+  "gui.tycooncraft.gun_workbench.tab.attachments": "총기 파츠",
+  "gui.tycooncraft.gun_workbench.can_make": "%s번 만들 수 있음",
+  "gui.tycooncraft.gun_workbench.missing": "재료 부족",
+  "gui.tycooncraft.gun_workbench.click_fill": "클릭: 재료 채우기",
+  "gui.tycooncraft.gun_workbench.click_fill_long": "클릭: 재료 채우기 · Shift+클릭: 최대한"
 }

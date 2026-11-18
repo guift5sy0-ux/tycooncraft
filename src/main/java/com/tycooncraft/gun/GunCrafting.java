@@ -75,12 +75,33 @@ public final class GunCrafting {
         return ModItems.GUN_PART_ITEMS.get(p).get();
     }
 
+    /** 0 총기, 1 탄약, 2 총기 부품, 3 총기 파츠 */
+    public static int category(Recipe rc) {
+        Item it = rc.result().getItem();
+        if (it instanceof GunItem) return 0;
+        if (it == ModItems.LIGHT_AMMO.get() || it == ModItems.HEAVY_AMMO.get() || it == ModItems.SHOTGUN_SHELL.get() || it == ModItems.ROCKET.get()) return 1;
+        if (it == ModItems.GUN_RECEIVER.get() || it == ModItems.GUN_BARREL.get() || it == ModItems.GUN_STOCK.get() || it == ModItems.SILENCER.get()) return 2;
+        return 3;
+    }
+
+    /** 판자는 종류 상관없이 하나로 셈 */
+    public static Item key(ItemStack s) {
+        return s.is(net.minecraft.tags.ItemTags.PLANKS) ? Items.OAK_PLANKS : s.getItem();
+    }
+
+    /** 가진 재료로 몇 번 만들 수 있는지 */
+    public static int sets(Recipe rc, Map<Item, Integer> have) {
+        int n = Integer.MAX_VALUE;
+        for (Map.Entry<Item, Integer> e : rc.needs().entrySet()) n = Math.min(n, have.getOrDefault(e.getKey(), 0) / e.getValue());
+        return n == Integer.MAX_VALUE ? 0 : n;
+    }
+
     /** 격자 내용과 정확히 맞는 레시피 */
     public static Recipe match(Container grid) {
         Map<Item, Integer> have = new LinkedHashMap<>();
         for (int i = 0; i < grid.getContainerSize(); i++) {
             ItemStack s = grid.getItem(i);
-            if (!s.isEmpty()) have.merge(s.is(net.minecraft.tags.ItemTags.PLANKS) ? Items.OAK_PLANKS : s.getItem(), 1, Integer::sum);
+            if (!s.isEmpty()) have.merge(key(s), 1, Integer::sum);
         }
         if (have.isEmpty()) return null;
         for (Recipe rc : all()) if (rc.needs().equals(have)) return rc;

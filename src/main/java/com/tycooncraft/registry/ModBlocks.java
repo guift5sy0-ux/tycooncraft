@@ -28,7 +28,7 @@ public final class ModBlocks {
 
     public static final DeferredBlock<com.tycooncraft.gun.GunWorkbenchBlock> GUN_WORKBENCH = BLOCKS.register("gun_workbench",
             () -> new com.tycooncraft.gun.GunWorkbenchBlock(BlockBehaviour.Properties.of().mapColor(net.minecraft.world.level.material.MapColor.WOOD)
-                    .strength(2.5f).sound(net.minecraft.world.level.block.SoundType.WOOD)));
+                    .strength(2.5f).sound(net.minecraft.world.level.block.SoundType.WOOD).noOcclusion()));
 
     // ── 운반 ──
     public static final DeferredBlock<ConveyorBlock> CONVEYOR = BLOCKS.register("conveyor",

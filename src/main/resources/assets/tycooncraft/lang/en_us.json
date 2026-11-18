@@ -559,12 +559,20 @@
   "block.tycooncraft.gun_workbench": "Gun Workbench",
   "container.tycooncraft.gun_workbench": "Gun Workbench",
   "gui.tycooncraft.gun_workbench.recipes": "Recipes",
-  "gui.tycooncraft.gun_workbench.needs": "Ingredients (any layout):",
-  "gui.tycooncraft.gun_workbench.hint": "Hover an icon to see its ingredients",
+  "gui.tycooncraft.gun_workbench.needs": "Ingredients (have/need):",
+  "gui.tycooncraft.gun_workbench.hint": "Pick something to craft",
   "tooltip.tycooncraft.gun_workbench_only": "Crafted at a Gun Workbench",
   "tooltip.tycooncraft.gun_workbench": "Workbench for guns and ammo",
   "gui.tycooncraft.gun_workbench.any_planks": "Planks (any wood)",
   "item.tycooncraft.police_shield": "Police Riot Shield",
   "tooltip.tycooncraft.police_shield": "Riot shield · 1200 durability · no knockback while blocking · blocked bullets cannot pierce · repair with steel plates",
-  "message.tycooncraft.gun.dual_offhand": "Empty your off hand to use dual pistols"
+  "message.tycooncraft.gun.dual_offhand": "Empty your off hand to use dual pistols",
+  "gui.tycooncraft.gun_workbench.tab.guns": "Guns",
+  "gui.tycooncraft.gun_workbench.tab.ammo": "Ammo",
+  "gui.tycooncraft.gun_workbench.tab.components": "Components",
+  "gui.tycooncraft.gun_workbench.tab.attachments": "Attachments",
+  "gui.tycooncraft.gun_workbench.can_make": "Can craft %s",
+  "gui.tycooncraft.gun_workbench.missing": "Missing materials",
+  "gui.tycooncraft.gun_workbench.click_fill": "Click: fill grid",
+  "gui.tycooncraft.gun_workbench.click_fill_long": "Click: fill · Shift+click: fill max"
 }

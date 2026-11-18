@@ -87,8 +87,62 @@ public final class GunWorkbenchTest {
         long known = rm.getRecipes().stream().filter(h -> h.id().getNamespace().equals("tycooncraft") && sp.getRecipeBook().contains(h)).count();
         System.out.println("[AUTOTEST] v18 workbench parts stock=" + stockOk + " barrel=" + barrelOk + " receiver=" + recOk + " silencer=" + silOk
                 + " recipeBook=" + known + "/" + total);
-        // 화면용: 소총 재료
-        fill(m, rec, bar, bar, stock, ModItems.ADVANCED_CIRCUIT.get());
+        // 제작법 클릭 → 재료 자동 채우기 (Shift = 최대)
+        fill(m);
+        sp.getInventory().clearContent();
+        sp.getInventory().add(new ItemStack(rec, 2)); sp.getInventory().add(new ItemStack(bar, 5)); sp.getInventory().add(new ItemStack(stock, 3));
+        sp.getInventory().add(new ItemStack(ModItems.ADVANCED_CIRCUIT.get(), 2)); sp.getInventory().add(new ItemStack(Items.GLASS, 4)); sp.getInventory().add(new ItemStack(Items.SPYGLASS, 2));
+        int sniperIdx = -1;
+        for (int i = 0; i < GunCrafting.all().size(); i++) if (GunCrafting.all().get(i).result().is(ModItems.SNIPER.get())) sniperIdx = i;
+        boolean one = m.fill(sp, sniperIdx, false);
+        boolean oneOk = m.getSlot(0).getItem().is(ModItems.SNIPER.get()) && m.grid.getItem(0).getCount() == 1;
+        boolean maxed = m.fill(sp, sniperIdx, true);
+        int perSlot = m.grid.getItem(0).getCount();
+        m.clicked(0, 0, ClickType.QUICK_MOVE, sp);
+        boolean refuse = !m.fill(sp, sniperIdx, false);
+        System.out.println("[AUTOTEST] v184 fill one=" + one + "/" + oneOk + " max=" + maxed + " perSlot=" + perSlot + " snipers=" + count(sp, ModItems.SNIPER.get())
+                + " noMaterialsRefused=" + refuse + " barrelsLeft=" + count(sp, bar));
+        // 화면용: 재료 조금 (만들 수 있는 것 / 없는 것 섞이게)
+        fill(m);
+        sp.getInventory().add(new ItemStack(rec, 1)); sp.getInventory().add(new ItemStack(bar, 2)); sp.getInventory().add(new ItemStack(stock, 1));
+        sp.getInventory().add(new ItemStack(ModItems.ADVANCED_CIRCUIT.get(), 1)); sp.getInventory().add(new ItemStack(ModItems.IRON_PLATE.get(), 3));
+        sp.getInventory().add(new ItemStack(ModItems.CIRCUIT.get(), 1)); sp.getInventory().add(new ItemStack(ModItems.STEEL_PLATE.get(), 6));
+    }
+
+    /** 제작대 3대 + 공장 아이템 진열 (방향별) */
+    static void showcase(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        BlockPos base = BlockPos.containing(-30, sp.getY(), -60);
+        for (int i = 0; i < 3; i++) {
+            var dir = new net.minecraft.core.Direction[]{net.minecraft.core.Direction.NORTH, net.minecraft.core.Direction.EAST, net.minecraft.core.Direction.WEST}[i];
+            sl.setBlockAndUpdate(base.offset(i * 2 - 2, 0, 0), ModBlocks.GUN_WORKBENCH.get().defaultBlockState().setValue(com.tycooncraft.gun.GunWorkbenchBlock.FACING, dir));
+        }
+        sp.teleportTo(sl, base.getX() + 0.5, base.getY() + 0.2, base.getZ() - 2.6, 0f, 32f);
+    }
+
+    /** 새 아이템 그림 한눈에: 상자(54칸) + 보관함(36칸) */
+    static void showItems(ServerPlayer sp) {
+        String[] ids = ("steel_ingot aluminum_ingot iron_plate steel_plate copper_plate gold_plate aluminum_plate iron_rod steel_rod rebar iron_gear steel_gear "
+                + "iron_dust copper_dust gold_dust coal_dust silica_dust bauxite_dust raw_bauxite rock_salt sulfur graphite coke silicon "
+                + "copper_wire gold_wire insulated_cable copper_coil bolt ball_bearing gasket valve piston drive_shaft steel_pipe h_beam "
+                + "circuit advanced_circuit control_board pcb microchip capacitor resistor battery_cell silicon_wafer solar_panel transformer electric_motor "
+                + "engine gearbox mechanism hydraulic_cylinder industrial_robot_arm drill_head wheel "
+                + "coin_copper coin_iron coin_gold coin_silver coin_emerald coin_diamond bill_5k bill_50k check_100k gold_bar_1m "
+                + "light_ammo heavy_ammo shotgun_shell frag_grenade flash_grenade smoke_grenade gun_receiver gun_barrel gun_stock silencer "
+                + "part_scope part_red_dot part_extended_mag part_vertical_grip vest_1 vest_2 vest_3 vest_4 helmet_4 pants_2 boots_3 combat_boots "
+                + "sulfuric_acid gas_cylinder fuel_canister wooden_crate").split(" ");
+        var chest = new net.minecraft.world.SimpleContainer(54);
+        sp.getInventory().clearContent();
+        int i = 0;
+        for (String id : ids) {
+            var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(com.tycooncraft.TycoonCraft.id(id));
+            if (item == Items.AIR) continue;
+            if (i < 54) chest.setItem(i, new ItemStack(item));
+            else if (i - 54 < 36) sp.getInventory().setItem((i - 54 + 9) % 36, new ItemStack(item));
+            i++;
+        }
+        sp.openMenu(new net.minecraft.world.SimpleMenuProvider((id, inv, p) -> net.minecraft.world.inventory.ChestMenu.sixRows(id, inv, chest),
+                net.minecraft.network.chat.Component.literal("TycoonCraft")));
     }
 
     private GunWorkbenchTest() {}
