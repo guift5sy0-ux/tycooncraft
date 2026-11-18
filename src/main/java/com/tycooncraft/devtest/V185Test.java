@@ -243,6 +243,13 @@ public final class V185Test {
         rush0 = com.tycooncraft.mob.VanillaBossBuffs.DSTATS[0];
     }
 
+    static void keepAirborne(ServerPlayer sp) {
+        if (restDragon == null || !restDragon.isAlive()) return;
+        var ph = restDragon.getPhaseManager().getCurrentPhase().getPhase();
+        if (ph != net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase.HOLDING_PATTERN)
+            restDragon.getPhaseManager().setPhase(net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase.HOLDING_PATTERN);
+    }
+
     static void dragonRestCheck(ServerPlayer sp) {
         double ground = sp.getY();
         System.out.println(String.format("[AUTOTEST] v188 dragonRest rests=%d heightAboveGround=%.1f rushes=%d phase=%s baitAlive=%s",

@@ -162,6 +162,7 @@ public final class AutoTestClient {
         var o = mc.options;
         int s = phaseT;
         double g = -60;
+        if (s > 3226 && s < 3300 && s % 2 == 0) serverDo(mc, V185Test::keepAirborne);   // 바닐라 착지 방지 (오버월드엔 수정이 없어 자꾸 내려앉음)
         switch (s) {
             case 1 -> {
                 o.setCameraType(CameraType.FIRST_PERSON);
