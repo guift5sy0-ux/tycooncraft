@@ -31,6 +31,11 @@ public final class GunCrafting {
         if (recipes == null) {
             Item rec = ModItems.GUN_RECEIVER.get(), bar = ModItems.GUN_BARREL.get(), stock = ModItems.GUN_STOCK.get();
             List<Recipe> l = new ArrayList<>();
+            // 총기 부품 (조립기·선반에서도 만들 수 있음)
+            l.add(r(rec, 1, ModItems.STEEL_PLATE.get(), 2, ModItems.MECHANISM.get(), 1, ModItems.IRON_GEAR.get(), 1));
+            l.add(r(bar, 1, ModItems.STEEL_ROD.get(), 1));
+            l.add(r(stock, 1, Items.OAK_PLANKS, 3, Items.LEATHER, 1));
+            l.add(r(ModItems.SILENCER.get(), 1, ModItems.STEEL_PLATE.get(), 1, ModItems.STEEL_ROD.get(), 1, Items.WHITE_WOOL, 1));
             // 총기
             l.add(r(ModItems.PISTOL.get(), 1, rec, 1, bar, 1, ModItems.IRON_PLATE.get(), 1));
             l.add(r(ModItems.DUAL_PISTOLS.get(), 1, ModItems.PISTOL.get(), 2, ModItems.MECHANISM.get(), 1));
@@ -59,14 +64,16 @@ public final class GunCrafting {
         Map<Item, Integer> have = new LinkedHashMap<>();
         for (int i = 0; i < grid.getContainerSize(); i++) {
             ItemStack s = grid.getItem(i);
-            if (!s.isEmpty()) have.merge(s.getItem(), 1, Integer::sum);
+            if (!s.isEmpty()) have.merge(s.is(net.minecraft.tags.ItemTags.PLANKS) ? Items.OAK_PLANKS : s.getItem(), 1, Integer::sum);
         }
         if (have.isEmpty()) return null;
         for (Recipe rc : all()) if (rc.needs().equals(have)) return rc;
         return null;
     }
 
+    /** 총기 제작대 전용 (총·탄약). 부품은 기계로도 만들 수 있으므로 제외 */
     public static boolean isGunOrAmmo(Item item) {
+        if (item == ModItems.GUN_RECEIVER.get() || item == ModItems.GUN_BARREL.get() || item == ModItems.GUN_STOCK.get() || item == ModItems.SILENCER.get()) return false;
         for (Recipe rc : all()) if (rc.result().is(item)) return true;
         return false;
     }

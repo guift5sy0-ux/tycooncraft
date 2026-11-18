@@ -34,6 +34,16 @@ public final class TycoonEvents {
         if (!player.level().isClientSide && !StarterKit.received(player)) {
             StarterKit.give(player);
         }
+        if (player instanceof net.minecraft.server.level.ServerPlayer sp) unlockRecipes(sp);
+    }
+
+    /** 모드 제작법은 처음부터 전부 레시피 북에 표시 (헷갈림 방지) */
+    public static int unlockRecipes(net.minecraft.server.level.ServerPlayer sp) {
+        var list = sp.server.getRecipeManager().getRecipes().stream()
+                .filter(h -> h.id().getNamespace().equals(com.tycooncraft.TycoonCraft.MODID))
+                .filter(h -> !sp.getRecipeBook().contains(h))
+                .toList();
+        return list.isEmpty() ? 0 : sp.awardRecipes(list);
     }
 
     @SubscribeEvent

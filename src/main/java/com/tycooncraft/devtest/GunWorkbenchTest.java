@@ -69,6 +69,19 @@ public final class GunWorkbenchTest {
                 new ItemStack(Items.OAK_LOG), new ItemStack(Items.SPRUCE_LOG), new ItemStack(Items.OAK_LOG))), sl);
         System.out.println("[AUTOTEST] v18 workbench-only vanillaPistol=" + vanillaPistol + " vanillaAmmo=" + vanillaAmmo + " machineGunRecipes=" + machineGuns
                 + " benchRecipe=" + wb.map(h -> h.value().getResultItem(sl.registryAccess()).getItem() == ModItems.GUN_WORKBENCH.get().asItem()).orElse(false));
+        // 부품도 제작대에서 (판자는 아무 나무나)
+        fill(m, Items.BIRCH_PLANKS, Items.LEATHER, Items.SPRUCE_PLANKS, Items.OAK_PLANKS);
+        boolean stockOk = m.getSlot(0).getItem().is(stock);
+        fill(m, ModItems.STEEL_ROD.get());
+        boolean barrelOk = m.getSlot(0).getItem().is(bar);
+        fill(m, ModItems.STEEL_PLATE.get(), ModItems.MECHANISM.get(), ModItems.STEEL_PLATE.get(), ModItems.IRON_GEAR.get());
+        boolean recOk = m.getSlot(0).getItem().is(rec);
+        fill(m, ModItems.STEEL_PLATE.get(), ModItems.STEEL_ROD.get(), Items.WHITE_WOOL);
+        boolean silOk = m.getSlot(0).getItem().is(ModItems.SILENCER.get());
+        long total = rm.getRecipes().stream().filter(h -> h.id().getNamespace().equals("tycooncraft")).count();
+        long known = rm.getRecipes().stream().filter(h -> h.id().getNamespace().equals("tycooncraft") && sp.getRecipeBook().contains(h)).count();
+        System.out.println("[AUTOTEST] v18 workbench parts stock=" + stockOk + " barrel=" + barrelOk + " receiver=" + recOk + " silencer=" + silOk
+                + " recipeBook=" + known + "/" + total);
         // 화면용: 소총 재료
         fill(m, rec, bar, bar, stock, ModItems.ADVANCED_CIRCUIT.get());
     }

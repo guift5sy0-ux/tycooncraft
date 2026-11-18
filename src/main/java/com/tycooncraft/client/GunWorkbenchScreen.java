@@ -74,7 +74,9 @@ public class GunWorkbenchScreen extends AbstractContainerScreen<GunWorkbenchMenu
         l.add(out.getHoverName().copy().withStyle(ChatFormatting.GOLD).append(Component.literal(out.getCount() > 1 ? " x" + out.getCount() : "").withStyle(ChatFormatting.GOLD)));
         l.add(Component.translatable("gui.tycooncraft.gun_workbench.needs").withStyle(ChatFormatting.GRAY));
         for (Map.Entry<Item, Integer> e : rc.needs().entrySet())
-            l.add(Component.literal(" • ").append(new ItemStack(e.getKey()).getHoverName()).append(" x" + e.getValue()).withStyle(ChatFormatting.WHITE));
+            l.add(Component.literal(" • ").append(e.getKey() == net.minecraft.world.item.Items.OAK_PLANKS
+                    ? Component.translatable("gui.tycooncraft.gun_workbench.any_planks") : new ItemStack(e.getKey()).getHoverName())
+                    .append(" x" + e.getValue()).withStyle(ChatFormatting.WHITE));
         return l;
     }
 }

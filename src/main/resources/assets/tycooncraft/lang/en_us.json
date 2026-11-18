@@ -562,5 +562,6 @@
   "gui.tycooncraft.gun_workbench.needs": "Ingredients (any layout):",
   "gui.tycooncraft.gun_workbench.hint": "Hover an icon to see its ingredients",
   "tooltip.tycooncraft.gun_workbench_only": "Crafted at a Gun Workbench",
-  "tooltip.tycooncraft.gun_workbench": "Workbench for guns and ammo"
+  "tooltip.tycooncraft.gun_workbench": "Workbench for guns and ammo",
+  "gui.tycooncraft.gun_workbench.any_planks": "Planks (any wood)"
 }

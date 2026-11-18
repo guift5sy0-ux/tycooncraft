@@ -562,5 +562,6 @@
   "gui.tycooncraft.gun_workbench.needs": "재료 (배치 자유):",
   "gui.tycooncraft.gun_workbench.hint": "아이콘에 마우스를 올리면 재료가 보여요",
   "tooltip.tycooncraft.gun_workbench_only": "총기 제작대에서 제작",
-  "tooltip.tycooncraft.gun_workbench": "총기와 탄약을 만드는 전용 작업대"
+  "tooltip.tycooncraft.gun_workbench": "총기와 탄약을 만드는 전용 작업대",
+  "gui.tycooncraft.gun_workbench.any_planks": "판자 (아무 나무)"
 }
