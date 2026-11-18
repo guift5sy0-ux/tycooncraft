@@ -756,7 +756,8 @@ public final class AutoTestClient {
                         + " signal=" + com.tycooncraft.client.cctv.CctvView.signal());
                 com.tycooncraft.client.cctv.CctvView.close();
             }
-            case 3348 -> next(11);
+            case 3348 -> serverDo(mc, V185Test::vehicleArmor);
+            case 3354 -> next(11);
             default -> {
             }
         }

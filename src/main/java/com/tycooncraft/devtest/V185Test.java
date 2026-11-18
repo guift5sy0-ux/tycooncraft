@@ -270,7 +270,7 @@ public final class V185Test {
         BlockPos camB = kitOrigin != null ? kitOrigin.offset(2, 2, -4) : base.offset(6, 1, 0);   // 공장 밖 남쪽 → 공장 정면
         sl.setBlockAndUpdate(camA, ModBlocks.CCTV.get().defaultBlockState().setValue(com.tycooncraft.cctv.CctvBlock.FACING, net.minecraft.core.Direction.NORTH));
         sl.setBlockAndUpdate(camB, ModBlocks.CCTV.get().defaultBlockState().setValue(com.tycooncraft.cctv.CctvBlock.FACING, net.minecraft.core.Direction.SOUTH));
-        cctvScreen = (kitOrigin != null ? kitOrigin.offset(7, 1, -6) : base.offset(3, 0, 6));
+        cctvScreen = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, kitOrigin != null ? kitOrigin.offset(7, 1, -6) : base.offset(3, 0, 6));
         sl.setBlockAndUpdate(cctvScreen, ModBlocks.CCTV_SCREEN.get().defaultBlockState().setValue(com.tycooncraft.cctv.ScreenBlock.FACING, net.minecraft.core.Direction.NORTH));
         if (sl.getBlockEntity(cctvScreen) instanceof com.tycooncraft.cctv.ScreenBlockEntity be) {
             be.add(camA);
@@ -278,8 +278,30 @@ public final class V185Test {
             be.add(camA.offset(0, 30, 0));   // 없는 카메라 → 신호 없음
             cctvLinks = be.links();
         }
-        sp.teleportTo(sl, cctvScreen.getX() + 0.5, cctvScreen.getY(), cctvScreen.getZ() - 2.5, 0f, 25f);
+        sp.teleportTo(sl, cctvScreen.getX() + 0.5, cctvScreen.getY(), cctvScreen.getZ() - 2.5, 0f, 15f);
         System.out.println("[AUTOTEST] v189 cctv links=" + cctvLinks.size() + " camA=" + sl.getBlockState(camA).getBlock().getClass().getSimpleName());
+    }
+
+    /** v0.18.9: 차·탱크 탑승 중 피해 → 차체가 대신 맞음 */
+    static void vehicleArmor(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        Zombie z = EntityType.ZOMBIE.create(sl);
+        z.moveTo(sp.getX() + 3, sp.getY(), sp.getZ(), 0, 0); sl.addFreshEntity(z);
+        StringBuilder out = new StringBuilder("[AUTOTEST] v189 vehicleArmor");
+        for (var type : java.util.List.of(ModEntities.CAR.get(), ModEntities.TANK.get())) {
+            var v = type.create(sl);
+            v.moveTo(sp.getX(), sp.getY(), sp.getZ(), 0, 0); sl.addFreshEntity(v);
+            sp.startRiding(v, true);
+            sp.setHealth(20f);
+            float[] gun = com.tycooncraft.vehicle.VehicleArmor.probe(sp, sl.damageSources().mobAttack(z), 6f);
+            float[] arrow = com.tycooncraft.vehicle.VehicleArmor.probe(sp, sl.damageSources().arrow(null, z), 5f);
+            float[] fall = com.tycooncraft.vehicle.VehicleArmor.probe(sp, sl.damageSources().inFire(), 1f);
+            out.append(String.format(" %s: hit rider=%.1f body=%.1f arrow rider=%.1f body=%.1f fire rider=%.1f", type.toShortString(), gun[0], gun[1], arrow[0], arrow[1], fall[0]));
+            sp.stopRiding(); v.discard();
+        }
+        z.discard();
+        sp.setHealth(20f);
+        System.out.println(out);
     }
 
     private V185Test() {}
