@@ -137,7 +137,7 @@ public class TankEntity extends VehicleEntity {
                 }
             }
             if (slot < 0) {
-                player.displayClientMessage(Component.translatable("message.tycooncraft.tank.no_shell"), true);
+                {} /* v0.18.9: 전투 안내 문구 제거 */
                 return;
             }
             player.getInventory().getItem(slot).shrink(1);

@@ -741,7 +741,21 @@ public final class AutoTestClient {
             case 3220 -> serverDo(mc, V185Test::bashCheck);
             case 3226 -> serverDo(mc, V185Test::dragonRest);
             case 3300 -> serverDo(mc, V185Test::dragonRestCheck);
-            case 3306 -> next(11);
+            // ── v0.18.9: CCTV ──
+            case 3306 -> serverDo(mc, V185Test::cctv);
+            case 3316 -> { mc.getToasts().clear(); shot(mc, "89_cctv_screen_block"); }
+            case 3318 -> com.tycooncraft.client.cctv.CctvView.open(V185Test.cctvScreen, V185Test.cctvLinks);
+            case 3326 -> shot(mc, "90_cctv_cam1");
+            case 3328 -> com.tycooncraft.client.cctv.CctvView.select(1);
+            case 3336 -> shot(mc, "91_cctv_cam2");
+            case 3338 -> com.tycooncraft.client.cctv.CctvView.select(2);
+            case 3342 -> shot(mc, "92_cctv_no_signal");
+            case 3344 -> {
+                System.out.println("[AUTOTEST] v189 view active=" + com.tycooncraft.client.cctv.CctvView.active() + " index=" + com.tycooncraft.client.cctv.CctvView.index()
+                        + " signal=" + com.tycooncraft.client.cctv.CctvView.signal());
+                com.tycooncraft.client.cctv.CctvView.close();
+            }
+            case 3348 -> next(11);
             default -> {
             }
         }

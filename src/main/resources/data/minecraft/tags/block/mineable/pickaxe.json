@@ -27,6 +27,8 @@
     "tycooncraft:ship_motor",
     "tycooncraft:ship_helm",
     "tycooncraft:ship_booster",
-    "tycooncraft:setter"
+    "tycooncraft:setter",
+    "tycooncraft:cctv",
+    "tycooncraft:cctv_screen"
   ]
 }

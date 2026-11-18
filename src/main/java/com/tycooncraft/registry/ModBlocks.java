@@ -30,6 +30,13 @@ public final class ModBlocks {
             () -> new com.tycooncraft.gun.GunWorkbenchBlock(BlockBehaviour.Properties.of().mapColor(net.minecraft.world.level.material.MapColor.WOOD)
                     .strength(2.5f).sound(net.minecraft.world.level.block.SoundType.WOOD).noOcclusion()));
 
+    public static final DeferredBlock<com.tycooncraft.cctv.CctvBlock> CCTV = BLOCKS.register("cctv",
+            () -> new com.tycooncraft.cctv.CctvBlock(BlockBehaviour.Properties.of().mapColor(net.minecraft.world.level.material.MapColor.METAL)
+                    .strength(1.5f).sound(net.minecraft.world.level.block.SoundType.METAL).noOcclusion()));
+    public static final DeferredBlock<com.tycooncraft.cctv.ScreenBlock> CCTV_SCREEN = BLOCKS.register("cctv_screen",
+            () -> new com.tycooncraft.cctv.ScreenBlock(BlockBehaviour.Properties.of().mapColor(net.minecraft.world.level.material.MapColor.COLOR_BLACK)
+                    .strength(1.5f).sound(net.minecraft.world.level.block.SoundType.METAL).noOcclusion().lightLevel(s -> 7)));
+
     // ── 운반 ──
     public static final DeferredBlock<ConveyorBlock> CONVEYOR = BLOCKS.register("conveyor",
             () -> new ConveyorBlock(machineProps().strength(1.0f).noOcclusion()));

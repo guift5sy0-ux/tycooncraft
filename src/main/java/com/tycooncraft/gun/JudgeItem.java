@@ -70,12 +70,12 @@ public class JudgeItem extends GunItem {
             level.explode(player, player.getX(), player.getEyeY() - 0.4, player.getZ(), 1.6f, net.minecraft.world.level.Level.ExplosionInteraction.NONE);
             level.sendParticles(ParticleTypes.REVERSE_PORTAL, player.getX(), player.getEyeY(), player.getZ(), 80, 0.5, 0.5, 0.5, 0.3);
             level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1.5f, 0.6f);
-            player.displayClientMessage(Component.translatable("message.tycooncraft.judge.broke").withStyle(ChatFormatting.DARK_RED), true);
+            {} /* v0.18.9: 전투 안내 문구 제거 */
             return;
         }
         stack.setDamageValue(stack.getDamageValue() + 1);
         if (left == 50 || left == 20 || left <= 5)
-            player.displayClientMessage(Component.translatable("message.tycooncraft.judge.wear", left).withStyle(ChatFormatting.RED), true);
+            {} /* v0.18.9: 전투 안내 문구 제거 */
     }
 
     @Override
@@ -111,7 +111,7 @@ public class JudgeItem extends GunItem {
             le.hurt(level.damageSources().indirectMagic(player, player), 6f);
             level.sendParticles(ParticleTypes.END_ROD, le.getX(), le.getY() + le.getBbHeight() * 0.5, le.getZ(), 30, 0.4, 0.8, 0.4, 0.15);
             level.playSound(null, le.getX(), le.getY(), le.getZ(), SoundEvents.TRIDENT_THUNDER.value(), SoundSource.PLAYERS, 2.5f, 1.2f);
-            player.displayClientMessage(Component.translatable("message.tycooncraft.judge.judgment").withStyle(ChatFormatting.LIGHT_PURPLE), true);
+            {} /* v0.18.9: 전투 안내 문구 제거 */
         } else if ((marked == 0 || now - marked > 60) && now - lastJudge > 120) {
             le.getPersistentData().putLong(MARK, now);
             le.addEffect(new MobEffectInstance(MobEffects.GLOWING, 60, 0, false, false));

@@ -630,5 +630,17 @@
   "message.tycooncraft.factory_kit.preview": "The factory will go inside the green outline. Right-click to build",
   "tooltip.tycooncraft.police_shield2": "Main hand + Q: charge — person-sized targets are flung and stunned 0.5s, 6 damage (4s cooldown)",
   "tooltip.tycooncraft.police_shield3": "Shield strike: 6 damage · repair with steel plates",
-  "message.tycooncraft.dragon.tired": "The Void Lord is catching its breath — strike now!"
+  "message.tycooncraft.dragon.tired": "The Void Lord is catching its breath — strike now!",
+  "block.tycooncraft.cctv": "CCTV Camera",
+  "block.tycooncraft.cctv_screen": "CCTV Screen",
+  "message.tycooncraft.cctv.selected": "CCTV selected (%s, %s, %s) → sneak + right-click a screen to link",
+  "message.tycooncraft.cctv.select_first": "Sneak + right-click a CCTV first",
+  "message.tycooncraft.cctv.linked": "CCTV linked (%s/%s)",
+  "message.tycooncraft.cctv.unlinked": "CCTV unlinked (%s/%s)",
+  "message.tycooncraft.cctv.full": "A screen holds at most %s cameras",
+  "message.tycooncraft.cctv.too_far": "That CCTV is too far (max %s blocks)",
+  "message.tycooncraft.cctv.no_links": "No cameras linked (sneak-click a CCTV, then sneak-click this screen)",
+  "gui.tycooncraft.cctv.no_signal": "NO SIGNAL",
+  "gui.tycooncraft.cctv.cam": "CAM %s/%s  (%s, %s, %s)",
+  "gui.tycooncraft.cctv.hint": "[1-5] switch · [Shift] exit"
 }

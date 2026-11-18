@@ -26,7 +26,7 @@ public final class EmpPulse {
             hit++;
             for (Entity p : e.getPassengers())
                 if (p instanceof ServerPlayer sp)
-                    sp.displayClientMessage(Component.translatable("message.tycooncraft.emp_hit", ticks / 20).withStyle(ChatFormatting.AQUA), true);
+                    {} /* v0.18.9: 전투 안내 문구 제거 */
             sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, e.getX(), e.getY() + e.getBbHeight() / 2, e.getZ(), 40,
                     e.getBbWidth() / 2, e.getBbHeight() / 2, e.getBbWidth() / 2, 0.3);
         }

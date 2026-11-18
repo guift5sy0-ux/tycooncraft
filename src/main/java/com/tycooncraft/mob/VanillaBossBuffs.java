@@ -175,9 +175,8 @@ public final class VanillaBossBuffs {
         return out;
     }
 
+    /** v0.18.9: 보스 전투 안내 문구는 띄우지 않음 (화면을 가려 불편) */
     private static void announce(ServerLevel sl, Entity boss, String key, ChatFormatting... style) {
-        for (ServerPlayer p : sl.players())
-            if (p.distanceTo(boss) < 128) p.displayClientMessage(Component.translatable(key).withStyle(style), true);
     }
 
     private static void bolt(ServerLevel sl, Vec3 at) {

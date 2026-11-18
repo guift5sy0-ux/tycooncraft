@@ -109,7 +109,7 @@ public class EmpGeneratorBlockEntity extends BlockEntity {
         int n = EmpPulse.pulse(sl, top, RADIUS, DISABLE_TIME);
         for (var p : sl.players())
             if (p.distanceToSqr(top) < (RADIUS + 16) * (RADIUS + 16))
-                p.displayClientMessage(Component.translatable("message.tycooncraft.emp.fired", n).withStyle(ChatFormatting.AQUA), true);
+                {} /* v0.18.9: 전투 안내 문구 제거 */
     }
 
     @Override

@@ -247,7 +247,7 @@ public class DroneEntity extends Entity {
         if (isPiloted()) {
             if (owner == null || !owner.isAlive() || owner.level() != level() || distanceTo(owner) > maxRange() + 20) {
                 // 한 번 띄운 자폭 드론은 무조건 터진다: 신호가 끊기면 그 자리에서 폭발
-                if (owner != null) owner.displayClientMessage(Component.translatable("message.tycooncraft.drone.lost"), true);
+                if (owner != null) {} /* v0.18.9: 전투 안내 문구 제거 */
                 detonate();
                 return;
             }
@@ -283,7 +283,7 @@ public class DroneEntity extends Entity {
         setYRot(yaw);
         setXRot(pitch);
         if (from.distanceTo(this) > maxRange()) {
-            from.displayClientMessage(Component.translatable("message.tycooncraft.drone.lost"), true);
+            {} /* v0.18.9: 전투 안내 문구 제거 */
             detonate();
         }
     }

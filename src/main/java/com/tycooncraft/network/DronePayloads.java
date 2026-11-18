@@ -72,7 +72,7 @@ public final class DronePayloads {
             if (c.action() == 1 || c.action() == 2) drone.detonate();   // 자폭 드론은 취소 없음
             else if (c.action() == 3) {                                  // 자동 돌진: 조종을 놓고 앞으로
                 drone.startDive(c.yaw(), c.pitch());
-                sp.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.tycooncraft.drone.dive"), true);
+                {} /* v0.18.9: 전투 안내 문구 제거 */
             }
         });
     }

@@ -259,5 +259,28 @@ public final class V185Test {
         restBait.discard();
     }
 
+    public static BlockPos cctvScreen;
+    public static java.util.List<BlockPos> cctvLinks = java.util.List.of();
+
+    /** v0.18.9: CCTV 2대 + 없는 자리 1 → 스크린에 연결 */
+    static void cctv(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        BlockPos base = BlockPos.containing(-60, sp.getY(), -120);   // 공장 키트로 세운 공장 근처
+        BlockPos camA = kitOrigin != null ? kitOrigin.offset(7, 4, 9) : base.offset(0, 3, 0);    // 공장 안 북쪽 벽 → 남쪽(라인) 을 봄
+        BlockPos camB = kitOrigin != null ? kitOrigin.offset(7, 1, -3) : base.offset(6, 1, 0);   // 공장 밖 남쪽 → 공장 정면
+        sl.setBlockAndUpdate(camA, ModBlocks.CCTV.get().defaultBlockState().setValue(com.tycooncraft.cctv.CctvBlock.FACING, net.minecraft.core.Direction.NORTH));
+        sl.setBlockAndUpdate(camB, ModBlocks.CCTV.get().defaultBlockState().setValue(com.tycooncraft.cctv.CctvBlock.FACING, net.minecraft.core.Direction.SOUTH));
+        cctvScreen = (kitOrigin != null ? kitOrigin.offset(7, 0, -8) : base.offset(3, 0, 6));
+        sl.setBlockAndUpdate(cctvScreen, ModBlocks.CCTV_SCREEN.get().defaultBlockState().setValue(com.tycooncraft.cctv.ScreenBlock.FACING, net.minecraft.core.Direction.NORTH));
+        if (sl.getBlockEntity(cctvScreen) instanceof com.tycooncraft.cctv.ScreenBlockEntity be) {
+            be.add(camA);
+            be.add(camB);
+            be.add(camA.offset(0, 30, 0));   // 없는 카메라 → 신호 없음
+            cctvLinks = be.links();
+        }
+        sp.teleportTo(sl, cctvScreen.getX() + 0.5, cctvScreen.getY(), cctvScreen.getZ() - 1.5, 0f, 20f);
+        System.out.println("[AUTOTEST] v189 cctv links=" + cctvLinks.size() + " camA=" + sl.getBlockState(camA).getBlock().getClass().getSimpleName());
+    }
+
     private V185Test() {}
 }

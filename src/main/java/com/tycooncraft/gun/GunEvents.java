@@ -36,7 +36,7 @@ public final class GunEvents {
         }
         if (main.getItem() instanceof GunItem && !main.is(ModItems.VSS.get())) {   // 총(RPG 포함)은 왼손으로 못 옮김
             event.setCanceled(true);
-            p.displayClientMessage(Component.translatable("message.tycooncraft.gun.no_offhand").withStyle(ChatFormatting.RED), true);
+            {} /* v0.18.9: 전투 안내 문구 제거 */
             return;
         }
         if (main.is(ModItems.VSS.get())) {
@@ -106,7 +106,7 @@ public final class GunEvents {
         p.setItemSlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND, ItemStack.EMPTY);
         if (!p.getInventory().add(moved)) p.drop(moved, false);
         OFFHAND_BLOCKED++;
-        p.displayClientMessage(Component.translatable("message.tycooncraft.gun.no_offhand").withStyle(ChatFormatting.RED), true);
+        {} /* v0.18.9: 전투 안내 문구 제거 */
     }
 
     @SubscribeEvent

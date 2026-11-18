@@ -204,7 +204,7 @@ public class JetEntity extends VehicleEntity {
         Vec3 nose = position().add(0, 1.0, 0).add(dir.scale(4.5));
         if (action == ACTION_FIRE && gunCooldown == 0) {
             if (!player.getAbilities().instabuild && !take(player, ModItems.HEAVY_AMMO.get())) {
-                player.displayClientMessage(Component.translatable("message.tycooncraft.jet.no_ammo"), true);
+                {} /* v0.18.9: 전투 안내 문구 제거 */
                 return;
             }
             gunCooldown = 2;
@@ -219,7 +219,7 @@ public class JetEntity extends VehicleEntity {
             level().playSound(null, nose.x, nose.y, nose.z, ModSounds.RIFLE_FIRE.get(), SoundSource.PLAYERS, 3.0f, 1.35f);
         } else if (action == ACTION_FIRE2 && missileCooldown == 0) {
             if (!player.getAbilities().instabuild && !take(player, ModItems.ROCKET.get())) {
-                player.displayClientMessage(Component.translatable("message.tycooncraft.jet.no_missile"), true);
+                {} /* v0.18.9: 전투 안내 문구 제거 */
                 return;
             }
             missileCooldown = 30;

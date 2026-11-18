@@ -121,7 +121,7 @@ public class GunItem extends Item {
         if (hand == InteractionHand.OFF_HAND) return InteractionResultHolder.fail(stack);   // 왼손 사격 금지
         if (player.getCooldowns().isOnCooldown(this)) return InteractionResultHolder.fail(stack);
         if (isDual() && !player.getOffhandItem().isEmpty()) {   // 쌍권총은 왼손이 비어 있어야
-            if (!level.isClientSide) player.displayClientMessage(Component.translatable("message.tycooncraft.gun.dual_offhand").withStyle(ChatFormatting.RED), true);
+            if (!level.isClientSide) {} /* v0.18.9: 전투 안내 문구 제거 */
             return InteractionResultHolder.fail(stack);
         }
 
@@ -133,7 +133,7 @@ public class GunItem extends Item {
             if (!level.isClientSide) {
                 level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.DRY_FIRE.get(), SoundSource.PLAYERS, 0.8f, 1.0f);
                 player.getCooldowns().addCooldown(this, 6);
-                player.displayClientMessage(Component.translatable("message.tycooncraft.gun.empty").withStyle(ChatFormatting.RED), true);
+                {} /* v0.18.9: 전투 안내 문구 제거 */
             }
             return InteractionResultHolder.fail(stack);
         }
@@ -282,15 +282,14 @@ public class GunItem extends Item {
             loaded = takeAmmo(player.getInventory(), stats.ammo().get(), need);
         }
         if (loaded <= 0) {
-            player.displayClientMessage(Component.translatable("message.tycooncraft.gun.no_ammo",
-                    stats.ammo().get().getDescription()).withStyle(ChatFormatting.RED), true);
+            {} /* v0.18.9: 전투 안내 문구 제거 */
             level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.DRY_FIRE.get(), SoundSource.PLAYERS, 0.8f, 0.9f);
             return;
         }
         setAmmo(stack, current + loaded);
         player.getCooldowns().addCooldown(this, reloadTicks(stack));
         level.playSound(null, player.getX(), player.getY(), player.getZ(), stats.reloadSound().get(), SoundSource.PLAYERS, 1.0f, 1.0f);
-        player.displayClientMessage(Component.translatable("message.tycooncraft.gun.reloaded", current + loaded, magazine(stack)), true);
+        {} /* v0.18.9: 전투 안내 문구 제거 */
     }
 
     private static int takeAmmo(Inventory inv, Item ammo, int need) {

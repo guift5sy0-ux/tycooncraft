@@ -131,8 +131,7 @@ public final class Ballistics {
                     level.sendParticles(ParticleTypes.ENCHANTED_HIT, impact.x, impact.y, impact.z, 10, 0.15, 0.15, 0.15, 0.3);
                     if (shooter instanceof Player p) {
                         level.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5f, 1.6f);
-                        p.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.tycooncraft.gun.headshot")
-                                .withStyle(net.minecraft.ChatFormatting.GOLD), true);
+                        {} /* v0.18.9: 전투 안내 문구 제거 */
                     }
                 }
             }
