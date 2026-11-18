@@ -82,7 +82,7 @@ public final class V183Test {
 
     static void check(ServerPlayer sp) {
         var sl = sp.serverLevel();
-        double em = empty.position().distanceTo(emptyStart), cm = crewed.position().distanceTo(crewedStart);
+        double em = empty.position().subtract(emptyStart).horizontalDistance(), cm = crewed.position().subtract(crewedStart).horizontalDistance();
         System.out.println(String.format("[AUTOTEST] v183 truck emptyMoved=%.2f crewedMoved=%.2f", em, cm));
         empty.discard();
         crewed.ejectPassengers();
@@ -107,7 +107,9 @@ public final class V183Test {
         System.out.println("[AUTOTEST] v183 dragonKb=" + com.tycooncraft.mob.VanillaBossBuffs.DRAGON_KB
                 + " vest=" + ModItems.VEST_1.get().getDefense() + "/" + ModItems.VEST_2.get().getDefense() + "/" + ModItems.VEST_3.get().getDefense() + "/" + ModItems.VEST_4.get().getDefense());
         // 화면용: 플레이어가 방패 좀비를 바라봄
-        sp.teleportTo(sl, base.x + 1.5, base.y, base.z - 3.2, 160f, 15f);
+        sp.getInventory().clearContent();
+        sp.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.POLICE_SHIELD.get()));
+        sp.teleportTo(sl, base.x + 1.5, base.y, base.z - 3.2, 25f, 12f);
     }
 
     static void cleanup(ServerPlayer sp) {
