@@ -555,5 +555,12 @@
   "tooltip.tycooncraft.gun.mode_hip": "모드: 일반 사격 (스코프 없음) — F 로 전환",
   "message.tycooncraft.gun.mode_scope": "조준 사격 모드 (스코프)",
   "message.tycooncraft.gun.mode_hip": "일반 사격 모드",
-  "gui.tycooncraft.bank.interest_cap": "하루 최대 ₩%s"
+  "gui.tycooncraft.bank.interest_cap": "하루 최대 ₩%s",
+  "block.tycooncraft.gun_workbench": "총기 제작대",
+  "container.tycooncraft.gun_workbench": "총기 제작대",
+  "gui.tycooncraft.gun_workbench.recipes": "제작법",
+  "gui.tycooncraft.gun_workbench.needs": "재료 (배치 자유):",
+  "gui.tycooncraft.gun_workbench.hint": "아이콘에 마우스를 올리면 재료가 보여요",
+  "tooltip.tycooncraft.gun_workbench_only": "총기 제작대에서 제작",
+  "tooltip.tycooncraft.gun_workbench": "총기와 탄약을 만드는 전용 작업대"
 }

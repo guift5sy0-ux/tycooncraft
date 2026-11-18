@@ -26,6 +26,10 @@ public final class ModBlocks {
     public static final DeferredBlock<ExchangeBlock> EXCHANGE = BLOCKS.register("exchange",
             () -> new ExchangeBlock(machineProps().strength(3.0f, 6.0f).requiresCorrectToolForDrops()));
 
+    public static final DeferredBlock<com.tycooncraft.gun.GunWorkbenchBlock> GUN_WORKBENCH = BLOCKS.register("gun_workbench",
+            () -> new com.tycooncraft.gun.GunWorkbenchBlock(BlockBehaviour.Properties.of().mapColor(net.minecraft.world.level.material.MapColor.WOOD)
+                    .strength(2.5f).sound(net.minecraft.world.level.block.SoundType.WOOD)));
+
     // ── 운반 ──
     public static final DeferredBlock<ConveyorBlock> CONVEYOR = BLOCKS.register("conveyor",
             () -> new ConveyorBlock(machineProps().strength(1.0f).noOcclusion()));

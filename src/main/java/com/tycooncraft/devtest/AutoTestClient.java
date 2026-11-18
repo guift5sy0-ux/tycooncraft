@@ -685,7 +685,12 @@ public final class AutoTestClient {
             case 2750 -> shot(mc, "77_ruin_basement_golem");
             case 2752 -> serverDo(mc, V18Test::kill);
             case 2760 -> serverDo(mc, V18Test::check);
-            case 2764 -> next(11);
+            // ── v0.18: 총기 제작대 ──
+            case 2764 -> serverDo(mc, GunWorkbenchTest::run);
+            case 2770 -> mc.getToasts().clear();
+            case 2774 -> shot(mc, "78_gun_workbench");
+            case 2776 -> { if (mc.player != null) mc.player.closeContainer(); }
+            case 2780 -> next(11);
             default -> {
             }
         }

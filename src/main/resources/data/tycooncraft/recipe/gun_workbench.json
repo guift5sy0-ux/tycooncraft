@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PPP",
+    "GCG",
+    "LLL"
+  ],
+  "key": {
+    "P": {
+      "item": "tycooncraft:iron_plate"
+    },
+    "G": {
+      "item": "tycooncraft:iron_gear"
+    },
+    "C": {
+      "item": "minecraft:crafting_table"
+    },
+    "L": {
+      "tag": "minecraft:logs"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:gun_workbench",
+    "count": 1
+  }
+}

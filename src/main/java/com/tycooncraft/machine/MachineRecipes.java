@@ -143,15 +143,7 @@ public final class MachineRecipes {
                         .in(ModItems.GUN_RECEIVER.get()).in(ModItems.GUN_BARREL.get(), 2).build());
                 r.add(MachineRecipe.of(ModItems.DRONE_MK2.get(), 1)
                         .in(ModItems.DRONE.get()).in(ModItems.ADVANCED_CIRCUIT.get(), 2).in(Items.TNT, 2).in(ModItems.STEEL_PLATE.get(), 2).in(ModItems.MECHANISM.get()).build());
-                // 신형 총기·탄
-                r.add(MachineRecipe.of(ModItems.VSS.get(), 1)
-                        .in(ModItems.GUN_RECEIVER.get()).in(ModItems.GUN_BARREL.get()).in(ModItems.SILENCER.get()).in(ModItems.GUN_STOCK.get())
-                        .in(Items.SPYGLASS).in(ModItems.STEEL_PLATE.get(), 2).build());
-                r.add(MachineRecipe.of(ModItems.RPG.get(), 1)
-                        .in(ModItems.GUN_RECEIVER.get()).in(ModItems.STEEL_PLATE.get(), 4).in(ModItems.STEEL_ROD.get(), 2).in(ModItems.GUN_STOCK.get()).in(Items.SPYGLASS).build());
-                r.add(MachineRecipe.of(ModItems.DUAL_PISTOLS.get(), 1).in(ModItems.PISTOL.get(), 2).in(ModItems.MECHANISM.get()).build());
-                r.add(MachineRecipe.of(ModItems.ROCKET.get(), 2)
-                        .in(ModItems.IRON_PLATE.get(), 2).in(Items.GUNPOWDER, 4).in(Items.TNT).in(ModItems.COPPER_WIRE.get()).build());
+                // 총기·탄약은 v0.18부터 총기 제작대 전용 (GunCrafting)
                 r.add(MachineRecipe.of(ModItems.TANK_SHELL.get(), 2)
                         .in(ModItems.STEEL_PLATE.get()).in(Items.GUNPOWDER, 3).in(Items.TNT).in(ModItems.COPPER_PLATE.get()).build());
                 r.add(MachineRecipe.of(ModItems.SILENCER_ADVANCED.get(), 1)
@@ -205,12 +197,6 @@ public final class MachineRecipes {
                 // 총기 부품 & 탄약
                 r.add(MachineRecipe.of(ModItems.GUN_RECEIVER.get(), 1)
                         .in(ModItems.STEEL_PLATE.get(), 2).in(ModItems.MECHANISM.get()).in(ModItems.IRON_GEAR.get()).build());
-                r.add(MachineRecipe.of(ModItems.HEAVY_AMMO.get(), 8)
-                        .in(ModItems.COPPER_PLATE.get()).in(Items.GUNPOWDER, 2).in(ModItems.STEEL_ROD.get()).build());
-                r.add(MachineRecipe.of(ModItems.LIGHT_AMMO.get(), 16)
-                        .in(ModItems.COPPER_PLATE.get()).in(Items.GUNPOWDER).in(ModItems.IRON_ROD.get()).build());
-                r.add(MachineRecipe.of(ModItems.SHOTGUN_SHELL.get(), 8)
-                        .in(ModItems.COPPER_PLATE.get()).in(Items.GUNPOWDER).in(ModItems.IRON_DUST.get(), 2).build());
                 for (Item planks : new Item[]{Items.OAK_PLANKS, Items.SPRUCE_PLANKS, Items.BIRCH_PLANKS}) {
                     r.add(MachineRecipe.of(ModItems.GUN_STOCK.get(), 1).in(planks, 3).in(Items.LEATHER).build());
                 }

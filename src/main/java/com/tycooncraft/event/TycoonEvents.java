@@ -96,10 +96,13 @@ public final class TycoonEvents {
                 || bi.getBlock() instanceof com.tycooncraft.ship.ShipFloatBlock
                 || bi.getBlock() instanceof com.tycooncraft.ship.ShipBoosterBlock
                 || bi.getBlock() instanceof com.tycooncraft.setter.SetterBlock
-                || bi.getBlock() instanceof com.tycooncraft.turret.CiwsBlock)) {
+                || bi.getBlock() instanceof com.tycooncraft.turret.CiwsBlock
+                || bi.getBlock() instanceof com.tycooncraft.gun.GunWorkbenchBlock)) {
             String id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item).getPath();
             event.getToolTip().add(Component.translatable("tooltip.tycooncraft." + id).withStyle(ChatFormatting.GRAY));
         }
+        if (com.tycooncraft.gun.GunCrafting.isGunOrAmmo(item))
+            event.getToolTip().add(Component.translatable("tooltip.tycooncraft.gun_workbench_only").withStyle(ChatFormatting.DARK_AQUA));
         double base = PriceTable.basePrice(event.getItemStack().getItem());
         if (base > 0) {
             event.getToolTip().add(Component.translatable("tooltip.tycooncraft.base_price", Coins.format(base))

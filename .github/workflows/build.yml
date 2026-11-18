@@ -92,7 +92,7 @@ jobs:
           rm -rf run/saves/autotest
           cp -r run/world run/saves/autotest
           rm -f run/saves/autotest/session.lock
-          printf "pauseOnLostFocus:false\nonboardAccessibility:false\ntutorialStep:none\nskipMultiplayerWarning:true\nrenderDistance:8\nguiScale:2\n" > run/options.txt
+          printf "pauseOnLostFocus:false\nonboardAccessibility:false\ntutorialStep:none\nskipMultiplayerWarning:true\nrenderDistance:8\nguiScale:2\nlang:ko_kr\n" > run/options.txt
           xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runAutoClient --no-configuration-cache > vehicle-log.txt 2>&1 &
           PID=$!
           for i in $(seq 1 200); do

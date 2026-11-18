@@ -555,5 +555,12 @@
   "tooltip.tycooncraft.gun.mode_hip": "Mode: hip fire (no scope) — F to switch",
   "message.tycooncraft.gun.mode_scope": "Scoped fire",
   "message.tycooncraft.gun.mode_hip": "Hip fire",
-  "gui.tycooncraft.bank.interest_cap": "Up to ₩%s per day"
+  "gui.tycooncraft.bank.interest_cap": "Up to ₩%s per day",
+  "block.tycooncraft.gun_workbench": "Gun Workbench",
+  "container.tycooncraft.gun_workbench": "Gun Workbench",
+  "gui.tycooncraft.gun_workbench.recipes": "Recipes",
+  "gui.tycooncraft.gun_workbench.needs": "Ingredients (any layout):",
+  "gui.tycooncraft.gun_workbench.hint": "Hover an icon to see its ingredients",
+  "tooltip.tycooncraft.gun_workbench_only": "Crafted at a Gun Workbench",
+  "tooltip.tycooncraft.gun_workbench": "Workbench for guns and ammo"
 }

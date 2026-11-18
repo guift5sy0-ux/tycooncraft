@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "tycooncraft:block/gun_workbench_top",
+    "side": "tycooncraft:block/gun_workbench_side",
+    "bottom": "tycooncraft:block/gun_workbench_bottom"
+  }
+}
