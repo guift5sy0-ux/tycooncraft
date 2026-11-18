@@ -193,8 +193,13 @@ public class ProtoDestroyer extends PathfinderMob {
     /** 탑승자 시선이 닿는 곳 (조준점) */
     private Vec3 aimPoint(Player rider) {
         Vec3 eye = rider.getEyePosition(), look = rider.getLookAngle();
-        var hit = level().clip(new ClipContext(eye.add(look.scale(2)), eye.add(look.scale(80)), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, rider));
-        return hit.getType() == HitResult.Type.MISS ? eye.add(look.scale(80)) : hit.getLocation();
+        Vec3 from = eye.add(look.scale(2)), to = eye.add(look.scale(80));
+        var hit = level().clip(new ClipContext(from, to, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, rider));
+        Vec3 end = hit.getType() == HitResult.Type.MISS ? to : hit.getLocation();
+        // 조준선에 걸린 생명체가 있으면 그 지점으로 수렴 (양팔 총구가 옆으로 떨어져 있어도 맞도록)
+        var eh = net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(level(), rider, from, end,
+                new net.minecraft.world.phys.AABB(from, end).inflate(1), e -> e != this && e != rider && e instanceof LivingEntity && e.isAlive() && !e.isSpectator(), 0.3f);
+        return eh != null ? eh.getLocation() : end;
     }
 
     public void action(ServerPlayer rider, int act) {

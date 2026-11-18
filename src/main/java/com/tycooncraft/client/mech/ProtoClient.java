@@ -109,11 +109,12 @@ public final class ProtoClient {
             return TEX;
         }
 
+        /** 1인칭으로 조종 중이면 기체를 그리지 않음 (바닐라는 탑승 중인 탈것을 shouldRender 와 무관하게 그리므로 여기서 막음) */
         @Override
-        public boolean shouldRender(ProtoDestroyer e, net.minecraft.client.renderer.culling.Frustum f, double x, double y, double z) {
+        public void render(ProtoDestroyer e, float yaw, float pt, com.mojang.blaze3d.vertex.PoseStack ps, net.minecraft.client.renderer.MultiBufferSource buf, int light) {
             Minecraft mc = Minecraft.getInstance();
-            if (mc.options.getCameraType().isFirstPerson() && mc.player != null && mc.player.getVehicle() == e) return false;   // 1인칭: 시야 확보
-            return super.shouldRender(e, f, x, y, z);
+            if (mc.options.getCameraType().isFirstPerson() && mc.player != null && mc.player.getVehicle() == e) return;
+            super.render(e, yaw, pt, ps, buf, light);
         }
     }
 
