@@ -77,6 +77,7 @@ public class TycoonCraft {
         event.put(ModEntities.MUTANT_SPIDER.get(), com.tycooncraft.mob.MutantSpider.attributes().build());
         event.put(ModEntities.GANG_TRUCK.get(), com.tycooncraft.mob.GangTruck.attributes().build());
         event.put(ModEntities.DESTROYER_GOLEM.get(), com.tycooncraft.mob.DestroyerGolem.attributes().build());
+        event.put(ModEntities.PROTO_DESTROYER.get(), com.tycooncraft.mech.ProtoDestroyer.attributes().build());
     }
 
     private void spawnPlacements(net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent event) {

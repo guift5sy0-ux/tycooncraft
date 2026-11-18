@@ -642,5 +642,19 @@
   "message.tycooncraft.cctv.no_links": "No cameras linked (sneak-click a CCTV, then sneak-click this screen)",
   "gui.tycooncraft.cctv.no_signal": "NO SIGNAL",
   "gui.tycooncraft.cctv.cam": "CAM %s/%s  (%s, %s, %s)",
-  "gui.tycooncraft.cctv.hint": "[1-5] switch · [Shift] exit"
+  "gui.tycooncraft.cctv.hint": "[1-5] switch · [Shift] exit",
+  "entity.tycooncraft.proto_destroyer": "Proto Destroyer",
+  "item.tycooncraft.proto_destroyer": "Proto Destroyer",
+  "tooltip.tycooncraft.proto.1": "Right-click the ground to deploy, right-click to ride",
+  "tooltip.tycooncraft.proto.2": "Hold LMB: gatling · RMB: 3 rockets · Space: ground slam",
+  "tooltip.tycooncraft.proto.3": "The pilot is shielded; the hull takes the hits",
+  "tooltip.tycooncraft.proto.4": "Sneak + empty hand: pick up · iron/steel ingot: repair",
+  "tooltip.tycooncraft.proto.health": "Hull %s / %s",
+  "message.tycooncraft.proto.not_owner": "Only the owner or allies can ride this",
+  "message.tycooncraft.proto.no_room": "Not enough room to deploy",
+  "hud.tycooncraft.proto.hp": "HULL %s",
+  "hud.tycooncraft.proto.heat": "BARREL HEAT",
+  "hud.tycooncraft.proto.overheat": "OVERHEAT!",
+  "hud.tycooncraft.proto.rocket": "ROCKETS %s",
+  "hud.tycooncraft.proto.slam": "SLAM %s"
 }

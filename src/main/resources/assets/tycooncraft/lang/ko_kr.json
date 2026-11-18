@@ -642,5 +642,19 @@
   "message.tycooncraft.cctv.no_links": "연결된 CCTV가 없어요 (CCTV 웅크리고 우클릭 → 스크린 웅크리고 우클릭)",
   "gui.tycooncraft.cctv.no_signal": "신호 없음",
   "gui.tycooncraft.cctv.cam": "CAM %s/%s  (%s, %s, %s)",
-  "gui.tycooncraft.cctv.hint": "[1~5] 전환 · [Shift] 나가기"
+  "gui.tycooncraft.cctv.hint": "[1~5] 전환 · [Shift] 나가기",
+  "entity.tycooncraft.proto_destroyer": "프로토 디스트로이어",
+  "item.tycooncraft.proto_destroyer": "프로토 디스트로이어",
+  "tooltip.tycooncraft.proto.1": "땅에 우클릭해 배치 → 우클릭으로 탑승",
+  "tooltip.tycooncraft.proto.2": "좌클릭(누르기) 개틀링 · 우클릭 로켓 3연발 · 스페이스 내려찍기",
+  "tooltip.tycooncraft.proto.3": "탑승자는 공격을 받지 않고 기체가 대신 맞음",
+  "tooltip.tycooncraft.proto.4": "웅크리고 빈손 우클릭: 회수 · 철/강철 주괴: 수리",
+  "tooltip.tycooncraft.proto.health": "기체 체력 %s / %s",
+  "message.tycooncraft.proto.not_owner": "주인이나 동맹만 탈 수 있어요",
+  "message.tycooncraft.proto.no_room": "배치할 공간이 부족해요",
+  "hud.tycooncraft.proto.hp": "기체 %s",
+  "hud.tycooncraft.proto.heat": "총열 열",
+  "hud.tycooncraft.proto.overheat": "과열!",
+  "hud.tycooncraft.proto.rocket": "로켓 %s",
+  "hud.tycooncraft.proto.slam": "내려찍기 %s"
 }

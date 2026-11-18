@@ -48,6 +48,7 @@ public final class VehicleClient {
     @SubscribeEvent
     public static void layers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(com.tycooncraft.client.mob.BossModels.GOLEM, com.tycooncraft.client.mob.DestroyerGolemGeo::createBodyLayer);
+        event.registerLayerDefinition(com.tycooncraft.client.mech.ProtoClient.LAYER, com.tycooncraft.client.mob.ProtoDestroyerGeo::createBodyLayer);
         event.registerLayerDefinition(com.tycooncraft.client.mob.AbyssalWither.LAYER, com.tycooncraft.client.mob.AbyssalWitherGeo::createBodyLayer);
         event.registerLayerDefinition(com.tycooncraft.client.mob.VoidDragon.LAYER, com.tycooncraft.client.mob.DragonArmorGeo::createBodyLayer);
     }
@@ -63,6 +64,7 @@ public final class VehicleClient {
         event.registerEntityRenderer(ModEntities.ROCKET.get(), RocketRenderer::new);
         event.registerEntityRenderer(ModEntities.AUTO_MINER.get(), AutoMinerRenderer::new);
         event.registerEntityRenderer(ModEntities.DESTROYER_GOLEM.get(), com.tycooncraft.client.mob.BossRenderers.Golem::new);
+        event.registerEntityRenderer(ModEntities.PROTO_DESTROYER.get(), com.tycooncraft.client.mech.ProtoClient.Renderer::new);
         // 바닐라 보스 외형 교체
         event.registerEntityRenderer(net.minecraft.world.entity.EntityType.WITHER, com.tycooncraft.client.mob.AbyssalWither.Renderer::new);
         event.registerEntityRenderer(net.minecraft.world.entity.EntityType.ENDER_DRAGON, com.tycooncraft.client.mob.VoidDragon.Renderer::new);

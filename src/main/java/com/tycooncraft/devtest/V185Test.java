@@ -11,6 +11,7 @@ import com.tycooncraft.registry.ModItems;
 import com.tycooncraft.turret.TurretAI;
 import com.tycooncraft.turret.TurretBlockEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
@@ -305,6 +306,89 @@ public final class V185Test {
         sp.setGameMode(prevMode);
         sp.setHealth(20f);
         System.out.println(out);
+    }
+
+    // ── v0.19.0 프로토 디스트로이어 ──
+    static com.tycooncraft.mech.ProtoDestroyer proto;
+    static Zombie protoTarget;
+    static float protoTargetHp0;
+
+    static void protoSetup(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        BlockPos p = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(40, 0, -200));
+        proto = com.tycooncraft.mech.ProtoDestroyerItem.spawn(sl, p, sp, new ItemStack(ModItems.PROTO_DESTROYER.get()), 0f);
+        sp.teleportTo(sl, p.getX() + 0.5, p.getY(), p.getZ() - 2.5, 0f, 0f);
+        var r = proto.interact(sp, InteractionHand.MAIN_HAND);
+        sp.setYRot(0); sp.setXRot(8);
+        protoTarget = EntityType.ZOMBIE.create(sl);
+        protoTarget.moveTo(p.getX() + 0.5, p.getY(), p.getZ() + 12.5, 180, 0);
+        protoTarget.setNoAi(true);
+        protoTarget.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(400);
+        protoTarget.setHealth(400);
+        sl.addFreshEntity(protoTarget);
+        protoTargetHp0 = 400;
+        System.out.println("[AUTOTEST] v190 proto spawned=" + (proto != null) + " mount=" + r + " riding=" + (sp.getVehicle() == proto)
+                + " hp=" + proto.getHealth() + " recipe=" + sl.getRecipeManager().byKey(com.tycooncraft.TycoonCraft.id("proto_destroyer")).isPresent());
+    }
+
+    static void protoFire(ServerPlayer sp) {
+        if (proto == null) return;
+        Vec3 c = protoTarget.getBoundingBox().getCenter().subtract(sp.getEyePosition());
+        sp.setYRot((float) (Math.atan2(-c.x, c.z) * 180 / Math.PI));
+        sp.setXRot((float) (-Math.atan2(c.y, c.horizontalDistance()) * 180 / Math.PI));
+        proto.action(sp, com.tycooncraft.mech.ProtoDestroyer.ACT_FIRE);
+    }
+
+    static float hpAfterFire, heatAfterFire;
+    static int shotsAfterFire;
+
+    static void protoRockets(ServerPlayer sp) {
+        hpAfterFire = protoTarget.getHealth();
+        heatAfterFire = proto.heat();
+        shotsAfterFire = com.tycooncraft.mech.ProtoDestroyer.shots;
+        protoTarget.setHealth(400);
+        protoFire(sp);   // 조준만 갱신 (쿨다운 중)
+        proto.action(sp, com.tycooncraft.mech.ProtoDestroyer.ACT_ROCKETS);
+    }
+
+    static float hpAfterRockets;
+
+    static void protoSlam(ServerPlayer sp) {
+        hpAfterRockets = protoTarget.isAlive() ? protoTarget.getHealth() : 0;
+        protoTarget.setHealth(400);
+        Vec3 f = proto.local(0, 0, 2.6);
+        protoTarget.teleportTo(f.x, proto.getY(), f.z);
+        proto.action(sp, com.tycooncraft.mech.ProtoDestroyer.ACT_SLAM);
+    }
+
+    static void protoCheck(ServerPlayer sp) {
+        float hpAfterSlam = protoTarget.getHealth();
+        float[] armor = new float[2];
+        sp.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        float hp = sp.getHealth(), mh = proto.getHealth();
+        sp.invulnerableTime = 0;
+        sp.hurt(sp.serverLevel().damageSources().mobAttack(protoTarget), 8f);
+        armor[0] = hp - sp.getHealth();
+        armor[1] = mh - proto.getHealth();
+        sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+        System.out.printf("[AUTOTEST] v190 fire shots=%d targetDmg=%.1f heat=%.0f | rockets=%d targetDmg=%.1f | slams=%d targetDmg=%.1f | riderHit rider=%.1f hull=%.1f%n",
+                shotsAfterFire, 400 - hpAfterFire, heatAfterFire, com.tycooncraft.mech.ProtoDestroyer.rockets, 400 - hpAfterRockets,
+                com.tycooncraft.mech.ProtoDestroyer.slams, 400 - hpAfterSlam, armor[0], armor[1]);
+    }
+
+    static void protoShowcase(ServerPlayer sp) {
+        sp.stopRiding();
+        protoTarget.discard();
+        Vec3 f = proto.local(0, 0, 7.5);
+        sp.teleportTo(sp.serverLevel(), f.x, proto.getY() + 0.5, f.z, proto.getYRot() + 180 - 25, 5f);
+        Vec3 g = proto.local(-2.5, 0, 7);
+        sp.teleportTo(sp.serverLevel(), g.x, proto.getY() + 0.5, g.z, proto.getYRot() + 180 + 18, 8f);
+    }
+
+    static void protoShowcase2(ServerPlayer sp) {
+        Vec3 g = proto.local(3, 0, -6.5);
+        sp.teleportTo(sp.serverLevel(), g.x, proto.getY() + 1.5, g.z, proto.getYRot() - 25, 12f);
+        // 회수 테스트
     }
 
     private V185Test() {}

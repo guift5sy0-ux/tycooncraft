@@ -11,8 +11,18 @@ public final class VehicleArmor {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onDamage(LivingIncomingDamageEvent event) {
         LivingEntity e = event.getEntity();
-        if (e.level().isClientSide || !(e.getVehicle() instanceof VehicleEntity v) || v.isRemoved()) return;
+        if (e.level().isClientSide) return;
         var src = event.getSource();
+        if (e.getVehicle() instanceof com.tycooncraft.mech.ProtoDestroyer m && m.isAlive()) {   // 프로토 디스트로이어 조종석
+            if (src.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) return;
+            if (src.is(DamageTypeTags.IS_EXPLOSION)) { event.setCanceled(true); return; }
+            if (src.getEntity() == null && src.getDirectEntity() == null) return;
+            if (src.getEntity() != null && m.hasPassenger(src.getEntity())) return;
+            m.hurt(src, event.getAmount());
+            event.setCanceled(true);
+            return;
+        }
+        if (!(e.getVehicle() instanceof VehicleEntity v) || v.isRemoved()) return;
         if (src.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) return;   // /kill, 공허
         if (src.is(DamageTypeTags.IS_EXPLOSION)) {   // 폭발은 차체가 따로 맞으므로 탑승자는 보호만
             v.hurt(src, event.getAmount() * 0.5f);

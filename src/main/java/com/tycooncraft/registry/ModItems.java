@@ -175,6 +175,8 @@ public final class ModItems {
     public static final DeferredItem<DeferredSpawnEggItem> GOLEM_EGG = ITEMS.register("destroyer_golem_spawn_egg",
             () -> new DeferredSpawnEggItem(ModEntities.DESTROYER_GOLEM, 0x565C64, 0xE0B020, new Item.Properties()));
     // 보스 전리품 (판매용)
+    public static final DeferredItem<com.tycooncraft.mech.ProtoDestroyerItem> PROTO_DESTROYER = ITEMS.register("proto_destroyer",
+            () -> new com.tycooncraft.mech.ProtoDestroyerItem(new Item.Properties().stacksTo(1).fireResistant().rarity(net.minecraft.world.item.Rarity.EPIC)));
     public static final DeferredItem<Item> DESTROYER_CORE = ITEMS.register("destroyer_core", () -> new Item(new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON)));
 
     // ── 탈것 & 연료 ──

@@ -76,6 +76,9 @@ public final class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.mob.DestroyerGolem>> DESTROYER_GOLEM = ENTITIES.register("destroyer_golem",
             () -> EntityType.Builder.<com.tycooncraft.mob.DestroyerGolem>of(com.tycooncraft.mob.DestroyerGolem::new, MobCategory.MONSTER)
                     .sized(2.2f, 3.4f).clientTrackingRange(10).build("destroyer_golem"));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.mech.ProtoDestroyer>> PROTO_DESTROYER = ENTITIES.register("proto_destroyer",
+            () -> EntityType.Builder.<com.tycooncraft.mech.ProtoDestroyer>of(com.tycooncraft.mech.ProtoDestroyer::new, MobCategory.MISC)
+                    .sized(2.4f, 3.5f).eyeHeight(3.0f).clientTrackingRange(10).fireImmune().build("proto_destroyer"));
     public static final DeferredHolder<EntityType<?>, EntityType<MutantSpider>> MUTANT_SPIDER = ENTITIES.register("mutant_spider",
             () -> EntityType.Builder.<MutantSpider>of(MutantSpider::new, MobCategory.MONSTER)
                     .sized(4.2f, 2.7f).clientTrackingRange(10).build("mutant_spider"));

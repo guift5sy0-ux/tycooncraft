@@ -78,7 +78,7 @@ public final class ModCreativeTabs {
                         out.accept(ModItems.GUN_WORKBENCH.get());
                         out.accept(ModItems.CARTEL_FLARE.get());
                         for (var v : java.util.List.of(ModItems.GANGSTER_EGG, ModItems.MERCENARY_EGG, ModItems.OUTLAW_EGG, ModItems.SPIDER_EGG, ModItems.BOSS_EGG, ModItems.GANG_TRUCK_EGG, ModItems.GOLEM_EGG,
-                                ModItems.DESTROYER_CORE)) out.accept(v.get());
+                                ModItems.DESTROYER_CORE, ModItems.PROTO_DESTROYER)) out.accept(v.get());
                     })
                     .build());
 

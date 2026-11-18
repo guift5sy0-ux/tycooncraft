@@ -162,7 +162,8 @@ public final class AutoTestClient {
         var o = mc.options;
         int s = phaseT;
         double g = -60;
-        if (s > 3226 && s < 3300 && s % 2 == 0) serverDo(mc, V185Test::keepAirborne);   // 바닐라 착지 방지 (오버월드엔 수정이 없어 자꾸 내려앉음)
+        if (s > 3226 && s < 3300 && s % 2 == 0) serverDo(mc, V185Test::keepAirborne);
+        if (s >= 3374 && s <= 3394 && s % 2 == 0) serverDo(mc, V185Test::protoFire);   // 바닐라 착지 방지 (오버월드엔 수정이 없어 자꾸 내려앉음)
         switch (s) {
             case 1 -> {
                 o.setCameraType(CameraType.FIRST_PERSON);
@@ -757,7 +758,21 @@ public final class AutoTestClient {
                 com.tycooncraft.client.cctv.CctvView.close();
             }
             case 3348 -> serverDo(mc, V185Test::vehicleArmor);
-            case 3354 -> next(11);
+            // ── v0.19.0: 프로토 디스트로이어 ──
+            case 3354 -> serverDo(mc, V185Test::protoSetup);
+            case 3362 -> o.setCameraType(CameraType.THIRD_PERSON_BACK);
+            case 3372 -> { mc.getToasts().clear(); shot(mc, "93_proto_ride"); }
+            case 3386 -> shot(mc, "94_proto_fire");
+            case 3396 -> serverDo(mc, V185Test::protoRockets);
+            case 3404 -> shot(mc, "95_proto_rockets");
+            case 3430 -> serverDo(mc, V185Test::protoSlam);
+            case 3440 -> shot(mc, "96_proto_slam");
+            case 3456 -> serverDo(mc, V185Test::protoCheck);
+            case 3460 -> { o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::protoShowcase); }
+            case 3474 -> shot(mc, "97_proto_front");
+            case 3476 -> serverDo(mc, V185Test::protoShowcase2);
+            case 3486 -> shot(mc, "98_proto_back");
+            case 3490 -> next(11);
             default -> {
             }
         }

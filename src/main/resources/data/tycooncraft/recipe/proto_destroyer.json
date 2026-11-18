@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NSN",
+    "GCR",
+    "NSN"
+  ],
+  "key": {
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "S": {
+      "item": "minecraft:nether_star"
+    },
+    "G": {
+      "item": "tycooncraft:smg"
+    },
+    "C": {
+      "item": "tycooncraft:destroyer_core"
+    },
+    "R": {
+      "item": "tycooncraft:rpg"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:proto_destroyer",
+    "count": 1
+  }
+}
