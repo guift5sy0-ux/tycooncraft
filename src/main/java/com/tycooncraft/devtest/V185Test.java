@@ -198,7 +198,8 @@ public final class V185Test {
         sp.teleportTo(sl, -90.5, sp.getY(), -150.5, 180f, 0f);   // 북쪽을 봄
         sp.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.POLICE_SHIELD.get()));
         double atk = 1;
-        for (var e : ModItems.POLICE_SHIELD.get().getDefaultAttributeModifiers().modifiers())
+        var mods = new ItemStack(ModItems.POLICE_SHIELD.get()).get(net.minecraft.core.component.DataComponents.ATTRIBUTE_MODIFIERS);
+        if (mods != null) for (var e : mods.modifiers())
             if (e.attribute().is(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE)) atk += e.modifier().amount();
         bashTarget = EntityType.ZOMBIE.create(sl);
         bashTarget.moveTo(-90.5, sp.getY(), -153.5, 0, 0);
@@ -216,6 +217,28 @@ public final class V185Test {
                 com.tycooncraft.gear.PoliceShieldItem.stunned(bashTarget), bashTarget.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN)));
         bashTarget.discard();
         sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+    }
+
+    static net.minecraft.world.entity.boss.enderdragon.EnderDragon restDragon;
+
+    /** 드래곤: 큰 기술 뒤 숨 고르기 */
+    static void dragonRest(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        double gy = sp.getY();
+        AutoTest.dummyVillagerAt(sl, 200.5, 230.5);
+        for (var v : sl.getEntitiesOfClass(net.minecraft.world.entity.npc.Villager.class, new net.minecraft.world.phys.AABB(190, gy - 5, 220, 210, gy + 5, 240))) v.addTag("tc_dummy");
+        restDragon = EntityType.ENDER_DRAGON.create(sl);
+        restDragon.moveTo(200.5, gy + 25, 200.5, 0, 0);
+        sl.addFreshEntity(restDragon);
+        restDragon.getPhaseManager().setPhase(net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase.HOLDING_PATTERN);
+        com.tycooncraft.mob.VanillaBossBuffs.forceMove(restDragon, 1);
+    }
+
+    static void dragonRestCheck(ServerPlayer sp) {
+        double ground = sp.getY();
+        System.out.println(String.format("[AUTOTEST] v188 dragonRest rests=%d heightAboveGround=%.1f",
+                com.tycooncraft.mob.VanillaBossBuffs.REST_COUNT, restDragon.getY() - ground));
+        restDragon.discard();
     }
 
     private V185Test() {}
