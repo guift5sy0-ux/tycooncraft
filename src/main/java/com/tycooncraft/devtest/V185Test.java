@@ -320,9 +320,11 @@ public final class V185Test {
         sp.teleportTo(sl, p.getX() + 0.5, p.getY(), p.getZ() - 2.5, 0f, 0f);
         var r = proto.interact(sp, InteractionHand.MAIN_HAND);
         sp.setYRot(0); sp.setXRot(8);
+        for (var e : sl.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, proto.getBoundingBox().inflate(40), e -> e != proto)) e.discard();   // 시야 가리는 슬라임 등 정리
         protoTarget = EntityType.ZOMBIE.create(sl);
         protoTarget.moveTo(p.getX() + 0.5, p.getY(), p.getZ() + 12.5, 180, 0);
         protoTarget.setNoAi(true);
+        protoTarget.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));   // 햇빛에 타지 않게
         protoTarget.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(400);
         protoTarget.setHealth(400);
         sl.addFreshEntity(protoTarget);
@@ -364,7 +366,7 @@ public final class V185Test {
         protoTarget.setHealth(400);
         Vec3 f = proto.local(0, 0, 3.2);
         protoTarget.teleportTo(f.x, proto.getY(), f.z);
-        proto.teleportTo(proto.getX(), proto.getY() + 5, proto.getZ());
+        System.out.println("[AUTOTEST] v191 jumpStart y=" + proto.getY() + " ground=" + proto.onGround());
     }
 
     static void protoCheck(ServerPlayer sp) {
