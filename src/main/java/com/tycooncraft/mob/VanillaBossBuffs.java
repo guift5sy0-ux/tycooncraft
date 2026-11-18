@@ -659,13 +659,13 @@ public final class VanillaBossBuffs {
 
         // ── 비행 중 ──
         if (s.move != M_NONE && !airborne(d)) s.move = M_NONE;
-        if (s.lastMove != M_NONE && s.move == M_NONE && airborne(d)) {   // 큰 기술이 끝남 → 지쳐서 내려옴
+        if (s.lastMove != M_NONE && s.move == M_NONE) {   // 큰 기술이 끝남(또는 끊김) → 지쳐서 내려옴
             s.rest = DRAGON_REST;
             s.restAt = new Vec3(d.getX(), ground(sl, d.getX(), d.getZ()) + 3.5, d.getZ());
             REST_COUNT++;
         }
         s.lastMove = s.move;
-        if (s.rest > 0 && airborne(d) && s.move == M_NONE) {
+        if (s.rest > 0 && s.move == M_NONE) {
             s.rest--;
             hold(d, d.position().lerp(s.restAt, 0.12));
             face(d, tgt.position().subtract(d.position()));
