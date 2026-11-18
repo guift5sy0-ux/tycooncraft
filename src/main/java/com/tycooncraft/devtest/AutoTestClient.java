@@ -783,7 +783,7 @@ public final class AutoTestClient {
             case 3476 -> serverDo(mc, V185Test::protoShowcase2);
             case 3486 -> shot(mc, "98_proto_back");
             case 3490 -> serverDo(mc, V185Test::locoSetup);
-            case 3496, 3500, 3504, 3508, 3512, 3516, 3520, 3524 -> serverKeep(mc, V185Test::locoPush);
+            case 3500, 3502, 3504, 3506, 3508, 3510, 3512, 3514, 3516, 3518, 3520, 3522, 3524 -> serverKeep(mc, V185Test::locoPush);
             case 3526 -> serverKeep(mc, V185Test::locoCheck);
             case 3530 -> next(11);
             default -> {

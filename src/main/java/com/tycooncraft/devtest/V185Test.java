@@ -398,28 +398,34 @@ public final class V185Test {
     /** v0.19.0: 기관차 최고 속력 1.8배 확인 — 직선 선로에서 계속 가속 */
     static void locoSetup(ServerPlayer sp) {
         var sl = sp.serverLevel();
-        int y = 120;
-        for (int z = 0; z < 400; z++) {
-            sl.setBlock(new BlockPos(300, y - 1, z), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(), 2);
-            sl.setBlock(new BlockPos(300, y, z), net.minecraft.world.level.block.Blocks.RAIL.defaultBlockState(), 2);
+        BlockPos g = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(60, 0, -200));
+        int y = g.getY();
+        for (int z = -200; z < 100; z++) {
+            sl.setBlock(new BlockPos(60, y - 1, z), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(), 2);
+            sl.setBlock(new BlockPos(60, y, z), net.minecraft.world.level.block.Blocks.RAIL.defaultBlockState(), 2);
+            sl.setBlock(new BlockPos(60, y + 1, z), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+            sl.setBlock(new BlockPos(60, y + 2, z), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
         }
         loco = ModEntities.LOCOMOTIVE.get().create(sl);
-        loco.moveTo(300.5, y + 0.0625, 2.5, 0, 0);
+        loco.moveTo(60.5, y + 0.0625, -198.5, 0, 0);
         loco.setFuel(loco.maxFuel());
         sl.addFreshEntity(loco);
-        sp.teleportTo(sl, 300.5, y + 1, 2.5, 0, 0);
+        sp.teleportTo(sl, 60.5, y + 1, -198.5, 0, 0);
         sp.startRiding(loco, true);
+        locoT0 = 0;
     }
+
+    static int locoPushes;
 
     static void locoPush(ServerPlayer sp) {
         if (loco == null) return;
         loco.setDeltaMovement(0, 0, 4.0);   // 상한에 걸리도록 크게
-        if (locoT0 == 0) { locoZ0 = loco.getZ(); locoT0 = sp.server.getTickCount(); }
+        if (++locoPushes == 4) { locoZ0 = loco.getZ(); locoT0 = sp.server.getTickCount(); }   // 앞의 몇 번은 가속·청크 로딩
     }
 
     static void locoCheck(ServerPlayer sp) {
         double v = (loco.getZ() - locoZ0) / Math.max(1, sp.server.getTickCount() - locoT0);
-        System.out.printf("[AUTOTEST] v190 loco avgSpeed=%.2f b/t (%.0f km/h) cap=%.2f riding=%s%n", v, v * 20 * 3.6, loco.getMaxSpeedWithRail(), sp.getVehicle() == loco);
+        System.out.printf("[AUTOTEST] v190 loco avgSpeed=%.2f b/t (%.0f km/h) cap=%.2f riding=%s z=%.1f%n", v, v * 20 * 3.6, loco.getMaxSpeedWithRail(), sp.getVehicle() == loco, loco.getZ());
         sp.stopRiding();
         loco.discard();
     }
