@@ -554,8 +554,18 @@ public final class V185Test {
     }
 
     static Vec3 kick0;
+    static BlockPos kickBase;
 
     static void rt20Kick(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        if (kickBase == null) kickBase = sp.blockPosition().offset(0, 12, 0);
+        int y = kickBase.getY(), bx = kickBase.getX(), bz = kickBase.getZ();
+        for (int x = -3; x <= 3; x++) for (int z = -12; z <= 4; z++) {   // 평평한 시험대 (가장자리·낙하 영향 없게)
+            sl.setBlockAndUpdate(new BlockPos(bx + x, y - 1, bz + z), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+            for (int h = 0; h < 3; h++) sl.setBlockAndUpdate(new BlockPos(bx + x, y + h, bz + z), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+        }
+        sp.teleportTo(sl, bx + 0.5, y, bz + 0.5, 0f, 0f);
+        sp.setDeltaMovement(Vec3.ZERO);
         sp.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         sp.setHealth(20f);
         sp.setYRot(0);

@@ -802,7 +802,7 @@ public final class AutoTestClient {
             case 3650 -> shot(mc, "99b_turret_damaged");
             case 3760 -> serverDo(mc, V185Test::turretCheck);
             case 3763 -> serverDo(mc, V185Test::rt20Check);
-            case 3768 -> serverKeep(mc, V185Test::rt20Kick);
+            case 3766 -> serverKeep(mc, V185Test::rt20Kick);
             case 3792 -> serverKeep(mc, V185Test::rt20KickMeasure);
             case 3794 -> key(o.keyShift, true);
             case 3798 -> serverKeep(mc, V185Test::rt20Kick);
