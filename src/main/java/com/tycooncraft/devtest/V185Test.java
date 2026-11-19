@@ -516,6 +516,7 @@ public final class V185Test {
         var sl = sp.serverLevel();
         BlockPos base = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(sp.getX() + 10, 0, sp.getZ() + 20));
         StringBuilder out = new StringBuilder("[AUTOTEST] v195 rt20");
+        sp.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.RT20.get()));   // 총을 든 상태 (빈손이면 차량은 근접 판정)
         net.minecraft.world.entity.Entity[] ts = {EntityType.ZOMBIE.create(sl), ModEntities.DESTROYER_GOLEM.get().create(sl), ModEntities.TANK.get().create(sl)};
         String[] names = {"zombie", "destroyer", "tank"};
         for (int i = 0; i < ts.length; i++) {
@@ -561,6 +562,7 @@ public final class V185Test {
         sp.setXRot(0);
         kick0 = sp.position();
         com.tycooncraft.gun.GunItem.rt20Kick(sp.serverLevel(), sp);
+        System.out.printf("[AUTOTEST] v195 rt20Recoil hpLostNow=%.1f%n", 20f - sp.getHealth());
     }
 
     static void rt20KickMeasure(ServerPlayer sp) {
