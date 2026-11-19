@@ -13,7 +13,9 @@ public final class TurretEvents {
         Vec3 c = e.getExplosion().center();
         float r = e.getExplosion().radius();
         double reach = r * 2;
-        for (BlockPos p : TurretBlockEntity.all(e.getLevel()).toArray(BlockPos[]::new)) {
+        java.util.Set<BlockPos> cand = new java.util.HashSet<>(TurretBlockEntity.all(e.getLevel()));
+        for (BlockPos p : e.getAffectedBlocks()) if (e.getLevel().getBlockEntity(p) instanceof TurretBlockEntity) cand.add(p.immutable());
+        for (BlockPos p : cand) {
             double d = p.getCenter().distanceTo(c);
             if (d > reach || !(e.getLevel().getBlockEntity(p) instanceof TurretBlockEntity t)) continue;
             e.getAffectedBlocks().remove(p);

@@ -456,7 +456,7 @@ public final class V185Test {
     static void turretSetup(ServerPlayer sp) {
         var sl = sp.serverLevel();
         for (int i = 0; i < 4; i++) {
-            BlockPos g = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BlockPos.containing(140, 0, -300 + i * 30));
+            BlockPos g = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BlockPos.containing(140, 0, -300 + new int[]{0, 40, 110, 150}[i]));
             turrets[i] = g;
             sl.setBlockAndUpdate(g, ModBlocks.TURRET.get().defaultBlockState());
         }
@@ -472,8 +472,6 @@ public final class V185Test {
         queen.moveTo(turrets[2].getX() + 10.5, turrets[2].getY(), turrets[2].getZ() + 0.5, 90, 0);
         queen.setPersistenceRequired();
         sl.addFreshEntity(queen);
-        // 폭발: TNT 급(반경 4) 이 2칸 옆에서 터짐 → 부서지지 않고 체력만 깎임
-        sl.explode(null, turrets[3].getX() + 2.5, turrets[3].getY() + 0.5, turrets[3].getZ() + 0.5, 4f, net.minecraft.world.level.Level.ExplosionInteraction.TNT);
         // 플레이어(크리에이티브)는 갱단원·포탑을 옆에서 봄
         sp.teleportTo(sl, turrets[0].getX() + 5.5, turrets[0].getY() + 1, turrets[0].getZ() - 7.5, 20f, 10f);
         System.out.printf("[AUTOTEST] v194 turretDmg light=%.2f heavy=%.2f protoMaxHeat=%d tankShell power=5 direct=%.0f%n",
@@ -495,6 +493,8 @@ public final class V185Test {
 
     static void turretMid(ServerPlayer sp) {
         sp0 = sp;
+        // 폭발: TNT 급(반경 4) 이 2칸 옆에서 터짐 → 부서지지 않고 체력만 깎임
+        sp.serverLevel().explode(null, turrets[3].getX() + 2.5, turrets[3].getY() + 0.5, turrets[3].getZ() + 0.5, 4f, net.minecraft.world.level.Level.ExplosionInteraction.TNT);
         System.out.println("[AUTOTEST] v194 turretMid" + turretState());
         sp.teleportTo(sp.serverLevel(), turrets[1].getX() + 5.5, turrets[1].getY() + 2, turrets[1].getZ() - 8.5, 20f, 15f);   // 디스트로이어 쪽
     }
