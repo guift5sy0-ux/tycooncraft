@@ -660,5 +660,8 @@
   "hud.tycooncraft.proto.stomp": "착지 충격파 준비",
   "hud.tycooncraft.proto.stomp_wait": "착지 충격파 충전 중",
   "item.tycooncraft.rt20": "RT-20 대물 저격총",
-  "item.tycooncraft.hispano_ammo": "히스파노 탄 (20mm)"
+  "item.tycooncraft.hispano_ammo": "히스파노 탄 (20mm)",
+  "death.attack.tycooncraft.recoil": "%1$s이(가) RT-20 반동을 버티지 못했습니다",
+  "tooltip.tycooncraft.rt20": "쏠 때 반동 피해 4 (고정) · 뒤로 2칸 밀림 (웅크리면 1칸) · 재장전 9초",
+  "tooltip.tycooncraft.rt20_2": "전차·디스트로이어에 피해 1.1배 · 1명 관통"
 }

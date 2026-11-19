@@ -514,7 +514,7 @@ public final class V185Test {
     /** v0.19.5: RT-20 피해 70, 전차·디스트로이어 1.1배 + 방어구 방어력 */
     static void rt20Check(ServerPlayer sp) {
         var sl = sp.serverLevel();
-        BlockPos base = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(0, 0, 400));
+        BlockPos base = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(sp.getX() + 10, 0, sp.getZ() + 20));
         StringBuilder out = new StringBuilder("[AUTOTEST] v195 rt20");
         net.minecraft.world.entity.Entity[] ts = {EntityType.ZOMBIE.create(sl), ModEntities.DESTROYER_GOLEM.get().create(sl), ModEntities.TANK.get().create(sl)};
         String[] names = {"zombie", "destroyer", "tank"};
@@ -550,6 +550,25 @@ public final class V185Test {
         }
         a.append(" | iron=15 diamond=20/t2 netherite=20/t3");
         System.out.println(a);
+    }
+
+    static Vec3 kick0;
+
+    static void rt20Kick(ServerPlayer sp) {
+        sp.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        sp.setHealth(20f);
+        sp.setYRot(0);
+        sp.setXRot(0);
+        kick0 = sp.position();
+        com.tycooncraft.gun.GunItem.rt20Kick(sp.serverLevel(), sp);
+    }
+
+    static void rt20KickMeasure(ServerPlayer sp) {
+        Vec3 d = sp.position().subtract(kick0);
+        System.out.printf("[AUTOTEST] v195 rt20Kick sneak=%s pushed=%.2f (dz=%.2f) hpLost=%.1f reload=%d%n", sp.isShiftKeyDown(), Math.hypot(d.x, d.z), d.z, 20f - sp.getHealth(),
+                ((com.tycooncraft.gun.GunItem) ModItems.RT20.get()).reloadTicks(new ItemStack(ModItems.RT20.get())));
+        sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+        sp.setHealth(20f);
     }
 
     private V185Test() {}

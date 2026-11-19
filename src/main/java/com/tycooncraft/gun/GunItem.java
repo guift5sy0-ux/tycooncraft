@@ -89,7 +89,11 @@ public class GunItem extends Item {
         return Math.max(1, Math.round(stats.fireDelay() * (1 - 0.15f * GunEnchants.level(stack, GunEnchants.RAPID_FIRE))));
     }
 
+    public static final int RT20_RELOAD = 180;   // 9초 고정 (인챈트·파츠 무시)
+    public static final float RT20_RECOIL_DMG = 4f;
+
     public int reloadTicks(ItemStack stack) {
+        if (stack.is(ModItems.RT20.get())) return RT20_RELOAD;
         return Math.max(5, Math.round(stats.reloadTicks() * (1 - 0.2f * GunEnchants.level(stack, GunEnchants.QUICK_RELOAD))));
     }
 
@@ -201,6 +205,7 @@ public class GunItem extends Item {
         int before = ammo(stack);
         if (!player.getAbilities().instabuild && player.getRandom().nextFloat() >= 0.15f * saver) setAmmo(stack, before - 1);
         fire(server, player, stack, tier);
+        if (stack.is(ModItems.RT20.get())) rt20Kick(server, player);
         // 쌍권총: 다음 발은 반대쪽 총
         if (isDual()) player.getPersistentData().putBoolean("tycooncraft_dual_left", !player.getPersistentData().getBoolean("tycooncraft_dual_left"));
         float pitch = 0.96f + player.getRandom().nextFloat() * 0.08f;
@@ -269,6 +274,23 @@ public class GunItem extends Item {
                 e -> !player.isPassengerOfSameVehicle(e) && e != player.getVehicle());
     }
 
+    /** RT-20 반동: 고정 피해 4 (방어구·저항 무시) + 뒤로 2칸 (웅크리면 1칸) */
+    public static void rt20Kick(ServerLevel level, Player player) {
+        var type = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
+                .getHolderOrThrow(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DAMAGE_TYPE, com.tycooncraft.TycoonCraft.id("recoil")));
+        player.invulnerableTime = 0;
+        player.hurt(new net.minecraft.world.damagesource.DamageSource(type), RT20_RECOIL_DMG);
+        Vec3 back = player.getLookAngle().multiply(1, 0, 1);
+        if (back.lengthSqr() < 1e-4) back = Vec3.directionFromRotation(0, player.getYRot());
+        double v = player.isShiftKeyDown() ? 0.46 : 0.9;   // 지면 마찰(0.546) 기준 약 1칸 / 2칸
+        back = back.normalize().scale(-v);
+        player.setDeltaMovement(back.x, player.getDeltaMovement().y, back.z);
+        player.hurtMarked = true;
+        RT20_KICKS++;
+    }
+
+    public static int RT20_KICKS;
+
     // ── 재장전 ──
 
     private void reload(Level level, Player player, ItemStack stack) {
@@ -335,6 +357,10 @@ public class GunItem extends Item {
         tooltip.add(Component.translatable(stats.scoped() ? "tooltip.tycooncraft.gun.how_scoped"
                 : stats.auto() ? "tooltip.tycooncraft.gun.how_auto" : "tooltip.tycooncraft.gun.how_semi").withStyle(ChatFormatting.DARK_GRAY));
         int st = silencerTier(stack);
+        if (stack.is(ModItems.RT20.get())) {
+            tooltip.add(Component.translatable("tooltip.tycooncraft.rt20").withStyle(ChatFormatting.RED));
+            tooltip.add(Component.translatable("tooltip.tycooncraft.rt20_2").withStyle(ChatFormatting.GOLD));
+        }
         if (stack.is(ModItems.VSS.get())) {
             tooltip.add(Component.translatable("tooltip.tycooncraft.gun.integral").withStyle(ChatFormatting.AQUA));
             tooltip.add(Component.translatable(fireMode(stack) == 1 ? "tooltip.tycooncraft.gun.mode_auto" : "tooltip.tycooncraft.gun.mode_semi").withStyle(ChatFormatting.YELLOW));
