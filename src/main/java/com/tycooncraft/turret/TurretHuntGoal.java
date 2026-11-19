@@ -92,7 +92,9 @@ public class TurretHuntGoal extends Goal {
     public void tick() {
         if (turret == null) return;
         if (mob.getTarget() != null) mob.setTarget(null);
-        Vec3 c = Vec3.atCenterOf(turret);
+        var st = mob.level().getBlockState(turret);
+        var shape = st.getCollisionShape(mob.level(), turret);
+        Vec3 c = shape.isEmpty() ? Vec3.atCenterOf(turret) : shape.bounds().getCenter().add(turret.getX(), turret.getY(), turret.getZ());   // 실제 몸통 중심을 조준
         Vec3 eye = mob.getEyePosition();
         mob.getLookControl().setLookAt(c.x, c.y, c.z, 30f, 30f);
         boolean ranged = rangedDmg > 0;
