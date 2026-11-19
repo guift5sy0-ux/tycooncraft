@@ -54,7 +54,7 @@ public class TurretHuntGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (mob.tickCount % 10 != 0 || !enabled.getAsBoolean() || !(mob.level() instanceof ServerLevel)) return false;
+        if ((mob.tickCount + mob.getId()) % 10 != 0 || !enabled.getAsBoolean() || !(mob.level() instanceof ServerLevel)) return false;
         turret = TurretBlockEntity.nearest(mob.level(), mob.position(), NOTICE);
         return turret != null;
     }
