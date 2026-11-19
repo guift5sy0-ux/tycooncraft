@@ -16,6 +16,7 @@ import net.minecraft.world.phys.Vec3;
 /** RPG 로켓 / 전차 포탄 / 전투기 미사일: 맞는 순간 폭발 */
 public class RocketEntity extends Projectile {
     public static final int ROCKET = 0, SHELL = 1, MISSILE = 2;
+    public static final float SHELL_DIRECT = 20f;
     private static final EntityDataAccessor<Integer> KIND = SynchedEntityData.defineId(RocketEntity.class, EntityDataSerializers.INT);
     private float power = 3.5f;
     private int life;
@@ -61,6 +62,10 @@ public class RocketEntity extends Projectile {
         }
         if (hit.getType() != HitResult.Type.MISS) {
             setPos(hit.getLocation().x, hit.getLocation().y, hit.getLocation().z);
+            if (!level().isClientSide && kind() == SHELL && hit instanceof net.minecraft.world.phys.EntityHitResult eh) {   // 전차 포탄 직격
+                eh.getEntity().invulnerableTime = 0;
+                eh.getEntity().hurt(damageSources().explosion(this, getOwner()), SHELL_DIRECT);
+            }
             explode();
             return;
         }

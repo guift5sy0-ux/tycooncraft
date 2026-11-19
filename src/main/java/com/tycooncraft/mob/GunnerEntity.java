@@ -72,6 +72,7 @@ public class GunnerEntity extends Monster implements RangedAttackMob {
         this.xpReward = kind == Kind.BOSS ? 200 : 8;
         // registerGoals() 는 부모 생성자에서 먼저 불리므로(kind 가 아직 null) 사격 목표는 여기서 추가
         goalSelector.addGoal(2, new RangedAttackGoal(this, 1.0, kind.interval, kind.interval + 10, kind.range));
+        goalSelector.addGoal(1, com.tycooncraft.turret.TurretHuntGoal.ranged(this, kind.damage * kind.pellets, kind.range, kind.interval, this::fireSound));   // 포탑 먼저
     }
 
     public Kind kind() {

@@ -11,12 +11,12 @@ import java.util.UUID;
 
 /**
  * 포탑 공통 규칙 (v0.18.5 밸런스: 총보다 약하게).
- * 연사 6틱(초당 3.3발), 피해 경탄 4 / 중탄 5.5, 탄 퍼짐 큼, 목표를 잡고 0.5초 뒤부터 사격.
+ * 연사 6틱(초당 3.3발), 피해 경탄 2.8 / 중탄 3.85 (v0.19.4 30% 너프), 탄 퍼짐 큼, 목표를 잡고 0.5초 뒤부터 사격.
  * 대상: 적대 몹 + (침입자 모드일 때) 주인·동맹이 아닌 플레이어. 동맹 플레이어는 맞히지도 않는다.
  */
 public final class TurretAI {
     public static final int COOLDOWN = 6, LOCK_DELAY = 10;
-    public static final float DMG_LIGHT = 4f, DMG_HEAVY = 5.5f;
+    public static final float DMG_LIGHT = 2.8f, DMG_HEAVY = 3.85f;   // v0.19.4: 30% 너프
     public static final double SPREAD = 0.05;
 
     public static boolean targetable(ServerLevel sl, Entity e, @Nullable UUID owner, boolean intruders) {

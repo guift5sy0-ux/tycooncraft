@@ -64,6 +64,7 @@ public class DestroyerGolem extends Monster {
     protected void registerGoals() {
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0, true));
+        goalSelector.addGoal(1, com.tycooncraft.turret.TurretHuntGoal.melee(this, 20f, 20));   // 포탑 먼저 (주먹으로 부숨)
         goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.7));
         goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 16f));
         goalSelector.addGoal(8, new RandomLookAroundGoal(this));

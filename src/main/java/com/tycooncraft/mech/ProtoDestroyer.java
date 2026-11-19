@@ -47,7 +47,7 @@ import java.util.UUID;
 public class ProtoDestroyer extends PathfinderMob {
     public static final int IDLE = 0, FIRING = 1, ROCKETS = 2, SLAM = 3;
     public static final int ACT_FIRE = 1, ACT_ROCKETS = 2, ACT_JUMP = 4;
-    public static final int MAX_HEAT = 100, ROCKET_CD = 120, SLAM_CD = 40;
+    public static final int MAX_HEAT = 180, ROCKET_CD = 120, SLAM_CD = 40;
     public static final float GUN_DMG = 3.5f;
     public static final int MAX_HP = 200;
     /** 탑승자도 받는 피해 비율 (완전 무적이면 보스를 너무 쉽게 잡음) */
@@ -248,10 +248,10 @@ public class ProtoDestroyer extends PathfinderMob {
     private void fire(ServerPlayer rider) {
         if (gunCd > 0 || overheated()) return;
         if (!take(rider, ModItems.HEAVY_AMMO.get())) { gunCd = 10; dry(); return; }
-        gunCd = 3;
+        gunCd = 2;
         lastFire = tickCount;
         if (attack() == IDLE) setAttack(FIRING);
-        int h = heat() + 5;
+        int h = heat() + 4;
         entityData.set(HEAT, Math.min(MAX_HEAT, h));
         if (h >= MAX_HEAT) {
             entityData.set(OVERHEAT, true);
@@ -298,7 +298,7 @@ public class ProtoDestroyer extends PathfinderMob {
         if (gunCd > 0) gunCd--;
         if (rocketCd() > 0) entityData.set(ROCKET_T, rocketCd() - 1);
         if (slamCd() > 0) entityData.set(SLAM_T, slamCd() - 1);
-        if (tickCount - lastFire > 6 && heat() > 0) entityData.set(HEAT, Math.max(0, heat() - (overheated() ? 2 : 3)));
+        if (tickCount - lastFire > 6 && heat() > 0) entityData.set(HEAT, Math.max(0, heat() - (overheated() ? 3 : 4)));
         if (overheated() && heat() == 0) entityData.set(OVERHEAT, false);
         attackT++;
         Player rider = getControllingPassenger() instanceof Player p ? p : null;

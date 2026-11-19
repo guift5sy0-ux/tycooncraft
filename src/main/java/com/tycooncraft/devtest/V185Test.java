@@ -449,5 +449,66 @@ public final class V185Test {
         loco.discard();
     }
 
+    // ── v0.19.4 포탑 ──
+    static BlockPos[] turrets = new BlockPos[4];
+    static String[] turretWho = {"gangster", "destroyer", "spiderQueen", "explosion"};
+
+    static void turretSetup(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        for (int i = 0; i < 4; i++) {
+            BlockPos g = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BlockPos.containing(140, 0, -300 + i * 30));
+            turrets[i] = g;
+            sl.setBlockAndUpdate(g, ModBlocks.TURRET.get().defaultBlockState());
+        }
+        var gang = ModEntities.GANGSTER.get().create(sl);
+        gang.moveTo(turrets[0].getX() + 10.5, turrets[0].getY(), turrets[0].getZ() + 0.5, 90, 0);
+        gang.setPersistenceRequired();
+        sl.addFreshEntity(gang);
+        var golem = ModEntities.DESTROYER_GOLEM.get().create(sl);
+        golem.moveTo(turrets[1].getX() + 10.5, turrets[1].getY(), turrets[1].getZ() + 0.5, 90, 0);
+        golem.setPersistenceRequired();
+        sl.addFreshEntity(golem);
+        var queen = ModEntities.MUTANT_SPIDER.get().create(sl);
+        queen.moveTo(turrets[2].getX() + 10.5, turrets[2].getY(), turrets[2].getZ() + 0.5, 90, 0);
+        queen.setPersistenceRequired();
+        sl.addFreshEntity(queen);
+        // 폭발: TNT 급(반경 4) 이 2칸 옆에서 터짐 → 부서지지 않고 체력만 깎임
+        sl.explode(null, turrets[3].getX() + 2.5, turrets[3].getY() + 0.5, turrets[3].getZ() + 0.5, 4f, net.minecraft.world.level.Level.ExplosionInteraction.TNT);
+        // 플레이어(크리에이티브)는 갱단원·포탑을 옆에서 봄
+        sp.teleportTo(sl, turrets[0].getX() + 5.5, turrets[0].getY() + 1, turrets[0].getZ() - 7.5, 20f, 10f);
+        System.out.printf("[AUTOTEST] v194 turretDmg light=%.2f heavy=%.2f protoMaxHeat=%d tankShell power=5 direct=%.0f%n",
+                com.tycooncraft.turret.TurretAI.DMG_LIGHT, com.tycooncraft.turret.TurretAI.DMG_HEAVY, com.tycooncraft.mech.ProtoDestroyer.MAX_HEAT,
+                com.tycooncraft.entity.RocketEntity.SHELL_DIRECT);
+    }
+
+    static String turretState() {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < 4; i++) {
+            b.append(' ').append(turretWho[i]).append('=');
+            if (sp0 != null && sp0.serverLevel().getBlockEntity(turrets[i]) instanceof com.tycooncraft.turret.TurretBlockEntity t) b.append(String.format("%.0f", t.hp));
+            else b.append("DESTROYED");
+        }
+        return b.toString();
+    }
+
+    static ServerPlayer sp0;
+
+    static void turretMid(ServerPlayer sp) {
+        sp0 = sp;
+        System.out.println("[AUTOTEST] v194 turretMid" + turretState());
+        sp.teleportTo(sp.serverLevel(), turrets[1].getX() + 5.5, turrets[1].getY() + 2, turrets[1].getZ() - 8.5, 20f, 15f);   // 디스트로이어 쪽
+    }
+
+    static void turretCheck(ServerPlayer sp) {
+        sp0 = sp;
+        // 수리: 폭발 맞은 포탑을 강철 주괴로
+        float before = -1, after = -1;
+        if (sp.serverLevel().getBlockEntity(turrets[3]) instanceof com.tycooncraft.turret.TurretBlockEntity t) { before = t.hp; t.repair(40); after = t.hp; }
+        System.out.println("[AUTOTEST] v194 turretEnd" + turretState() + " destroyed=" + com.tycooncraft.turret.TurretBlockEntity.DESTROYED
+                + " rangedShots=" + com.tycooncraft.turret.TurretHuntGoal.RANGED_SHOTS + " meleeHits=" + com.tycooncraft.turret.TurretHuntGoal.MELEE_HITS
+                + String.format(" repair %.0f→%.0f", before, after));
+        for (var e : sp.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.Mob.class, new net.minecraft.world.phys.AABB(turrets[0]).inflate(220, 40, 40))) e.discard();
+    }
+
     private V185Test() {}
 }

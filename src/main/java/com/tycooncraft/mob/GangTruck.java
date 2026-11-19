@@ -94,6 +94,7 @@ public class GangTruck extends Monster {
     protected void registerGoals() {
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(2, new ChaseGoal(this));
+        goalSelector.addGoal(1, new com.tycooncraft.turret.TurretHuntGoal(this, 3.5f, 40, 3, ModSounds.RIFLE_FIRE::get, 0, this::hasDriver));   // 포탑 먼저
         goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.55) {
             @Override
             public boolean canUse() {

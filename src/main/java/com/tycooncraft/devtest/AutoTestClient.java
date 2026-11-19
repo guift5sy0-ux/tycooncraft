@@ -795,7 +795,13 @@ public final class AutoTestClient {
             case 3490 -> serverDo(mc, V185Test::locoSetup);
             case 3500, 3502, 3504, 3506, 3508, 3510, 3512, 3514, 3516, 3518, 3520, 3522, 3524 -> serverKeep(mc, V185Test::locoPush);
             case 3526 -> serverKeep(mc, V185Test::locoCheck);
-            case 3530 -> next(11);
+            // ── v0.19.4: 포탑 체력 · 몹이 포탑 먼저 노림 ──
+            case 3530 -> serverDo(mc, V185Test::turretSetup);
+            case 3560 -> shot(mc, "99_turret_hunt");
+            case 3640 -> serverDo(mc, V185Test::turretMid);
+            case 3650 -> shot(mc, "99b_turret_damaged");
+            case 3760 -> serverDo(mc, V185Test::turretCheck);
+            case 3766 -> next(11);
             default -> {
             }
         }

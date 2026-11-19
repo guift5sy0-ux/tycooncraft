@@ -63,6 +63,21 @@ public class TurretBlock extends BaseEntityBlock {
         if (placer instanceof Player p && level.getBlockEntity(pos) instanceof TurretBlockEntity t) t.setOwner(p.getUUID());
     }
 
+    /** 철 주괴(+15)·강철 주괴(+40)로 포탑 수리 */
+    @Override
+    protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack st, BlockState state, Level level, BlockPos pos, Player player,
+                                                                net.minecraft.world.InteractionHand hand, BlockHitResult hit) {
+        boolean steel = st.is(com.tycooncraft.registry.ModItems.STEEL_INGOT.get());
+        if (!steel && !st.is(net.minecraft.world.item.Items.IRON_INGOT)) return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        if (!(level.getBlockEntity(pos) instanceof TurretBlockEntity t) || t.hp >= TurretBlockEntity.MAX_HP)
+            return net.minecraft.world.ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        if (!level.isClientSide && t.repair(steel ? 40 : 15)) {
+            st.consume(1, player);
+            level.playSound(null, pos, net.minecraft.sounds.SoundEvents.ANVIL_USE, net.minecraft.sounds.SoundSource.BLOCKS, 0.6f, 1.3f);
+        }
+        return net.minecraft.world.ItemInteractionResult.sidedSuccess(level.isClientSide);
+    }
+
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (!level.isClientSide && level.getBlockEntity(pos) instanceof TurretBlockEntity t) {

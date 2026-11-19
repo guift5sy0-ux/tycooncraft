@@ -143,6 +143,9 @@ public final class Ballistics {
                 break;
             }
         }
+        // v0.19.4: 총알이 포탑에 맞음 → 포탑 체력 감소 (포탑끼리는 서로 쏘지 않음)
+        if (n <= pierce && shooter != null && blockHit.getType() == HitResult.Type.BLOCK
+                && level.getBlockEntity(blockHit.getBlockPos()) instanceof com.tycooncraft.turret.TurretBlockEntity tb) tb.hurt(dmg, shooter);
         Vec3 first = n > 0 ? hits.get(0).getLocation() : impact;
         // 눈에 보이는 총알 (탄착 파편·소리는 총알이 도착할 때 클라이언트가 만든다)
         Vec3 stop = n > pierce ? hits.get(pierce).getLocation() : impact;

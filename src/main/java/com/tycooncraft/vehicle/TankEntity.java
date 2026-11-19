@@ -154,7 +154,7 @@ public class TankEntity extends VehicleEntity {
         Vec3 muzzle = pivot.add(dir.scale(5.4));
         Vec3 shot = target.subtract(muzzle);
         if (shot.lengthSqr() > 4 && shot.normalize().dot(dir) > 0.8) dir = shot.normalize();
-        level().addFreshEntity(RocketEntity.create(ModEntities.ROCKET.get(), level(), player, muzzle, dir.scale(4.0), RocketEntity.SHELL, 4.0f));
+        level().addFreshEntity(RocketEntity.create(ModEntities.ROCKET.get(), level(), player, muzzle, dir.scale(4.0), RocketEntity.SHELL, 5.0f));   // v0.19.4 버프 (4 → 5)
         level().playSound(null, muzzle.x, muzzle.y, muzzle.z, ModSounds.TANK_FIRE.get(), SoundSource.NEUTRAL, 6.0f, 0.95f + random.nextFloat() * 0.1f);
         if (level() instanceof ServerLevel sl) {
             sl.sendParticles(ParticleTypes.EXPLOSION, muzzle.x, muzzle.y, muzzle.z, 2, 0.2, 0.2, 0.2, 0);

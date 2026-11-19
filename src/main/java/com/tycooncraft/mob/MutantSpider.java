@@ -30,6 +30,7 @@ public class MutantSpider extends Spider {
     @Override
     protected void registerGoals() {
         super.registerGoals();
+        goalSelector.addGoal(1, com.tycooncraft.turret.TurretHuntGoal.melee(this, 9f, 14));   // 포탑 먼저
         targetSelector.addGoal(2, new net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal<>(this, DestroyerGolem.class, false));
     }
 

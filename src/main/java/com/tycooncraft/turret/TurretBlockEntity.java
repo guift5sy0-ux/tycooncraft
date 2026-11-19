@@ -80,7 +80,66 @@ public class TurretBlockEntity extends BlockEntity implements MenuProvider {
         return handler;
     }
 
-    public static int SHOTS;
+    public static int SHOTS, DESTROYED;
+    public static final float MAX_HP = 60f;
+    public float hp = MAX_HP;
+    /** 레벨별 포탑 위치 (몹이 가장 가까운 포탑을 싸게 찾도록) */
+    private static final java.util.Map<net.minecraft.resources.ResourceKey<Level>, java.util.Set<BlockPos>> ALL = new java.util.concurrent.ConcurrentHashMap<>();
+
+    public static java.util.Set<BlockPos> all(Level level) {
+        return ALL.computeIfAbsent(level.dimension(), k -> java.util.concurrent.ConcurrentHashMap.newKeySet());
+    }
+
+    @org.jetbrains.annotations.Nullable
+    public static BlockPos nearest(Level level, net.minecraft.world.phys.Vec3 from, double range) {
+        BlockPos best = null;
+        double bd = range * range;
+        for (BlockPos p : all(level)) {
+            double d = p.getCenter().distanceToSqr(from);
+            if (d < bd && level.isLoaded(p) && level.getBlockEntity(p) instanceof TurretBlockEntity) { bd = d; best = p; }
+        }
+        return best;
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (level != null && !level.isClientSide) all(level).add(worldPosition.immutable());
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        if (level != null && !level.isClientSide) all(level).remove(worldPosition);
+    }
+
+    /** 포탑이 맞음: 체력이 다 닳으면 터져서 부서짐 (탄약은 쏟아지고 고철 조금) */
+    public void hurt(float amount, @org.jetbrains.annotations.Nullable Entity attacker) {
+        if (!(level instanceof ServerLevel sl) || amount <= 0 || isRemoved()) return;
+        hp -= amount;
+        setChanged();
+        sl.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        Vec3 c = Vec3.atCenterOf(worldPosition);
+        sl.sendParticles(net.minecraft.core.particles.ParticleTypes.CRIT, c.x, c.y + 0.3, c.z, 6, 0.3, 0.3, 0.3, 0.2);
+        sl.playSound(null, worldPosition, net.minecraft.sounds.SoundEvents.ANVIL_PLACE, net.minecraft.sounds.SoundSource.BLOCKS, 0.35f, 1.6f + sl.random.nextFloat() * 0.3f);
+        if (hp <= 0) {
+            DESTROYED++;
+            sl.sendParticles(net.minecraft.core.particles.ParticleTypes.EXPLOSION, c.x, c.y, c.z, 2, 0.2, 0.2, 0.2, 0);
+            sl.sendParticles(net.minecraft.core.particles.ParticleTypes.LARGE_SMOKE, c.x, c.y, c.z, 20, 0.3, 0.4, 0.3, 0.05);
+            sl.playSound(null, worldPosition, net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE.value(), net.minecraft.sounds.SoundSource.BLOCKS, 1.2f, 1.1f);
+            sl.destroyBlock(worldPosition, false, attacker);
+            net.minecraft.world.Containers.dropItemStack(sl, c.x, c.y, c.z, new ItemStack(net.minecraft.world.item.Items.IRON_INGOT, 2));
+        }
+    }
+
+    /** 수리 (철 주괴 등) */
+    public boolean repair(float amount) {
+        if (hp >= MAX_HP) return false;
+        hp = Math.min(MAX_HP, hp + amount);
+        setChanged();
+        if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        return true;
+    }
 
     public UUID owner() {
         return owner;
@@ -184,6 +243,9 @@ public class TurretBlockEntity extends BlockEntity implements MenuProvider {
 
     // ── 클라이언트: 목표 쪽으로 몸통·총구 회전 ──
     public static void clientTick(Level level, BlockPos pos, BlockState state, TurretBlockEntity t) {
+        if (t.hp < MAX_HP * 0.5f && level.random.nextInt(t.hp < MAX_HP * 0.25f ? 3 : 8) == 0)   // 손상: 연기·불꽃
+            level.addParticle(t.hp < MAX_HP * 0.25f ? net.minecraft.core.particles.ParticleTypes.LARGE_SMOKE : net.minecraft.core.particles.ParticleTypes.SMOKE,
+                    pos.getX() + 0.3 + level.random.nextFloat() * 0.4, pos.getY() + 1.0, pos.getZ() + 0.3 + level.random.nextFloat() * 0.4, 0, 0.04, 0);
         t.yawO = t.yaw;
         t.pitchO = t.pitch;
         Entity target = t.targetId >= 0 ? level.getEntity(t.targetId) : null;
@@ -209,6 +271,7 @@ public class TurretBlockEntity extends BlockEntity implements MenuProvider {
         if (owner != null) tag.putUUID("Owner", owner);
         tag.putBoolean("Intruders", intruders);
         tag.putInt("Target", targetId);
+        tag.putFloat("Hp", hp);
     }
 
     @Override
@@ -218,12 +281,14 @@ public class TurretBlockEntity extends BlockEntity implements MenuProvider {
         if (tag.hasUUID("Owner")) owner = tag.getUUID("Owner");
         intruders = !tag.contains("Intruders") || tag.getBoolean("Intruders");
         targetId = tag.contains("Target") ? tag.getInt("Target") : -1;
+        hp = tag.contains("Hp") ? tag.getFloat("Hp") : MAX_HP;
     }
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag tag = super.getUpdateTag(registries);
         tag.putInt("Target", targetId);
+        tag.putFloat("Hp", hp);
         return tag;
     }
 

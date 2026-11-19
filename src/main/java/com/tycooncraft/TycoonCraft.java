@@ -60,6 +60,7 @@ public class TycoonCraft {
         NeoForge.EVENT_BUS.register(com.tycooncraft.mob.VanillaBossBuffs.class);
         NeoForge.EVENT_BUS.register(com.tycooncraft.gear.JuggernautEvents.class);
         NeoForge.EVENT_BUS.register(com.tycooncraft.vehicle.VehicleArmor.class);
+        NeoForge.EVENT_BUS.register(com.tycooncraft.turret.TurretEvents.class);
         com.tycooncraft.devtest.MpTest.init();
         NeoForge.EVENT_BUS.register(com.tycooncraft.world.gen.VillageTraders.class);
         if (AutoTest.ENABLED) NeoForge.EVENT_BUS.register(AutoTest.class);
