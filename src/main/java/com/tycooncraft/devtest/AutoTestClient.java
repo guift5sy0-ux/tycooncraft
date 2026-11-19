@@ -769,8 +769,8 @@ public final class AutoTestClient {
                 com.tycooncraft.client.cctv.CctvView.close();
             }
             case 3345 -> serverDo(mc, V185Test::cctvHeadCheck);
-            case 3347 -> shot(mc, "92b_cctv_head");
-            case 3348 -> serverDo(mc, V185Test::vehicleArmor);
+            case 3351 -> shot(mc, "92b_cctv_head");
+            case 3352 -> serverDo(mc, V185Test::vehicleArmor);
             // ── v0.19.0: 프로토 디스트로이어 ──
             case 3354 -> serverDo(mc, V185Test::protoSetup);
             case 3362 -> o.setCameraType(CameraType.THIRD_PERSON_BACK);
