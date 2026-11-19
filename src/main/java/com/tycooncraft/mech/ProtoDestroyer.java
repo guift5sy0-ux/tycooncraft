@@ -48,7 +48,13 @@ public class ProtoDestroyer extends PathfinderMob {
     public static final int IDLE = 0, FIRING = 1, ROCKETS = 2, SLAM = 3;
     public static final int ACT_FIRE = 1, ACT_ROCKETS = 2, ACT_JUMP = 4;
     public static final int MAX_HEAT = 100, ROCKET_CD = 120, SLAM_CD = 40;
-    public static final float GUN_DMG = 4.5f;
+    public static final float GUN_DMG = 3.5f;
+    public static final int MAX_HP = 200;
+    /** 탑승자도 받는 피해 비율 (완전 무적이면 보스를 너무 쉽게 잡음) */
+    public static final float PILOT_SHARE = 0.15f;
+    /** 걸음 위상 계수: 클수록 빠른 걸음. 모델·카메라 흔들림과 공유 */
+    public static final float GAIT = 0.2f;
+    private float throttle;
     public static final double JUMP_VEL = 0.62;
     private static final EntityDataAccessor<Integer> ATTACK = SynchedEntityData.defineId(ProtoDestroyer.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> HEAT = SynchedEntityData.defineId(ProtoDestroyer.class, EntityDataSerializers.INT);
@@ -67,8 +73,8 @@ public class ProtoDestroyer extends PathfinderMob {
     }
 
     public static AttributeSupplier.Builder attributes() {
-        return PathfinderMob.createMobAttributes().add(Attributes.MAX_HEALTH, 320).add(Attributes.ARMOR, 18).add(Attributes.ARMOR_TOUGHNESS, 8)
-                .add(Attributes.MOVEMENT_SPEED, 0.2).add(Attributes.KNOCKBACK_RESISTANCE, 1.0).add(Attributes.STEP_HEIGHT, 1.1)
+        return PathfinderMob.createMobAttributes().add(Attributes.MAX_HEALTH, MAX_HP).add(Attributes.ARMOR, 10).add(Attributes.ARMOR_TOUGHNESS, 2)
+                .add(Attributes.MOVEMENT_SPEED, 0.15).add(Attributes.KNOCKBACK_RESISTANCE, 1.0).add(Attributes.STEP_HEIGHT, 1.1)
                 .add(Attributes.SAFE_FALL_DISTANCE, 12).add(Attributes.FOLLOW_RANGE, 0);
     }
 
@@ -149,7 +155,7 @@ public class ProtoDestroyer extends PathfinderMob {
         super.tickRidden(rider, input);
         float yaw = rider.getYRot();
         float d = Mth.wrapDegrees(yaw - getYRot());
-        setYRot(getYRot() + Mth.clamp(d, -7f, 7f));   // 육중하게 천천히 돎
+        setYRot(getYRot() + Mth.clamp(d, -3.5f, 3.5f));   // 육중하게 천천히 돎
         yRotO = getYRot();
         yBodyRot = yHeadRot = getYRot();
         setXRot(rider.getXRot() * 0.5f);
@@ -157,9 +163,12 @@ public class ProtoDestroyer extends PathfinderMob {
 
     @Override
     protected Vec3 getRiddenInput(Player rider, Vec3 travel) {
-        float f = rider.zza, s = rider.xxa * 0.45f;
-        if (f < 0) f *= 0.45f;
-        return new Vec3(s, 0, f);
+        float want = rider.zza < 0 ? rider.zza * 0.4f : rider.zza;
+        throttle += Mth.clamp(want - throttle, -0.035f, 0.025f);   // 관성: 천천히 출발하고 천천히 멈춤
+        // 걸음마다 발을 디딜 때 거의 멈췄다가 다시 밀고 나감 → 쿵, 쿵 끊기는 육중한 걸음
+        float stomp = 1f - Math.abs(Mth.sin(walkAnimation.position() * GAIT));
+        float lurch = 1f - 0.6f * stomp * stomp;
+        return new Vec3(rider.xxa * 0.25f * lurch, 0, throttle * lurch);
     }
 
     @Override
@@ -239,10 +248,10 @@ public class ProtoDestroyer extends PathfinderMob {
     private void fire(ServerPlayer rider) {
         if (gunCd > 0 || overheated()) return;
         if (!take(rider, ModItems.HEAVY_AMMO.get())) { gunCd = 10; dry(); return; }
-        gunCd = 2;
+        gunCd = 3;
         lastFire = tickCount;
         if (attack() == IDLE) setAttack(FIRING);
-        int h = heat() + 3;
+        int h = heat() + 5;
         entityData.set(HEAT, Math.min(MAX_HEAT, h));
         if (h >= MAX_HEAT) {
             entityData.set(OVERHEAT, true);
@@ -272,7 +281,7 @@ public class ProtoDestroyer extends PathfinderMob {
 
     @Override
     protected float nextStep() {
-        return moveDist + 1.9f;   // 큰 보폭 → 발소리 간격 넓게
+        return moveDist + 2.3f;   // 큰 보폭 → 발소리 간격 넓게
     }
 
     @Override
@@ -326,7 +335,7 @@ public class ProtoDestroyer extends PathfinderMob {
             if (rider != null && e instanceof Player p && sl.getServer() != null && Alliances.friendly(sl.getServer(), rider.getUUID(), p.getUUID())) continue;
             double d = e.position().distanceTo(c);
             if (d > 5.5) continue;
-            e.hurt(src, (float) (16 - d * 1.8) * power);
+            e.hurt(src, (float) (11 - d * 1.4) * power);
             Vec3 push = e.position().subtract(c).normalize().scale(1.2 * power);
             e.push(push.x, 0.7 * power, push.z);
             e.hurtMarked = true;
@@ -371,7 +380,8 @@ public class ProtoDestroyer extends PathfinderMob {
 
     @Override
     protected void playStepSound(BlockPos pos, net.minecraft.world.level.block.state.BlockState state) {
-        playSound(SoundEvents.IRON_GOLEM_STEP, 2.2f, 0.4f);                     // 쿵
+        playSound(SoundEvents.IRON_GOLEM_STEP, 2.6f, 0.32f);                    // 쿵
+        playSound(SoundEvents.GENERIC_EXPLODE.value(), 0.25f, 0.35f);            // 땅 울림
         playSound(SoundEvents.ANVIL_LAND, 0.25f, 0.45f + random.nextFloat() * 0.1f);
         playSound(ModSounds.SERVO.get(), 0.7f, 0.65f + random.nextFloat() * 0.15f);   // 유압
         if (level() instanceof ServerLevel sl && !state.isAir())

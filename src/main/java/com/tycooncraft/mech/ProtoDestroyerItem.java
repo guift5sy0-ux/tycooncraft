@@ -53,7 +53,7 @@ public class ProtoDestroyerItem extends Item {
     public void appendHoverText(ItemStack st, TooltipContext ctx, List<Component> tip, TooltipFlag flag) {
         CustomData cd = st.get(DataComponents.CUSTOM_DATA);
         if (cd != null && cd.contains("Health"))
-            tip.add(Component.translatable("tooltip.tycooncraft.proto.health", Math.round(cd.copyTag().getFloat("Health")), 320).withStyle(net.minecraft.ChatFormatting.RED));
+            tip.add(Component.translatable("tooltip.tycooncraft.proto.health", Math.round(cd.copyTag().getFloat("Health")), ProtoDestroyer.MAX_HP).withStyle(net.minecraft.ChatFormatting.RED));
         for (int i = 1; i <= 4; i++) tip.add(Component.translatable("tooltip.tycooncraft.proto." + i).withStyle(net.minecraft.ChatFormatting.GRAY));
     }
 }

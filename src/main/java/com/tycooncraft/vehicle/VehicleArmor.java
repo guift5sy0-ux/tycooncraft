@@ -19,7 +19,7 @@ public final class VehicleArmor {
             if (src.getEntity() == null && src.getDirectEntity() == null) return;
             if (src.getEntity() != null && m.hasPassenger(src.getEntity())) return;
             m.hurt(src, event.getAmount());
-            event.setCanceled(true);
+            event.setAmount(event.getAmount() * com.tycooncraft.mech.ProtoDestroyer.PILOT_SHARE);   // 일부는 조종석까지 들어옴
             return;
         }
         if (!(e.getVehicle() instanceof VehicleEntity v) || v.isRemoved()) return;

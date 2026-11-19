@@ -784,6 +784,9 @@ public final class AutoTestClient {
             case 3430 -> { serverKeep(mc, V185Test::protoSlam); key(o.keyJump, true); }
             case 3433 -> key(o.keyJump, false);
             case 3446 -> shot(mc, "96_proto_slam");
+            case 3447 -> key(o.keyUp, true);
+            case 3455 -> shot(mc, "96b_proto_walk");
+            case 3458 -> key(o.keyUp, false);
             case 3456 -> serverKeep(mc, V185Test::protoCheck);
             case 3460 -> { o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::protoShowcase); }
             case 3474 -> shot(mc, "97_proto_front");

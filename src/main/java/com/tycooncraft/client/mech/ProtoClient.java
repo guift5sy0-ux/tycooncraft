@@ -52,13 +52,13 @@ public final class ProtoClient {
         @Override
         public void setupAnim(ProtoDestroyer e, float limb, float amount, float age, float yaw, float pitch) {
             root.getAllParts().forEach(ModelPart::resetPose);
-            float ph = limb * 0.32f;                       // 느리고 큰 보폭
+            float ph = limb * ProtoDestroyer.GAIT;          // 느리고 큰 보폭
             float amt = Math.min(1f, amount * 1.6f);
             for (int i = 0; i < 2; i++) {
                 String side = i == 0 ? "left" : "right";
                 float p = ph + (i == 0 ? 0 : Mth.PI);
-                float swing = Mth.sin(p) * 0.42f * amt;                  // 앞뒤로 내딛기
-                float lift = Math.max(0f, Mth.cos(p)) * 0.55f * amt;     // 들어 올릴 때 무릎 접힘
+                float swing = Mth.sin(p) * 0.5f * amt;                  // 앞뒤로 내딛기
+                float lift = (float) Math.pow(Math.max(0f, Mth.cos(p)), 1.5) * 0.75f * amt;     // 들어 올릴 때 무릎 접힘
                 ModelPart th = b.get(side + "_thigh"), sh = b.get(side + "_shin"), ft = b.get(side + "_foot");
                 th.xRot -= swing + lift * 0.5f;
                 sh.xRot += lift;
@@ -66,8 +66,12 @@ public final class ProtoClient {
             }
             ModelPart hull = b.get("hull");
             float stomp = 1f - Math.abs(Mth.sin(ph));                  // 발이 땅을 디딜 때 1
-            hull.y += (float) Math.pow(stomp, 3) * 1.6f * amt;           // 쿵 하고 내려앉음
-            hull.zRot += Mth.sin(ph) * 0.035f * amt;                     // 좌우로 묵직하게 흔들림
+            hull.y += (float) Math.pow(stomp, 4) * 2.6f * amt;           // 쿵 하고 내려앉음 (디딜 때 급격히)
+            hull.zRot += Mth.sin(ph) * 0.06f * amt;                      // 좌우로 묵직하게 흔들림
+            hull.x += Mth.sin(ph) * 1.2f * amt;                          // 디딘 발 쪽으로 무게 이동
+            hull.xRot += (float) Math.pow(stomp, 4) * 0.05f * amt;       // 디딜 때 앞으로 쏠림
+            b.get("arm_left").xRot += (float) Math.pow(stomp, 4) * 0.12f * amt;    // 팔이 관성으로 출렁
+            b.get("arm_right").xRot += (float) Math.pow(stomp, 4) * 0.12f * amt;
             hull.xRot += Mth.sin(age * 0.05f) * 0.008f;                  // 대기 중 미세한 떨림
             float aimPitch = Mth.clamp(e.getXRot(), -35, 35) * Mth.DEG_TO_RAD;
             b.get("arm_left").xRot += aimPitch;
@@ -130,11 +134,11 @@ public final class ProtoClient {
         ProtoDestroyer m = piloting();
         if (m == null) return;
         float pt = (float) e.getPartialTick();
-        float limb = m.walkAnimation.position(pt) * 0.32f, amt = Math.min(1f, m.walkAnimation.speed(pt) * 1.6f);
+        float limb = m.walkAnimation.position(pt) * ProtoDestroyer.GAIT, amt = Math.min(1f, m.walkAnimation.speed(pt) * 1.6f);
         float stomp = (float) Math.pow(1f - Math.abs(Mth.sin(limb)), 6) * amt;
         float land = m.attack() == ProtoDestroyer.SLAM ? Math.max(0f, 1f - (m.animT + pt) / 10f) : 0f;
-        e.setPitch(e.getPitch() + stomp * 1.4f + land * 4f);
-        e.setRoll(e.getRoll() + Mth.sin(limb) * 0.8f * amt + (land > 0 ? Mth.sin((m.animT + pt) * 2.5f) * land * 2f : 0));
+        e.setPitch(e.getPitch() + stomp * 2.4f + land * 4f);
+        e.setRoll(e.getRoll() + Mth.sin(limb) * 1.4f * amt + (land > 0 ? Mth.sin((m.animT + pt) * 2.5f) * land * 2f : 0));
     }
 
     // ── 조종 입력 ────────────────────────────────────────────────
