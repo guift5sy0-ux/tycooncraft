@@ -95,7 +95,8 @@ public class TankEntity extends VehicleEntity {
     /** 총알·근접엔 매우 튼튼, 폭발엔 그대로 */
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (!source.is(DamageTypeTags.IS_EXPLOSION) && !(source.getDirectEntity() instanceof Player p && !(p.getMainHandItem().getItem() instanceof com.tycooncraft.gun.GunItem))) {
+        // v0.19.6: RT-20(대물 저격총) 탄은 전차의 총알 피해 감소를 무시
+        if (!source.is(DamageTypeTags.IS_EXPLOSION) && !com.tycooncraft.gun.Ballistics.nextAntiMaterial && !(source.getDirectEntity() instanceof Player p && !(p.getMainHandItem().getItem() instanceof com.tycooncraft.gun.GunItem))) {
             amount *= 0.12f;
         }
         return super.hurt(source, amount);
