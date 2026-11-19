@@ -268,7 +268,7 @@ public final class V185Test {
         if (sl.getBlockEntity(cctvCamA) instanceof com.tycooncraft.cctv.CctvBlockEntity be)
             System.out.printf("[AUTOTEST] v192 cctvHead yaw=%.1f pitch=%.1f%n", be.yaw, be.pitch);
         // 카메라 앞쪽(북쪽) 아래에서 올려다봄
-        sp.teleportTo(sl, cctvCamA.getX() + 0.5 + 1.2, cctvCamA.getY() - 1.0, cctvCamA.getZ() - 2.2, 180f + 180f - 20f, -25f);
+        sp.teleportTo(sl, cctvCamA.getX() + 0.5 - 1.5, cctvCamA.getY() - 1.6, cctvCamA.getZ() - 4.5, -18f, -14f);
     }
     public static java.util.List<BlockPos> cctvLinks = java.util.List.of();
 
