@@ -46,6 +46,8 @@ public final class ModCreativeTabs {
                         out.accept(ModItems.RIFLE.get());
                         out.accept(ModItems.SHOTGUN.get());
                         out.accept(ModItems.SNIPER.get());
+                        out.accept(ModItems.RT20.get());
+                        out.accept(ModItems.HISPANO_AMMO.get());
                         out.accept(ModItems.VSS.get());
                         out.accept(ModItems.DUAL_PISTOLS.get());
                         out.accept(ModItems.RPG.get());

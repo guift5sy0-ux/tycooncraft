@@ -658,5 +658,7 @@
   "hud.tycooncraft.proto.rocket": "ROCKETS %s · %s",
   "hud.tycooncraft.proto.ammo": "HEAVY %s",
   "hud.tycooncraft.proto.stomp": "STOMP READY",
-  "hud.tycooncraft.proto.stomp_wait": "STOMP CHARGING"
+  "hud.tycooncraft.proto.stomp_wait": "STOMP CHARGING",
+  "item.tycooncraft.rt20": "RT-20 Anti-Materiel Rifle",
+  "item.tycooncraft.hispano_ammo": "Hispano Round (20mm)"
 }

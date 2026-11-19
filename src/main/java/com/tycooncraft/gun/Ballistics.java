@@ -76,6 +76,13 @@ public final class Ballistics {
     public static int nextKind = -1;
     public static float nextSpeed;
     public static boolean nextSilenced;
+    /** RT-20: 전차·디스트로이어(프로토 포함)에 1.1배 */
+    public static boolean nextAntiMaterial;
+    public static final float ANTI_MATERIAL_MULT = 1.1f;
+
+    public static boolean armoredTarget(Entity e) {
+        return e instanceof com.tycooncraft.vehicle.TankEntity || e instanceof com.tycooncraft.mob.DestroyerGolem || e instanceof com.tycooncraft.mech.ProtoDestroyer;
+    }
 
     /** 플레이어가 쏘면 총알이 눈이 아니라 손에 든 총의 총구에서 나가 보이게 */
     static Vec3 visualMuzzle(Entity shooter, Vec3 from, Vec3 dir) {
@@ -121,6 +128,7 @@ public final class Ballistics {
             impact = hit.getLocation();
             boolean head = isHead(target, impact);
             float d = damage(target, dmg * (n == 0 ? 1f : 0.7f), head, headMult);
+            if (nextAntiMaterial && armoredTarget(target)) d *= ANTI_MATERIAL_MULT;
             target.invulnerableTime = 0;
             // 엔더 드래곤 같은 다중 부위 몹: 실제 체력은 본체에 있으므로 본체의 무적 시간도 풀어 준다
             if (target instanceof net.neoforged.neoforge.entity.PartEntity<?> part) part.getParent().invulnerableTime = 0;
@@ -158,6 +166,7 @@ public final class Ballistics {
         nextKind = -1;
         nextSpeed = 0;
         nextSilenced = false;
+        nextAntiMaterial = false;
         return first;
     }
 

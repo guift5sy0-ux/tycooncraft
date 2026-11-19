@@ -79,6 +79,10 @@ public final class ModItems {
             new GunStats(8f, 1, 0.015f, 80, 30, 4, 50, true, false, 1.8f, HEAVY_AMMO, ModSounds.RIFLE_FIRE, ModSounds.RIFLE_RELOAD)));
     public static final DeferredItem<GunItem> SHOTGUN = ITEMS.register("shotgun", () -> new GunItem(new Item.Properties(),
             new GunStats(4f, 8, 0.09f, 20, 6, 18, 50, false, false, 6f, SHOTGUN_SHELL, ModSounds.SHOTGUN_FIRE, ModSounds.SHOTGUN_RELOAD)));
+    /** v0.19.5: RT-20 대물 저격총 (단발, 히스파노 20mm 탄, 피해 70, 전차·디스트로이어에 1.1배) */
+    public static final DeferredItem<Item> HISPANO_AMMO = ITEMS.register("hispano_ammo", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final DeferredItem<GunItem> RT20 = ITEMS.register("rt20", () -> new GunItem(new Item.Properties(),
+            new GunStats(70f, 1, 0.012f, 220, 1, 30, 70, false, true, 22f, HISPANO_AMMO, ModSounds.SNIPER_FIRE, ModSounds.SNIPER_RELOAD)));
     public static final DeferredItem<GunItem> SNIPER = ITEMS.register("sniper", () -> new GunItem(new Item.Properties(),
             new GunStats(26f, 1, 0.05f, 160, 5, 30, 60, false, true, 8f, HEAVY_AMMO, ModSounds.SNIPER_FIRE, ModSounds.SNIPER_RELOAD)));
 

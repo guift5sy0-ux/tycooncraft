@@ -658,5 +658,7 @@
   "hud.tycooncraft.proto.rocket": "로켓 %s · %s",
   "hud.tycooncraft.proto.ammo": "중탄 %s",
   "hud.tycooncraft.proto.stomp": "착지 충격파 준비",
-  "hud.tycooncraft.proto.stomp_wait": "착지 충격파 충전 중"
+  "hud.tycooncraft.proto.stomp_wait": "착지 충격파 충전 중",
+  "item.tycooncraft.rt20": "RT-20 대물 저격총",
+  "item.tycooncraft.hispano_ammo": "히스파노 탄 (20mm)"
 }

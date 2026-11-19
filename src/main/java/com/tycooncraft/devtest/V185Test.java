@@ -6,6 +6,7 @@ import com.tycooncraft.economy.BankData;
 import com.tycooncraft.economy.PriceTable;
 import com.tycooncraft.mob.DestroyerGolem;
 import com.tycooncraft.registry.ModBlocks;
+import com.tycooncraft.gun.Ballistics;
 import com.tycooncraft.registry.ModEntities;
 import com.tycooncraft.registry.ModItems;
 import com.tycooncraft.turret.TurretAI;
@@ -508,6 +509,47 @@ public final class V185Test {
                 + " rangedShots=" + com.tycooncraft.turret.TurretHuntGoal.RANGED_SHOTS + " meleeHits=" + com.tycooncraft.turret.TurretHuntGoal.MELEE_HITS
                 + String.format(" repair %.0f→%.0f", before, after));
         for (var e : sp.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.Mob.class, new net.minecraft.world.phys.AABB(turrets[0]).inflate(220, 40, 40))) e.discard();
+    }
+
+    /** v0.19.5: RT-20 피해 70, 전차·디스트로이어 1.1배 + 방어구 방어력 */
+    static void rt20Check(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        BlockPos base = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(0, 0, 400));
+        StringBuilder out = new StringBuilder("[AUTOTEST] v195 rt20");
+        net.minecraft.world.entity.Entity[] ts = {EntityType.ZOMBIE.create(sl), ModEntities.DESTROYER_GOLEM.get().create(sl), ModEntities.TANK.get().create(sl)};
+        String[] names = {"zombie", "destroyer", "tank"};
+        for (int i = 0; i < ts.length; i++) {
+            var t = ts[i];
+            t.moveTo(base.getX() + i * 12 + 0.5, base.getY(), base.getZ() + 0.5, 0, 0);
+            if (t instanceof net.minecraft.world.entity.Mob m) { m.setNoAi(true); m.setPersistenceRequired(); }
+            sl.addFreshEntity(t);
+            for (boolean anti : new boolean[]{false, true}) {
+                float before = t instanceof net.minecraft.world.entity.LivingEntity le ? le.getHealth() : ((com.tycooncraft.vehicle.VehicleEntity) t).getDamage();
+                if (t instanceof net.minecraft.world.entity.LivingEntity le) { le.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(1000); le.setHealth(1000); before = 1000; }
+                t.invulnerableTime = 0;
+                Vec3 c = t.getBoundingBox().getCenter();
+                Vec3 from = c.add(0, 0, -4);
+                Ballistics.nextAntiMaterial = anti;
+                Ballistics.shoot(sl, sp, from, new Vec3(0, 0, 1), 10, 70f, 0, 1f, false, false, sl.damageSources().playerAttack(sp), e -> e == t);
+                float after = t instanceof net.minecraft.world.entity.LivingEntity le ? le.getHealth() : ((com.tycooncraft.vehicle.VehicleEntity) t).getDamage();
+                out.append(String.format(" %s%s=%.1f", names[i], anti ? "(rt20)" : "", Math.abs(before - after)));
+            }
+            t.discard();
+        }
+        var gun = (com.tycooncraft.gun.GunItem) ModItems.RT20.get();
+        out.append(" dmg=").append(gun.stats().damage()).append(" ammo=").append(gun.stats().ammo().get() == ModItems.HISPANO_AMMO.get());
+        System.out.println(out);
+        StringBuilder a = new StringBuilder("[AUTOTEST] v195 armor");
+        for (var mat : java.util.List.of(com.tycooncraft.registry.ModArmorMaterials.TACTICAL_LIGHT, com.tycooncraft.registry.ModArmorMaterials.TACTICAL_MEDIUM,
+                com.tycooncraft.registry.ModArmorMaterials.TACTICAL_HEAVY, com.tycooncraft.registry.ModArmorMaterials.JUGGERNAUT)) {
+            var m = mat.get();
+            int sum = 0;
+            for (var ty : new net.minecraft.world.item.ArmorItem.Type[]{net.minecraft.world.item.ArmorItem.Type.HELMET, net.minecraft.world.item.ArmorItem.Type.CHESTPLATE,
+                    net.minecraft.world.item.ArmorItem.Type.LEGGINGS, net.minecraft.world.item.ArmorItem.Type.BOOTS}) sum += m.getDefense(ty);
+            a.append(" ").append(mat.getId().getPath()).append("=").append(sum).append("/t").append(m.toughness());
+        }
+        a.append(" | iron=15 diamond=20/t2 netherite=20/t3");
+        System.out.println(a);
     }
 
     private V185Test() {}

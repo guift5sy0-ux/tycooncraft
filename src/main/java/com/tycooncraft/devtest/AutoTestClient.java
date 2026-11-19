@@ -801,6 +801,7 @@ public final class AutoTestClient {
             case 3640 -> serverDo(mc, V185Test::turretMid);
             case 3650 -> shot(mc, "99b_turret_damaged");
             case 3760 -> serverDo(mc, V185Test::turretCheck);
+            case 3763 -> serverDo(mc, V185Test::rt20Check);
             case 3766 -> next(11);
             default -> {
             }

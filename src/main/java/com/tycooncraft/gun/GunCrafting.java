@@ -43,6 +43,7 @@ public final class GunCrafting {
             l.add(r(ModItems.SHOTGUN.get(), 1, rec, 1, bar, 2, stock, 1, ModItems.STEEL_PLATE.get(), 1));
             l.add(r(ModItems.RIFLE.get(), 1, rec, 1, bar, 2, stock, 1, ModItems.ADVANCED_CIRCUIT.get(), 1));
             l.add(r(ModItems.SNIPER.get(), 1, rec, 1, bar, 2, stock, 1, ModItems.ADVANCED_CIRCUIT.get(), 1, Items.GLASS, 1, Items.SPYGLASS, 1));
+            l.add(r(ModItems.RT20.get(), 1, rec, 1, bar, 3, stock, 1, ModItems.STEEL_INGOT.get(), 2, Items.SPYGLASS, 1, ModItems.ADVANCED_CIRCUIT.get(), 1));
             l.add(r(ModItems.VSS.get(), 1, rec, 1, bar, 1, ModItems.SILENCER.get(), 1, stock, 1, Items.SPYGLASS, 1, ModItems.STEEL_PLATE.get(), 2));
             l.add(r(ModItems.RPG.get(), 1, rec, 1, ModItems.STEEL_PLATE.get(), 4, ModItems.STEEL_ROD.get(), 2, stock, 1, Items.SPYGLASS, 1));
             l.add(r(ModItems.JUDGE.get(), 1, Items.BEACON, 2, Items.NETHERITE_INGOT, 5, Items.DRAGON_EGG, 1, ModItems.PISTOL.get(), 1));
@@ -63,6 +64,7 @@ public final class GunCrafting {
             l.add(r(ModItems.LIGHT_AMMO.get(), 6, Items.COPPER_INGOT, 1, Items.GUNPOWDER, 1, Items.IRON_NUGGET, 1));
             l.add(r(ModItems.HEAVY_AMMO.get(), 8, ModItems.COPPER_PLATE.get(), 1, Items.GUNPOWDER, 2, ModItems.STEEL_ROD.get(), 1));
             l.add(r(ModItems.HEAVY_AMMO.get(), 4, Items.COPPER_INGOT, 1, Items.GUNPOWDER, 2, Items.IRON_INGOT, 1));
+            l.add(r(ModItems.HISPANO_AMMO.get(), 2, Items.GUNPOWDER, 5, ModItems.HEAVY_AMMO.get(), 1, ModItems.STEEL_INGOT.get(), 3));   // RT-20 전용 20mm
             l.add(r(ModItems.SHOTGUN_SHELL.get(), 8, ModItems.COPPER_PLATE.get(), 1, Items.GUNPOWDER, 1, ModItems.IRON_DUST.get(), 2));
             l.add(r(ModItems.SHOTGUN_SHELL.get(), 4, Items.PAPER, 1, Items.GUNPOWDER, 1, Items.IRON_NUGGET, 2));
             l.add(r(ModItems.ROCKET.get(), 2, ModItems.IRON_PLATE.get(), 2, Items.GUNPOWDER, 4, Items.TNT, 1, ModItems.COPPER_WIRE.get(), 1));

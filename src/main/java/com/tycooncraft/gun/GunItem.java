@@ -261,8 +261,10 @@ public class GunItem extends Item {
             Vec3 right = player.getViewVector(1f).cross(new Vec3(0, 1, 0)).normalize();
             origin = origin.add(right.scale(left ? -0.32 : 0.32)).add(0, -0.2, 0).add(player.getViewVector(1f).scale(0.6));
         }
+        boolean rt20 = stack.is(ModItems.RT20.get());
+        Ballistics.nextAntiMaterial = rt20;
         Ballistics.shoot(level, player, origin, dir, stats.range(), damage(stack),
-                GunEnchants.level(stack, GunEnchants.PIERCING), 1.5f + 0.5f * hunter,
+                GunEnchants.level(stack, GunEnchants.PIERCING) + (rt20 ? 1 : 0), 1.5f + 0.5f * hunter,
                 GunEnchants.level(stack, GunEnchants.INCENDIARY) > 0, !quiet, level.damageSources().playerAttack(player),
                 e -> !player.isPassengerOfSameVehicle(e) && e != player.getVehicle());
     }
