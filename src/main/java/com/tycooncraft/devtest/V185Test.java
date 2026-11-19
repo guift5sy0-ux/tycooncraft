@@ -260,14 +260,23 @@ public final class V185Test {
         restBait.discard();
     }
 
-    public static BlockPos cctvScreen;
+    public static BlockPos cctvScreen, cctvCamA;
+
+    /** CCTV 머리가 보는 방향을 따라 돌았는지 + 바깥에서 본 모습 */
+    static void cctvHeadCheck(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        if (sl.getBlockEntity(cctvCamA) instanceof com.tycooncraft.cctv.CctvBlockEntity be)
+            System.out.printf("[AUTOTEST] v192 cctvHead yaw=%.1f pitch=%.1f%n", be.yaw, be.pitch);
+        // 카메라 앞쪽(북쪽) 아래에서 올려다봄
+        sp.teleportTo(sl, cctvCamA.getX() + 0.5 + 1.2, cctvCamA.getY() - 1.0, cctvCamA.getZ() - 2.2, 180f + 180f - 20f, -25f);
+    }
     public static java.util.List<BlockPos> cctvLinks = java.util.List.of();
 
     /** v0.18.9: CCTV 2대 + 없는 자리 1 → 스크린에 연결 */
     static void cctv(ServerPlayer sp) {
         var sl = sp.serverLevel();
         BlockPos base = BlockPos.containing(-60, sp.getY(), -120);   // 공장 키트로 세운 공장 근처
-        BlockPos camA = kitOrigin != null ? kitOrigin.offset(7, 4, 9) : base.offset(0, 3, 0);    // 공장 안 북쪽 벽 → 남쪽(라인) 을 봄
+        BlockPos camA = cctvCamA = kitOrigin != null ? kitOrigin.offset(7, 4, 9) : base.offset(0, 3, 0);    // 공장 안 북쪽 벽 → 남쪽(라인) 을 봄
         BlockPos camB = kitOrigin != null ? kitOrigin.offset(2, 2, -4) : base.offset(6, 1, 0);   // 공장 밖 남쪽 → 공장 정면
         sl.setBlockAndUpdate(camA, ModBlocks.CCTV.get().defaultBlockState().setValue(com.tycooncraft.cctv.CctvBlock.FACING, net.minecraft.core.Direction.NORTH));
         sl.setBlockAndUpdate(camB, ModBlocks.CCTV.get().defaultBlockState().setValue(com.tycooncraft.cctv.CctvBlock.FACING, net.minecraft.core.Direction.SOUTH));

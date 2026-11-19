@@ -22,7 +22,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /** CCTV 카메라: 설치한 사람을 향해 바라본다. 웅크리고 빈손 우클릭 → 연결할 카메라로 선택 */
-public class CctvBlock extends Block {
+public class CctvBlock extends Block implements net.minecraft.world.level.block.EntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final String PENDING = "tycooncraft_cctv_pending";
     private static final VoxelShape SHAPE = Block.box(3, 3, 3, 13, 13, 13);
@@ -30,6 +30,18 @@ public class CctvBlock extends Block {
     public CctvBlock(Properties p) {
         super(p);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    public net.minecraft.world.level.block.entity.BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new CctvBlockEntity(pos, state);
+    }
+
+    @Override
+    public <T extends net.minecraft.world.level.block.entity.BlockEntity> net.minecraft.world.level.block.entity.BlockEntityTicker<T> getTicker(
+            Level level, BlockState state, net.minecraft.world.level.block.entity.BlockEntityType<T> type) {
+        if (!level.isClientSide || type != com.tycooncraft.registry.ModBlockEntities.CCTV.get()) return null;
+        return (l, p, s, be) -> CctvBlockEntity.clientTick(l, p, s, (CctvBlockEntity) be);
     }
 
     @Override

@@ -757,6 +757,7 @@ public final class AutoTestClient {
             case 3316 -> { mc.getToasts().clear(); shot(mc, "89_cctv_screen_block");
                 System.out.println("[AUTOTEST] v189 clientScreen=" + mc.level.getBlockState(V185Test.cctvScreen) + " at " + V185Test.cctvScreen + " player=" + mc.player.blockPosition() + " yaw=" + mc.player.getYRot()); }
             case 3318 -> com.tycooncraft.client.cctv.CctvView.open(V185Test.cctvScreen, V185Test.cctvLinks);
+            case 3320 -> { mc.player.setYRot(mc.player.getYRot() + 45f); mc.player.setXRot(mc.player.getXRot() + 15f); }
             case 3326 -> shot(mc, "90_cctv_cam1");
             case 3328 -> com.tycooncraft.client.cctv.CctvView.select(1);
             case 3336 -> shot(mc, "91_cctv_cam2");
@@ -767,6 +768,8 @@ public final class AutoTestClient {
                         + " signal=" + com.tycooncraft.client.cctv.CctvView.signal());
                 com.tycooncraft.client.cctv.CctvView.close();
             }
+            case 3345 -> serverDo(mc, V185Test::cctvHeadCheck);
+            case 3347 -> shot(mc, "92b_cctv_head");
             case 3348 -> serverDo(mc, V185Test::vehicleArmor);
             // ── v0.19.0: 프로토 디스트로이어 ──
             case 3354 -> serverDo(mc, V185Test::protoSetup);

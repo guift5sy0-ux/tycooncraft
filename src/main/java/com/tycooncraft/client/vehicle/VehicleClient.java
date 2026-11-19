@@ -80,6 +80,7 @@ public final class VehicleClient {
         event.registerEntityRenderer(ModEntities.MUTANT_SPIDER.get(), com.tycooncraft.client.mob.MutantSpiderRenderer::new);
         event.registerBlockEntityRenderer(com.tycooncraft.registry.ModBlockEntities.TURRET.get(), TurretRenderer::new);
         event.registerBlockEntityRenderer(com.tycooncraft.registry.ModBlockEntities.CIWS.get(), CiwsRenderer::new);
+        event.registerBlockEntityRenderer(com.tycooncraft.registry.ModBlockEntities.CCTV.get(), com.tycooncraft.client.cctv.CctvRenderer::new);
     }
 
     @SubscribeEvent

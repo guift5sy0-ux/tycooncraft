@@ -89,6 +89,19 @@ public final class CctvView {
         mc.setCameraEntity(eye);
     }
 
+    private static float sentYaw = 999, sentPitch = 999;
+
+    /** 보는 방향대로 CCTV 머리를 돌림: 내 화면은 즉시, 서버(다른 사람)에는 조금씩 묶어서 전송 */
+    private static void aimHead(BlockPos p, float yaw, float pitch) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level.getBlockEntity(p) instanceof com.tycooncraft.cctv.CctvBlockEntity be) be.aim(yaw, pitch);
+        if ((Math.abs(yaw - sentYaw) > 1.5f || Math.abs(pitch - sentPitch) > 1.5f) && ticks % 3 == 0) {
+            sentYaw = yaw;
+            sentPitch = pitch;
+            net.neoforged.neoforge.network.PacketDistributor.sendToServer(new com.tycooncraft.cctv.CctvAimPayload(p, yaw, pitch));
+        }
+    }
+
     public static void close() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
@@ -131,6 +144,7 @@ public final class CctvView {
             eye.xRotO = eye.getXRot();
             eye.setYRot(baseYaw + dy);
             eye.setXRot(20f + dp);
+            aimHead(cams.get(index), dy, 20f + dp);
             BlockPos p = cams.get(index);
             if (!(mc.level.getBlockState(p).getBlock() instanceof CctvBlock)) select(index);   // 카메라가 부서짐 → 신호 없음
         }
