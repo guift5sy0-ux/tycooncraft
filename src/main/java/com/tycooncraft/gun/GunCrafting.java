@@ -43,7 +43,7 @@ public final class GunCrafting {
             l.add(r(ModItems.SHOTGUN.get(), 1, rec, 1, bar, 2, stock, 1, ModItems.STEEL_PLATE.get(), 1));
             l.add(r(ModItems.RIFLE.get(), 1, rec, 1, bar, 2, stock, 1, ModItems.ADVANCED_CIRCUIT.get(), 1));
             l.add(r(ModItems.SNIPER.get(), 1, rec, 1, bar, 2, stock, 1, ModItems.ADVANCED_CIRCUIT.get(), 1, Items.GLASS, 1, Items.SPYGLASS, 1));
-            l.add(r(ModItems.RT20.get(), 1, rec, 1, bar, 3, stock, 1, ModItems.STEEL_INGOT.get(), 2, Items.SPYGLASS, 1, ModItems.ADVANCED_CIRCUIT.get(), 1));
+            l.add(r(ModItems.RT20.get(), 1, Items.NETHERITE_INGOT, 2, Items.SPYGLASS, 1, stock, 1, bar, 1, rec, 1, Items.IRON_BLOCK, 1, ModItems.STEEL_PLATE.get(), 2));   // v0.19.7
             l.add(r(ModItems.VSS.get(), 1, rec, 1, bar, 1, ModItems.SILENCER.get(), 1, stock, 1, Items.SPYGLASS, 1, ModItems.STEEL_PLATE.get(), 2));
             l.add(r(ModItems.RPG.get(), 1, rec, 1, ModItems.STEEL_PLATE.get(), 4, ModItems.STEEL_ROD.get(), 2, stock, 1, Items.SPYGLASS, 1));
             l.add(r(ModItems.JUDGE.get(), 1, Items.BEACON, 2, Items.NETHERITE_INGOT, 5, Items.DRAGON_EGG, 1, ModItems.PISTOL.get(), 1));

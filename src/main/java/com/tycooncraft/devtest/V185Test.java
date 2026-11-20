@@ -538,6 +538,8 @@ public final class V185Test {
             t.discard();
         }
         var gun = (com.tycooncraft.gun.GunItem) ModItems.RT20.get();
+        var rec = com.tycooncraft.gun.GunCrafting.all().stream().filter(r -> r.result().is(ModItems.RT20.get())).findFirst();
+        out.append(" recipe=").append(rec.map(r -> r.needs().toString()).orElse("NONE"));
         out.append(" dmg=").append(gun.stats().damage()).append(" ammo=").append(gun.stats().ammo().get() == ModItems.HISPANO_AMMO.get());
         System.out.println(out);
         StringBuilder a = new StringBuilder("[AUTOTEST] v195 armor");
