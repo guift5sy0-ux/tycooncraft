@@ -231,7 +231,7 @@ public final class VanillaBossBuffs {
                 double x = w.getX() + Math.cos(a) * 4, z = w.getZ() + Math.sin(a) * 4;
                 g.moveTo(x, ground(sl, x, z), z, 0, 0);
                 g.finalizeSpawn(sl, sl.getCurrentDifficultyAt(g.blockPosition()), MobSpawnType.MOB_SUMMONED, null);
-                g.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.NETHERITE_SWORD));
+                g.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));   // v0.19.9: 네더라이트 검 → 철 검
                 g.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(Items.NETHERITE_HELMET));
                 g.setDropChance(net.minecraft.world.entity.EquipmentSlot.MAINHAND, 0);
                 g.setDropChance(net.minecraft.world.entity.EquipmentSlot.HEAD, 0);
