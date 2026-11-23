@@ -89,7 +89,7 @@ public class GunItem extends Item {
         return Math.max(1, Math.round(stats.fireDelay() * (1 - 0.15f * GunEnchants.level(stack, GunEnchants.RAPID_FIRE))));
     }
 
-    public static final int RT20_RELOAD = 180;   // 9초 고정 (인챈트·파츠 무시)
+    public static final int RT20_RELOAD = 280;   // 14초 고정 (인챈트·파츠 무시)
     public static final float RT20_RECOIL_DMG = 4f;
 
     public int reloadTicks(ItemStack stack) {

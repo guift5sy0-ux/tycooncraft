@@ -662,6 +662,6 @@
   "item.tycooncraft.rt20": "RT-20 Anti-Materiel Rifle",
   "item.tycooncraft.hispano_ammo": "Hispano Round (20mm)",
   "death.attack.tycooncraft.recoil": "%1$s was knocked out by RT-20 recoil",
-  "tooltip.tycooncraft.rt20": "Recoil: 4 true damage · pushed back 2 blocks (1 when sneaking) · reload 9s",
+  "tooltip.tycooncraft.rt20": "Recoil: 4 true damage · pushed back 2 blocks (1 when sneaking) · reload 14s",
   "tooltip.tycooncraft.rt20_2": "x1.1 damage to tanks & Destroyers · pierces 1 target"
 }
