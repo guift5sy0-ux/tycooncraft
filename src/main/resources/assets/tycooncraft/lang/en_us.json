@@ -663,5 +663,18 @@
   "item.tycooncraft.hispano_ammo": "Hispano Round (20mm)",
   "death.attack.tycooncraft.recoil": "%1$s was knocked out by RT-20 recoil",
   "tooltip.tycooncraft.rt20": "Recoil: 4 true damage · pushed back 2 blocks (1 when sneaking) · reload 14s",
-  "tooltip.tycooncraft.rt20_2": "x1.1 damage to tanks & Destroyers · pierces 1 target"
+  "tooltip.tycooncraft.rt20_2": "x1.1 damage to tanks & Destroyers · pierces 1 target",
+  "block.tycooncraft.boiler": "Boiler",
+  "block.tycooncraft.steam_engine": "Steam Engine",
+  "block.tycooncraft.shaft": "Shaft",
+  "message.tycooncraft.boiler.status": "Water %s/%s mB · Fuel %s · Steam %s/%s",
+  "message.tycooncraft.boiler.no_fuel": "none",
+  "gui.tycooncraft.power.none": "⚡ No power (needs %s P)",
+  "gui.tycooncraft.power.pct": "⚡ Power %s%% (%s P)",
+  "tooltip.tycooncraft.boiler": "Fuel + water (adjacent source or bucket) → steam for an adjacent Steam Engine",
+  "tooltip.tycooncraft.steam_engine": "Makes 32 P from an adjacent boiler's steam → send it through shafts",
+  "tooltip.tycooncraft.shaft": "Carries power along its axis and drives machines it touches",
+  "tooltip.tycooncraft.machine_power": "⚡ Needs %s P (steam engine + shafts)",
+  "block.tycooncraft.power_gearbox": "Power Gearbox",
+  "tooltip.tycooncraft.power_gearbox": "Connects power on all six sides to turn or split shafts"
 }

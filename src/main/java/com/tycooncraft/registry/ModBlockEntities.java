@@ -18,6 +18,14 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.turret.CiwsBlockEntity>> CIWS =
             BLOCK_ENTITY_TYPES.register("ciws",
                     () -> BlockEntityType.Builder.of(com.tycooncraft.turret.CiwsBlockEntity::new, ModBlocks.CIWS.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.power.BoilerBlockEntity>> BOILER =
+            BLOCK_ENTITY_TYPES.register("boiler", () -> BlockEntityType.Builder.of(com.tycooncraft.power.BoilerBlockEntity::new, ModBlocks.BOILER.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.power.SteamEngineBlockEntity>> STEAM_ENGINE =
+            BLOCK_ENTITY_TYPES.register("steam_engine", () -> BlockEntityType.Builder.of(com.tycooncraft.power.SteamEngineBlockEntity::new, ModBlocks.STEAM_ENGINE.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.power.ShaftBlockEntity>> SHAFT =
+            BLOCK_ENTITY_TYPES.register("shaft", () -> BlockEntityType.Builder.of(com.tycooncraft.power.ShaftBlockEntity::new, ModBlocks.SHAFT.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.power.GearboxBlockEntity>> GEARBOX =
+            BLOCK_ENTITY_TYPES.register("power_gearbox", () -> BlockEntityType.Builder.of(com.tycooncraft.power.GearboxBlockEntity::new, ModBlocks.POWER_GEARBOX.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.cctv.CctvBlockEntity>> CCTV =
             BLOCK_ENTITY_TYPES.register("cctv",
                     () -> BlockEntityType.Builder.of(com.tycooncraft.cctv.CctvBlockEntity::new, ModBlocks.CCTV.get()).build(null));

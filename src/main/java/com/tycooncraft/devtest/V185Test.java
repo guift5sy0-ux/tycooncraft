@@ -612,6 +612,56 @@ public final class V185Test {
         sp.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.RT20.get()));
     }
 
+    // ── v0.21.0 증기 동력 ──
+    static BlockPos pwBase;
+
+    static void powerSetup(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        pwBase = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, sp.blockPosition().offset(0, 0, -14));
+        for (int x = -2; x <= 7; x++) for (int y = 0; y <= 3; y++) for (int z = -2; z <= 2; z++)
+            sl.setBlockAndUpdate(pwBase.offset(x, y, z), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+        sl.setBlockAndUpdate(pwBase, ModBlocks.machine(com.tycooncraft.machine.MachineType.CRUSHER).defaultBlockState());
+        if (sl.getBlockEntity(pwBase) instanceof com.tycooncraft.blockentity.MachineBlockEntity m)
+            m.inputs().insertItem(0, new ItemStack(net.minecraft.world.item.Items.RAW_IRON, 32), false);
+        sp.teleportTo(sl, pwBase.getX() + 2.5, pwBase.getY(), pwBase.getZ() + 6.5, 180f, 12f);
+        System.out.println("[AUTOTEST] v210 powerSetup crusher placed (no power yet)");
+    }
+
+    static void powerMid(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        int out = sl.getBlockEntity(pwBase) instanceof com.tycooncraft.blockentity.MachineBlockEntity m ? m.output().getStackInSlot(0).getCount() : -1;
+        System.out.println("[AUTOTEST] v210 noPower crusherOut=" + out + " ratio=" + com.tycooncraft.power.PowerGrid.ratio(sl, pwBase));
+        // 회전축 3개(기계 위) → 증기기관 → 보일러
+        for (int x = 0; x <= 2; x++)
+            sl.setBlockAndUpdate(pwBase.offset(x, 1, 0), ModBlocks.SHAFT.get().defaultBlockState().setValue(com.tycooncraft.power.ShaftBlock.AXIS, net.minecraft.core.Direction.Axis.X));
+        sl.setBlockAndUpdate(pwBase.offset(3, 0, 0), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        sl.setBlockAndUpdate(pwBase.offset(3, 1, 0), ModBlocks.STEAM_ENGINE.get().defaultBlockState().setValue(com.tycooncraft.power.SteamEngineBlock.FACING, net.minecraft.core.Direction.SOUTH));
+        sl.setBlockAndUpdate(pwBase.offset(4, 0, 0), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        sl.setBlockAndUpdate(pwBase.offset(4, 1, 0), ModBlocks.BOILER.get().defaultBlockState().setValue(com.tycooncraft.power.BoilerBlock.FACING, net.minecraft.core.Direction.SOUTH));
+        if (sl.getBlockEntity(pwBase.offset(4, 1, 0)) instanceof com.tycooncraft.power.BoilerBlockEntity b)
+            b.fuel().insertItem(0, new ItemStack(net.minecraft.world.item.Items.COAL, 8), false);
+    }
+
+    static void powerEnd(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        int out = sl.getBlockEntity(pwBase) instanceof com.tycooncraft.blockentity.MachineBlockEntity m ? m.output().getStackInSlot(0).getCount() : -1;
+        var net = com.tycooncraft.power.PowerGrid.net(sl, pwBase);
+        boolean spin = sl.getBlockEntity(pwBase.offset(1, 1, 0)) instanceof com.tycooncraft.power.ShaftBlockEntity sh && sh.spinning();
+        int water = sl.getBlockEntity(pwBase.offset(4, 1, 0)) instanceof com.tycooncraft.power.BoilerBlockEntity b ? b.water : -1;
+        System.out.println("[AUTOTEST] v210 powered crusherOut=" + out + " ratio=" + com.tycooncraft.power.PowerGrid.ratio(sl, pwBase)
+                + " supply=" + (net == null ? -1 : net.supply) + " demand=" + (net == null ? -1 : net.demand) + " nodes=" + (net == null ? 0 : net.nodes.size())
+                + " shaftSpin=" + spin + " coalBurned=" + com.tycooncraft.power.BoilerBlockEntity.coalBurned + " water=" + water + " rebuilds=" + com.tycooncraft.power.PowerGrid.rebuilds);
+        // 공장 키트에 동력이 이어져 있는지 (분쇄기 위치)
+        if (kitOrigin != null) {
+            BlockPos kc = kitOrigin.offset(3, 0, 5);
+            var kn = com.tycooncraft.power.PowerGrid.net(sl, kc);
+            System.out.println("[AUTOTEST] v210 kit crusherNet=" + (kn != null) + " nodes=" + (kn == null ? 0 : kn.nodes.size())
+                    + " boiler=" + sl.getBlockState(kitOrigin.offset(11, 0, 5)).getBlock().getClass().getSimpleName()
+                    + " water=" + (sl.getBlockEntity(kitOrigin.offset(11, 0, 5)) instanceof com.tycooncraft.power.BoilerBlockEntity kb ? kb.water + " fuel=" + kb.fuel().getStackInSlot(0).getCount() : "-"));
+            sp.teleportTo(sl, kitOrigin.getX() + 12.5, kitOrigin.getY() + 1, kitOrigin.getZ() + 8.5, 120f, 18f);
+        }
+    }
+
     static com.tycooncraft.vehicle.JetEntity landJet;
 
     static void jetLandSetup(ServerPlayer sp) {

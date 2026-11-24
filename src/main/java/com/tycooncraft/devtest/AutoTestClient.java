@@ -850,7 +850,15 @@ public final class AutoTestClient {
             case 4070 -> shot(mc, "fx9_rt20_tp_carry");
             case 4072 -> fxFire(mc, 30f);
             case 4076 -> shot(mc, "fx10_rt20_tp_aim");
-            case 4078 -> { o.setCameraType(CameraType.FIRST_PERSON); next(11); }
+            // ── v0.21.0 산업혁명 1단계: 증기 동력 ──
+            case 4078 -> { o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::powerSetup); }
+            case 4140 -> serverKeep(mc, V185Test::powerMid);
+            case 4200 -> shot(mc, "pw1_steam_running");
+            case 4204 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), V185Test.pwBase.getX() + 2.0, V185Test.pwBase.getY() + 5.0, V185Test.pwBase.getZ() + 0.5, 180f, 90f));
+            case 4210 -> shot(mc, "pw1b_close");
+            case 4340 -> serverKeep(mc, V185Test::powerEnd);
+            case 4346 -> shot(mc, "pw2_kit_power");
+            case 4350 -> next(11);
             default -> {
             }
         }

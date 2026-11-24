@@ -75,6 +75,10 @@ public final class ModCreativeTabs {
                         for (var v : java.util.List.of(ModItems.VEST_1, ModItems.VEST_2, ModItems.VEST_3, ModItems.HELMET_1, ModItems.HELMET_2, ModItems.HELMET_3, ModItems.PANTS_1, ModItems.PANTS_2, ModItems.PANTS_3, ModItems.BOOTS_1, ModItems.BOOTS_2, ModItems.BOOTS_3, ModItems.HELMET_4, ModItems.VEST_4, ModItems.JUGGERNAUT_LEGGINGS, ModItems.COMBAT_BOOTS)) out.accept(v.get());
                         out.accept(ModItems.POLICE_SHIELD.get());
                         out.accept(ModItems.FACTORY_KIT.get());
+                        out.accept(ModItems.BOILER.get());
+                        out.accept(ModItems.STEAM_ENGINE.get());
+                        out.accept(ModItems.SHAFT.get());
+                        out.accept(ModItems.POWER_GEARBOX.get());
                         out.accept(ModItems.CCTV.get());
                         out.accept(ModItems.CCTV_SCREEN.get());
                         out.accept(ModItems.GUN_WORKBENCH.get());

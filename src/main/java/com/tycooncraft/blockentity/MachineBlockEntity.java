@@ -38,7 +38,7 @@ import java.util.Map;
  * - 레시피 재료가 모이면 가공 → 결과 칸
  * - 앞이 컨베이어·인벤토리면 결과물을 자동으로 내보냄 (아니면 결과 칸에 쌓임)
  */
-public class MachineBlockEntity extends BlockEntity implements MenuProvider {
+public class MachineBlockEntity extends BlockEntity implements com.tycooncraft.power.PowerNode, MenuProvider {
     public static final int INPUT_SLOTS = 6;
     private static final int ABSORB_INTERVAL = 5;
 
@@ -62,22 +62,32 @@ public class MachineBlockEntity extends BlockEntity implements MenuProvider {
     };
 
     private int progress;
+    /** v0.21.0 동력: 일할 거리가 있는지(수요), 받은 동력 비율을 쌓아 진행도로 바꿈 */
+    private boolean wantsPower;
+    private float powerAcc;
+    private int powerPct;
 
     /** GUI 동기화용: 0 = 진행도, 1 = 필요 시간 */
     private final ContainerData data = new ContainerData() {
         @Override
         public int get(int index) {
-            return index == 0 ? progress : type().processTime();
+            return switch (index) {
+                case 0 -> progress;
+                case 1 -> type().processTime();
+                case 2 -> powerPct;
+                default -> type().power();
+            };
         }
 
         @Override
         public void set(int index, int value) {
             if (index == 0) progress = value;
+            if (index == 2) powerPct = value;
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return 4;
         }
     };
 
@@ -163,6 +173,28 @@ public class MachineBlockEntity extends BlockEntity implements MenuProvider {
         return null;
     }
 
+    @Override
+    public boolean consumer() {
+        return true;
+    }
+
+    @Override
+    public int demand() {
+        return wantsPower ? type().power() : 0;
+    }
+
+    @Override
+    public void onLoad() {
+        super.onLoad();
+        if (level != null) com.tycooncraft.power.PowerGrid.add(level, worldPosition);
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        if (level != null) com.tycooncraft.power.PowerGrid.remove(level, worldPosition);
+    }
+
     public void serverTick() {
         if (level == null) return;
         if (level.getGameTime() % ABSORB_INTERVAL == 0) absorb();
@@ -175,6 +207,9 @@ public class MachineBlockEntity extends BlockEntity implements MenuProvider {
         }
 
         MachineRecipe recipe = findRecipe();
+        float ratio = com.tycooncraft.power.PowerGrid.ratio(level, worldPosition);
+        powerPct = Math.round(ratio * 100);
+        wantsPower = recipe != null;
         if (recipe == null) {
             if (progress != 0) {
                 progress = 0;
@@ -182,6 +217,10 @@ public class MachineBlockEntity extends BlockEntity implements MenuProvider {
             }
             return;
         }
+        // 동력이 없으면 멈춤, 모자라면 그만큼 느리게
+        powerAcc += ratio;
+        if (powerAcc < 1f) return;
+        powerAcc -= 1f;
         progress++;
         if (progress >= type().processTime()) {
             progress = 0;

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "GPG",
+    "PTP",
+    "III"
+  ],
+  "key": {
+    "G": {
+      "item": "tycooncraft:iron_gear"
+    },
+    "P": {
+      "item": "tycooncraft:iron_plate"
+    },
+    "T": {
+      "item": "minecraft:piston"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:steam_engine",
+    "count": 1
+  }
+}

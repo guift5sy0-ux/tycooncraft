@@ -60,6 +60,16 @@ public class MachineMenu extends AbstractContainerMenu {
     }
 
     /** 진행 막대 길이 (0 ~ width) */
+    /** 받는 동력 비율 % */
+    public int powerPct() {
+        return data.get(2);
+    }
+
+    /** 필요한 동력 P/t */
+    public int powerNeed() {
+        return data.get(3);
+    }
+
     public int progressScaled(int width) {
         int max = data.get(1);
         return max <= 0 ? 0 : data.get(0) * width / max;

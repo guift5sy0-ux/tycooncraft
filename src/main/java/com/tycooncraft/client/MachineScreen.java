@@ -46,6 +46,14 @@ public class MachineScreen extends AbstractContainerScreen<MachineMenu> {
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         super.render(g, mouseX, mouseY, partialTick);
+        // v0.21.0 동력 표시: 화살표 아래 (초록 = 충분, 노랑 = 모자라서 느림, 빨강 = 없어서 멈춤)
+        int pct = menu.powerPct();
+        int col = pct >= 100 ? 0xFF4CAF50 : pct > 0 ? 0xFFFFC107 : 0xFFE53935;
+        Component pw = pct <= 0 ? Component.translatable("gui.tycooncraft.power.none", menu.powerNeed())
+                : Component.translatable("gui.tycooncraft.power.pct", pct, menu.powerNeed());
+        int px = leftPos + ARROW_X + ARROW_W / 2 - font.width(pw) / 2, py = topPos + ARROW_Y + ARROW_H + 4;
+        g.fill(px - 2, py - 1, px + font.width(pw) + 2, py + 9, 0xC0202020);
+        g.drawString(font, pw, px, py, col, false);
         renderTooltip(g, mouseX, mouseY);
         if (isHovering(ARROW_X, ARROW_Y, ARROW_W, ARROW_H, mouseX, mouseY)) {
             List<Component> lines = new ArrayList<>();

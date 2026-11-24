@@ -30,6 +30,16 @@ public final class ModBlocks {
             () -> new com.tycooncraft.gun.GunWorkbenchBlock(BlockBehaviour.Properties.of().mapColor(net.minecraft.world.level.material.MapColor.WOOD)
                     .strength(2.5f).sound(net.minecraft.world.level.block.SoundType.WOOD).noOcclusion()));
 
+    // ── v0.21.0 산업혁명 1단계: 증기 동력 ──
+    public static final DeferredBlock<com.tycooncraft.power.BoilerBlock> BOILER = BLOCKS.register("boiler",
+            () -> new com.tycooncraft.power.BoilerBlock(machineProps().strength(3.5f, 8.0f).requiresCorrectToolForDrops().noOcclusion()
+                    .lightLevel(s -> s.getValue(com.tycooncraft.power.BoilerBlock.LIT) ? 10 : 0)));
+    public static final DeferredBlock<com.tycooncraft.power.SteamEngineBlock> STEAM_ENGINE = BLOCKS.register("steam_engine",
+            () -> new com.tycooncraft.power.SteamEngineBlock(machineProps().strength(3.5f, 8.0f).requiresCorrectToolForDrops().noOcclusion()));
+    public static final DeferredBlock<com.tycooncraft.power.ShaftBlock> SHAFT = BLOCKS.register("shaft",
+            () -> new com.tycooncraft.power.ShaftBlock(machineProps().strength(1.5f, 4.0f).noOcclusion()));
+    public static final DeferredBlock<com.tycooncraft.power.GearboxBlock> POWER_GEARBOX = BLOCKS.register("power_gearbox",
+            () -> new com.tycooncraft.power.GearboxBlock(machineProps().strength(2.5f, 6.0f).requiresCorrectToolForDrops()));
     public static final DeferredBlock<com.tycooncraft.cctv.CctvBlock> CCTV = BLOCKS.register("cctv",
             () -> new com.tycooncraft.cctv.CctvBlock(BlockBehaviour.Properties.of().mapColor(net.minecraft.world.level.material.MapColor.METAL)
                     .strength(1.5f).sound(net.minecraft.world.level.block.SoundType.METAL).noOcclusion()));

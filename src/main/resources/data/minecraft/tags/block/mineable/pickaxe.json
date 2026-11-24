@@ -29,6 +29,10 @@
     "tycooncraft:ship_booster",
     "tycooncraft:setter",
     "tycooncraft:cctv",
-    "tycooncraft:cctv_screen"
+    "tycooncraft:cctv_screen",
+    "tycooncraft:boiler",
+    "tycooncraft:steam_engine",
+    "tycooncraft:shaft",
+    "tycooncraft:power_gearbox"
   ]
 }

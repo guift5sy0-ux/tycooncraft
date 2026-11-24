@@ -1,0 +1,254 @@
+{
+ "parent": "minecraft:block/block",
+ "ambientocclusion": false,
+ "textures": {
+  "particle": "tycooncraft:block/boiler_firebox",
+  "fire": "tycooncraft:block/boiler_firebox",
+  "door": "tycooncraft:block/boiler_door_lit",
+  "drum": "tycooncraft:block/boiler_drum",
+  "drumtop": "tycooncraft:block/boiler_drum_top",
+  "chimney": "tycooncraft:block/boiler_chimney",
+  "gauge": "tycooncraft:block/boiler_gauge",
+  "collar": "tycooncraft:block/shaft_collar"
+ },
+ "elements": [
+  {
+   "from": [
+    0.5,
+    0,
+    0.5
+   ],
+   "to": [
+    15.5,
+    6,
+    15.5
+   ],
+   "faces": {
+    "east": {
+     "texture": "#fire"
+    },
+    "south": {
+     "texture": "#fire"
+    },
+    "west": {
+     "texture": "#fire"
+    },
+    "down": {
+     "texture": "#fire"
+    },
+    "up": {
+     "texture": "#fire"
+    }
+   }
+  },
+  {
+   "from": [
+    0.5,
+    0,
+    0.4
+   ],
+   "to": [
+    15.5,
+    6,
+    0.5
+   ],
+   "faces": {
+    "north": {
+     "texture": "#door"
+    }
+   }
+  },
+  {
+   "from": [
+    1.5,
+    6,
+    1.5
+   ],
+   "to": [
+    14.5,
+    15,
+    14.5
+   ],
+   "faces": {
+    "north": {
+     "texture": "#drum"
+    },
+    "east": {
+     "texture": "#drum"
+    },
+    "south": {
+     "texture": "#drum"
+    },
+    "west": {
+     "texture": "#drum"
+    },
+    "up": {
+     "texture": "#drumtop"
+    }
+   }
+  },
+  {
+   "from": [
+    2.5,
+    5.5,
+    0.8
+   ],
+   "to": [
+    13.5,
+    15.5,
+    1.5
+   ],
+   "faces": {
+    "north": {
+     "texture": "#drum"
+    },
+    "east": {
+     "texture": "#drum"
+    },
+    "south": {
+     "texture": "#drum"
+    },
+    "west": {
+     "texture": "#drum"
+    },
+    "up": {
+     "texture": "#drumtop"
+    }
+   }
+  },
+  {
+   "from": [
+    6,
+    15,
+    9.5
+   ],
+   "to": [
+    10,
+    23,
+    13.5
+   ],
+   "faces": {
+    "north": {
+     "texture": "#chimney"
+    },
+    "east": {
+     "texture": "#chimney"
+    },
+    "south": {
+     "texture": "#chimney"
+    },
+    "west": {
+     "texture": "#chimney"
+    },
+    "up": {
+     "texture": "#chimney"
+    }
+   }
+  },
+  {
+   "from": [
+    5.5,
+    22,
+    9
+   ],
+   "to": [
+    10.5,
+    23.5,
+    14
+   ],
+   "faces": {
+    "north": {
+     "texture": "#chimney"
+    },
+    "east": {
+     "texture": "#chimney"
+    },
+    "south": {
+     "texture": "#chimney"
+    },
+    "west": {
+     "texture": "#chimney"
+    },
+    "up": {
+     "texture": "#chimney"
+    },
+    "down": {
+     "texture": "#chimney"
+    }
+   }
+  },
+  {
+   "from": [
+    10.5,
+    10,
+    0.2
+   ],
+   "to": [
+    14.5,
+    14,
+    0.8
+   ],
+   "faces": {
+    "north": {
+     "texture": "#gauge"
+    }
+   }
+  },
+  {
+   "from": [
+    7,
+    13,
+    13.5
+   ],
+   "to": [
+    9,
+    16,
+    16
+   ],
+   "faces": {
+    "north": {
+     "texture": "#collar"
+    },
+    "east": {
+     "texture": "#collar"
+    },
+    "south": {
+     "texture": "#collar"
+    },
+    "west": {
+     "texture": "#collar"
+    },
+    "up": {
+     "texture": "#collar"
+    }
+   }
+  },
+  {
+   "from": [
+    3,
+    1.2,
+    0.35
+   ],
+   "to": [
+    13,
+    4.6,
+    0.4
+   ],
+   "faces": {
+    "north": {
+     "texture": "#door",
+     "uv": [
+      3,
+      6,
+      13,
+      11
+     ]
+    }
+   },
+   "neoforge_data": {
+    "block_light": 15,
+    "sky_light": 15
+   }
+  }
+ ]
+}

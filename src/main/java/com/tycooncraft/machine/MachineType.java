@@ -59,4 +59,14 @@ public enum MachineType implements StringRepresentable {
     public String translationKey() {
         return "block.tycooncraft." + name;
     }
+
+    /** v0.21.0: 일할 때 필요한 동력 (P/t). 증기기관 하나 = 32 */
+    public int power() {
+        return switch (this) {
+            case CRUSHER, SMELTER, WIRE_DRAWER -> 8;
+            case PRESS, LATHE -> 12;
+            case ALLOY_FURNACE, ASSEMBLER, CHEMICAL_REACTOR -> 16;
+            case ELECTROLYZER -> 24;
+        };
+    }
 }

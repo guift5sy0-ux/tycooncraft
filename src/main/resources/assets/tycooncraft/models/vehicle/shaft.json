@@ -1,0 +1,73 @@
+{
+ "textures": {
+  "particle": "tycooncraft:block/shaft",
+  "shaft": "tycooncraft:block/shaft",
+  "collar": "tycooncraft:block/shaft_collar"
+ },
+ "elements": [
+  {
+   "from": [
+    6,
+    0,
+    6
+   ],
+   "to": [
+    10,
+    16,
+    10
+   ],
+   "faces": {
+    "north": {
+     "texture": "#shaft"
+    },
+    "east": {
+     "texture": "#shaft"
+    },
+    "south": {
+     "texture": "#shaft"
+    },
+    "west": {
+     "texture": "#shaft"
+    },
+    "up": {
+     "texture": "#collar"
+    },
+    "down": {
+     "texture": "#collar"
+    }
+   }
+  },
+  {
+   "from": [
+    5.5,
+    7,
+    5.5
+   ],
+   "to": [
+    10.5,
+    9,
+    10.5
+   ],
+   "faces": {
+    "north": {
+     "texture": "#collar"
+    },
+    "east": {
+     "texture": "#collar"
+    },
+    "south": {
+     "texture": "#collar"
+    },
+    "west": {
+     "texture": "#collar"
+    },
+    "up": {
+     "texture": "#collar"
+    },
+    "down": {
+     "texture": "#collar"
+    }
+   }
+  }
+ ]
+}

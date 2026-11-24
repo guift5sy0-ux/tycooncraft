@@ -86,6 +86,8 @@ public final class VehicleClient {
         event.registerBlockEntityRenderer(com.tycooncraft.registry.ModBlockEntities.TURRET.get(), TurretRenderer::new);
         event.registerBlockEntityRenderer(com.tycooncraft.registry.ModBlockEntities.CIWS.get(), CiwsRenderer::new);
         event.registerBlockEntityRenderer(com.tycooncraft.registry.ModBlockEntities.CCTV.get(), com.tycooncraft.client.cctv.CctvRenderer::new);
+        event.registerBlockEntityRenderer(com.tycooncraft.registry.ModBlockEntities.SHAFT.get(), com.tycooncraft.client.power.PowerRenderers.Shaft::new);
+        event.registerBlockEntityRenderer(com.tycooncraft.registry.ModBlockEntities.STEAM_ENGINE.get(), com.tycooncraft.client.power.PowerRenderers.Engine::new);
     }
 
     @SubscribeEvent

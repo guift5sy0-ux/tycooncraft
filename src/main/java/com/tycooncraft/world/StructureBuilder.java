@@ -284,6 +284,14 @@ public final class StructureBuilder {
         Block c = ModBlocks.CONVEYOR.get();
         b.line(2, 0, 5, c, m(MachineType.CRUSHER), c, m(MachineType.SMELTER), c, m(MachineType.PRESS), c, ModBlocks.SELL_STATION.get());
         b.set(1, 0, 5, Blocks.AIR);
+        // v0.21.0 동력: 보일러(아래 물 원천) → 증기기관 → 기어박스 → 천장 회전축이 기계 위를 지나며 돌림
+        b.set(11, -1, 5, Blocks.WATER);
+        b.set(11, 0, 5, ModBlocks.BOILER.get().defaultBlockState().setValue(com.tycooncraft.power.BoilerBlock.FACING, Direction.SOUTH));
+        b.set(10, 0, 5, ModBlocks.STEAM_ENGINE.get().defaultBlockState().setValue(com.tycooncraft.power.SteamEngineBlock.FACING, Direction.SOUTH));
+        b.set(10, 1, 5, ModBlocks.POWER_GEARBOX.get().defaultBlockState());
+        for (int x = 2; x <= 9; x++) b.set(x, 1, 5, ModBlocks.SHAFT.get().defaultBlockState().setValue(com.tycooncraft.power.ShaftBlock.AXIS, Direction.Axis.X));
+        if (b.inside(b.at(11, 0, 5)) && b.level.getBlockEntity(b.at(11, 0, 5)) instanceof com.tycooncraft.power.BoilerBlockEntity boiler)
+            boiler.fuel().insertItem(0, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.COAL, 16), false);
         // 작업 공간
         b.set(2, 0, 1, Blocks.CRAFTING_TABLE);
         b.set(9, 0, 1, Blocks.FURNACE.defaultBlockState().setValue(net.minecraft.world.level.block.FurnaceBlock.FACING, Direction.SOUTH));

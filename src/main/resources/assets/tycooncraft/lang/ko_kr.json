@@ -663,5 +663,18 @@
   "item.tycooncraft.hispano_ammo": "히스파노 탄 (20mm)",
   "death.attack.tycooncraft.recoil": "%1$s이(가) RT-20 반동을 버티지 못했습니다",
   "tooltip.tycooncraft.rt20": "쏠 때 반동 피해 4 (고정) · 뒤로 2칸 밀림 (웅크리면 1칸) · 재장전 14초",
-  "tooltip.tycooncraft.rt20_2": "전차·디스트로이어에 피해 1.1배 · 1명 관통"
+  "tooltip.tycooncraft.rt20_2": "전차·디스트로이어에 피해 1.1배 · 1명 관통",
+  "block.tycooncraft.boiler": "보일러",
+  "block.tycooncraft.steam_engine": "증기기관",
+  "block.tycooncraft.shaft": "회전축",
+  "message.tycooncraft.boiler.status": "물 %s/%s mB · 연료 %s · 증기 %s/%s",
+  "message.tycooncraft.boiler.no_fuel": "없음",
+  "gui.tycooncraft.power.none": "⚡ 동력 없음 (%s P 필요)",
+  "gui.tycooncraft.power.pct": "⚡ 동력 %s%% (%s P)",
+  "tooltip.tycooncraft.boiler": "석탄 등 연료 + 물(옆에 물 원천 또는 물 양동이) → 증기. 증기기관을 옆에 붙이세요",
+  "tooltip.tycooncraft.steam_engine": "붙어 있는 보일러의 증기로 동력 32 P 생산 → 회전축으로 기계에 전달",
+  "tooltip.tycooncraft.shaft": "축 방향으로 동력을 잇고, 옆에 붙은 기계를 돌립니다",
+  "tooltip.tycooncraft.machine_power": "⚡ 동력 %s P 필요 (증기기관·회전축)",
+  "block.tycooncraft.power_gearbox": "동력 분배기",
+  "tooltip.tycooncraft.power_gearbox": "여섯 면 모두로 동력을 이어 축을 꺾거나 나눕니다"
 }
