@@ -166,7 +166,7 @@ public abstract class VehicleEntity extends Entity implements FueledVehicle {
         if (empTicks() > 0) {
             if (!level().isClientSide) entityData.set(EMP, empTicks() - 1);
             else if (tickCount % 3 == 0)
-                level().addParticle(net.minecraft.core.particles.com.tycooncraft.registry.ModParticles.SPARK.get(), getX() + (random.nextDouble() - 0.5) * getBbWidth(),
+                level().addParticle(com.tycooncraft.registry.ModParticles.SPARK.get(), getX() + (random.nextDouble() - 0.5) * getBbWidth(),
                         getY() + random.nextDouble() * getBbHeight(), getZ() + (random.nextDouble() - 0.5) * getBbWidth(), 0, 0.05, 0);
         }
         if (level().isClientSide) {
@@ -212,7 +212,7 @@ public abstract class VehicleEntity extends Entity implements FueledVehicle {
         level().playSound(null, getX(), getY(), getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.NEUTRAL, 1.5f, 0.6f);
         level().playSound(null, getX(), getY(), getZ(), SoundEvents.ANVIL_LAND, SoundSource.NEUTRAL, 0.7f, 0.5f);
         if (level() instanceof net.minecraft.server.level.ServerLevel sl)
-            sl.sendParticles(net.minecraft.core.particles.com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get(), getX(), getY() + 1, getZ(), 40, getBbWidth() * 0.4, 0.6, getBbWidth() * 0.4, 0.02);
+            sl.sendParticles(com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get(), getX(), getY() + 1, getZ(), 40, getBbWidth() * 0.4, 0.6, getBbWidth() * 0.4, 0.02);
         // 고철 몇 장은 건진다
         spawnAtLocation(new ItemStack(ModItems.STEEL_PLATE.get(), 2));
         discard();
