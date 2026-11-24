@@ -277,6 +277,9 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> POWER_CABLE = ITEMS.registerSimpleBlockItem(ModBlocks.POWER_CABLE);
     public static final DeferredItem<BlockItem> SOLAR_GENERATOR = ITEMS.registerSimpleBlockItem(ModBlocks.SOLAR_GENERATOR);
     public static final DeferredItem<BlockItem> ACCUMULATOR = ITEMS.registerSimpleBlockItem(ModBlocks.ACCUMULATOR);
+    public static final DeferredItem<BlockItem> ROBOT_ARM = ITEMS.registerSimpleBlockItem(ModBlocks.ROBOT_ARM);
+    public static final DeferredItem<BlockItem> SORTER = ITEMS.registerSimpleBlockItem(ModBlocks.SORTER);
+    public static final DeferredItem<BlockItem> WAREHOUSE = ITEMS.registerSimpleBlockItem(ModBlocks.WAREHOUSE);
     public static final DeferredItem<BlockItem> CCTV = ITEMS.registerSimpleBlockItem(ModBlocks.CCTV);
     public static final DeferredItem<BlockItem> CCTV_SCREEN = ITEMS.registerSimpleBlockItem(ModBlocks.CCTV_SCREEN);
     public static final List<DeferredItem<BlockItem>> MACHINE_ITEMS = new ArrayList<>();

@@ -742,6 +742,69 @@ public final class V185Test {
         sp.serverLevel().setDayTime(18000);
     }
 
+    // ── v0.23.0 자동화 ──
+    static BlockPos auBase;
+
+    private static int count(net.minecraft.server.level.ServerLevel sl, BlockPos p, net.minecraft.world.item.Item it) {
+        if (!(sl.getBlockEntity(p) instanceof com.tycooncraft.automation.WarehouseBlockEntity w)) return -1;
+        int n = 0;
+        for (int i = 0; i < w.inv.getContainerSize(); i++) if (w.inv.getItem(i).is(it)) n += w.inv.getItem(i).getCount();
+        return n;
+    }
+
+    static void autoSetup(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        auBase = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, sp.blockPosition().offset(-4, 0, -40));
+        for (int x = -2; x <= 9; x++) for (int y = 0; y <= 4; y++) for (int z = -3; z <= 3; z++)
+            put(sl, auBase.offset(x, y, z), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+        var E = net.minecraft.core.Direction.EAST;
+        put(sl, auBase, ModBlocks.WAREHOUSE.get().defaultBlockState());
+        var wa = (com.tycooncraft.automation.WarehouseBlockEntity) sl.getBlockEntity(auBase);
+        wa.inv.setItem(0, new ItemStack(net.minecraft.world.item.Items.RAW_IRON, 64));
+        wa.inv.setItem(1, new ItemStack(net.minecraft.world.item.Items.COBBLESTONE, 32));
+        put(sl, auBase.offset(1, 0, 0), ModBlocks.ROBOT_ARM.get().defaultBlockState().setValue(com.tycooncraft.automation.RobotArmBlock.FACING, E));
+        ((com.tycooncraft.automation.RobotArmBlockEntity) sl.getBlockEntity(auBase.offset(1, 0, 0))).setFilter(new ItemStack(net.minecraft.world.item.Items.RAW_IRON));
+        put(sl, auBase.offset(2, 0, 0), ModBlocks.machine(com.tycooncraft.machine.MachineType.INDUCTION_FURNACE).defaultBlockState()
+                .setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING, net.minecraft.core.Direction.SOUTH));
+        put(sl, auBase.offset(3, 0, 0), ModBlocks.ROBOT_ARM.get().defaultBlockState().setValue(com.tycooncraft.automation.RobotArmBlock.FACING, E));
+        put(sl, auBase.offset(4, 0, 0), ModBlocks.CONVEYOR.get().defaultBlockState().setValue(com.tycooncraft.block.ConveyorBlock.FACING, E));
+        put(sl, auBase.offset(5, 0, 0), ModBlocks.SORTER.get().defaultBlockState().setValue(com.tycooncraft.automation.SorterBlock.FACING, E));
+        ((com.tycooncraft.automation.SorterBlockEntity) sl.getBlockEntity(auBase.offset(5, 0, 0))).setFilter(new ItemStack(net.minecraft.world.item.Items.IRON_INGOT));
+        put(sl, auBase.offset(5, 0, -1), ModBlocks.WAREHOUSE.get().defaultBlockState());
+        put(sl, auBase.offset(6, 0, 0), ModBlocks.WAREHOUSE.get().defaultBlockState());
+        // 전기: 꽉 찬 축전지 + 전선
+        put(sl, auBase.offset(1, 0, 1), ModBlocks.ACCUMULATOR.get().defaultBlockState());
+        ((com.tycooncraft.power.elec.AccumulatorBlockEntity) sl.getBlockEntity(auBase.offset(1, 0, 1))).stored = 200_000;
+        put(sl, auBase.offset(2, 0, 1), ModBlocks.POWER_CABLE.get().defaultBlockState());
+        put(sl, auBase.offset(3, 0, 1), ModBlocks.POWER_CABLE.get().defaultBlockState());
+        // 분류 안 되는 물건(조약돌)을 벨트에 올림 → 앞(창고 C)으로 가야 함
+        com.tycooncraft.blockentity.ItemTransfer.spawnAt(sl, auBase.offset(4, 0, 0), E, new ItemStack(net.minecraft.world.item.Items.COBBLESTONE, 8));
+        sp.teleportTo(sl, auBase.getX() + 3.5, auBase.getY() + 1.9, auBase.getZ() - 3.8, 0f, 20f);
+        System.out.println("[AUTOTEST] v230 autoSetup ok");
+    }
+
+    private static void autoLog(ServerPlayer sp, String tag) {
+        var sl = sp.serverLevel();
+        var I = net.minecraft.world.item.Items.IRON_INGOT;
+        var raw = net.minecraft.world.item.Items.RAW_IRON;
+        var cob = net.minecraft.world.item.Items.COBBLESTONE;
+        System.out.println("[AUTOTEST] v230 " + tag + " A.raw=" + count(sl, auBase, raw) + " A.cobble=" + count(sl, auBase, cob)
+                + " B.ingot(left)=" + count(sl, auBase.offset(5, 0, -1), I) + " B.cobble=" + count(sl, auBase.offset(5, 0, -1), cob)
+                + " C.ingot(fwd)=" + count(sl, auBase.offset(6, 0, 0), I) + " C.cobble=" + count(sl, auBase.offset(6, 0, 0), cob)
+                + " armMoves=" + com.tycooncraft.automation.RobotArmBlockEntity.moves + " sortedLeft=" + com.tycooncraft.automation.SorterBlockEntity.sortedLeft
+                + " passed=" + com.tycooncraft.automation.SorterBlockEntity.passed
+                + " armPower=" + com.tycooncraft.power.PowerGrid.ratio(sl, auBase.offset(1, 0, 0), com.tycooncraft.power.Layer.ELEC)
+                + " arm2Power=" + com.tycooncraft.power.PowerGrid.ratio(sl, auBase.offset(3, 0, 0), com.tycooncraft.power.Layer.ELEC));
+    }
+
+    static void autoMid(ServerPlayer sp) {
+        autoLog(sp, "mid");
+    }
+
+    static void autoEnd(ServerPlayer sp) {
+        autoLog(sp, "end");
+    }
+
     static com.tycooncraft.vehicle.JetEntity landJet;
 
     static void jetLandSetup(ServerPlayer sp) {

@@ -1,0 +1,24 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "redstone",
+ "pattern": [
+  "PBP",
+  "BCB",
+  "PBP"
+ ],
+ "key": {
+  "P": {
+   "item": "tycooncraft:iron_plate"
+  },
+  "B": {
+   "item": "minecraft:barrel"
+  },
+  "C": {
+   "item": "minecraft:chest"
+  }
+ },
+ "result": {
+  "id": "tycooncraft:warehouse",
+  "count": 1
+ }
+}

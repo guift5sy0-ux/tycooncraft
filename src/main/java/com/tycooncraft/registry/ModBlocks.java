@@ -52,6 +52,13 @@ public final class ModBlocks {
     public static final DeferredBlock<com.tycooncraft.power.elec.AccumulatorBlock> ACCUMULATOR = BLOCKS.register("accumulator",
             () -> new com.tycooncraft.power.elec.AccumulatorBlock(machineProps().strength(3.5f, 8.0f).requiresCorrectToolForDrops()
                     .lightLevel(s -> s.getValue(com.tycooncraft.power.elec.AccumulatorBlock.LEVEL) * 2)));
+    // ── v0.23.0 산업혁명 3단계: 자동화 ──
+    public static final DeferredBlock<com.tycooncraft.automation.RobotArmBlock> ROBOT_ARM = BLOCKS.register("robot_arm",
+            () -> new com.tycooncraft.automation.RobotArmBlock(machineProps().strength(3.0f, 6.0f).requiresCorrectToolForDrops().noOcclusion()));
+    public static final DeferredBlock<com.tycooncraft.automation.SorterBlock> SORTER = BLOCKS.register("sorter",
+            () -> new com.tycooncraft.automation.SorterBlock(machineProps().strength(2.5f, 6.0f).requiresCorrectToolForDrops().noOcclusion()));
+    public static final DeferredBlock<com.tycooncraft.automation.WarehouseBlock> WAREHOUSE = BLOCKS.register("warehouse",
+            () -> new com.tycooncraft.automation.WarehouseBlock(machineProps().strength(3.5f, 8.0f).requiresCorrectToolForDrops()));
     public static final DeferredBlock<com.tycooncraft.cctv.CctvBlock> CCTV = BLOCKS.register("cctv",
             () -> new com.tycooncraft.cctv.CctvBlock(BlockBehaviour.Properties.of().mapColor(net.minecraft.world.level.material.MapColor.METAL)
                     .strength(1.5f).sound(net.minecraft.world.level.block.SoundType.METAL).noOcclusion()));

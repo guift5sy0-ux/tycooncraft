@@ -32,6 +32,12 @@ public final class ModBlockEntities {
             BLOCK_ENTITY_TYPES.register("solar_generator", () -> BlockEntityType.Builder.of(com.tycooncraft.power.elec.SolarBlockEntity::new, ModBlocks.SOLAR_GENERATOR.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.power.elec.AccumulatorBlockEntity>> ACCUMULATOR =
             BLOCK_ENTITY_TYPES.register("accumulator", () -> BlockEntityType.Builder.of(com.tycooncraft.power.elec.AccumulatorBlockEntity::new, ModBlocks.ACCUMULATOR.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.automation.RobotArmBlockEntity>> ROBOT_ARM =
+            BLOCK_ENTITY_TYPES.register("robot_arm", () -> BlockEntityType.Builder.of(com.tycooncraft.automation.RobotArmBlockEntity::new, ModBlocks.ROBOT_ARM.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.automation.SorterBlockEntity>> SORTER =
+            BLOCK_ENTITY_TYPES.register("sorter", () -> BlockEntityType.Builder.of(com.tycooncraft.automation.SorterBlockEntity::new, ModBlocks.SORTER.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.automation.WarehouseBlockEntity>> WAREHOUSE =
+            BLOCK_ENTITY_TYPES.register("warehouse", () -> BlockEntityType.Builder.of(com.tycooncraft.automation.WarehouseBlockEntity::new, ModBlocks.WAREHOUSE.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.power.ShaftBlockEntity>> SHAFT =
             BLOCK_ENTITY_TYPES.register("shaft", () -> BlockEntityType.Builder.of(com.tycooncraft.power.ShaftBlockEntity::new, ModBlocks.SHAFT.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.power.GearboxBlockEntity>> GEARBOX =

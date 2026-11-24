@@ -40,6 +40,9 @@
     "tycooncraft:solar_generator",
     "tycooncraft:accumulator",
     "tycooncraft:induction_furnace",
-    "tycooncraft:arc_furnace"
+    "tycooncraft:arc_furnace",
+    "tycooncraft:robot_arm",
+    "tycooncraft:sorter",
+    "tycooncraft:warehouse"
   ]
 }

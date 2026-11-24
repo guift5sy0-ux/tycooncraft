@@ -84,6 +84,9 @@ public final class ModCreativeTabs {
                         out.accept(ModItems.POWER_CABLE.get());
                         out.accept(ModItems.SOLAR_GENERATOR.get());
                         out.accept(ModItems.ACCUMULATOR.get());
+                        out.accept(ModItems.ROBOT_ARM.get());
+                        out.accept(ModItems.SORTER.get());
+                        out.accept(ModItems.WAREHOUSE.get());
                         out.accept(ModItems.CCTV.get());
                         out.accept(ModItems.CCTV_SCREEN.get());
                         out.accept(ModItems.GUN_WORKBENCH.get());

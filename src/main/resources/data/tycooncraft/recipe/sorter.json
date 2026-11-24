@@ -1,0 +1,26 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "redstone",
+ "pattern": [
+  "PCP",
+  "WHW"
+ ],
+ "key": {
+  "P": {
+   "item": "tycooncraft:iron_plate"
+  },
+  "C": {
+   "item": "tycooncraft:circuit"
+  },
+  "W": {
+   "item": "tycooncraft:copper_wire"
+  },
+  "H": {
+   "item": "minecraft:hopper"
+  }
+ },
+ "result": {
+  "id": "tycooncraft:sorter",
+  "count": 2
+ }
+}

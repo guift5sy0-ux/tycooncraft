@@ -183,7 +183,8 @@ public final class AutoTestClient {
     private static void later(Minecraft mc) {
         var o = mc.options;
         if (System.getenv("TC_FXONLY") != null && phaseT < 3828) phaseT = 3828;   // 로컬 디버그: 이펙트 구간만
-        if (System.getenv("TC_ELECONLY") != null && phaseT < 4350) phaseT = 4350;   // 로컬 디버그: 이펙트 구간만
+        if (System.getenv("TC_ELECONLY") != null && phaseT < 4350) phaseT = 4350;
+        if (System.getenv("TC_AUTOONLY") != null && phaseT < 4656) phaseT = 4656;   // 로컬 디버그: 이펙트 구간만
         int s = phaseT;
         double g = -60;
         if (s > 3226 && s < 3300 && s % 2 == 0) serverDo(mc, V185Test::keepAirborne);
@@ -866,7 +867,14 @@ public final class AutoTestClient {
             case 4520 -> serverKeep(mc, V185Test::elecView2);
             case 4526 -> shot(mc, "el2_cables");
             case 4650 -> serverKeep(mc, V185Test::elecEnd);
-            case 4656 -> next(11);
+            // ── v0.23.0 산업혁명 3단계: 자동화 ──
+            case 4656 -> { o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::autoSetup); }
+            case 4760 -> serverKeep(mc, V185Test::autoMid);
+            case 4763 -> shot(mc, "au1_line");
+            case 4767 -> shot(mc, "au2_line_b");
+            case 4771 -> shot(mc, "au3_line_c");
+            case 4990 -> serverKeep(mc, V185Test::autoEnd);
+            case 4996 -> next(11);
             default -> {
             }
         }

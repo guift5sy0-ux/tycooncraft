@@ -82,6 +82,79 @@ public final class PowerRenderers {
         }
     }
 
+    /**
+     * v0.23.0 로봇 팔: 평소엔 집는 쪽(뒤)을 보고 있다가, 옮길 때 앞으로 휙 돌아 내려놓고 돌아온다 (0.5초 + 0.5초).
+     * 머리 모델은 +Z(남) 쪽으로 팔을 뻗은 모양.
+     */
+    public static class Arm implements BlockEntityRenderer<com.tycooncraft.automation.RobotArmBlockEntity> {
+        public Arm(BlockEntityRendererProvider.Context c) {
+        }
+
+        @Override
+        public void render(com.tycooncraft.automation.RobotArmBlockEntity be, float pt, PoseStack ps, MultiBufferSource buf, int light, int overlay) {
+            if (be.getLevel() == null) return;
+            var f = be.getBlockState().getValue(com.tycooncraft.automation.RobotArmBlock.FACING);
+            float front = -f.toYRot(), back = front + 180f;
+            float t = (be.getLevel().getGameTime() - be.swingAt + pt) / 10f;
+            float yaw, lift = 0;
+            boolean carry = false;
+            if (t >= 0 && t < 1) {
+                float e = t * t * (3 - 2 * t);
+                yaw = back + 180f * e;
+                lift = Mth.sin(t * Mth.PI) * 2.5f;
+                carry = true;
+            } else if (t >= 1 && t < 2) {
+                float u = t - 1, e = u * u * (3 - 2 * u);
+                yaw = front + 180f * e;
+                lift = Mth.sin(u * Mth.PI) * 1.5f;
+            } else yaw = back;
+            ps.pushPose();
+            ps.translate(0.5, (6 + lift) / 16.0, 0.5);
+            ps.mulPose(Axis.YP.rotationDegrees(yaw));
+            VehicleModels.part(ps, VehicleModels.cutout(buf), VehicleModels.ROBOT_ARM_HEAD, 1f, light);
+            if (carry && be.carried != null) {
+                ps.translate(0, 6 / 16.0, 8.5 / 16.0);
+                ps.scale(0.38f, 0.38f, 0.38f);
+                net.minecraft.client.Minecraft.getInstance().getItemRenderer().renderStatic(new net.minecraft.world.item.ItemStack(be.carried),
+                        net.minecraft.world.item.ItemDisplayContext.FIXED, light, overlay, ps, buf, be.getLevel(), 0);
+            }
+            ps.popPose();
+            // 필터 아이템: 받침 앞면 작은 표시
+            if (!be.filter().isEmpty()) renderFilter(be.filter(), f, ps, buf, light, overlay, be.getLevel(), 0.2);
+        }
+    }
+
+    /** 분류기: 윗면 왼쪽(갈라지는 쪽)에 필터 아이템 표시 */
+    public static class Sorter implements BlockEntityRenderer<com.tycooncraft.automation.SorterBlockEntity> {
+        public Sorter(BlockEntityRendererProvider.Context c) {
+        }
+
+        @Override
+        public void render(com.tycooncraft.automation.SorterBlockEntity be, float pt, PoseStack ps, MultiBufferSource buf, int light, int overlay) {
+            if (be.filter().isEmpty() || be.getLevel() == null) return;
+            var f = be.getBlockState().getValue(com.tycooncraft.automation.SorterBlock.FACING);
+            var left = f.getCounterClockWise();
+            ps.pushPose();
+            ps.translate(0.5 + left.getStepX() * 0.47, 0.32, 0.5 + left.getStepZ() * 0.47);
+            ps.mulPose(Axis.YP.rotationDegrees(-left.toYRot()));
+            ps.scale(0.4f, 0.4f, 0.4f);
+            net.minecraft.client.Minecraft.getInstance().getItemRenderer().renderStatic(be.filter(),
+                    net.minecraft.world.item.ItemDisplayContext.FIXED, light, overlay, ps, buf, be.getLevel(), 0);
+            ps.popPose();
+        }
+    }
+
+    private static void renderFilter(net.minecraft.world.item.ItemStack st, net.minecraft.core.Direction f, PoseStack ps, MultiBufferSource buf,
+                                     int light, int overlay, net.minecraft.world.level.Level level, double y) {
+        var side = f.getClockWise();
+        ps.pushPose();
+        ps.translate(0.5 + side.getStepX() * 0.445, y, 0.5 + side.getStepZ() * 0.445);
+        ps.mulPose(Axis.YP.rotationDegrees(-side.toYRot()));
+        ps.scale(0.25f, 0.25f, 0.25f);
+        net.minecraft.client.Minecraft.getInstance().getItemRenderer().renderStatic(st, net.minecraft.world.item.ItemDisplayContext.FIXED, light, overlay, ps, buf, level, 0);
+        ps.popPose();
+    }
+
     @SubscribeEvent
     public static void tooltip(ItemTooltipEvent e) {
         var st = e.getItemStack();
@@ -89,7 +162,8 @@ public final class PowerRenderers {
                 : st.is(ModItems.SHAFT.get()) ? "shaft" : st.is(ModItems.POWER_GEARBOX.get()) ? "power_gearbox"
                 : st.is(ModItems.GENERATOR.get()) ? "generator" : st.is(ModItems.POWER_MOTOR.get()) ? "power_motor"
                 : st.is(ModItems.POWER_CABLE.get()) ? "power_cable" : st.is(ModItems.SOLAR_GENERATOR.get()) ? "solar_generator"
-                : st.is(ModItems.ACCUMULATOR.get()) ? "accumulator" : null;
+                : st.is(ModItems.ACCUMULATOR.get()) ? "accumulator" : st.is(ModItems.ROBOT_ARM.get()) ? "robot_arm"
+                : st.is(ModItems.SORTER.get()) ? "sorter" : st.is(ModItems.WAREHOUSE.get()) ? "warehouse" : null;
         if (key != null) e.getToolTip().add(Component.translatable("tooltip.tycooncraft." + key).withStyle(ChatFormatting.GRAY));
         if (st.getItem() instanceof BlockItem bi && bi.getBlock() instanceof com.tycooncraft.block.MachineBlock mb)
             e.getToolTip().add(mb.type().electricOnly()

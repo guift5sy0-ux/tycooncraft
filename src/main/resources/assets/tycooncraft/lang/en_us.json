@@ -693,5 +693,17 @@
   "tooltip.tycooncraft.power_cable": "Carries electricity; machines on a cable run 1.5x faster",
   "tooltip.tycooncraft.solar_generator": "8 ⚡ in daylight with open sky (3 in rain, 0 at night)",
   "tooltip.tycooncraft.accumulator": "Stores up to 200,000 ⚡, outputs up to 128/t",
-  "tooltip.tycooncraft.machine_elec_only": "⚡ Electric only: needs %s ⚡ via cable"
+  "tooltip.tycooncraft.machine_elec_only": "⚡ Electric only: needs %s ⚡ via cable",
+  "block.tycooncraft.robot_arm": "Robot Arm",
+  "block.tycooncraft.sorter": "Sorter",
+  "block.tycooncraft.warehouse": "Warehouse",
+  "message.tycooncraft.filter.set": "Filter: %s",
+  "message.tycooncraft.filter.clear": "Filter cleared",
+  "message.tycooncraft.filter.any": "anything",
+  "message.tycooncraft.robot_arm.status": "Moves: %s · Power %s%%",
+  "message.tycooncraft.sorter.set": "%s → left, others → forward",
+  "message.tycooncraft.sorter.none": "No filter: everything goes forward",
+  "tooltip.tycooncraft.robot_arm": "Moves 8 items from behind to the front. 4 ⚡. Right-click with an item to filter",
+  "tooltip.tycooncraft.sorter": "Filtered items go left, others forward",
+  "tooltip.tycooncraft.warehouse": "54 slots in one block; works with arms, conveyors and hoppers"
 }

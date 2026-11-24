@@ -1,0 +1,16 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "tycooncraft:block/robot_arm"
+  },
+  "facing=east": {
+   "model": "tycooncraft:block/robot_arm"
+  },
+  "facing=south": {
+   "model": "tycooncraft:block/robot_arm"
+  },
+  "facing=west": {
+   "model": "tycooncraft:block/robot_arm"
+  }
+ }
+}
