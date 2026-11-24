@@ -823,16 +823,18 @@ public final class AutoTestClient {
             // ── v0.20.0: 총기 이펙트 (총구 섬광·연기·탄피·탄착 먼지) ──
             case 3828 -> { o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::fxSetup); }
             case 3840 -> fxFire(mc, 22f);
-            case 3841 -> shot(mc, "fx1_fp_flash");
-            case 3843 -> fxFire(mc, 22f);
-            case 3849 -> shot(mc, "fx2_fp_smoke_impact");
-            case 3852 -> o.setCameraType(CameraType.THIRD_PERSON_BACK);
+            case 3842 -> shot(mc, "fx1_fp_flash");          // 파티클은 다음 틱에 추가되고 그 다음 프레임에 보임
+            case 3844 -> fxFire(mc, 22f);
+            case 3850 -> shot(mc, "fx2_fp_smoke_impact");
+            case 3852 -> o.setCameraType(CameraType.THIRD_PERSON_FRONT);
             case 3858 -> fxFire(mc, 30f);
-            case 3859 -> shot(mc, "fx3_tp_flash");
+            case 3860 -> shot(mc, "fx3_tp_flash");
             case 3866 -> shot(mc, "fx4_tp_smoke");
-            // ── v0.20.0: 전투기 착륙 (얕은 강하로 내려와 활주 후 정지) ──
-            case 3870 -> { o.setCameraType(CameraType.THIRD_PERSON_BACK); serverDo(mc, V185Test::jetLandSetup); }
-            case 3874 -> { mc.player.setYRot(180f); mc.player.setXRot(12f); if (mc.player.getVehicle() instanceof com.tycooncraft.vehicle.JetEntity j) j.throttle = 0.4f; }
+            case 3867 -> { o.setCameraType(CameraType.FIRST_PERSON); serverKeep(mc, V185Test::night); }
+            case 3869 -> fxFire(mc, 22f);
+            case 3871 -> shot(mc, "fx3b_fp_flash_night");
+            case 3872 -> { o.setCameraType(CameraType.THIRD_PERSON_BACK); serverKeep(mc, V185Test::day); serverDo(mc, V185Test::jetLandSetup); }
+            case 3876 -> { mc.player.setYRot(180f); mc.player.setXRot(12f); if (mc.player.getVehicle() instanceof com.tycooncraft.vehicle.JetEntity j) j.throttle = 0.4f; }
             case 3900 -> shot(mc, "fx5_jet_approach");
             case 3930 -> { mc.player.setXRot(2f); if (mc.player.getVehicle() instanceof com.tycooncraft.vehicle.JetEntity j) j.throttle = 0f; }
             case 3960 -> { shot(mc, "fx6_jet_landed"); serverKeep(mc, V185Test::jetLandCheck); }

@@ -55,7 +55,7 @@ public final class BulletFx {
             int puffs = 2 + (int) (size * 2);
             for (int i = 0; i < puffs; i++)
                 mc.particleEngine.add(new Smoke(mc.level, p.from().add(dir.scale(0.1 + i * 0.12)), dir.scale(0.05 + 0.09 * mc.level.random.nextFloat())
-                        .add(gauss(mc.level, 0.012)), 0.06f * size, 0.35f + 0.25f * size, 0.22f, 16 + mc.level.random.nextInt(18), 0.78f));
+                        .add(gauss(mc.level, 0.012)), 0.06f * size, 0.35f + 0.25f * size, 0.32f, 16 + mc.level.random.nextInt(18), 0.72f));
         } else {   // 소음기: 옅은 김만
             mc.particleEngine.add(new Smoke(mc.level, p.from(), dir.scale(0.03), 0.04f, 0.2f, 0.12f, 12, 0.8f));
         }
