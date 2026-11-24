@@ -30,11 +30,23 @@ public final class BulletFx {
     public static void spawn(TracerPayload p) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
+        boolean mine = mc.player != null && mc.player.getId() == p.shooter();
+        boolean fp = mine && mc.options.getCameraType().isFirstPerson() && mc.player.getVehicle() == null;
+        if (fp) {
+            // 1인칭: 손에 든 총 모델은 파티클 위에 덧그려지므로, 화면상 총구 끝 바로 앞(총에 가리지 않는 곳)에서 섬광·연기·총알이 나오게
+            var cam = mc.gameRenderer.getMainCamera();
+            Vec3 look = new Vec3(cam.getLookVector()), up = new Vec3(cam.getUpVector()), right = look.cross(up).normalize();
+            boolean left = mc.player.getMainArm() == net.minecraft.world.entity.HumanoidArm.LEFT;
+            if (mc.player.getMainHandItem().getItem() instanceof com.tycooncraft.gun.GunItem g && g.isDual()
+                    && mc.player.getPersistentData().getBoolean("tycooncraft_dual_left")) left = !left;
+            boolean scoped = com.tycooncraft.client.GunClient.isScoping();
+            Vec3 fpm = scoped ? cam.getPosition().add(look.scale(1.6)).subtract(up.scale(0.12))
+                    : cam.getPosition().add(look.scale(1.9)).add(right.scale(left ? -0.27 : 0.27)).subtract(up.scale(0.19));
+            p = new TracerPayload(fpm, p.to(), p.kind(), p.impact(), p.shooter(), p.speed(), p.flash());
+        }
         mc.particleEngine.add(new Bullet(mc.level, p));
         Vec3 d = p.to().subtract(p.from());
         Vec3 dir = d.lengthSqr() > 1e-6 ? d.normalize() : new Vec3(0, 0, 1);
-        boolean mine = mc.player != null && mc.player.getId() == p.shooter();
-        boolean fp = mine && mc.options.getCameraType().isFirstPerson();
         // 총기 크기 대략: 탄속(저격 30 > 소총 22 > 권총·기관단총 16), 기관포(kind 3)는 크게
         float size = p.kind() == 3 ? 1.6f : 0.75f + (p.speed() - 16f) * 0.04f;
         if (p.flash()) {
@@ -53,7 +65,7 @@ public final class BulletFx {
                 && p.kind() != 3 && !(shooter instanceof com.tycooncraft.mech.ProtoDestroyer) && !(shooter instanceof com.tycooncraft.mob.DestroyerGolem)) {
             Vec3 right = dir.cross(new Vec3(0, 1, 0));
             right = right.lengthSqr() < 1e-6 ? new Vec3(1, 0, 0) : right.normalize();
-            Vec3 at = p.from().subtract(dir.scale(fp ? 0.45 : 0.6)).add(right.scale(0.05));
+            Vec3 at = fp ? p.from().subtract(dir.scale(1.0)).add(right.scale(0.12)).add(0, -0.05, 0) : p.from().subtract(dir.scale(0.6)).add(right.scale(0.05));
             mc.particleEngine.add(new Shell(mc.level, at, right.scale(0.09 + 0.04 * mc.level.random.nextFloat()).add(0, 0.11, 0).add(dir.scale(-0.02))));
         }
         spawned++;

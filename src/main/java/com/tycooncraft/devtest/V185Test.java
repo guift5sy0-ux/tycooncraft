@@ -595,7 +595,15 @@ public final class V185Test {
         }
         sp.teleportTo(sl, b.getX() + 0.5, b.getY(), b.getZ() + 0.5, 0f, 4f);
         sp.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.RIFLE.get()));
-        sl.setDayTime(18000);   // 밤 → 섬광이 잘 보이게
+        sl.setDayTime(6000);
+    }
+
+    static void night(ServerPlayer sp) {
+        sp.serverLevel().setDayTime(18000);
+    }
+
+    static void day(ServerPlayer sp) {
+        sp.serverLevel().setDayTime(6000);
     }
 
     static com.tycooncraft.vehicle.JetEntity landJet;
