@@ -182,6 +182,7 @@ public final class AutoTestClient {
     /** 신규 콘텐츠: 몹·포탑, 낙하산, 전차, 전투기, 쌍권총, VSS, RPG */
     private static void later(Minecraft mc) {
         var o = mc.options;
+        if (System.getenv("TC_FXONLY") != null && phaseT < 3828) phaseT = 3828;   // 로컬 디버그: 이펙트 구간만
         int s = phaseT;
         double g = -60;
         if (s > 3226 && s < 3300 && s % 2 == 0) serverDo(mc, V185Test::keepAirborne);

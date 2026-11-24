@@ -50,7 +50,7 @@ public final class BulletFx {
         // 총기 크기 대략: 탄속(저격 30 > 소총 22 > 권총·기관단총 16), 기관포(kind 3)는 크게
         float size = p.kind() == 3 ? 1.6f : 0.75f + (p.speed() - 16f) * 0.04f;
         if (p.flash()) {
-            mc.particleEngine.add(new Flash(mc.level, p.from(), dir, p.kind(), size * (fp ? 0.55f : 1f)));
+            mc.particleEngine.add(new Flash(mc.level, p.from(), dir, p.kind(), size * (fp ? 0.85f : 1f)));
             // 총구 연기: 앞으로 뿜어졌다가 느려지며 퍼짐
             int puffs = 2 + (int) (size * 2);
             for (int i = 0; i < puffs; i++)
@@ -86,7 +86,8 @@ public final class BulletFx {
     static void billboard(VertexConsumer vc, Camera cam, Vec3 c, float size, float rot, TextureAtlasSprite sp, float r, float g, float b, float a, int light) {
         org.joml.Quaternionf q = new org.joml.Quaternionf(cam.rotation()).rotateZ(rot);
         Vec3 o = c.subtract(cam.getPosition());
-        org.joml.Vector3f[] v = {new org.joml.Vector3f(-1, -1, 0), new org.joml.Vector3f(-1, 1, 0), new org.joml.Vector3f(1, 1, 0), new org.joml.Vector3f(1, -1, 0)};
+        // 바닐라와 같은 감기 순서 (반대로 감으면 뒷면이라 잘려서 안 보임)
+        org.joml.Vector3f[] v = {new org.joml.Vector3f(1, -1, 0), new org.joml.Vector3f(1, 1, 0), new org.joml.Vector3f(-1, 1, 0), new org.joml.Vector3f(-1, -1, 0)};
         float[][] uv = {{sp.getU1(), sp.getV1()}, {sp.getU1(), sp.getV0()}, {sp.getU0(), sp.getV0()}, {sp.getU0(), sp.getV1()}};
         for (int i = 0; i < 4; i++) {
             v[i].rotate(q).mul(size).add((float) o.x, (float) o.y, (float) o.z);
@@ -176,14 +177,20 @@ public final class BulletFx {
             yd -= 0.05;
             xd *= 0.9;
             zd *= 0.9;
+            if (onGround) {   // 바닥에 닿으면 꺼짐 (속도가 계속 쌓여 긴 줄로 늘어나지 않게)
+                yd = 0;
+                xd *= 0.4;
+                zd *= 0.4;
+                if (age < lifetime - 2) age = lifetime - 2;
+            }
         }
 
         @Override
         public void render(VertexConsumer vc, Camera cam, float pt) {
             Vec3 p = new Vec3(Mth.lerp(pt, xo, x), Mth.lerp(pt, yo, y), Mth.lerp(pt, zo, z));
             Vec3 tail = p.subtract(xd * 1.4, yd * 1.4, zd * 1.4);
-            float t = (age + pt) / lifetime;
-            quad(vc, tail, p, cam.getPosition(), 0.018f, 1f, 0.85f - 0.4f * t, 0.45f - 0.4f * t, 1f - t * t, sp, 0.3f, 0.7f);
+            float t = Mth.clamp((age + pt) / lifetime, 0f, 1f);
+            quad(vc, tail, p, cam.getPosition(), 0.018f, 1f, 0.85f - 0.4f * t, Math.max(0f, 0.45f - 0.4f * t), Math.max(0f, 1f - t * t), sp, 0.3f, 0.7f);
         }
 
         @Override
@@ -433,8 +440,9 @@ public final class BulletFx {
             float s = size * (0.6f + 0.4f * k);
             boolean fire = kind == 1;
             float g = fire ? 0.6f : 0.85f, b = fire ? 0.35f : 0.6f;
-            billboard(vc, camera, c.add(dir.scale(0.08 * s)), 0.5f * s, roll, glow, 1f, g, b, 0.35f * k, 0xF000F0);       // 주변 빛 번짐
-            billboard(vc, camera, c.add(dir.scale(0.1 * s)), 0.22f * s, roll, front, 1f, 1f, 1f, k, 0xF000F0);          // 정면 섬광
+            billboard(vc, camera, c.add(dir.scale(0.08 * s)), 0.55f * s, roll, glow, 1f, g, b, 0.45f * k, 0xF000F0);      // 주변 빛 번짐
+            billboard(vc, camera, c.add(dir.scale(0.1 * s)), 0.3f * s, roll, front, 1f, 1f, 1f, k, 0xF000F0);           // 정면 섬광
+            billboard(vc, camera, c.add(dir.scale(0.1 * s)), 0.12f * s, -roll, glow, 1f, 1f, 0.9f, k, 0xF000F0);       // 하얀 심
             quad(vc, c, c.add(dir.scale(0.55 * s)), camera.getPosition(), 0.09f * s, 1f, g, b, 0.9f * k, side, 0f, 1f);  // 앞으로 뻗는 화염 혀
         }
 
