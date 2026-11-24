@@ -86,10 +86,16 @@ public final class PowerRenderers {
     public static void tooltip(ItemTooltipEvent e) {
         var st = e.getItemStack();
         String key = st.is(ModItems.BOILER.get()) ? "boiler" : st.is(ModItems.STEAM_ENGINE.get()) ? "steam_engine"
-                : st.is(ModItems.SHAFT.get()) ? "shaft" : st.is(ModItems.POWER_GEARBOX.get()) ? "power_gearbox" : null;
+                : st.is(ModItems.SHAFT.get()) ? "shaft" : st.is(ModItems.POWER_GEARBOX.get()) ? "power_gearbox"
+                : st.is(ModItems.GENERATOR.get()) ? "generator" : st.is(ModItems.POWER_MOTOR.get()) ? "power_motor"
+                : st.is(ModItems.POWER_CABLE.get()) ? "power_cable" : st.is(ModItems.SOLAR_GENERATOR.get()) ? "solar_generator"
+                : st.is(ModItems.ACCUMULATOR.get()) ? "accumulator" : null;
         if (key != null) e.getToolTip().add(Component.translatable("tooltip.tycooncraft." + key).withStyle(ChatFormatting.GRAY));
         if (st.getItem() instanceof BlockItem bi && bi.getBlock() instanceof com.tycooncraft.block.MachineBlock mb)
-            e.getToolTip().add(Component.translatable("tooltip.tycooncraft.machine_power", mb.type().power()).withStyle(ChatFormatting.GOLD));
+            e.getToolTip().add(mb.type().electricOnly()
+                    ? Component.translatable("tooltip.tycooncraft.machine_elec_only", mb.type().power()).withStyle(ChatFormatting.AQUA)
+                    : Component.translatable("tooltip.tycooncraft.machine_power", mb.type().power(),
+                    Math.round(mb.type().power() * com.tycooncraft.blockentity.MachineBlockEntity.ELEC_SPEED)).withStyle(ChatFormatting.GOLD));
     }
 
     private PowerRenderers() {}

@@ -33,6 +33,13 @@
     "tycooncraft:boiler",
     "tycooncraft:steam_engine",
     "tycooncraft:shaft",
-    "tycooncraft:power_gearbox"
+    "tycooncraft:power_gearbox",
+    "tycooncraft:generator",
+    "tycooncraft:power_motor",
+    "tycooncraft:power_cable",
+    "tycooncraft:solar_generator",
+    "tycooncraft:accumulator",
+    "tycooncraft:induction_furnace",
+    "tycooncraft:arc_furnace"
   ]
 }

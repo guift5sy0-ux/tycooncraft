@@ -1,0 +1,9 @@
+{
+ "parent": "minecraft:block/orientable_with_bottom",
+ "textures": {
+  "front": "tycooncraft:block/power_motor_front",
+  "side": "tycooncraft:block/power_motor_side",
+  "top": "tycooncraft:block/generator_top",
+  "bottom": "tycooncraft:block/generator_top"
+ }
+}

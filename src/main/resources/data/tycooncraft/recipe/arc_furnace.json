@@ -1,0 +1,30 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "redstone",
+ "pattern": [
+  "GTG",
+  "PAP",
+  "PCP"
+ ],
+ "key": {
+  "G": {
+   "item": "tycooncraft:graphite"
+  },
+  "T": {
+   "item": "tycooncraft:transformer"
+  },
+  "A": {
+   "item": "tycooncraft:alloy_furnace"
+  },
+  "P": {
+   "item": "tycooncraft:steel_plate"
+  },
+  "C": {
+   "item": "tycooncraft:advanced_circuit"
+  }
+ },
+ "result": {
+  "id": "tycooncraft:arc_furnace",
+  "count": 1
+ }
+}

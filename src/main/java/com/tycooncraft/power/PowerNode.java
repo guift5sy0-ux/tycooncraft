@@ -34,4 +34,33 @@ public interface PowerNode {
 
     /** 네트워크 상태가 바뀜 (돌아가는지·비율) — 축 애니메이션 동기화 등에 사용 */
     default void onNetState(boolean running, float ratio) {}
+
+    // ── v0.22.0 층별(축/전선) 버전. 기본은 축(MECH) 전용 블록 ──
+    default boolean in(Layer l) {
+        return l == Layer.MECH;
+    }
+
+    default boolean conducts(Layer l, Direction d) {
+        return l == Layer.MECH && conducts(d);
+    }
+
+    default boolean drives(Layer l, Direction d) {
+        return l == Layer.MECH ? drives(d) : conducts(l, d);
+    }
+
+    default boolean consumer(Layer l) {
+        return consumer();
+    }
+
+    default int supply(Layer l) {
+        return l == Layer.MECH ? supply() : 0;
+    }
+
+    default int demand(Layer l) {
+        return l == Layer.MECH ? demand() : 0;
+    }
+
+    default void onNetState(Layer l, boolean running, float ratio) {
+        if (l == Layer.MECH) onNetState(running, ratio);
+    }
 }

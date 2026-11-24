@@ -1,0 +1,27 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "redstone",
+ "pattern": [
+  "PBP",
+  "BCB",
+  "PWP"
+ ],
+ "key": {
+  "P": {
+   "item": "tycooncraft:steel_plate"
+  },
+  "B": {
+   "item": "tycooncraft:battery_cell"
+  },
+  "C": {
+   "item": "tycooncraft:circuit"
+  },
+  "W": {
+   "item": "tycooncraft:copper_wire"
+  }
+ },
+ "result": {
+  "id": "tycooncraft:accumulator",
+  "count": 1
+ }
+}

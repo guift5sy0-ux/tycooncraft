@@ -35,6 +35,7 @@ public final class PriceTable {
         record R(Map<Item, Integer> in, Item out, int count, double markup) {}
         java.util.List<R> rs = new java.util.ArrayList<>();
         for (com.tycooncraft.machine.MachineType t : com.tycooncraft.machine.MachineType.values())
+            if (!t.electricOnly())   // v0.22.0: 고급 전기 기계는 원가 절감(이윤)용 — 판매가를 끌어내리지 않음
             for (var r : t.recipes()) rs.add(new R(r.inputs(), r.output(), r.outputCount(), MACHINE_MARKUP));
         for (var r : com.tycooncraft.gun.GunCrafting.all()) rs.add(new R(r.needs(), r.result().getItem(), r.result().getCount(), GUN_MARKUP));
         // 작업대 제작법 (이 모드 것만; 재료 선택지가 여럿이면 가장 싼 것)

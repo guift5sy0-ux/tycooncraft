@@ -1,0 +1,33 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "redstone",
+ "pattern": [
+  "PCP",
+  "GMS",
+  "PWP"
+ ],
+ "key": {
+  "P": {
+   "item": "tycooncraft:iron_plate"
+  },
+  "C": {
+   "item": "tycooncraft:copper_coil"
+  },
+  "G": {
+   "item": "tycooncraft:iron_gear"
+  },
+  "M": {
+   "item": "tycooncraft:electric_motor"
+  },
+  "S": {
+   "item": "tycooncraft:shaft"
+  },
+  "W": {
+   "item": "tycooncraft:copper_wire"
+  }
+ },
+ "result": {
+  "id": "tycooncraft:power_motor",
+  "count": 1
+ }
+}

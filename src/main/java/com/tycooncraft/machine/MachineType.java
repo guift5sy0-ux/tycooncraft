@@ -18,7 +18,10 @@ public enum MachineType implements StringRepresentable {
     LATHE("lathe", 30),
     ASSEMBLER("assembler", 40),
     CHEMICAL_REACTOR("chemical_reactor", 40),
-    ELECTROLYZER("electrolyzer", 60);
+    ELECTROLYZER("electrolyzer", 60),
+    // v0.22.0 전기 시대: 전기로만 도는 고급 기계
+    INDUCTION_FURNACE("induction_furnace", 12),
+    ARC_FURNACE("arc_furnace", 30);
 
     public static final Codec<MachineType> CODEC = StringRepresentable.fromEnum(MachineType::values);
 
@@ -67,6 +70,13 @@ public enum MachineType implements StringRepresentable {
             case PRESS, LATHE -> 12;
             case ALLOY_FURNACE, ASSEMBLER, CHEMICAL_REACTOR -> 16;
             case ELECTROLYZER -> 24;
+            case INDUCTION_FURNACE -> 32;
+            case ARC_FURNACE -> 48;
         };
+    }
+
+    /** v0.22.0: 전선으로만 돌릴 수 있는 기계 */
+    public boolean electricOnly() {
+        return this == INDUCTION_FURNACE || this == ARC_FURNACE;
     }
 }

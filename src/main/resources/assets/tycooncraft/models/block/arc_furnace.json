@@ -1,0 +1,12 @@
+{
+ "parent": "minecraft:block/cube",
+ "textures": {
+  "particle": "tycooncraft:block/arc_furnace_side",
+  "up": "tycooncraft:block/arc_furnace_top",
+  "down": "tycooncraft:block/arc_furnace_side",
+  "north": "tycooncraft:block/arc_furnace_side",
+  "south": "tycooncraft:block/arc_furnace_front",
+  "east": "tycooncraft:block/arc_furnace_side",
+  "west": "tycooncraft:block/arc_furnace_side"
+ }
+}

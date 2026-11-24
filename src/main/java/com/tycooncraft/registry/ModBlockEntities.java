@@ -22,6 +22,16 @@ public final class ModBlockEntities {
             BLOCK_ENTITY_TYPES.register("boiler", () -> BlockEntityType.Builder.of(com.tycooncraft.power.BoilerBlockEntity::new, ModBlocks.BOILER.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.power.SteamEngineBlockEntity>> STEAM_ENGINE =
             BLOCK_ENTITY_TYPES.register("steam_engine", () -> BlockEntityType.Builder.of(com.tycooncraft.power.SteamEngineBlockEntity::new, ModBlocks.STEAM_ENGINE.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.power.elec.GeneratorBlockEntity>> GENERATOR =
+            BLOCK_ENTITY_TYPES.register("generator", () -> BlockEntityType.Builder.of(com.tycooncraft.power.elec.GeneratorBlockEntity::new, ModBlocks.GENERATOR.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.power.elec.MotorBlockEntity>> ELECTRIC_MOTOR =
+            BLOCK_ENTITY_TYPES.register("power_motor", () -> BlockEntityType.Builder.of(com.tycooncraft.power.elec.MotorBlockEntity::new, ModBlocks.ELECTRIC_MOTOR.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.power.elec.CableBlockEntity>> POWER_CABLE =
+            BLOCK_ENTITY_TYPES.register("power_cable", () -> BlockEntityType.Builder.of(com.tycooncraft.power.elec.CableBlockEntity::new, ModBlocks.POWER_CABLE.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.power.elec.SolarBlockEntity>> SOLAR_GENERATOR =
+            BLOCK_ENTITY_TYPES.register("solar_generator", () -> BlockEntityType.Builder.of(com.tycooncraft.power.elec.SolarBlockEntity::new, ModBlocks.SOLAR_GENERATOR.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.power.elec.AccumulatorBlockEntity>> ACCUMULATOR =
+            BLOCK_ENTITY_TYPES.register("accumulator", () -> BlockEntityType.Builder.of(com.tycooncraft.power.elec.AccumulatorBlockEntity::new, ModBlocks.ACCUMULATOR.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.power.ShaftBlockEntity>> SHAFT =
             BLOCK_ENTITY_TYPES.register("shaft", () -> BlockEntityType.Builder.of(com.tycooncraft.power.ShaftBlockEntity::new, ModBlocks.SHAFT.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.power.GearboxBlockEntity>> GEARBOX =

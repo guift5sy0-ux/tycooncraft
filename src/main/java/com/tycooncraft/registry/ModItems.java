@@ -272,6 +272,11 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> STEAM_ENGINE = ITEMS.registerSimpleBlockItem(ModBlocks.STEAM_ENGINE);
     public static final DeferredItem<BlockItem> SHAFT = ITEMS.registerSimpleBlockItem(ModBlocks.SHAFT);
     public static final DeferredItem<BlockItem> POWER_GEARBOX = ITEMS.registerSimpleBlockItem(ModBlocks.POWER_GEARBOX);
+    public static final DeferredItem<BlockItem> GENERATOR = ITEMS.registerSimpleBlockItem(ModBlocks.GENERATOR);
+    public static final DeferredItem<BlockItem> POWER_MOTOR = ITEMS.registerSimpleBlockItem(ModBlocks.ELECTRIC_MOTOR);
+    public static final DeferredItem<BlockItem> POWER_CABLE = ITEMS.registerSimpleBlockItem(ModBlocks.POWER_CABLE);
+    public static final DeferredItem<BlockItem> SOLAR_GENERATOR = ITEMS.registerSimpleBlockItem(ModBlocks.SOLAR_GENERATOR);
+    public static final DeferredItem<BlockItem> ACCUMULATOR = ITEMS.registerSimpleBlockItem(ModBlocks.ACCUMULATOR);
     public static final DeferredItem<BlockItem> CCTV = ITEMS.registerSimpleBlockItem(ModBlocks.CCTV);
     public static final DeferredItem<BlockItem> CCTV_SCREEN = ITEMS.registerSimpleBlockItem(ModBlocks.CCTV_SCREEN);
     public static final List<DeferredItem<BlockItem>> MACHINE_ITEMS = new ArrayList<>();

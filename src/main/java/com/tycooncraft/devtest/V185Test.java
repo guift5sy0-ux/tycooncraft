@@ -662,6 +662,86 @@ public final class V185Test {
         }
     }
 
+    // ── v0.22.0 전기 ──
+    static BlockPos elBase;
+
+    private static void put(net.minecraft.server.level.ServerLevel sl, BlockPos p, net.minecraft.world.level.block.state.BlockState s) {
+        sl.setBlockAndUpdate(p, s);
+    }
+
+    private static com.tycooncraft.blockentity.MachineBlockEntity mach(net.minecraft.server.level.ServerLevel sl, BlockPos p, com.tycooncraft.machine.MachineType t,
+                                                                      net.minecraft.world.item.Item a, int an, net.minecraft.world.item.Item b, int bn) {
+        put(sl, p, ModBlocks.machine(t).defaultBlockState());
+        var m = (com.tycooncraft.blockentity.MachineBlockEntity) sl.getBlockEntity(p);
+        m.inputs().insertItem(0, new ItemStack(a, an), false);
+        if (b != null) m.inputs().insertItem(1, new ItemStack(b, bn), false);
+        return m;
+    }
+
+    static void elecSetup(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        sl.setDayTime(6000);
+        elBase = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, sp.blockPosition().offset(-4, 0, -26));
+        for (int x = -2; x <= 13; x++) for (int y = 0; y <= 4; y++) for (int z = -3; z <= 4; z++)
+            put(sl, elBase.offset(x, y, z), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+        var S = net.minecraft.core.Direction.SOUTH;
+        put(sl, elBase, ModBlocks.BOILER.get().defaultBlockState().setValue(com.tycooncraft.power.BoilerBlock.FACING, S));
+        ((com.tycooncraft.power.BoilerBlockEntity) sl.getBlockEntity(elBase)).fuel().insertItem(0, new ItemStack(net.minecraft.world.item.Items.COAL, 16), false);
+        put(sl, elBase.offset(1, 0, 0), ModBlocks.STEAM_ENGINE.get().defaultBlockState().setValue(com.tycooncraft.power.SteamEngineBlock.FACING, S));
+        put(sl, elBase.offset(2, 0, 0), ModBlocks.GENERATOR.get().defaultBlockState().setValue(com.tycooncraft.power.elec.GeneratorBlock.FACING, S));
+        for (int x = 3; x <= 8; x++) put(sl, elBase.offset(x, 0, 0), ModBlocks.POWER_CABLE.get().defaultBlockState());
+        var I = net.minecraft.world.item.Items.RAW_IRON;
+        mach(sl, elBase.offset(4, 0, 1), com.tycooncraft.machine.MachineType.INDUCTION_FURNACE, I, 64, null, 0);
+        mach(sl, elBase.offset(5, 0, 1), com.tycooncraft.machine.MachineType.CRUSHER, I, 64, null, 0);
+        put(sl, elBase.offset(6, 0, -1), ModBlocks.ACCUMULATOR.get().defaultBlockState());
+        ((com.tycooncraft.power.elec.AccumulatorBlockEntity) sl.getBlockEntity(elBase.offset(6, 0, -1))).stored = 50_000;
+        put(sl, elBase.offset(7, 0, -1), ModBlocks.SOLAR_GENERATOR.get().defaultBlockState());
+        // 전동기 → 회전축 → 프레스 (전기로 옛 축 기계 돌리기)
+        put(sl, elBase.offset(9, 0, 0), ModBlocks.ELECTRIC_MOTOR.get().defaultBlockState().setValue(com.tycooncraft.power.elec.GeneratorBlock.FACING, net.minecraft.core.Direction.WEST));
+        put(sl, elBase.offset(10, 0, 0), ModBlocks.SHAFT.get().defaultBlockState().setValue(com.tycooncraft.power.ShaftBlock.AXIS, net.minecraft.core.Direction.Axis.X));
+        put(sl, elBase.offset(11, 0, 0), ModBlocks.SHAFT.get().defaultBlockState().setValue(com.tycooncraft.power.ShaftBlock.AXIS, net.minecraft.core.Direction.Axis.X));
+        mach(sl, elBase.offset(11, 0, 1), com.tycooncraft.machine.MachineType.PRESS, net.minecraft.world.item.Items.JUNGLE_LOG, 32, null, 0);
+        // 전기 전용 기계를 전선 없이 → 멈춰 있어야 함
+        mach(sl, elBase.offset(0, 0, 3), com.tycooncraft.machine.MachineType.ARC_FURNACE, net.minecraft.world.item.Items.IRON_INGOT, 16, ModItems.GRAPHITE.get(), 8);
+        sp.teleportTo(sl, elBase.getX() + 5.5, elBase.getY() + 4.5, elBase.getZ() + 7.5, 180f, 35f);
+        System.out.println("[AUTOTEST] v220 elecSetup cable0=" + sl.getBlockState(elBase.offset(3, 0, 0)));
+    }
+
+    private static int outOf(net.minecraft.server.level.ServerLevel sl, BlockPos p) {
+        return sl.getBlockEntity(p) instanceof com.tycooncraft.blockentity.MachineBlockEntity m ? m.output().getStackInSlot(0).getCount() : -1;
+    }
+
+    private static void elecLog(ServerPlayer sp, String tag) {
+        var sl = sp.serverLevel();
+        var L = com.tycooncraft.power.Layer.ELEC;
+        var e = com.tycooncraft.power.PowerGrid.net(sl, elBase.offset(3, 0, 0), L);
+        var m = com.tycooncraft.power.PowerGrid.net(sl, elBase.offset(10, 0, 0));
+        var acc = (com.tycooncraft.power.elec.AccumulatorBlockEntity) sl.getBlockEntity(elBase.offset(6, 0, -1));
+        var gen = (com.tycooncraft.power.elec.GeneratorBlockEntity) sl.getBlockEntity(elBase.offset(2, 0, 0));
+        var sol = (com.tycooncraft.power.elec.SolarBlockEntity) sl.getBlockEntity(elBase.offset(7, 0, -1));
+        var mot = (com.tycooncraft.power.elec.MotorBlockEntity) sl.getBlockEntity(elBase.offset(9, 0, 0));
+        System.out.println("[AUTOTEST] v220 " + tag + " induction=" + outOf(sl, elBase.offset(4, 0, 1)) + " crusher=" + outOf(sl, elBase.offset(5, 0, 1))
+                + " press=" + outOf(sl, elBase.offset(11, 0, 1)) + " arcNoCable=" + outOf(sl, elBase.offset(0, 0, 3))
+                + " elecNodes=" + (e == null ? 0 : e.nodes.size()) + " supply=" + (e == null ? -1 : e.supply) + " demand=" + (e == null ? -1 : e.demand)
+                + " ratio=" + (e == null ? -1 : e.ratio) + " stored=" + acc.stored + " gen=" + gen.output() + " solar=" + sol.output() + " motor=" + mot.output()
+                + " shaftNet=" + (m == null ? -1 : m.supply + "/" + m.demand) + " coal=" + com.tycooncraft.power.BoilerBlockEntity.coalBurned
+                + " cableState=" + sl.getBlockState(elBase.offset(4, 0, 0)).getValue(com.tycooncraft.power.elec.CableBlock.prop(net.minecraft.core.Direction.SOUTH)));
+    }
+
+    static void elecMid(ServerPlayer sp) {
+        elecLog(sp, "mid");
+    }
+
+    static void elecView2(ServerPlayer sp) {
+        sp.teleportTo(sp.serverLevel(), elBase.getX() + 6.5, elBase.getY() + 1.8, elBase.getZ() + 3.6, 160f, 30f);
+    }
+
+    static void elecEnd(ServerPlayer sp) {
+        elecLog(sp, "end");
+        // 밤: 태양광 0 확인
+        sp.serverLevel().setDayTime(18000);
+    }
+
     static com.tycooncraft.vehicle.JetEntity landJet;
 
     static void jetLandSetup(ServerPlayer sp) {

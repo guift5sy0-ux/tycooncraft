@@ -1,0 +1,23 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "redstone",
+ "pattern": [
+  "SSS",
+  "PCP"
+ ],
+ "key": {
+  "S": {
+   "item": "tycooncraft:solar_panel"
+  },
+  "P": {
+   "item": "tycooncraft:iron_plate"
+  },
+  "C": {
+   "item": "tycooncraft:circuit"
+  }
+ },
+ "result": {
+  "id": "tycooncraft:solar_generator",
+  "count": 1
+ }
+}

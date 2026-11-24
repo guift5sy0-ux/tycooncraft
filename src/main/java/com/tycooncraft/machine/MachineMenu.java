@@ -70,6 +70,11 @@ public class MachineMenu extends AbstractContainerMenu {
         return data.get(3);
     }
 
+    /** 전기로 도는지 */
+    public boolean electric() {
+        return data.get(4) != 0;
+    }
+
     public int progressScaled(int width) {
         int max = data.get(1);
         return max <= 0 ? 0 : data.get(0) * width / max;

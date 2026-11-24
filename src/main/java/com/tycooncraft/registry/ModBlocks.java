@@ -40,6 +40,18 @@ public final class ModBlocks {
             () -> new com.tycooncraft.power.ShaftBlock(machineProps().strength(1.5f, 4.0f).noOcclusion()));
     public static final DeferredBlock<com.tycooncraft.power.GearboxBlock> POWER_GEARBOX = BLOCKS.register("power_gearbox",
             () -> new com.tycooncraft.power.GearboxBlock(machineProps().strength(2.5f, 6.0f).requiresCorrectToolForDrops()));
+    // ── v0.22.0 산업혁명 2단계: 전기 ──
+    public static final DeferredBlock<com.tycooncraft.power.elec.GeneratorBlock> GENERATOR = BLOCKS.register("generator",
+            () -> new com.tycooncraft.power.elec.GeneratorBlock(machineProps().strength(3.5f, 8.0f).requiresCorrectToolForDrops(), false));
+    public static final DeferredBlock<com.tycooncraft.power.elec.GeneratorBlock> ELECTRIC_MOTOR = BLOCKS.register("power_motor",
+            () -> new com.tycooncraft.power.elec.GeneratorBlock(machineProps().strength(3.5f, 8.0f).requiresCorrectToolForDrops(), true));
+    public static final DeferredBlock<com.tycooncraft.power.elec.CableBlock> POWER_CABLE = BLOCKS.register("power_cable",
+            () -> new com.tycooncraft.power.elec.CableBlock(machineProps().strength(0.6f, 2.0f).noOcclusion()));
+    public static final DeferredBlock<com.tycooncraft.power.elec.SolarBlock> SOLAR_GENERATOR = BLOCKS.register("solar_generator",
+            () -> new com.tycooncraft.power.elec.SolarBlock(machineProps().strength(2.0f, 4.0f).noOcclusion()));
+    public static final DeferredBlock<com.tycooncraft.power.elec.AccumulatorBlock> ACCUMULATOR = BLOCKS.register("accumulator",
+            () -> new com.tycooncraft.power.elec.AccumulatorBlock(machineProps().strength(3.5f, 8.0f).requiresCorrectToolForDrops()
+                    .lightLevel(s -> s.getValue(com.tycooncraft.power.elec.AccumulatorBlock.LEVEL) * 2)));
     public static final DeferredBlock<com.tycooncraft.cctv.CctvBlock> CCTV = BLOCKS.register("cctv",
             () -> new com.tycooncraft.cctv.CctvBlock(BlockBehaviour.Properties.of().mapColor(net.minecraft.world.level.material.MapColor.METAL)
                     .strength(1.5f).sound(net.minecraft.world.level.block.SoundType.METAL).noOcclusion()));

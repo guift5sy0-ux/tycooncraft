@@ -66,6 +66,9 @@ public class MachineBlockEntity extends BlockEntity implements com.tycooncraft.p
     private boolean wantsPower;
     private float powerAcc;
     private int powerPct;
+    /** v0.22.0: 전선(전력망)에 붙어 있으면 전기로 돎 — 1.5배 빠르고 전력도 1.5배 */
+    private boolean onElec;
+    public static final float ELEC_SPEED = 1.5f;
 
     /** GUI 동기화용: 0 = 진행도, 1 = 필요 시간 */
     private final ContainerData data = new ContainerData() {
@@ -75,7 +78,8 @@ public class MachineBlockEntity extends BlockEntity implements com.tycooncraft.p
                 case 0 -> progress;
                 case 1 -> type().processTime();
                 case 2 -> powerPct;
-                default -> type().power();
+                case 3 -> needNow();
+                default -> onElec ? 1 : 0;
             };
         }
 
@@ -83,11 +87,12 @@ public class MachineBlockEntity extends BlockEntity implements com.tycooncraft.p
         public void set(int index, int value) {
             if (index == 0) progress = value;
             if (index == 2) powerPct = value;
+            if (index == 4) onElec = value != 0;
         }
 
         @Override
         public int getCount() {
-            return 4;
+            return 5;
         }
     };
 
@@ -180,7 +185,29 @@ public class MachineBlockEntity extends BlockEntity implements com.tycooncraft.p
 
     @Override
     public int demand() {
-        return wantsPower ? type().power() : 0;
+        return demand(com.tycooncraft.power.Layer.MECH);
+    }
+
+    @Override
+    public boolean in(com.tycooncraft.power.Layer l) {
+        return true;
+    }
+
+    @Override
+    public boolean consumer(com.tycooncraft.power.Layer l) {
+        return true;
+    }
+
+    @Override
+    public int demand(com.tycooncraft.power.Layer l) {
+        if (!wantsPower) return 0;
+        boolean elecLayer = l == com.tycooncraft.power.Layer.ELEC;
+        return elecLayer == onElec ? needNow() : 0;
+    }
+
+    /** 지금 필요한 동력/전력 */
+    private int needNow() {
+        return onElec ? Math.round(type().power() * (type().electricOnly() ? 1f : ELEC_SPEED)) : type().power();
     }
 
     @Override
@@ -207,7 +234,8 @@ public class MachineBlockEntity extends BlockEntity implements com.tycooncraft.p
         }
 
         MachineRecipe recipe = findRecipe();
-        float ratio = com.tycooncraft.power.PowerGrid.ratio(level, worldPosition);
+        onElec = type().electricOnly() || com.tycooncraft.power.PowerGrid.net(level, worldPosition, com.tycooncraft.power.Layer.ELEC) != null;
+        float ratio = com.tycooncraft.power.PowerGrid.ratio(level, worldPosition, onElec ? com.tycooncraft.power.Layer.ELEC : com.tycooncraft.power.Layer.MECH);
         powerPct = Math.round(ratio * 100);
         wantsPower = recipe != null;
         if (recipe == null) {
@@ -218,10 +246,11 @@ public class MachineBlockEntity extends BlockEntity implements com.tycooncraft.p
             return;
         }
         // 동력이 없으면 멈춤, 모자라면 그만큼 느리게
-        powerAcc += ratio;
+        powerAcc += ratio * (onElec && !type().electricOnly() ? ELEC_SPEED : 1f);
         if (powerAcc < 1f) return;
-        powerAcc -= 1f;
-        progress++;
+        int steps = (int) powerAcc;   // 전기(1.5배)면 한 틱에 2칸 나갈 때도 있음
+        powerAcc -= steps;
+        progress += steps;
         if (progress >= type().processTime()) {
             progress = 0;
             for (Map.Entry<Item, Integer> e : recipe.inputs().entrySet()) consume(e.getKey(), e.getValue());

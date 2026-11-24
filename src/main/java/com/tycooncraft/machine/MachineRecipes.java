@@ -202,6 +202,24 @@ public final class MachineRecipes {
                 r.add(MachineRecipe.of(ModItems.PLASTIC_PELLET.get(), 4).in(ModItems.FUEL_CANISTER.get()).in(ModItems.COAL_DUST.get(), 2).build());
                 r.add(MachineRecipe.of(ModItems.SULFURIC_ACID.get(), 1).in(ModItems.SULFUR.get(), 2).in(Items.GLASS_BOTTLE).build());
             }
+            case INDUCTION_FURNACE -> {
+                // 원광석을 녹이면 주괴 2개 (제련기의 2배)
+                r.add(MachineRecipe.of(Items.IRON_INGOT, 2).in(Items.RAW_IRON).build());
+                r.add(MachineRecipe.of(Items.COPPER_INGOT, 2).in(Items.RAW_COPPER).build());
+                r.add(MachineRecipe.of(Items.GOLD_INGOT, 2).in(Items.RAW_GOLD).build());
+                r.add(MachineRecipe.of(Items.IRON_INGOT, 1).in(ModItems.IRON_DUST.get()).build());
+                r.add(MachineRecipe.of(Items.COPPER_INGOT, 1).in(ModItems.COPPER_DUST.get()).build());
+                r.add(MachineRecipe.of(Items.GOLD_INGOT, 1).in(ModItems.GOLD_DUST.get()).build());
+                r.add(MachineRecipe.of(Items.GLASS, 2).in(ModItems.SILICA_DUST.get()).build());
+                r.add(MachineRecipe.of(Items.GLASS, 1).in(Items.SAND).build());
+                r.add(MachineRecipe.of(ModItems.ALUMINUM_INGOT.get(), 1).in(ModItems.ALUMINA.get()).build());
+            }
+            case ARC_FURNACE -> {
+                // 전기 아크로: 강철·규소를 더 싸게
+                r.add(MachineRecipe.of(ModItems.STEEL_INGOT.get(), 3).in(Items.IRON_INGOT, 2).in(ModItems.GRAPHITE.get()).build());
+                r.add(MachineRecipe.of(ModItems.STEEL_INGOT.get(), 2).in(Items.IRON_INGOT, 2).in(ModItems.COAL_DUST.get()).build());
+                r.add(MachineRecipe.of(ModItems.SILICON.get(), 2).in(ModItems.SILICA_DUST.get(), 2).in(ModItems.COKE.get()).build());
+            }
             case ELECTROLYZER -> {
                 r.add(MachineRecipe.of(ModItems.CHLORINE_CYLINDER.get(), 1).in(ModItems.SALT.get(), 3).in(ModItems.GAS_CYLINDER.get()).build());
                 r.add(MachineRecipe.of(ModItems.CAUSTIC_SODA.get(), 1).in(ModItems.SALT.get(), 2).in(Items.GLASS_BOTTLE).build());

@@ -1,0 +1,21 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "redstone",
+ "pattern": [
+  "RRR",
+  "WWW",
+  "RRR"
+ ],
+ "key": {
+  "R": {
+   "item": "tycooncraft:rubber"
+  },
+  "W": {
+   "item": "tycooncraft:copper_wire"
+  }
+ },
+ "result": {
+  "id": "tycooncraft:power_cable",
+  "count": 12
+ }
+}

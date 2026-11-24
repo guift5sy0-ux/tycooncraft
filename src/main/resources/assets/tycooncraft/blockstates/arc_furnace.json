@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=south": {
+   "model": "tycooncraft:block/arc_furnace"
+  },
+  "facing=west": {
+   "model": "tycooncraft:block/arc_furnace",
+   "y": 90
+  },
+  "facing=north": {
+   "model": "tycooncraft:block/arc_furnace",
+   "y": 180
+  },
+  "facing=east": {
+   "model": "tycooncraft:block/arc_furnace",
+   "y": 270
+  }
+ }
+}
