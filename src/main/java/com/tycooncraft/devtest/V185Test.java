@@ -585,5 +585,18 @@ public final class V185Test {
         sp.setHealth(20f);
     }
 
+    /** v0.20.0 이펙트 시험장: 남쪽 7칸에 돌벽, 소총을 들고 벽을 봄 */
+    static void fxSetup(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        BlockPos b = sp.blockPosition();
+        for (int x = -4; x <= 4; x++) for (int y = 0; y <= 4; y++) {
+            sl.setBlockAndUpdate(b.offset(x, y, 7), net.minecraft.world.level.block.Blocks.STONE_BRICKS.defaultBlockState());
+            for (int z = 1; z < 7; z++) sl.setBlockAndUpdate(b.offset(x, y, z), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+        }
+        sp.teleportTo(sl, b.getX() + 0.5, b.getY(), b.getZ() + 0.5, 0f, 4f);
+        sp.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.RIFLE.get()));
+        sl.setDayTime(18000);   // 밤 → 섬광이 잘 보이게
+    }
+
     private V185Test() {}
 }

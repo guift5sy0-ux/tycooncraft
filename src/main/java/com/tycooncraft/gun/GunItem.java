@@ -222,7 +222,7 @@ public class GunItem extends Item {
         Vec3 right = look.cross(new Vec3(0, 1, 0)).normalize();
         double side = isDual() ? (player.getPersistentData().getBoolean("tycooncraft_dual_left") ? 0.32 : -0.32) : 0.25;
         Vec3 muzzle = player.getEyePosition().add(look.scale(tier > 0 ? 1.7 : 1.3)).add(right.scale(side)).add(0, -0.18, 0);
-        server.sendParticles(ParticleTypes.SMOKE, muzzle.x, muzzle.y, muzzle.z, tier > 0 ? 1 : 4, 0.04, 0.04, 0.04, 0.012);
+        // v0.20.0: 총구 연기·섬광·탄피는 클라이언트(BulletFx)가 현실적으로 그림
     }
 
     /** VSS: F 로 바꾸는 사격 모드 (0 = 단발·조준, 1 = 연사·조준 없음) */

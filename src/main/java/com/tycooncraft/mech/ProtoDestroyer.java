@@ -262,8 +262,7 @@ public class ProtoDestroyer extends PathfinderMob {
         Vec3 aim = aimPoint(rider).subtract(muzzle).normalize();
         aim = aim.add(random.nextGaussian() * 0.02, random.nextGaussian() * 0.015, random.nextGaussian() * 0.02).normalize();
         Ballistics.shoot(sl, rider, muzzle, aim, 70, GUN_DMG, 1, 1.3f, false, true, damageSources().playerAttack(rider), e -> e != this && e != rider);
-        sl.sendParticles(ParticleTypes.FLAME, muzzle.x, muzzle.y, muzzle.z, 2, 0.06, 0.06, 0.06, 0.01);
-        sl.sendParticles(ParticleTypes.LARGE_SMOKE, muzzle.x, muzzle.y, muzzle.z, 1, 0.05, 0.05, 0.05, 0.01);
+        // v0.20.0: 총구 섬광·연기는 BulletFx 가 그림
         playSound(ModSounds.SMG_FIRE.get(), 2.6f, 0.6f + random.nextFloat() * 0.06f);
         shots++;
     }

@@ -147,7 +147,17 @@ public class JetEntity extends VehicleEntity {
         airbrake = brake;
         // 기수 방향: 조종자가 보는 쪽으로 천천히
         float yaw = getYRot(), pitch = getXRot();
-        if (manned) {
+        boolean grounded = onGround();
+        double gs = Math.sqrt(dm.x * dm.x + dm.z * dm.z);
+        if (grounded) {
+            // v0.20.0 지상 활주: 앞바퀴 조향처럼 속도에 비례해 천천히 돌고(멈춰 있으면 거의 안 돎),
+            // 기수는 수평 고정 → 이륙 속도에 도달해야 조종자가 위를 볼 때 최대 15° 까지 들림
+            float steer = (float) Mth.clamp(gs / 0.3, 0.15, 1.0);
+            float dy = manned ? Mth.wrapDegrees(in.lookYaw() - yaw) : 0;
+            yawVel += (Mth.clamp(dy * 0.06f, -2.2f, 2.2f) * steer - yawVel) * 0.35f;
+            float targetPitch = manned && speed >= LIFT_SPEED * 0.8 ? Mth.clamp(in.lookPitch(), -15f, 0f) : 0f;
+            pitchVel = (targetPitch - pitch) * 0.12f;
+        } else if (manned) {
             float dy = Mth.wrapDegrees(in.lookYaw() - yaw);
             float dp = in.lookPitch() - pitch;
             float agility = (float) Mth.clamp(speed / LIFT_SPEED, 0.25, 1.0);
@@ -162,7 +172,6 @@ public class JetEntity extends VehicleEntity {
         yaw += yawVel;
         pitch += pitchVel;
         boolean flying = speed > LIFT_SPEED * 0.8;
-        if (onGround() && !flying) pitch = Math.min(0, pitch) * 0.5f + Math.max(0, pitch) * 0f;
         pitch = Mth.clamp(pitch, -70f, 70f);
         deltaRotation = 0;
         setYRot(yaw);
@@ -172,16 +181,37 @@ public class JetEntity extends VehicleEntity {
         // 속도 방향은 기수 방향을 살짝 늦게 따라감 (관성)
         Vec3 cur = dm.lengthSqr() > 1e-4 ? dm.normalize() : dir;
         Vec3 v = cur.scale(0.25).add(dir.scale(0.75)).normalize().scale(speed);
-        double sink = (1 - lift) * 0.5;
-        if (onGround() && !flying) v = new Vec3(v.x, Math.min(v.y, 0), v.z);
-        setDeltaMovement(v.x, v.y - sink * (onGround() ? 0 : 1) - (onGround() ? 0.04 : 0), v.z);
-        if (onGround() && throttle < 0.05) setDeltaMovement(getDeltaMovement().multiply(0.9, 1, 0.9));
+        double sink = (1 - lift) * 0.35;
+        if (grounded && !flying) v = new Vec3(v.x, Math.min(v.y, 0), v.z);
+        double vy = v.y - sink * (grounded ? 0 : 1) - (grounded ? 0.04 : 0);
+        // v0.20.0 착륙 보조: 지면 가까이에서 기수가 심하게 숙여지지 않았으면 하강 속도를 부드럽게 줄임 (지면 효과·플레어)
+        if (!grounded && vy < 0) {
+            double agl = heightAboveGround(8);
+            if (agl < 6 && pitch < 25f) {
+                double maxDescent = -0.08 - agl * 0.035;
+                if (vy < maxDescent) vy += (maxDescent - vy) * 0.5;
+            }
+        }
+        setDeltaMovement(v.x, vy, v.z);
+        // 지상: 스로틀을 내리면 굴러가며 서서히 멈춤 (브레이크는 위에서 강하게)
+        if (grounded && throttle < 0.05) setDeltaMovement(getDeltaMovement().multiply(0.96, 1, 0.96));
+        lastAgl = grounded ? 0 : heightAboveGround(8);
+    }
+
+    public double lastAgl;
+
+    /** 바로 아래 지면까지 높이 (max 를 넘으면 max) */
+    public double heightAboveGround(double max) {
+        var hit = level().clip(new net.minecraft.world.level.ClipContext(position(), position().add(0, -max, 0),
+                net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.ANY, this));
+        return hit.getType() == net.minecraft.world.phys.HitResult.Type.MISS ? max : getY() - hit.getLocation().y;
     }
 
     @Override
     protected void afterMove(Vec3 v) {
         double h = Math.sqrt(v.x * v.x + v.z * v.z);
-        if ((horizontalCollision && h > 0.7) || (verticalCollision && v.y < -0.7)) crash();
+        // v0.20.0: 착륙이 너무 어려워서 기준 완화 (세게 박을 때만 폭발)
+        if ((horizontalCollision && h > 1.0) || (verticalCollision && v.y < -0.9)) crash();
     }
 
     @Override
@@ -192,7 +222,8 @@ public class JetEntity extends VehicleEntity {
         if (level().isClientSide) {
             if (rollTicks > 0) rollTicks--;
             rollO = roll;
-            roll += (Mth.clamp(-yawRate * 9f, -60f, 60f) - roll) * 0.15f;
+            float bank = onGround() ? 0f : Mth.clamp(-yawRate * 9f, -60f, 60f);   // 지상에선 기울지 않음
+            roll += (bank - roll) * (onGround() ? 0.3f : 0.15f);
         }
     }
 

@@ -31,8 +31,199 @@ public final class BulletFx {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
         mc.particleEngine.add(new Bullet(mc.level, p));
-        if (p.flash()) mc.particleEngine.add(new Flash(mc.level, p.from(), p.kind()));
+        Vec3 d = p.to().subtract(p.from());
+        Vec3 dir = d.lengthSqr() > 1e-6 ? d.normalize() : new Vec3(0, 0, 1);
+        boolean mine = mc.player != null && mc.player.getId() == p.shooter();
+        boolean fp = mine && mc.options.getCameraType().isFirstPerson();
+        // 총기 크기 대략: 탄속(저격 30 > 소총 22 > 권총·기관단총 16), 기관포(kind 3)는 크게
+        float size = p.kind() == 3 ? 1.6f : 0.75f + (p.speed() - 16f) * 0.04f;
+        if (p.flash()) {
+            mc.particleEngine.add(new Flash(mc.level, p.from(), dir, p.kind(), size * (fp ? 0.55f : 1f)));
+            // 총구 연기: 앞으로 뿜어졌다가 느려지며 퍼짐
+            int puffs = 2 + (int) (size * 2);
+            for (int i = 0; i < puffs; i++)
+                mc.particleEngine.add(new Smoke(mc.level, p.from().add(dir.scale(0.1 + i * 0.12)), dir.scale(0.05 + 0.09 * mc.level.random.nextFloat())
+                        .add(gauss(mc.level, 0.012)), 0.06f * size, 0.35f + 0.25f * size, 0.22f, 16 + mc.level.random.nextInt(18), 0.78f));
+        } else {   // 소음기: 옅은 김만
+            mc.particleEngine.add(new Smoke(mc.level, p.from(), dir.scale(0.03), 0.04f, 0.2f, 0.12f, 12, 0.8f));
+        }
+        // 탄피 배출: 사람이 든 총만 (포탑·차량·전투기 제외)
+        var shooter = mc.level.getEntity(p.shooter());
+        if (shooter instanceof net.minecraft.world.entity.LivingEntity && !(shooter.getVehicle() != null && !(shooter.getVehicle() instanceof net.minecraft.world.entity.LivingEntity))
+                && p.kind() != 3 && !(shooter instanceof com.tycooncraft.mech.ProtoDestroyer) && !(shooter instanceof com.tycooncraft.mob.DestroyerGolem)) {
+            Vec3 right = dir.cross(new Vec3(0, 1, 0));
+            right = right.lengthSqr() < 1e-6 ? new Vec3(1, 0, 0) : right.normalize();
+            Vec3 at = p.from().subtract(dir.scale(fp ? 0.45 : 0.6)).add(right.scale(0.05));
+            mc.particleEngine.add(new Shell(mc.level, at, right.scale(0.09 + 0.04 * mc.level.random.nextFloat()).add(0, 0.11, 0).add(dir.scale(-0.02))));
+        }
         spawned++;
+    }
+
+    static Vec3 gauss(ClientLevel l, double s) {
+        return new Vec3(l.random.nextGaussian() * s, l.random.nextGaussian() * s, l.random.nextGaussian() * s);
+    }
+
+    private static final java.util.Map<String, TextureAtlasSprite> SPRITES = new java.util.HashMap<>();
+
+    static TextureAtlasSprite fx(String name) {
+        return SPRITES.computeIfAbsent(name, n -> Minecraft.getInstance().getTextureManager().getTexture(TextureAtlas.LOCATION_PARTICLES) instanceof TextureAtlas atlas
+                ? atlas.getSprite(com.tycooncraft.TycoonCraft.id(n)) : sprite());
+    }
+
+    /** 카메라를 향한 사각형 (회전·크기·색·빛) */
+    static void billboard(VertexConsumer vc, Camera cam, Vec3 c, float size, float rot, TextureAtlasSprite sp, float r, float g, float b, float a, int light) {
+        org.joml.Quaternionf q = new org.joml.Quaternionf(cam.rotation()).rotateZ(rot);
+        Vec3 o = c.subtract(cam.getPosition());
+        org.joml.Vector3f[] v = {new org.joml.Vector3f(-1, -1, 0), new org.joml.Vector3f(-1, 1, 0), new org.joml.Vector3f(1, 1, 0), new org.joml.Vector3f(1, -1, 0)};
+        float[][] uv = {{sp.getU1(), sp.getV1()}, {sp.getU1(), sp.getV0()}, {sp.getU0(), sp.getV0()}, {sp.getU0(), sp.getV1()}};
+        for (int i = 0; i < 4; i++) {
+            v[i].rotate(q).mul(size).add((float) o.x, (float) o.y, (float) o.z);
+            vc.addVertex(v[i].x(), v[i].y(), v[i].z()).setUv(uv[i][0], uv[i][1]).setColor(r, g, b, a).setLight(light);
+        }
+    }
+
+    /** 총구·탄착 연기: 처음엔 빠르게 퍼지고 점점 느려지며 커지고, 살짝 떠오르며 사라짐 (조명 영향 받음) */
+    static final class Smoke extends Particle {
+        final TextureAtlasSprite sp;
+        final float s0, s1, a0, spin, rot0, tint;
+        float r = 1, g = 1, b = 1;
+
+        Smoke(ClientLevel level, Vec3 at, Vec3 vel, float s0, float s1, float a0, int life, float tint) {
+            super(level, at.x, at.y, at.z);
+            this.sp = fx("tc_smoke_" + random.nextInt(4));
+            this.s0 = s0;
+            this.s1 = s1;
+            this.a0 = a0;
+            this.tint = tint * (0.92f + random.nextFloat() * 0.16f);
+            lifetime = life;
+            hasPhysics = false;
+            gravity = 0;
+            xd = vel.x;
+            yd = vel.y;
+            zd = vel.z;
+            spin = (random.nextFloat() - 0.5f) * 0.06f;
+            rot0 = random.nextFloat() * Mth.TWO_PI;
+        }
+
+        Smoke color(float r, float g, float b) {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            return this;
+        }
+
+        @Override
+        public void tick() {
+            xo = x;
+            yo = y;
+            zo = z;
+            if (age++ >= lifetime) {
+                remove();
+                return;
+            }
+            x += xd;
+            y += yd;
+            z += zd;
+            xd *= 0.82;
+            yd = yd * 0.82 + 0.0025;
+            zd *= 0.82;
+        }
+
+        @Override
+        public void render(VertexConsumer vc, Camera cam, float pt) {
+            float t = Mth.clamp((age + pt) / lifetime, 0, 1);
+            float size = Mth.lerp(1 - (1 - t) * (1 - t), s0, s1);
+            float alpha = a0 * (t < 0.1f ? t / 0.1f : (1 - t) * (1 - t) / 0.81f);
+            Vec3 c = new Vec3(Mth.lerp(pt, xo, x), Mth.lerp(pt, yo, y), Mth.lerp(pt, zo, z));
+            int light = getLightColor(pt);
+            billboard(vc, cam, c, size, rot0 + spin * (age + pt), sp, tint * r, tint * g, tint * b, alpha, light);
+        }
+
+        @Override
+        public ParticleRenderType getRenderType() {
+            return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+        }
+    }
+
+    /** 불꽃: 짧고 가는 빛줄기로 튀었다가 중력으로 떨어지며 식음 */
+    static final class Spark extends Particle {
+        final TextureAtlasSprite sp = fx("tc_glow");
+
+        Spark(ClientLevel level, Vec3 at, Vec3 vel) {
+            super(level, at.x, at.y, at.z);
+            xd = vel.x;
+            yd = vel.y;
+            zd = vel.z;
+            lifetime = 5 + random.nextInt(7);
+            gravity = 0;
+            hasPhysics = true;
+        }
+
+        @Override
+        public void tick() {
+            super.tick();
+            yd -= 0.05;
+            xd *= 0.9;
+            zd *= 0.9;
+        }
+
+        @Override
+        public void render(VertexConsumer vc, Camera cam, float pt) {
+            Vec3 p = new Vec3(Mth.lerp(pt, xo, x), Mth.lerp(pt, yo, y), Mth.lerp(pt, zo, z));
+            Vec3 tail = p.subtract(xd * 1.4, yd * 1.4, zd * 1.4);
+            float t = (age + pt) / lifetime;
+            quad(vc, tail, p, cam.getPosition(), 0.018f, 1f, 0.85f - 0.4f * t, 0.45f - 0.4f * t, 1f - t * t, sp, 0.3f, 0.7f);
+        }
+
+        @Override
+        public ParticleRenderType getRenderType() {
+            return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+        }
+    }
+
+    /** 탄피: 오른쪽 위로 튀어 나가 빙글빙글 돌며 떨어지고, 바닥에 '팅' 소리 */
+    static final class Shell extends Particle {
+        final TextureAtlasSprite sp = fx("tc_shell");
+        float rot, spinV;
+        boolean clinked;
+
+        Shell(ClientLevel level, Vec3 at, Vec3 vel) {
+            super(level, at.x, at.y, at.z);
+            xd = vel.x;
+            yd = vel.y;
+            zd = vel.z;
+            gravity = 0.9f;
+            lifetime = 45;
+            hasPhysics = true;
+            setSize(0.05f, 0.05f);
+            spinV = 0.6f + random.nextFloat() * 0.5f;
+        }
+
+        @Override
+        public void tick() {
+            super.tick();
+            rot += spinV;
+            if (onGround) {
+                spinV *= 0.6f;
+                if (!clinked) {
+                    clinked = true;
+                    level.playLocalSound(x, y, z, net.minecraft.sounds.SoundEvents.CHAIN_FALL, SoundSource.PLAYERS, 0.25f, 1.9f + random.nextFloat() * 0.2f, false);
+                    yd = 0.06;
+                }
+            }
+        }
+
+        @Override
+        public void render(VertexConsumer vc, Camera cam, float pt) {
+            Vec3 c = new Vec3(Mth.lerp(pt, xo, x), Mth.lerp(pt, yo, y), Mth.lerp(pt, zo, z));
+            float a = age > lifetime - 10 ? (lifetime - age - pt) / 10f : 1f;
+            billboard(vc, cam, c, 0.035f, rot + spinV * pt, sp, 1, 1, 1, Math.max(0, a), getLightColor(pt));
+        }
+
+        @Override
+        public ParticleRenderType getRenderType() {
+            return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
+        }
     }
 
     private static TextureAtlasSprite cached;
@@ -53,13 +244,18 @@ public final class BulletFx {
     };
 
     static void quad(VertexConsumer vc, Vec3 a, Vec3 b, Vec3 cam, float w, float r, float g, float bl, float al, TextureAtlasSprite s) {
+        quad(vc, a, b, cam, w, r, g, bl, al, s, 0.4f, 0.6f);
+    }
+
+    /** uvLo~uvHi: 스프라이트에서 쓸 구간 (0.4~0.6 = 가운데만, 0~1 = 전체) */
+    static void quad(VertexConsumer vc, Vec3 a, Vec3 b, Vec3 cam, float w, float r, float g, float bl, float al, TextureAtlasSprite s, float uvLo, float uvHi) {
         Vec3 dir = b.subtract(a);
         Vec3 view = a.add(b).scale(0.5).subtract(cam);
         Vec3 side = dir.cross(view);
         if (side.lengthSqr() < 1e-8) side = new Vec3(0, 1, 0);
         side = side.normalize().scale(w);
-        float u0 = Mth.lerp(0.4f, s.getU0(), s.getU1()), u1 = Mth.lerp(0.6f, s.getU0(), s.getU1());
-        float v0 = Mth.lerp(0.4f, s.getV0(), s.getV1()), v1 = Mth.lerp(0.6f, s.getV0(), s.getV1());
+        float u0 = Mth.lerp(uvLo, s.getU0(), s.getU1()), u1 = Mth.lerp(uvHi, s.getU0(), s.getU1());
+        float v0 = Mth.lerp(uvLo, s.getV0(), s.getV1()), v1 = Mth.lerp(uvHi, s.getV0(), s.getV1());
         int light = 0xF000F0;
         Vec3 p1 = a.add(side).subtract(cam), p2 = a.subtract(side).subtract(cam), p3 = b.subtract(side).subtract(cam), p4 = b.add(side).subtract(cam);
         // 양면
@@ -88,7 +284,7 @@ public final class BulletFx {
             dist = d.length();
             dir = dist > 1e-6 ? d.scale(1 / dist) : new Vec3(0, 0, 1);
             speed = p.speed();
-            len = Math.min(3.2, speed * 0.22);
+            len = p.kind() == 0 ? Math.min(1.6, speed * 0.1) : Math.min(3.2, speed * 0.22);
             kind = Mth.clamp(p.kind(), 0, 3);
             impact = p.impact();
             shooter = p.shooter();
@@ -132,21 +328,41 @@ public final class BulletFx {
         }
 
         private void land() {
+            if (impact == 2) {
+                Vec3 back = dir.scale(-1);
+                var hit = level.getEntities((net.minecraft.world.entity.Entity) null, new AABB(to, to).inflate(0.8), e -> e.isPickable());
+                boolean machine = hit.stream().anyMatch(e -> !(e instanceof net.minecraft.world.entity.LivingEntity) || e instanceof com.tycooncraft.mob.DestroyerGolem
+                        || e instanceof com.tycooncraft.mech.ProtoDestroyer || e instanceof net.minecraft.world.entity.animal.IronGolem);
+                if (machine) {
+                    for (int i = 0; i < 6; i++) Minecraft.getInstance().particleEngine.add(new Spark(level, to, back.scale(0.2).add(gauss(level, 0.12)).add(0, 0.08, 0)));
+                    level.playLocalSound(to.x, to.y, to.z, ModSounds.BULLET_IMPACT_METAL.get(), SoundSource.PLAYERS, 0.6f, 1.0f + random.nextFloat() * 0.2f, false);
+                } else {
+                    for (int i = 0; i < 3; i++)
+                        Minecraft.getInstance().particleEngine.add(new Smoke(level, to, back.scale(0.04).add(gauss(level, 0.02)), 0.05f, 0.28f, 0.32f, 10 + random.nextInt(6), 1f)
+                                .color(0.55f, 0.08f, 0.07f));
+                }
+                return;
+            }
             if (impact != 1) return;
             BlockPos bp = BlockPos.containing(to.add(dir.scale(0.05)));
             BlockState st = level.getBlockState(bp);
             if (st.isAir()) return;
             Vec3 back = dir.scale(-1);
-            for (int i = 0; i < 8; i++)
+            // 작은 파편 몇 개 + 블록 색 흙먼지가 튀어나와 퍼짐
+            for (int i = 0; i < 4; i++)
                 level.addParticle(new BlockParticleOption(ParticleTypes.BLOCK, st), to.x, to.y, to.z,
-                        back.x * 0.15 + random.nextGaussian() * 0.08, back.y * 0.15 + 0.1 + random.nextGaussian() * 0.06, back.z * 0.15 + random.nextGaussian() * 0.08);
-            level.addParticle(ParticleTypes.SMOKE, to.x, to.y, to.z, back.x * 0.02, 0.02, back.z * 0.02);
+                        back.x * 0.12 + random.nextGaussian() * 0.06, back.y * 0.12 + 0.08 + random.nextGaussian() * 0.05, back.z * 0.12 + random.nextGaussian() * 0.06);
+            int col = st.getMapColor(level, bp).col;
+            float cr = ((col >> 16) & 255) / 255f, cg = ((col >> 8) & 255) / 255f, cb = (col & 255) / 255f;
+            for (int i = 0; i < 4; i++)
+                Minecraft.getInstance().particleEngine.add(new Smoke(level, to.add(back.scale(0.05)), back.scale(0.05 + 0.05 * i).add(gauss(level, 0.02)), 0.06f, 0.35f + 0.08f * i,
+                        0.45f, 14 + random.nextInt(14), 1f).color(0.5f + cr * 0.5f, 0.5f + cg * 0.5f, 0.5f + cb * 0.5f));
             boolean metal = st.getSoundType() == SoundType.METAL || st.getSoundType() == SoundType.ANVIL || st.getSoundType() == SoundType.NETHERITE_BLOCK
                     || st.getSoundType() == SoundType.COPPER || st.getSoundType() == SoundType.CHAIN;
             boolean soft = st.is(BlockTags.DIRT) || st.is(BlockTags.SAND) || st.is(BlockTags.LEAVES) || st.is(BlockTags.WOOL) || st.is(BlockTags.LOGS) || st.is(BlockTags.PLANKS);
             if (metal || !soft)
-                for (int i = 0; i < 4; i++)
-                    level.addParticle(ParticleTypes.ELECTRIC_SPARK, to.x, to.y, to.z, back.x * 0.2 + random.nextGaussian() * 0.1, 0.12 + random.nextGaussian() * 0.08, back.z * 0.2 + random.nextGaussian() * 0.1);
+                for (int i = 0; i < (metal ? 6 : 2); i++)
+                    Minecraft.getInstance().particleEngine.add(new Spark(level, to, back.scale(0.18).add(gauss(level, 0.1)).add(0, 0.06, 0)));
             SoundEvent s = metal ? ModSounds.BULLET_IMPACT_METAL.get() : soft ? ModSounds.BULLET_IMPACT_DIRT.get() : ModSounds.BULLET_IMPACT_STONE.get();
             level.playLocalSound(to.x, to.y, to.z, s, SoundSource.PLAYERS, 0.7f, 0.9f + random.nextFloat() * 0.2f, false);
         }
@@ -160,9 +376,13 @@ public final class BulletFx {
             Vec3 cam = camera.getPosition();
             float[] c = COLORS[kind];
             float fade = trav > dist ? (float) Math.max(0, 1 - (trav - dist) / len) : 1f;
-            float w = kind == 3 ? 0.07f : kind == 2 ? 0.055f : 0.04f;
-            quad(vc, tail, head, cam, w * 2.6f, c[3], c[4], c[5], 0.35f * fade, sprite);   // 바깥 빛
-            quad(vc, tail, head, cam, w, c[0], c[1], c[2], 0.95f * fade, sprite);          // 밝은 심
+            if (kind == 0) {   // 일반탄: 실제 총알처럼 거의 안 보이게, 옅고 가는 줄만
+                quad(vc, tail, head, cam, 0.012f, 1f, 0.95f, 0.85f, 0.28f * fade, sprite);
+                return;
+            }
+            float w = kind == 3 ? 0.05f : kind == 2 ? 0.045f : 0.03f;
+            quad(vc, tail, head, cam, w * 2.2f, c[3], c[4], c[5], 0.22f * fade, sprite);   // 바깥 빛
+            quad(vc, tail, head, cam, w, c[0], c[1], c[2], 0.85f * fade, sprite);          // 밝은 심
         }
 
         @Override
@@ -171,15 +391,19 @@ public final class BulletFx {
         }
     }
 
-    /** 총구 화염: 2틱 동안 십자 모양 섬광 */
+    /** 총구 화염: 아주 짧게(1~2틱) 번쩍 — 정면에선 꽃잎 모양 섬광, 옆에선 앞으로 뻗는 화염 혀 */
     static final class Flash extends Particle {
-        final TextureAtlasSprite sprite = sprite();
+        final TextureAtlasSprite front = fx("tc_flash_" + random.nextInt(2)), side = fx("tc_flash_side"), glow = fx("tc_glow");
+        final Vec3 dir;
+        final float size;
         final int kind;
 
-        Flash(ClientLevel level, Vec3 at, int kind) {
+        Flash(ClientLevel level, Vec3 at, Vec3 dir, int kind, float size) {
             super(level, at.x, at.y, at.z);
+            this.dir = dir;
             this.kind = Mth.clamp(kind, 0, 3);
-            lifetime = 2;
+            this.size = size * (0.8f + random.nextFloat() * 0.4f);
+            lifetime = 1 + random.nextInt(2);
             hasPhysics = false;
             gravity = 0;
             roll = random.nextFloat() * Mth.TWO_PI;
@@ -192,19 +416,14 @@ public final class BulletFx {
 
         @Override
         public void render(VertexConsumer vc, Camera camera, float pt) {
-            Vec3 cam = camera.getPosition();
             Vec3 c = new Vec3(x, y, z);
-            Vec3 view = c.subtract(cam).normalize();
-            Vec3 up = Math.abs(view.y) > 0.95 ? new Vec3(1, 0, 0) : new Vec3(0, 1, 0);
-            Vec3 a = view.cross(up).normalize(), b = view.cross(a).normalize();
-            float s = (1 - (age + pt) / (lifetime + 1)) * 0.32f;
-            float[] col = COLORS[kind];
-            for (int i = 0; i < 3; i++) {
-                double ang = roll + i * Math.PI / 3;
-                Vec3 d = a.scale(Math.cos(ang)).add(b.scale(Math.sin(ang))).scale(s);
-                quad(vc, c.subtract(d), c.add(d), cam, s * 0.35f, col[3], col[4], col[5], 0.8f, sprite);
-            }
-            quad(vc, c.subtract(a.scale(s * 0.3)), c.add(a.scale(s * 0.3)), cam, s * 0.3f, col[0], col[1], col[2], 1f, sprite);
+            float k = 1 - (age + pt) / (lifetime + 1);
+            float s = size * (0.6f + 0.4f * k);
+            boolean fire = kind == 1;
+            float g = fire ? 0.6f : 0.85f, b = fire ? 0.35f : 0.6f;
+            billboard(vc, camera, c.add(dir.scale(0.08 * s)), 0.5f * s, roll, glow, 1f, g, b, 0.35f * k, 0xF000F0);       // 주변 빛 번짐
+            billboard(vc, camera, c.add(dir.scale(0.1 * s)), 0.22f * s, roll, front, 1f, 1f, 1f, k, 0xF000F0);          // 정면 섬광
+            quad(vc, c, c.add(dir.scale(0.55 * s)), camera.getPosition(), 0.09f * s, 1f, g, b, 0.9f * k, side, 0f, 1f);  // 앞으로 뻗는 화염 혀
         }
 
         @Override

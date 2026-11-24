@@ -154,6 +154,18 @@ public final class AutoTestClient {
         });
     }
 
+    /** 클라이언트에서 총 한 발의 시각 효과만 재현 (서버가 보내는 TracerPayload 와 같은 경로) */
+    private static void fxFire(Minecraft mc, float speed) {
+        var p = mc.player;
+        net.minecraft.world.phys.Vec3 look = p.getViewVector(1f);
+        net.minecraft.world.phys.Vec3 right = look.cross(new net.minecraft.world.phys.Vec3(0, 1, 0)).normalize();
+        net.minecraft.world.phys.Vec3 muzzle = p.getEyePosition().add(look.scale(0.85)).add(right.scale(0.24)).add(0, -0.17, 0);
+        var hit = mc.level.clip(new net.minecraft.world.level.ClipContext(p.getEyePosition(), p.getEyePosition().add(look.scale(40)),
+                net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, p));
+        com.tycooncraft.client.BulletFx.spawn(new com.tycooncraft.network.TracerPayload(muzzle, hit.getLocation(), (byte) 0,
+                (byte) (hit.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK ? 1 : 0), p.getId(), speed, true));
+    }
+
     private static void lookAt(Minecraft mc, double x, double y, double z) {
         var p = mc.player;
         double dx = x - p.getX(), dy = y - p.getEyeY(), dz = z - p.getZ();
@@ -808,7 +820,17 @@ public final class AutoTestClient {
             case 3798 -> serverKeep(mc, V185Test::rt20Kick);
             case 3822 -> serverKeep(mc, V185Test::rt20KickMeasure);
             case 3824 -> key(o.keyShift, false);
-            case 3828 -> next(11);
+            // ── v0.20.0: 총기 이펙트 (총구 섬광·연기·탄피·탄착 먼지) ──
+            case 3828 -> { o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::fxSetup); }
+            case 3840 -> fxFire(mc, 22f);
+            case 3841 -> shot(mc, "fx1_fp_flash");
+            case 3843 -> fxFire(mc, 22f);
+            case 3849 -> shot(mc, "fx2_fp_smoke_impact");
+            case 3852 -> o.setCameraType(CameraType.THIRD_PERSON_BACK);
+            case 3858 -> fxFire(mc, 30f);
+            case 3859 -> shot(mc, "fx3_tp_flash");
+            case 3866 -> shot(mc, "fx4_tp_smoke");
+            case 3870 -> { o.setCameraType(CameraType.FIRST_PERSON); next(11); }
             default -> {
             }
         }

@@ -152,8 +152,7 @@ public class GunnerEntity extends Monster implements RangedAttackMob {
         }
         sl.playSound(null, getX(), getY(), getZ(), fireSound(), SoundSource.HOSTILE, 3.0f, 0.95f + random.nextFloat() * 0.1f);
         Vec3 m = from.add(base.scale(1.0)).add(0, -0.25, 0);
-        sl.sendParticles(ParticleTypes.FLAME, m.x, m.y, m.z, 1, 0.02, 0.02, 0.02, 0.005);
-        sl.sendParticles(ParticleTypes.SMOKE, m.x, m.y, m.z, 3, 0.04, 0.04, 0.04, 0.01);
+        // v0.20.0: 총구 섬광·연기는 BulletFx 가 그림
     }
 
     @Override

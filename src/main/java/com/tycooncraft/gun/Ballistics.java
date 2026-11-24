@@ -86,6 +86,12 @@ public final class Ballistics {
 
     /** 플레이어가 쏘면 총알이 눈이 아니라 손에 든 총의 총구에서 나가 보이게 */
     static Vec3 visualMuzzle(Entity shooter, Vec3 from, Vec3 dir) {
+        // v0.20.0: 총을 든 사람형 몹(갱단 등)은 눈이 아니라 오른손 총구에서 섬광·총알이 나가 보이게
+        if (shooter instanceof com.tycooncraft.mob.GunnerEntity gm && from.distanceToSqr(gm.getEyePosition()) < 1.5) {
+            Vec3 r = dir.cross(new Vec3(0, 1, 0));
+            r = r.lengthSqr() < 1e-6 ? new Vec3(1, 0, 0) : r.normalize();
+            return gm.getEyePosition().add(dir.scale(0.75)).add(r.scale(0.32)).add(0, -0.42, 0);
+        }
         if (!(shooter instanceof net.minecraft.world.entity.player.Player p) || from.distanceToSqr(p.getEyePosition()) > 2.5) return from;
         Vec3 right = dir.cross(new Vec3(0, 1, 0));
         right = right.lengthSqr() < 1e-6 ? new Vec3(1, 0, 0) : right.normalize();
@@ -136,14 +142,13 @@ public final class Ballistics {
                 if (onHit != null) onHit.accept(target);
                 if (fire) target.igniteForSeconds(4);
                 if (head) {
-                    level.sendParticles(ParticleTypes.ENCHANTED_HIT, impact.x, impact.y, impact.z, 10, 0.15, 0.15, 0.15, 0.3);
                     if (shooter instanceof Player p) {
                         level.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.ARROW_HIT_PLAYER, SoundSource.PLAYERS, 0.5f, 1.6f);
                         {} /* v0.18.9: 전투 안내 문구 제거 */
                     }
                 }
             }
-            level.sendParticles(fire ? ParticleTypes.FLAME : ParticleTypes.CRIT, impact.x, impact.y, impact.z, 6, 0.1, 0.1, 0.1, 0.2);
+            if (fire) level.sendParticles(ParticleTypes.SMALL_FLAME, impact.x, impact.y, impact.z, 3, 0.08, 0.08, 0.08, 0.02);   // v0.20.0: 탄착 효과는 클라이언트(BulletFx)가 그림
             n++;
             if (target instanceof net.minecraft.world.entity.LivingEntity le && le.isBlocking() && le.isDamageSourceBlocked(src)) {   // 방패에 막힘 → 관통 없음
                 BLOCKED++;

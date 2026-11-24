@@ -143,7 +143,7 @@ public class DestroyerGolem extends Monster {
                     aim = aim.add(random.nextGaussian() * 0.045, random.nextGaussian() * 0.03, random.nextGaussian() * 0.045).normalize();
                     Ballistics.shoot((ServerLevel) level(), this, muzzle, aim, 40, 2.6f, 0, 1.3f, false, true,
                             damageSources().mobAttack(this), e -> e != this && !(e instanceof DestroyerGolem));
-                    ((ServerLevel) level()).sendParticles(ParticleTypes.FLAME, muzzle.x, muzzle.y, muzzle.z, 1, 0.05, 0.05, 0.05, 0.01);
+                    // v0.20.0: 총구 섬광·연기는 BulletFx 가 그림
                     playSound(ModSounds.SMG_FIRE.get(), 2.2f, 0.72f + random.nextFloat() * 0.06f);
                     shots++;
                 }
