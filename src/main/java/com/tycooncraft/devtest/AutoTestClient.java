@@ -825,7 +825,7 @@ public final class AutoTestClient {
             case 3840 -> fxFire(mc, 22f);
             case 3842 -> shot(mc, "fx1_fp_flash");          // 파티클은 다음 틱에 추가되고 그 다음 프레임에 보임
             case 3844 -> fxFire(mc, 22f);
-            case 3850 -> shot(mc, "fx2_fp_smoke_impact");
+            case 3850 -> { shot(mc, "fx2_fp_smoke_impact"); System.out.println("[AUTOTEST] v200 fx " + com.tycooncraft.client.BulletFx.debug()); }
             case 3852 -> o.setCameraType(CameraType.THIRD_PERSON_FRONT);
             case 3858 -> fxFire(mc, 30f);
             case 3860 -> shot(mc, "fx3_tp_flash");

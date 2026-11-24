@@ -25,7 +25,7 @@ import net.minecraft.world.phys.Vec3;
 
 /** 눈에 보이는 총알: 빛나는 탄 줄기가 총구에서 탄착점까지 날아가고, 총구 화염 · 스치는 소리 · 탄착 파편 */
 public final class BulletFx {
-    public static int spawned;
+    public static int spawned, flashRenders, smokeRenders;
 
     public static void spawn(TracerPayload p) {
         Minecraft mc = Minecraft.getInstance();
@@ -141,6 +141,7 @@ public final class BulletFx {
 
         @Override
         public void render(VertexConsumer vc, Camera cam, float pt) {
+            smokeRenders++;
             float t = Mth.clamp((age + pt) / lifetime, 0, 1);
             float size = Mth.lerp(1 - (1 - t) * (1 - t), s0, s1);
             float alpha = a0 * (t < 0.1f ? t / 0.1f : (1 - t) * (1 - t) / 0.81f);
@@ -426,6 +427,7 @@ public final class BulletFx {
 
         @Override
         public void render(VertexConsumer vc, Camera camera, float pt) {
+            flashRenders++;
             Vec3 c = new Vec3(x, y, z);
             float k = 1 - (age + pt) / (lifetime + 1);
             float s = size * (0.6f + 0.4f * k);
@@ -450,6 +452,12 @@ public final class BulletFx {
                 new Smoke(level, new Vec3(x, y, z), new Vec3(dx, dy, dz), 0.3f, 1.4f, 0.5f, 30 + level.random.nextInt(25), 0.35f));
         e.registerSpecial(com.tycooncraft.registry.ModParticles.SPARK.get(), (t, level, x, y, z, dx, dy, dz) ->
                 new Spark(level, new Vec3(x, y, z), new Vec3(dx, dy, dz)));
+    }
+
+    public static String debug() {
+        TextureAtlasSprite a = fx("tc_smoke_0"), b = fx("tc_flash_0");
+        return "spawned=" + spawned + " flashRenders=" + flashRenders + " smokeRenders=" + smokeRenders + " smokeSprite=" + a.contents().name() + " " + a.contents().width()
+                + " uv=" + a.getU0() + "," + a.getV0() + "-" + a.getU1() + "," + a.getV1() + " flashSprite=" + b.contents().name() + " particles=" + Minecraft.getInstance().particleEngine.countParticles();
     }
 
     private BulletFx() {}
