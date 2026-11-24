@@ -88,6 +88,12 @@ public class SorterBlock extends BaseEntityBlock {
     }
 
     @Override
+    public void setPlacedBy(net.minecraft.world.level.Level level, BlockPos pos, BlockState state, net.minecraft.world.entity.LivingEntity who, ItemStack st) {
+        super.setPlacedBy(level, pos, state, who, st);
+        if (!level.isClientSide && who instanceof Player p) p.displayClientMessage(Component.translatable("message.tycooncraft.tip.sorter"), true);
+    }
+
+    @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new SorterBlockEntity(pos, state);
     }

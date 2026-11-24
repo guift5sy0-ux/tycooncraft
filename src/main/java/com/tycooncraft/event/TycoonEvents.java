@@ -35,6 +35,7 @@ public final class TycoonEvents {
             StarterKit.give(player);
         }
         if (player instanceof net.minecraft.server.level.ServerPlayer sp) unlockRecipes(sp);
+        if (!player.level().isClientSide) StarterKit.updateGuide(player);
     }
 
     /** 모드 제작법은 처음부터 전부 레시피 북에 표시 (헷갈림 방지) */

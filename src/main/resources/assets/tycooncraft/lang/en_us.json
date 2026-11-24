@@ -705,5 +705,9 @@
   "message.tycooncraft.sorter.none": "No filter: everything goes forward",
   "tooltip.tycooncraft.robot_arm": "Moves 8 items from behind to the front. 4 ⚡. Right-click with an item to filter",
   "tooltip.tycooncraft.sorter": "Filtered items go left, others forward",
-  "tooltip.tycooncraft.warehouse": "54 slots in one block; works with arms, conveyors and hoppers"
+  "tooltip.tycooncraft.warehouse": "54 slots in one block; works with arms, conveyors and hoppers",
+  "message.tycooncraft.guide_updated": "📖 Guide book updated! See chapter 17 \"Industrial Revolution\"",
+  "message.tycooncraft.tip.robot_arm": "💡 Drops in front, takes from behind · needs a cable · right-click with an item to filter",
+  "message.tycooncraft.tip.sorter": "💡 Place between belts · right-click with an item: that item goes left",
+  "message.tycooncraft.tip.machine": "💡 Needs power: attach a shaft (steam engine) or a cable (generator)"
 }

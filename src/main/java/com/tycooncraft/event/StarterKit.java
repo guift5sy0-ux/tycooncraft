@@ -23,8 +23,8 @@ public final class StarterKit {
     private static final String FLAG = "tycooncraft_starter";
 
     private static final String[][] GUIDE = {
-            {"타이쿤크래프트", "공장을 짓고, 가공품을 팔아 돈을 벌고, 그 돈으로 더 큰 공장을 만드는 모드예요.\n\n모든 기계는 동력·연료 없이 설치만 하면 작동해요!"},
-            {"0. 공장 키트", "공장 키트를 들고 우클릭하면 바라보는 쪽에 기본 공장이 세워져요.\n\n웅크리고 우클릭: 자리 미리 보기\n\n원석을 첫 벨트에 던지면\n분쇄→제련→압착→판매까지 자동!"},
+            {"타이쿤크래프트", "공장을 짓고, 가공품을 팔아 돈을 벌고, 그 돈으로 더 큰 공장을 만드는 모드예요.\n\n기계는 동력(증기·전기)이 있어야 돌아가요!\n→ 17장 산업 혁명"},
+            {"0. 공장 키트", "공장 키트를 들고 우클릭하면 바라보는 쪽에 기본 공장이 세워져요.\n\n웅크리고 우클릭: 자리 미리 보기\n\n보일러·증기기관·회전축 포함\n(보일러에 석탄 넣기!)\n원석을 첫 벨트에 던지면\n분쇄→제련→압착→판매 자동"},
             {"1. 가공하면 비싸요", "철 원석 1개 ₩5\n→ 분쇄: 가루 2 ₩7\n→ 제련: 주괴 2 ₩16\n→ 압착: 철판 2 ₩28\n→ 절삭: 기어 2 ₩44\n\n/prices : 전체 시세"},
             {"2. 판매소", "빈손 우클릭: 판매소 창\n왼쪽 칸에 물건 → 판매 예정 금액 표시 → [판매]\n[인출]: 번 돈을 동전으로\n\n물건 들고 우클릭: 바로 판매\n벨트로 넣으면 자동 판매\n/sell, /sell all"},
             {"3. 동전 & 환전기", "구리 ₩1 · 철 ₩10\n금 ₩100 · 에메랄드 ₩1,000\n다이아 ₩10,000\n\n환전기 우클릭: 동전을 큰 단위로 정리\n제작대: 큰 동전 1 → 작은 동전 10"},
@@ -56,6 +56,15 @@ public final class StarterKit {
             {"16-5. 수류탄", "유황 광석: 지하 -48~72\n 곡괭이(돌 이상)로 채굴 → 유황\n\n파편 수류탄: 철판+유황2+화약\n섬광탄: 철판+유황+발광석가루2\n 보고 있으면 화면이 하얗게\n연막탄: 철판+유황+석탄가루+종이\n우클릭 던지기, 웅크리면 굴리기"},
             {"16-6. 자동 굴착기", "드릴: 다이아+강철주괴2\n +강철톱니+강철판3\n바퀴: 말린켈프블록4+강철막대\n드릴+바퀴+엔진 = 자동 굴착기\n\n설치 후 연료 우클릭 → 굴착 시작\n3×3 터널, 다이아 광석까지\n단단할수록 느리고 연료 많이\n빈손 우클릭: 저장통\n웅크리고 우클릭: 켜기/끄기"},
             {"13. 탐험", "상인 마을\n 무적 상인이 동전으로 거래\n\n폐공장\n 몹 조심! 고장난 기계를 부수면 고철 부품\n\n몹 사냥: 확률로 동전\n마을 상자: 동전"},
+            {"17. 산업 혁명", "기계는 동력이 있어야 돌아가요.\n\n증기 시대\n 보일러+증기기관+회전축\n전기 시대\n 발전기+전선 (1.5배 빠름)\n자동화 시대\n 로봇 팔·분류기·창고\n\n제작법: 제작대 레시피 북\n(초록 책)에서 검색"},
+            {"17-1. 증기 동력", "① 보일러: 석탄 넣기\n 물: 옆에 물 원천 or 물 양동이\n② 증기기관: 보일러 옆에\n 동력 32 P\n③ 회전축: 증기기관에서 기계까지 일직선\n 축에 닿은 기계가 돌아감\n동력 분배기: 축 꺾기·나누기\n\n빈손 우클릭: 보일러 상태"},
+            {"17-2. 동력 계산", "필요 동력 (P)\n 분쇄·제련·인발 8\n 압착·절삭 12\n 합금·조립·화학 16\n 전해 24\n\n증기기관 1개 = 분쇄기 4대\n모자라면 그만큼 느려짐\n\n기계 창 화살표 아래\n 초록 충분/노랑 부족/빨강 없음"},
+            {"17-3. 전기", "① 발전기: 증기기관이나\n 회전축 옆에 → 30 ⚡\n② 전선: 이어 깔면 자동 연결\n 거리 제한·손실 없음\n③ 기계를 전선에 붙이기\n → 1.5배 빠름 (전력 1.5배)\n\n전기 블록 빈손 우클릭:\n 생산·사용·저장량"},
+            {"17-4. 전기 블록", "태양광 발전기\n 낮 8 ⚡ 비 3 밤 0\n축전지\n 남는 전기 20만 저장\n 모자랄 때 내보냄\n전동기\n 전기 → 축 동력 28 P\n 멀리 있는 축 기계용\n전선 만들기\n 고무6+구리선3 → 12"},
+            {"17-5. 전기 전용 기계", "전선에 붙여야만 작동\n\n유도로 (32 ⚡)\n 원광석 → 주괴 2개!\n 규사 가루 → 유리 2\n전기 아크로 (48 ⚡)\n 철 주괴2+흑연 → 강철 3\n 규사 가루2+코크스 → 규소 2\n\n재료비가 줄어 이윤↑"},
+            {"17-6. 로봇 팔", "바라보는 쪽에 내려놓고\n등 뒤에서 집어 옴\n(설치할 때 내려놓을 쪽을 보기)\n\n0.8초마다 8개씩\n상자·창고·기계·벨트 OK\n기계: 결과물만 꺼내고\n 맞는 재료만 넣음\n전선 필수 (4 ⚡)"},
+            {"17-7. 필터·분류기", "필터 (로봇 팔·분류기)\n 아이템 들고 우클릭 = 설정\n 웅크리고 빈손 = 해제\n\n분류기: 벨트 사이에 설치\n 필터 아이템 → 왼쪽\n 나머지 → 앞\n 여러 개 이으면 여러 갈래\n\n창고: 한 블록 54칸"},
+            {"17-8. 자동 공장 예시", "창고(원철)\n↓ 로봇 팔 (필터: 원철)\n유도로\n↓ 로봇 팔\n컨베이어\n↓\n분류기 (필터: 철 주괴)\n ├왼쪽 → 창고\n └앞 → 판매소\n\n+ 발전기에서 전선으로\n 팔·유도로에 전기 연결"},
             {"14. 명령어", "/guide /starter\n/sell /sell all\n/price /prices\n\n(관리자)\n/tycoon factory\n/tycoon village\n/tycoon ruin\n/tycoon nearest"},
     };
 
@@ -89,6 +98,18 @@ public final class StarterKit {
         return data.getCompound(Player.PERSISTED_NBT_TAG);
     }
 
+    /** v0.23.1: 가이드 내용이 바뀌면 올림 → 기존 플레이어도 접속 시 새 책을 받음 */
+    public static final int GUIDE_VERSION = 23;
+
+    public static void updateGuide(Player player) {
+        CompoundTag p = persisted(player);
+        if (p.getInt("tycooncraft_guide_ver") >= GUIDE_VERSION) return;
+        p.putInt("tycooncraft_guide_ver", GUIDE_VERSION);
+        if (!p.getBoolean(FLAG)) return;   // 처음 온 사람은 스타터 키트에서 새 책을 받음
+        Coins.giveStack(player, guideBook());
+        player.sendSystemMessage(Component.translatable("message.tycooncraft.guide_updated").withStyle(ChatFormatting.AQUA));
+    }
+
     public static boolean received(Player player) {
         return persisted(player).getBoolean(FLAG);
     }
@@ -97,6 +118,7 @@ public final class StarterKit {
         Coins.giveStack(player, guideBook());
         for (ItemStack stack : kit()) Coins.giveStack(player, stack);
         persisted(player).putBoolean(FLAG, true);
+        persisted(player).putInt("tycooncraft_guide_ver", GUIDE_VERSION);
         player.sendSystemMessage(Component.translatable("message.tycooncraft.welcome").withStyle(ChatFormatting.GOLD));
     }
 

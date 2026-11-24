@@ -96,4 +96,14 @@ public class MachineBlock extends BaseEntityBlock {
         }
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
+
+    /** v0.23.1: 동력 블록이 옆에 없으면 설치할 때 안내 */
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, net.minecraft.world.entity.LivingEntity who, net.minecraft.world.item.ItemStack st) {
+        super.setPlacedBy(level, pos, state, who, st);
+        if (level.isClientSide || !(who instanceof Player p)) return;
+        for (Direction d : Direction.values())
+            if (level.getBlockEntity(pos.relative(d)) instanceof com.tycooncraft.power.PowerNode n && !(n instanceof MachineBlockEntity)) return;
+        p.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.tycooncraft.tip.machine"), true);
+    }
 }
