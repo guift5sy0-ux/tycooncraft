@@ -35,6 +35,15 @@
         "class": "com/tycooncraft/client/GunPoses",
         "field": "RPG_PROXY"
       }
+    },
+    {
+      "enum": "net/minecraft/client/model/HumanoidModel$ArmPose",
+      "name": "TYCOONCRAFT_HEAVY",
+      "constructor": "(ZLnet/neoforged/neoforge/client/IArmPoseTransformer;)V",
+      "parameters": {
+        "class": "com/tycooncraft/client/GunPoses",
+        "field": "HEAVY_PROXY"
+      }
     }
   ]
 }

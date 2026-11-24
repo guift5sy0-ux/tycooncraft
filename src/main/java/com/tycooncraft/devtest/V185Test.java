@@ -606,6 +606,12 @@ public final class V185Test {
         sp.serverLevel().setDayTime(6000);
     }
 
+    /** v0.20.1: 이펙트 시험장으로 돌아와 RT-20 을 듦 */
+    static void rt20Hold(ServerPlayer sp) {
+        fxSetup(sp);
+        sp.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.RT20.get()));
+    }
+
     static com.tycooncraft.vehicle.JetEntity landJet;
 
     static void jetLandSetup(ServerPlayer sp) {

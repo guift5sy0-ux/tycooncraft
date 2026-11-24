@@ -34,8 +34,9 @@ public final class GunClient {
                 return GunPoses.poseFor(stack);
             }
         };
-        event.registerItem(aim, ModItems.PISTOL.get(), ModItems.SMG.get(), ModItems.RIFLE.get(),
-                ModItems.SHOTGUN.get(), ModItems.SNIPER.get(), ModItems.VSS.get(), ModItems.DUAL_PISTOLS.get(), ModItems.RPG.get(), ModItems.JUDGE.get());
+        // v0.20.1: 새 총이 빠지지 않도록 등록된 총 전부 (RT-20 이 빠져 있어서 잡는 자세가 없었음)
+        event.registerItem(aim, ModItems.ITEMS.getEntries().stream().map(h -> h.get())
+                .filter(i -> i instanceof com.tycooncraft.gun.GunItem || i == ModItems.RPG.get()).toArray(net.minecraft.world.item.Item[]::new));
     }
 
     @SubscribeEvent

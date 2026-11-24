@@ -841,7 +841,16 @@ public final class AutoTestClient {
             case 3960 -> { shot(mc, "fx6_jet_landed"); serverKeep(mc, V185Test::jetLandCheck); }
             case 3961 -> mc.player.setYRot(150f);   // 지상에서 시선을 돌려도 기체가 바로 따라 돌지 않음
             case 3990 -> serverKeep(mc, V185Test::jetLandCheck);
-            case 3994 -> { o.setCameraType(CameraType.FIRST_PERSON); next(11); }
+            // ── v0.20.1: 들고 다니는 자세 / 쏘는 자세 (RT-20 포함) ──
+            case 3994 -> { o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::rt20Hold); }
+            case 4010 -> shot(mc, "fx7_rt20_fp_carry");
+            case 4012 -> fxFire(mc, 30f);
+            case 4016 -> shot(mc, "fx8_rt20_fp_aim");
+            case 4018 -> o.setCameraType(CameraType.THIRD_PERSON_FRONT);
+            case 4070 -> shot(mc, "fx9_rt20_tp_carry");
+            case 4072 -> fxFire(mc, 30f);
+            case 4076 -> shot(mc, "fx10_rt20_tp_aim");
+            case 4078 -> { o.setCameraType(CameraType.FIRST_PERSON); next(11); }
             default -> {
             }
         }

@@ -30,6 +30,7 @@ public final class BulletFx {
     public static void spawn(TracerPayload p) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
+        if (p.shooter() >= 0) GunAnim.shot(p.shooter());
         boolean mine = mc.player != null && mc.player.getId() == p.shooter();
         boolean fp = mine && mc.options.getCameraType().isFirstPerson() && mc.player.getVehicle() == null;
         if (fp) {

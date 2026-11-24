@@ -47,6 +47,8 @@ public final class GunArms {
         if (s.is(ModItems.SNIPER.get())) return new float[]{0.33f, -0.33f, -0.62f, 0.30f, -0.264f, -1.048f};
         if (s.is(ModItems.VSS.get())) return new float[]{0.31f, -0.33f, -0.62f, 0.29f, -0.285f, -0.98f};
         if (s.is(ModItems.RPG.get())) return new float[]{0.34f, -0.28f, -0.58f, 0.331f, -0.314f, -0.752f};
+        // RT-20: 오른손은 앞쪽 권총 손잡이(불펍), 왼손은 총열 덮개 아래를 받침 (rt20.json 좌표에서 계산)
+        if (s.is(ModItems.RT20.get())) return new float[]{0.34f, -0.33f, -0.64f, 0.326f, -0.285f, -0.846f};
         if (s.is(ModItems.DUAL_PISTOLS.get())) return new float[]{0.36f, -0.34f, -0.62f, -0.36f, -0.34f, -0.62f};
         return null;
     }
@@ -67,7 +69,8 @@ public final class GunArms {
         }
         int ammo = GunItem.ammo(s);
         int slot = p.getInventory().selected;
-        if (slot == lastSlot && lastAmmo >= 0 && ammo < lastAmmo) kick = s.is(ModItems.RPG.get()) || s.is(ModItems.SHOTGUN.get()) || s.is(ModItems.SNIPER.get()) ? 1.6f : 1f;
+        if (slot == lastSlot && lastAmmo >= 0 && ammo < lastAmmo)
+            kick = s.is(ModItems.RT20.get()) ? 3.2f : s.is(ModItems.RPG.get()) || s.is(ModItems.SHOTGUN.get()) || s.is(ModItems.SNIPER.get()) ? 1.6f : 1f;
         lastAmmo = ammo;
         lastSlot = slot;
     }
@@ -92,8 +95,13 @@ public final class GunArms {
         if (stack.is(ModItems.PISTOL.get()) || stack.is(ModItems.JUDGE.get())) ps.translate(-0.08f, 0.075f, 0.02f);
         // 꺼내기(장착) 애니메이션 + 반동: 손잡이를 축으로 총구가 들리며 뒤로
         ps.translate(0, event.getEquipProgress() * -0.6f, k * 0.06f);
+        // v0.20.1 들고 다닐 때: 총을 조금 내리고 총구를 아래·안쪽으로 (쏘거나 조준하면 빠르게 올라옴)
+        float relax = 1f - GunAnim.aim(p);
+        ps.translate(-0.03f * relax, -0.07f * relax, 0.06f * relax);
         ps.translate(h[0], h[1], h[2]);
-        ps.mulPose(Axis.XP.rotationDegrees(k * 7f));
+        ps.mulPose(Axis.XP.rotationDegrees(k * 7f - 14f * relax));
+        ps.mulPose(Axis.YP.rotationDegrees(9f * relax));
+        ps.mulPose(Axis.ZP.rotationDegrees(-6f * relax));
         ps.translate(-h[0], -h[1], -h[2]);
         // 총
         ps.pushPose();
