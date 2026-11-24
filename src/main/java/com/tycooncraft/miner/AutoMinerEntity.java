@@ -92,7 +92,7 @@ public class AutoMinerEntity extends Entity {
             wheelAngle += (float) (moved / (11 / 32.0));
             if (isWorking() && random.nextInt(3) == 0) {
                 Vec3 f = Vec3.directionFromRotation(0, getYRot());
-                level().addParticle(ParticleTypes.LARGE_SMOKE, getX() + f.x * 0.3 + random.nextGaussian() * 0.05, getY() + 1.95, getZ() + f.z * 0.3, 0, 0.06, 0);
+                level().addParticle(com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get(), getX() + f.x * 0.3 + random.nextGaussian() * 0.05, getY() + 1.95, getZ() + f.z * 0.3, 0, 0.06, 0);
             }
             return;
         }

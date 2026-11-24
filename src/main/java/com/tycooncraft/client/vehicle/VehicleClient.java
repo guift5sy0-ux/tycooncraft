@@ -46,6 +46,11 @@ public final class VehicleClient {
     }
 
     @SubscribeEvent
+    public static void particles(net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent e) {
+        com.tycooncraft.client.BulletFx.registerProviders(e);
+    }
+
+    @SubscribeEvent
     public static void layers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(com.tycooncraft.client.mob.BossModels.GOLEM, com.tycooncraft.client.mob.DestroyerGolemGeo::createBodyLayer);
         event.registerLayerDefinition(com.tycooncraft.client.mech.ProtoClient.LAYER, com.tycooncraft.client.mob.ProtoDestroyerGeo::createBodyLayer);

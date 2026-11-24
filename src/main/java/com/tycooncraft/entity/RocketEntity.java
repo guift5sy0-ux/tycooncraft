@@ -78,9 +78,9 @@ public class RocketEntity extends Projectile {
             Vec3 back = position().subtract(getDeltaMovement().normalize().scale(0.6));
             if (kind() != SHELL) {
                 level().addParticle(ParticleTypes.FLAME, back.x, back.y, back.z, 0, 0, 0);
-                level().addParticle(ParticleTypes.LARGE_SMOKE, back.x, back.y, back.z, 0, 0.02, 0);
+                level().addParticle(com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get(), back.x, back.y, back.z, 0, 0.02, 0);
             } else {
-                level().addParticle(ParticleTypes.SMOKE, back.x, back.y, back.z, 0, 0, 0);
+                level().addParticle(com.tycooncraft.registry.ModParticles.SMOKE.get(), back.x, back.y, back.z, 0, 0, 0);
             }
         } else if (++life > 200 || isInWater()) {
             explode();

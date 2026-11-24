@@ -34,7 +34,7 @@ public class FlareItem extends Item {
             boss.finalizeSpawn(sl, sl.getCurrentDifficultyAt(pos), MobSpawnType.EVENT, null);
             sl.addFreshEntity(boss);
             sl.sendParticles(ParticleTypes.FLAME, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 60, 0.4, 3, 0.4, 0.05);
-            sl.sendParticles(ParticleTypes.LARGE_SMOKE, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 40, 1, 1, 1, 0.05);
+            sl.sendParticles(com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get(), pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 40, 1, 1, 1, 0.05);
             sl.playSound(null, pos, SoundEvents.WITHER_SPAWN, SoundSource.HOSTILE, 1.0f, 1.3f);
             ctx.getItemInHand().consume(1, ctx.getPlayer());
         }

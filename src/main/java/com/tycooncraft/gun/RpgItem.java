@@ -24,7 +24,7 @@ public class RpgItem extends GunItem {
         level.addFreshEntity(RocketEntity.create(ModEntities.ROCKET.get(), level, player, pos, look.scale(1.6), RocketEntity.ROCKET, power));
         // 후폭풍
         Vec3 back = player.getEyePosition().subtract(look.scale(1.2)).add(right.scale(0.3));
-        level.sendParticles(ParticleTypes.LARGE_SMOKE, back.x, back.y, back.z, 14, 0.3, 0.2, 0.3, 0.06);
+        level.sendParticles(com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get(), back.x, back.y, back.z, 14, 0.3, 0.2, 0.3, 0.06);
         level.sendParticles(ParticleTypes.FLAME, back.x, back.y, back.z, 6, 0.15, 0.1, 0.15, 0.04);
     }
 }

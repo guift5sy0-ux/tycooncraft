@@ -510,7 +510,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         if (empTicks() > 0 && tickCount % 2 == 0) {
             Cell c = cells.get(random.nextInt(cells.size()));
             Vec3 w = rot(c.x + 0.5, c.z + 0.5, yaw).add(now);
-            level().addParticle(ParticleTypes.ELECTRIC_SPARK, w.x, now.y + c.y + 1, w.z, 0, 0.05, 0);
+            level().addParticle(com.tycooncraft.registry.ModParticles.SPARK.get(), w.x, now.y + c.y + 1, w.z, 0, 0.05, 0);
         }
     }
 
@@ -652,7 +652,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
                     if (water && Math.abs(speed) > 0.03) {
                         sl.sendParticles(ParticleTypes.BUBBLE, w.x, getY() + c.y + 0.3, w.z, 4, 0.4, 0.2, 0.4, 0.05);
                         sl.sendParticles(ParticleTypes.SPLASH, w.x, getY() + c.y + 0.9, w.z, 3, 0.4, 0.1, 0.4, 0.1);
-                    } else sl.sendParticles(ParticleTypes.SMOKE, w.x, getY() + c.y + 0.6, w.z, 2, 0.25, 0.1, 0.25, 0.01);
+                    } else sl.sendParticles(com.tycooncraft.registry.ModParticles.SMOKE.get(), w.x, getY() + c.y + 0.6, w.z, 2, 0.25, 0.1, 0.25, 0.01);
                 }
             if (++soundT % 14 == 0) {
                 if (water) level().playSound(null, getX(), getY(), getZ(), SoundEvents.BOAT_PADDLE_WATER, SoundSource.NEUTRAL, 1.0f, 0.7f + (float) Math.abs(speed));

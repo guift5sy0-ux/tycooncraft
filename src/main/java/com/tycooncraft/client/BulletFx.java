@@ -133,9 +133,7 @@ public final class BulletFx {
                 remove();
                 return;
             }
-            x += xd;
-            y += yd;
-            z += zd;
+            setPos(x + xd, y + yd, z + zd);   // 위치와 함께 상자도 옮겨야 화면 밖 판정(컬링)에 안 걸림
             xd *= 0.82;
             yd = yd * 0.82 + 0.0025;
             zd *= 0.82;
@@ -442,6 +440,16 @@ public final class BulletFx {
         public ParticleRenderType getRenderType() {
             return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
         }
+    }
+
+    /** 서버에서 sendParticles 로 보내는 부드러운 연기·불꽃 (마크 기본 연기 대체) */
+    public static void registerProviders(net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent e) {
+        e.registerSpecial(com.tycooncraft.registry.ModParticles.SMOKE.get(), (t, level, x, y, z, dx, dy, dz) ->
+                new Smoke(level, new Vec3(x, y, z), new Vec3(dx, dy, dz), 0.12f, 0.55f, 0.32f, 18 + level.random.nextInt(14), 0.8f));
+        e.registerSpecial(com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get(), (t, level, x, y, z, dx, dy, dz) ->
+                new Smoke(level, new Vec3(x, y, z), new Vec3(dx, dy, dz), 0.3f, 1.4f, 0.5f, 30 + level.random.nextInt(25), 0.35f));
+        e.registerSpecial(com.tycooncraft.registry.ModParticles.SPARK.get(), (t, level, x, y, z, dx, dy, dz) ->
+                new Spark(level, new Vec3(x, y, z), new Vec3(dx, dy, dz)));
     }
 
     private BulletFx() {}

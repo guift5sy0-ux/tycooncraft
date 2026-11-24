@@ -125,7 +125,7 @@ public class TurretBlockEntity extends BlockEntity implements MenuProvider {
         if (hp <= 0) {
             DESTROYED++;
             sl.sendParticles(net.minecraft.core.particles.ParticleTypes.EXPLOSION, c.x, c.y, c.z, 2, 0.2, 0.2, 0.2, 0);
-            sl.sendParticles(net.minecraft.core.particles.ParticleTypes.LARGE_SMOKE, c.x, c.y, c.z, 20, 0.3, 0.4, 0.3, 0.05);
+            sl.sendParticles(net.minecraft.core.particles.com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get(), c.x, c.y, c.z, 20, 0.3, 0.4, 0.3, 0.05);
             sl.playSound(null, worldPosition, net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE.value(), net.minecraft.sounds.SoundSource.BLOCKS, 1.2f, 1.1f);
             sl.destroyBlock(worldPosition, false, attacker);
             net.minecraft.world.Containers.dropItemStack(sl, c.x, c.y, c.z, new ItemStack(net.minecraft.world.item.Items.IRON_INGOT, 2));
@@ -244,7 +244,7 @@ public class TurretBlockEntity extends BlockEntity implements MenuProvider {
     // ── 클라이언트: 목표 쪽으로 몸통·총구 회전 ──
     public static void clientTick(Level level, BlockPos pos, BlockState state, TurretBlockEntity t) {
         if (t.hp < MAX_HP * 0.5f && level.random.nextInt(t.hp < MAX_HP * 0.25f ? 3 : 8) == 0)   // 손상: 연기·불꽃
-            level.addParticle(t.hp < MAX_HP * 0.25f ? net.minecraft.core.particles.ParticleTypes.LARGE_SMOKE : net.minecraft.core.particles.ParticleTypes.SMOKE,
+            level.addParticle(t.hp < MAX_HP * 0.25f ? net.minecraft.core.particles.com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get() : net.minecraft.core.particles.com.tycooncraft.registry.ModParticles.SMOKE.get(),
                     pos.getX() + 0.3 + level.random.nextFloat() * 0.4, pos.getY() + 1.0, pos.getZ() + 0.3 + level.random.nextFloat() * 0.4, 0, 0.04, 0);
         t.yawO = t.yaw;
         t.pitchO = t.pitch;

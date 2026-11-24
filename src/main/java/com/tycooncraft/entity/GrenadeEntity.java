@@ -90,7 +90,7 @@ public class GrenadeEntity extends ThrowableItemProjectile {
         if (level().isClientSide) {
             int st = smokeTicks();
             if (st > 0) smokeParticles(st);
-            else if (tickCount % 2 == 0) level().addParticle(ParticleTypes.SMOKE, getX(), getY() + 0.15, getZ(), 0, 0.01, 0);
+            else if (tickCount % 2 == 0) level().addParticle(com.tycooncraft.registry.ModParticles.SMOKE.get(), getX(), getY() + 0.15, getZ(), 0, 0.01, 0);
             return;
         }
         int st = smokeTicks();

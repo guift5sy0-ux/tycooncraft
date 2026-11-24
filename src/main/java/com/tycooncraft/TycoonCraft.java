@@ -14,6 +14,7 @@ import com.tycooncraft.registry.ModCreativeTabs;
 import com.tycooncraft.registry.ModItems;
 import com.tycooncraft.registry.ModMenus;
 import com.tycooncraft.registry.ModSounds;
+import com.tycooncraft.registry.ModParticles;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -37,6 +38,7 @@ public class TycoonCraft {
         ModMenus.MENUS.register(modBus);
         ModComponents.COMPONENTS.register(modBus);
         ModSounds.SOUNDS.register(modBus);
+        ModParticles.PARTICLES.register(modBus);
         ModEntities.ENTITIES.register(modBus);
         ModRecipes.SERIALIZERS.register(modBus);
         com.tycooncraft.registry.ModArmorMaterials.MATERIALS.register(modBus);

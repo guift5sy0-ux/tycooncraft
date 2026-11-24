@@ -159,7 +159,7 @@ public class TankEntity extends VehicleEntity {
         level().playSound(null, muzzle.x, muzzle.y, muzzle.z, ModSounds.TANK_FIRE.get(), SoundSource.NEUTRAL, 6.0f, 0.95f + random.nextFloat() * 0.1f);
         if (level() instanceof ServerLevel sl) {
             sl.sendParticles(ParticleTypes.EXPLOSION, muzzle.x, muzzle.y, muzzle.z, 2, 0.2, 0.2, 0.2, 0);
-            sl.sendParticles(ParticleTypes.LARGE_SMOKE, muzzle.x, muzzle.y, muzzle.z, 20, 0.5, 0.3, 0.5, 0.05);
+            sl.sendParticles(com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get(), muzzle.x, muzzle.y, muzzle.z, 20, 0.5, 0.3, 0.5, 0.05);
         }
         level().broadcastEntityEvent(this, (byte) 60);
         // 반동: 차체가 살짝 뒤로

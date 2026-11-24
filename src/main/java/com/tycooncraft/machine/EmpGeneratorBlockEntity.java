@@ -82,7 +82,7 @@ public class EmpGeneratorBlockEntity extends BlockEntity {
                 double a = sl.random.nextDouble() * Math.PI * 2, r = 3 - k * 0.04;
                 sl.sendParticles(BLUE, top.x + Math.cos(a) * r, top.y - 0.4 + sl.random.nextDouble(), top.z + Math.sin(a) * r, 1, 0, 0, 0, 0);
             }
-            sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, top.x, top.y - 0.3, top.z, 2 + k / 10, 0.35, 0.25, 0.35, 0.15);
+            sl.sendParticles(com.tycooncraft.registry.ModParticles.SPARK.get(), top.x, top.y - 0.3, top.z, 2 + k / 10, 0.35, 0.25, 0.35, 0.15);
             if (countdown == 0) fire(sl, top);
         }
         if (ring >= 0) {
@@ -90,7 +90,7 @@ public class EmpGeneratorBlockEntity extends BlockEntity {
             int n = (int) (r * 3) + 8;
             for (int i = 0; i < n; i++) {
                 double a = i * Math.PI * 2 / n;
-                sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, top.x + Math.cos(a) * r, top.y - 0.5, top.z + Math.sin(a) * r, 1, 0, 0.4, 0, 0.05);
+                sl.sendParticles(com.tycooncraft.registry.ModParticles.SPARK.get(), top.x + Math.cos(a) * r, top.y - 0.5, top.z + Math.sin(a) * r, 1, 0, 0.4, 0, 0.05);
                 if (i % 3 == 0) sl.sendParticles(BLUE, top.x + Math.cos(a) * r, top.y + 0.5, top.z + Math.sin(a) * r, 1, 0, 0.3, 0, 0);
             }
             if (++ring * 3.2 > RADIUS) ring = -1;
@@ -105,7 +105,7 @@ public class EmpGeneratorBlockEntity extends BlockEntity {
         sl.setBlock(worldPosition, getBlockState().setValue(EmpGeneratorBlock.ACTIVE, false), 3);
         sl.playSound(null, worldPosition, ModSounds.EMP_BLAST.get(), SoundSource.BLOCKS, 6f, 1f);
         sl.sendParticles(ParticleTypes.FLASH, top.x, top.y, top.z, 1, 0, 0, 0, 0);
-        sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, top.x, top.y, top.z, 150, 1.5, 1.5, 1.5, 1.0);
+        sl.sendParticles(com.tycooncraft.registry.ModParticles.SPARK.get(), top.x, top.y, top.z, 150, 1.5, 1.5, 1.5, 1.0);
         int n = EmpPulse.pulse(sl, top, RADIUS, DISABLE_TIME);
         for (var p : sl.players())
             if (p.distanceToSqr(top) < (RADIUS + 16) * (RADIUS + 16))

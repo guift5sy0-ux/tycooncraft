@@ -137,7 +137,7 @@ public final class Interceptor {
             sl.sendParticles(ParticleTypes.EXPLOSION, p.x, p.y, p.z, 1, 0, 0, 0, 0);
             sl.playSound(null, p.x, p.y, p.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 0.8f, 1.5f);
         }
-        sl.sendParticles(ParticleTypes.LARGE_SMOKE, p.x, p.y, p.z, 6, 0.3, 0.3, 0.3, 0.02);
+        sl.sendParticles(com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get(), p.x, p.y, p.z, 6, 0.3, 0.3, 0.3, 0.02);
     }
 
     private Interceptor() {}

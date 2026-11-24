@@ -172,7 +172,7 @@ public class DroneEntity extends Entity {
         setDeltaMovement(v);
         move(MoverType.SELF, v);
         if (level() instanceof ServerLevel sl && tickCount % 2 == 0)
-            sl.sendParticles(ParticleTypes.SMOKE, getX(), getY() + 0.1, getZ(), 1, 0.05, 0.05, 0.05, 0);
+            sl.sendParticles(com.tycooncraft.registry.ModParticles.SMOKE.get(), getX(), getY() + 0.1, getZ(), 1, 0.05, 0.05, 0.05, 0);
         Player owner = owner();
         if (horizontalCollision || verticalCollision) {
             endDive("block");
@@ -234,7 +234,7 @@ public class DroneEntity extends Entity {
             }
             VehicleHooks.client.tick(this);
             if (isPiloted() && tickCount % 10 == 0) {
-                level().addParticle(ParticleTypes.SMOKE, getX(), getY() + 0.1, getZ(), 0, -0.02, 0);
+                level().addParticle(com.tycooncraft.registry.ModParticles.SMOKE.get(), getX(), getY() + 0.1, getZ(), 0, -0.02, 0);
             }
             return;
         }

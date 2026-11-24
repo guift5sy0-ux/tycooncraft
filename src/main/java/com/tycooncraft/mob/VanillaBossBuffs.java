@@ -200,7 +200,7 @@ public final class VanillaBossBuffs {
         double ring = powered ? 2.6 : 1.9;
         for (int i = 0; i < 3; i++) {
             double a = s.t * 0.25 + i * Math.PI * 2 / 3;
-            sl.sendParticles(powered ? ParticleTypes.FLAME : ParticleTypes.SMOKE, c.x + Math.cos(a) * ring, c.y + Math.sin(s.t * 0.1 + i) * 0.6, c.z + Math.sin(a) * ring, 1, 0, 0, 0, 0);
+            sl.sendParticles(powered ? ParticleTypes.FLAME : com.tycooncraft.registry.ModParticles.SMOKE.get(), c.x + Math.cos(a) * ring, c.y + Math.sin(s.t * 0.1 + i) * 0.6, c.z + Math.sin(a) * ring, 1, 0, 0, 0, 0);
         }
         if (s.t % 3 == 0) sl.sendParticles(DARK, w.getX(), w.getY() + 0.5, w.getZ(), 2, 0.6, 0.4, 0.6, 0);
         if (w.getInvulnerableTicks() > 0) {
@@ -280,7 +280,7 @@ public final class VanillaBossBuffs {
                     double a = sl.random.nextDouble() * Math.PI * 2, r = 7 - s.nova * 0.2;
                     Vec3 p = c.add(Math.cos(a) * r, sl.random.nextGaussian(), Math.sin(a) * r);
                     Vec3 v = c.subtract(p).scale(0.15);
-                    sl.sendParticles(ParticleTypes.LARGE_SMOKE, p.x, p.y, p.z, 0, v.x, v.y, v.z, 1);
+                    sl.sendParticles(com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get(), p.x, p.y, p.z, 0, v.x, v.y, v.z, 1);
                 }
                 w.setDeltaMovement(w.getDeltaMovement().scale(0.5));
             } else if (s.nova == 30) {
@@ -455,7 +455,7 @@ public final class VanillaBossBuffs {
         bolt(sl, new Vec3(x, gy, z));
         for (double y = 0; y < 16; y += 0.8)
             sl.sendParticles(RED, x + sl.random.nextGaussian() * 0.15, gy + y, z + sl.random.nextGaussian() * 0.15, 2, 0.05, 0.1, 0.05, 0);
-        sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, x, gy + 0.3, z, 30, 1.2, 0.3, 1.2, 0.4);
+        sl.sendParticles(com.tycooncraft.registry.ModParticles.SPARK.get(), x, gy + 0.3, z, 30, 1.2, 0.3, 1.2, 0.4);
         sl.sendParticles(ParticleTypes.FLAME, x, gy + 0.3, z, 20, 1.0, 0.2, 1.0, 0.08);
         for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, new AABB(x - 2.6, gy - 1, z - 2.6, x + 2.6, gy + 5, z + 2.6))) {
             if (e == d) continue;
@@ -482,7 +482,7 @@ public final class VanillaBossBuffs {
             Vec3 tip = d.position().add(right.scale(sd * 6.5)).add(0, 2, 0);
             if (powered) {
                 sl.sendParticles(RED, tip.x, tip.y, tip.z, 3, 0.6, 0.3, 0.6, 0);
-                if (s0.t % 3 == 0) sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, tip.x, tip.y, tip.z, 4, 0.8, 0.4, 0.8, 0.3);
+                if (s0.t % 3 == 0) sl.sendParticles(com.tycooncraft.registry.ModParticles.SPARK.get(), tip.x, tip.y, tip.z, 4, 0.8, 0.4, 0.8, 0.3);
             } else sl.sendParticles(ParticleTypes.PORTAL, tip.x, tip.y, tip.z, 3, 0.2, 0.2, 0.2, 0.02);
         }
         // 대기 중인 낙뢰·폭염 처리 (항상)
@@ -595,7 +595,7 @@ public final class VanillaBossBuffs {
                     for (double k = 0; k < 11; k += 0.7) {
                         Vec3 p = h.add(f.scale(k));
                         sl.sendParticles(ParticleTypes.SWEEP_ATTACK, p.x, p.y - 1, p.z, 1, 0, 0, 0, 0);
-                        if (powered) sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, p.x, p.y - 1, p.z, 3, 0.3, 0.3, 0.3, 0.2);
+                        if (powered) sl.sendParticles(com.tycooncraft.registry.ModParticles.SPARK.get(), p.x, p.y - 1, p.z, 3, 0.3, 0.3, 0.3, 0.2);
                     }
                     for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, d.getBoundingBox().inflate(14, 5, 14))) {
                         if (e == d) continue;
@@ -670,7 +670,7 @@ public final class VanillaBossBuffs {
             face(d, tgt.position().subtract(d.position()));
             if (s0.t % 4 == 0) {
                 Vec3 h = d.head.position();
-                sl.sendParticles(ParticleTypes.LARGE_SMOKE, h.x, h.y, h.z, 3, 0.4, 0.3, 0.4, 0.02);
+                sl.sendParticles(com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get(), h.x, h.y, h.z, 3, 0.4, 0.3, 0.4, 0.02);
                 sl.sendParticles(ParticleTypes.CLOUD, d.getX(), d.getY(), d.getZ(), 4, 2.5, 0.3, 2.5, 0.01);
             }
             if (s.rest == DRAGON_REST - 1) announce(sl, d, "message.tycooncraft.dragon.tired", ChatFormatting.YELLOW);
@@ -740,8 +740,8 @@ public final class VanillaBossBuffs {
         hold(d, p);
         face(d, s.dir);
         sl.sendParticles(ParticleTypes.FLAME, p.x, p.y + 1, p.z, 12, 2.5, 1, 2.5, 0.05);
-        sl.sendParticles(ParticleTypes.LARGE_SMOKE, p.x, p.y + 1, p.z, 4, 2, 1, 2, 0.02);
-        if (powered) sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, p.x, p.y + 1, p.z, 8, 2, 1, 2, 0.3);
+        sl.sendParticles(com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get(), p.x, p.y + 1, p.z, 4, 2, 1, 2, 0.02);
+        if (powered) sl.sendParticles(com.tycooncraft.registry.ModParticles.SPARK.get(), p.x, p.y + 1, p.z, 8, 2, 1, 2, 0.3);
         if (powered && dt % 3 == 0) queue(s, p.x, p.z, 16 + dt, 0);
         for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, d.getBoundingBox().inflate(2.5))) {
             if (e == d || !s.hit.add(e)) continue;
@@ -845,7 +845,7 @@ public final class VanillaBossBuffs {
         for (double q = 1; q < reach; q += 1.4) {
             Vec3 p = h.add(dir.scale(q));
             sl.sendParticles(ParticleTypes.FLAME, p.x, p.y, p.z, 2, 0.25 + q * 0.04, 0.25, 0.25 + q * 0.04, 0.02);
-            if (powered && sl.random.nextInt(3) == 0) sl.sendParticles(ParticleTypes.ELECTRIC_SPARK, p.x, p.y, p.z, 1, 0.3, 0.3, 0.3, 0.2);
+            if (powered && sl.random.nextInt(3) == 0) sl.sendParticles(com.tycooncraft.registry.ModParticles.SPARK.get(), p.x, p.y, p.z, 1, 0.3, 0.3, 0.3, 0.2);
         }
         if (t % 4 == 0)
             for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, new AABB(h, h).inflate(reach))) {

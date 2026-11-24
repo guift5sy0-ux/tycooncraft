@@ -194,7 +194,7 @@ public class GangTruck extends Monster {
             wheelAngle += (float) (v.dot(fwd) / 0.5);
             if (getHealth() < getMaxHealth() * 0.4f && tickCount % 3 == 0) {
                 Vec3 h = toWorld(new Vec3(0, 42, -56));
-                level().addParticle(getHealth() < getMaxHealth() * 0.2f ? ParticleTypes.LARGE_SMOKE : ParticleTypes.SMOKE, h.x, h.y, h.z, 0, 0.06, 0);
+                level().addParticle(getHealth() < getMaxHealth() * 0.2f ? com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get() : com.tycooncraft.registry.ModParticles.SMOKE.get(), h.x, h.y, h.z, 0, 0.06, 0);
             }
         }
     }
@@ -260,7 +260,7 @@ public class GangTruck extends Monster {
             Ballistics.shoot(sl, this, m, dir, 48, 3.5f, 0, 1.5f, false, true, damageSources().mobAttack(this),
                     e -> e != this && !(e instanceof GunnerEntity) && !(e instanceof GangTruck) && e.getVehicle() != this);
             sl.sendParticles(ParticleTypes.FLASH, m.x, m.y, m.z, 1, 0, 0, 0, 0);
-            sl.sendParticles(ParticleTypes.SMOKE, m.x, m.y, m.z, 2, 0.05, 0.05, 0.05, 0.01);
+            sl.sendParticles(com.tycooncraft.registry.ModParticles.SMOKE.get(), m.x, m.y, m.z, 2, 0.05, 0.05, 0.05, 0.01);
             SoundEvent s = ModSounds.RIFLE_FIRE.get();
             level().playSound(null, m.x, m.y, m.z, s, SoundSource.HOSTILE, 2.2f, 0.75f + random.nextFloat() * 0.1f);
             SHOTS++;
@@ -287,7 +287,7 @@ public class GangTruck extends Monster {
             ejectPassengers();
             Vec3 c = position().add(0, 1, 0);
             level().explode(this, c.x, c.y, c.z, 2.4f, Level.ExplosionInteraction.NONE);
-            ((ServerLevel) level()).sendParticles(ParticleTypes.LARGE_SMOKE, c.x, c.y + 1, c.z, 40, 1.2, 0.8, 1.2, 0.05);
+            ((ServerLevel) level()).sendParticles(com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get(), c.x, c.y + 1, c.z, 40, 1.2, 0.8, 1.2, 0.05);
             ((ServerLevel) level()).sendParticles(ParticleTypes.FLAME, c.x, c.y, c.z, 30, 1.0, 0.5, 1.0, 0.05);
         }
         super.die(source);

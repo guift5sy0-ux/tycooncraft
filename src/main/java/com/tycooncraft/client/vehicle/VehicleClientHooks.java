@@ -62,7 +62,7 @@ public final class VehicleClientHooks implements VehicleHooks.Client {
                 for (int s = -1; s <= 1; s += 2) {
                     Vec3 p = v.position().add(car.toWorld(new Vec3(s * 24 / 32.0, 8 / 32.0, 73 / 32.0)));
                     Vec3 back = car.forward().scale(-0.04);
-                    level.addParticle(ParticleTypes.SMOKE, p.x, p.y, p.z, back.x, 0.01, back.z);
+                    level.addParticle(com.tycooncraft.registry.ModParticles.SMOKE.get(), p.x, p.y, p.z, back.x, 0.01, back.z);
                 }
             }
             damageSmoke(car, car.toWorld(new Vec3(0, 1.1, -1.6)), r);
@@ -81,7 +81,7 @@ public final class VehicleClientHooks implements VehicleHooks.Client {
             if (h.rotor > 0.3f && r.nextInt(4) == 0) {
                 for (int s = -1; s <= 1; s += 2) {
                     Vec3 p = v.position().add(h.toWorld(new Vec3(s * 10 / 32.0, 84 / 32.0, 40 / 32.0)));
-                    level.addParticle(ParticleTypes.SMOKE, p.x, p.y, p.z, 0, 0.03, 0);
+                    level.addParticle(com.tycooncraft.registry.ModParticles.SMOKE.get(), p.x, p.y, p.z, 0, 0.03, 0);
                 }
             }
             if (h.rotor > 0.7f) downwash(h, r);
@@ -99,7 +99,7 @@ public final class VehicleClientHooks implements VehicleHooks.Client {
             if (t.engineRunning() && r.nextInt(3) == 0) {
                 for (int s = -1; s <= 1; s += 2) {
                     Vec3 p = v.position().add(t.toWorld(new Vec3(s * 30 / 32.0, 42 / 32.0, 96 / 32.0)));
-                    level.addParticle(ParticleTypes.SMOKE, p.x, p.y, p.z, 0, 0.04, 0);
+                    level.addParticle(com.tycooncraft.registry.ModParticles.SMOKE.get(), p.x, p.y, p.z, 0, 0.04, 0);
                 }
             }
             damageSmoke(t, t.toWorld(new Vec3(0, 1.6, 2.0)), r);
@@ -109,7 +109,7 @@ public final class VehicleClientHooks implements VehicleHooks.Client {
                 for (int s = -1; s <= 1; s += 2) {
                     Vec3 side = Vec3.directionFromRotation(0, j.getYRot() + 90).scale(s * 7 / 32.0);
                     Vec3 p = v.position().add(0, 0.9, 0).add(back).add(side);
-                    level.addParticle(j.forwardSpeed > 1.2 ? ParticleTypes.FLAME : ParticleTypes.SMOKE, p.x, p.y, p.z, 0, 0, 0);
+                    level.addParticle(j.forwardSpeed > 1.2 ? ParticleTypes.FLAME : com.tycooncraft.registry.ModParticles.SMOKE.get(), p.x, p.y, p.z, 0, 0, 0);
                 }
             }
             damageSmoke(j, new Vec3(0, 1.2, 0), r);
@@ -122,11 +122,11 @@ public final class VehicleClientHooks implements VehicleHooks.Client {
                 Vec3 dir = new Vec3(Math.cos(a), 0, Math.sin(a));
                 for (int s = -1; s <= 1; s += 2) {
                     Vec3 p = v.position().add(dir.scale(s * 40 / 32.0)).add(0, 52 / 32.0, 0);
-                    level.addParticle(sp > 0.1 ? ParticleTypes.LARGE_SMOKE : ParticleTypes.SMOKE, p.x, p.y, p.z, 0, 0.06, 0);
+                    level.addParticle(sp > 0.1 ? com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get() : com.tycooncraft.registry.ModParticles.SMOKE.get(), p.x, p.y, p.z, 0, 0.06, 0);
                 }
             }
             if (loco.healthFraction() < 0.5f && r.nextInt(3) == 0) {
-                level.addParticle(ParticleTypes.LARGE_SMOKE, v.getX(), v.getY() + 1.5, v.getZ(), 0, 0.05, 0);
+                level.addParticle(com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get(), v.getX(), v.getY() + 1.5, v.getZ(), 0, 0.05, 0);
             }
         }
         sound(v);
@@ -137,7 +137,7 @@ public final class VehicleClientHooks implements VehicleHooks.Client {
         if (hp >= 0.5f) return;
         if (r.nextFloat() < (0.5f - hp) * 1.6f) {
             Vec3 p = v.position().add(offset);
-            v.level().addParticle(hp < 0.25f ? ParticleTypes.LARGE_SMOKE : ParticleTypes.SMOKE, p.x + r.nextGaussian() * 0.2, p.y, p.z + r.nextGaussian() * 0.2, 0, 0.06, 0);
+            v.level().addParticle(hp < 0.25f ? com.tycooncraft.registry.ModParticles.SMOKE_LARGE.get() : com.tycooncraft.registry.ModParticles.SMOKE.get(), p.x + r.nextGaussian() * 0.2, p.y, p.z + r.nextGaussian() * 0.2, 0, 0.06, 0);
         }
     }
 
