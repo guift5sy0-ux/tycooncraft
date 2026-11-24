@@ -598,5 +598,25 @@ public final class V185Test {
         sl.setDayTime(18000);   // 밤 → 섬광이 잘 보이게
     }
 
+    static com.tycooncraft.vehicle.JetEntity landJet;
+
+    static void jetLandSetup(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        BlockPos g = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, sp.blockPosition().offset(0, 0, -12));
+        landJet = ModEntities.FIGHTER_JET.get().create(sl);
+        landJet.moveTo(g.getX() + 0.5, g.getY() + 12, g.getZ() + 0.5, 180f, 8f);
+        landJet.setFuel(landJet.maxFuel());
+        landJet.setDeltaMovement(0, -0.1, -1.0);
+        sl.addFreshEntity(landJet);
+        sp.startRiding(landJet, true);
+        System.out.printf("[AUTOTEST] v200 jetLand start y=%.1f ground=%d%n", landJet.getY(), g.getY());
+    }
+
+    static void jetLandCheck(ServerPlayer sp) {
+        var j = landJet;
+        System.out.printf("[AUTOTEST] v200 jetLand alive=%s onGround=%s speed=%.2f pitch=%.1f yaw=%.1f agl=%.2f riding=%s%n", j.isAlive(), j.onGround(),
+                j.getDeltaMovement().horizontalDistance(), j.getXRot(), j.getYRot(), j.heightAboveGround(8), sp.getVehicle() == j);
+    }
+
     private V185Test() {}
 }

@@ -830,7 +830,15 @@ public final class AutoTestClient {
             case 3858 -> fxFire(mc, 30f);
             case 3859 -> shot(mc, "fx3_tp_flash");
             case 3866 -> shot(mc, "fx4_tp_smoke");
-            case 3870 -> { o.setCameraType(CameraType.FIRST_PERSON); next(11); }
+            // ── v0.20.0: 전투기 착륙 (얕은 강하로 내려와 활주 후 정지) ──
+            case 3870 -> { o.setCameraType(CameraType.THIRD_PERSON_BACK); serverDo(mc, V185Test::jetLandSetup); }
+            case 3874 -> { mc.player.setYRot(180f); mc.player.setXRot(12f); if (mc.player.getVehicle() instanceof com.tycooncraft.vehicle.JetEntity j) j.throttle = 0.4f; }
+            case 3900 -> shot(mc, "fx5_jet_approach");
+            case 3930 -> { mc.player.setXRot(2f); if (mc.player.getVehicle() instanceof com.tycooncraft.vehicle.JetEntity j) j.throttle = 0f; }
+            case 3960 -> { shot(mc, "fx6_jet_landed"); serverKeep(mc, V185Test::jetLandCheck); }
+            case 3961 -> mc.player.setYRot(150f);   // 지상에서 시선을 돌려도 기체가 바로 따라 돌지 않음
+            case 3990 -> serverKeep(mc, V185Test::jetLandCheck);
+            case 3994 -> { o.setCameraType(CameraType.FIRST_PERSON); next(11); }
             default -> {
             }
         }
