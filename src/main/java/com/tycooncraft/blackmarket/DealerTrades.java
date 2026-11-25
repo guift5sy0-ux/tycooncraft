@@ -89,6 +89,7 @@ public final class DealerTrades {
                     double h = StructureBuilder.hours(e.item());
                     long won = h > 0 ? Math.round(h * PriceTable.MANUAL_HOUR * SMUGGLE)
                             : e.won() > 0 ? e.won() : Math.round(PriceTable.basePrice(e.item()) * e.count() * StructureBuilder.TRADER_MARKUP * SMUGGLE);
+                    won = Math.round(won * StructureBuilder.usableMult(e.item()));   // 밀수품도 정규가(3배)의 70%
                     ItemStack res = new ItemStack(e.item(), e.count());
                     if (e.item() instanceof GunItem) smuggle(res);
                     out.add(sell(won, res, 8, r));

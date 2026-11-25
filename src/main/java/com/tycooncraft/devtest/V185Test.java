@@ -817,6 +817,18 @@ public final class V185Test {
                 ModItems.TANK.get(), ModItems.STEEL_INGOT.get()})
             pr.append(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(it).getPath()).append('=').append(Math.round(com.tycooncraft.economy.PriceTable.basePrice(it) * 10) / 10.0).append(' ');
         System.out.println("[AUTOTEST] v260 prices " + pr + " manualHour=" + com.tycooncraft.economy.PriceTable.MANUAL_HOUR);
+        // v0.26.2 상점 구매가 (상인 진열 계산 그대로)
+        StringBuilder buy = new StringBuilder();
+        for (String key : new String[]{"trader.tycooncraft.gun", "trader.tycooncraft.vehicle", "trader.tycooncraft.gear", "trader.tycooncraft.engineer"}) {
+            var pool = com.tycooncraft.world.StructureBuilder.traderStock(key, net.minecraft.util.RandomSource.create(1));
+            for (var o : pool) {
+                long won = com.tycooncraft.economy.Coins.valueOf(new ItemStack(o.getItemCostA().item().value(), o.getItemCostA().count()))
+                        + o.getItemCostB().map(c -> com.tycooncraft.economy.Coins.valueOf(new ItemStack(c.item().value(), c.count()))).orElse(0L);
+                buy.append(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(o.getResult().getItem()).getPath()).append('x').append(o.getResult().getCount())
+                        .append('=').append(won).append(' ');
+            }
+        }
+        System.out.println("[AUTOTEST] v262 buy " + buy);
         armBase = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, sp.blockPosition().offset(-6, 0, -52));
         for (int x = -2; x <= 15; x++) for (int y = 0; y <= 4; y++) for (int z = -2; z <= 5; z++)
             put(sl, armBase.offset(x, y, z), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());

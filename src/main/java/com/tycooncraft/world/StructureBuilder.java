@@ -596,6 +596,19 @@ public final class StructureBuilder {
 
     /** v0.27.0 물가 조정: 상점은 기준가의 2배(이전 3배), 시간 기준 장비(총·기계)는 0.7배 */
     public static final double TRADER_MARKUP = 2.0, TRADER_PAY = 0.8, HOURS_BUY = 0.7;
+    /** v0.26.2: 바로 쓰는 물건(총·탄약·수류탄·방어구·탈것·드론)은 상점에서 3배 비싸게 — 돈이 빠져나가는 곳 */
+    public static final double USABLE_MARKUP = 3.0;
+
+    public static boolean usable(Item it) {
+        return it instanceof com.tycooncraft.gun.GunItem || it instanceof com.tycooncraft.gun.GrenadeItem || it instanceof com.tycooncraft.gear.GearItem
+                || it instanceof com.tycooncraft.gear.PoliceShieldItem || it instanceof com.tycooncraft.vehicle.VehicleItem || it instanceof com.tycooncraft.vehicle.DroneItem
+                || com.tycooncraft.gun.GunCrafting.isGunOrAmmo(it) || it == ModItems.PARACHUTE.get() || it == ModItems.FUEL_CANISTER.get()
+                || it == ModItems.SILENCER.get() || it == ModItems.SILENCER_ADVANCED.get();
+    }
+
+    public static double usableMult(Item it) {
+        return usable(it) ? USABLE_MARKUP : 1.0;
+    }
 
     /** 핵심 장비는 "손노동 몇 시간어치"로 값을 매김 (권총 = 1시간) */
     public static double hours(Item it) {
@@ -659,7 +672,7 @@ public final class StructureBuilder {
                     : com.tycooncraft.economy.PriceTable.basePrice(o.getResult().getItem());
             double hrs = buyer ? 0 : hours(o.getResult().getItem());
             if (hrs > 0) {   // 시간 기준 장비 (±흔들림 포함)
-                long won = Math.round(hrs * com.tycooncraft.economy.PriceTable.MANUAL_HOUR * HOURS_BUY * o.getResult().getCount() * f);
+                long won = Math.round(hrs * com.tycooncraft.economy.PriceTable.MANUAL_HOUR * HOURS_BUY * usableMult(o.getResult().getItem()) * o.getResult().getCount() * f);
                 ItemStack[] c = com.tycooncraft.economy.VillagerCoins.coinsForTest((int) won);
                 out.add(new MerchantOffer(new ItemCost(c[0].getItem(), c[0].getCount()),
                         c.length > 1 ? Optional.of(new ItemCost(c[1].getItem(), c[1].getCount())) : Optional.empty(),
@@ -671,7 +684,7 @@ public final class StructureBuilder {
                     long won = Math.max(1, Math.round(price * o.getItemCostA().count() * TRADER_PAY * (2.1f - f)));
                     out.add(new MerchantOffer(o.getItemCostA(), Optional.empty(), oneStack(won), Integer.MAX_VALUE, 0, 0f));
                 } else {
-                    long won = Math.max(1, Math.round(price * o.getResult().getCount() * TRADER_MARKUP * f));
+                    long won = Math.max(1, Math.round(price * o.getResult().getCount() * TRADER_MARKUP * usableMult(o.getResult().getItem()) * f));
                     ItemStack[] c = com.tycooncraft.economy.VillagerCoins.coinsForTest((int) Math.min(Integer.MAX_VALUE, won));
                     out.add(new MerchantOffer(new ItemCost(c[0].getItem(), c[0].getCount()),
                             c.length > 1 ? Optional.of(new ItemCost(c[1].getItem(), c[1].getCount())) : Optional.empty(),
@@ -685,7 +698,8 @@ public final class StructureBuilder {
                 out.add(new MerchantOffer(o.getItemCostA(), o.getItemCostB(), oneStack(won), Integer.MAX_VALUE, 0, 0f));
             } else {
                 ItemCost a = o.getItemCostA();
-                long won = Math.max(1, Math.round(com.tycooncraft.economy.Coins.valueOf(new ItemStack(a.item().value(), a.count())) * com.tycooncraft.economy.PriceTable.ECON * f));
+                long won = Math.max(1, Math.round(com.tycooncraft.economy.Coins.valueOf(new ItemStack(a.item().value(), a.count())) * com.tycooncraft.economy.PriceTable.ECON
+                        * usableMult(o.getResult().getItem()) * f));
                 ItemStack[] c = com.tycooncraft.economy.VillagerCoins.coinsForTest((int) Math.min(Integer.MAX_VALUE, won));
                 out.add(new MerchantOffer(new ItemCost(c[0].getItem(), c[0].getCount()),
                         c.length > 1 ? Optional.of(new ItemCost(c[1].getItem(), c[1].getCount())) : Optional.empty(),
