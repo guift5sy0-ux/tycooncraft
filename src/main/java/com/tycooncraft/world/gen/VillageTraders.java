@@ -40,9 +40,10 @@ public final class VillageTraders {
                 it.remove();
                 continue;
             }
-            BlockPos center = p.origin().offset(16, 0, 16);
+            int half = com.tycooncraft.world.StructureBuilder.VILLAGE_SIZE / 2;
+            BlockPos center = p.origin().offset(half, 0, half);
             if (!p.level().isLoaded(center) || !p.level().areEntitiesLoaded(new net.minecraft.world.level.ChunkPos(center).toLong())) continue;
-            AABB box = new AABB(p.origin()).expandTowards(32, 8, 32).inflate(2);
+            AABB box = new AABB(p.origin()).expandTowards(half * 2, 8, half * 2).inflate(2);
             if (p.level().getEntitiesOfClass(Villager.class, box, Villager::hasCustomName).isEmpty()) {
                 StructureBuilder.spawnVillageTraders(p.level(), p.origin());
                 SPAWNED++;

@@ -94,6 +94,14 @@ public class RobotArmBlock extends BaseEntityBlock {
         if (!level.isClientSide && who instanceof Player p) p.displayClientMessage(Component.translatable("message.tycooncraft.tip.robot_arm"), true);
     }
 
+    /** 부수면 집게에 든 아이템은 떨어뜨림 */
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState ns, boolean moved) {
+        if (!state.is(ns.getBlock()) && level.getBlockEntity(pos) instanceof RobotArmBlockEntity a && !a.held().isEmpty())
+            net.minecraft.world.Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, a.held().copy());
+        super.onRemove(state, level, pos, ns, moved);
+    }
+
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new RobotArmBlockEntity(pos, state);

@@ -703,11 +703,18 @@
   "message.tycooncraft.robot_arm.status": "옮길 것: %s · 전기 %s%%",
   "message.tycooncraft.sorter.set": "%s → 왼쪽, 나머지 → 앞",
   "message.tycooncraft.sorter.none": "필터 없음: 전부 앞으로 (아이템 들고 우클릭)",
-  "tooltip.tycooncraft.robot_arm": "등 뒤(상자·기계·컨베이어)에서 집어 앞쪽에 내려놓음. 한 번에 8개, 전기 4 ⚡. 아이템 들고 우클릭 = 필터",
+  "tooltip.tycooncraft.robot_arm": "등 뒤(상자·기계·컨베이어)에서 집어 앞쪽에 내려놓음. 1.2초마다 12개, 전기 4 ⚡. 아이템 들고 우클릭 = 필터",
   "tooltip.tycooncraft.sorter": "컨베이어 사이에 두면 필터와 같은 아이템은 왼쪽, 나머지는 앞으로. 동력 필요 없음",
   "tooltip.tycooncraft.warehouse": "한 블록에 54칸. 로봇 팔·컨베이어·호퍼로 넣고 뺄 수 있음",
   "message.tycooncraft.guide_updated": "📖 가이드 책이 업데이트됐어요! 17장 「산업 혁명」에 보일러·전선·로봇 팔 사용법이 있어요",
   "message.tycooncraft.tip.robot_arm": "💡 바라본 쪽에 내려놓고 등 뒤에서 집어요 · 전선 연결 필요 · 아이템 들고 우클릭 = 필터",
   "message.tycooncraft.tip.sorter": "💡 벨트 사이에 두세요 · 아이템 들고 우클릭 = 그 아이템은 왼쪽, 나머지는 앞",
-  "message.tycooncraft.tip.machine": "💡 동력 필요: 회전축(증기기관)이나 전선(발전기)에 붙이세요"
+  "message.tycooncraft.tip.machine": "💡 동력 필요: 회전축(증기기관)이나 전선(발전기)에 붙이세요",
+  "trader.tycooncraft.gun": "총기상",
+  "trader.tycooncraft.engineer": "기계공학자",
+  "trader.tycooncraft.scrap_buyer": "공산품 매입상",
+  "trader.tycooncraft.miner": "광물상",
+  "trader.tycooncraft.chemist": "화학약품상",
+  "trader.tycooncraft.vehicle": "차량 정비사",
+  "trader.tycooncraft.pharmacist": "약사"
 }

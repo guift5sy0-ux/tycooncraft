@@ -37,6 +37,22 @@ public final class AutoTestClient {
         KeyMapping.set(k.getKey(), down);
     }
 
+    /** 로봇 팔·분류기 애니메이션을 원하는 단계에 멈춰 둠 (클라이언트) */
+    private static void armFreeze(Minecraft mc, float[] phases) {
+        if (mc.level == null || V185Test.armBase == null) return;
+        long now = mc.level.getGameTime();
+        for (int i = 0; i < phases.length; i++) {
+            if (mc.level.getBlockEntity(V185Test.armBase.offset(i * 3, 0, 0)) instanceof com.tycooncraft.automation.RobotArmBlockEntity a) {
+                a.swingAt = now - (long) phases[i];
+                a.carried = net.minecraft.world.item.Items.IRON_INGOT;
+            }
+        }
+        if (mc.level.getBlockEntity(V185Test.armBase.offset(0, 0, 3)) instanceof com.tycooncraft.automation.SorterBlockEntity so) {
+            so.flapAt = now - 4;
+            so.flapLeft = true;
+        }
+    }
+
     private static void shot(Minecraft mc, String name) {
         Screenshot.grab(mc.gameDirectory, name + ".png", mc.getMainRenderTarget(), msg -> {});
         Entity v = mc.player.getVehicle();
@@ -185,7 +201,9 @@ public final class AutoTestClient {
         if (System.getenv("TC_FXONLY") != null && phaseT < 3828) phaseT = 3828;   // 로컬 디버그: 이펙트 구간만
         if (System.getenv("TC_ELECONLY") != null && phaseT < 4350) phaseT = 4350;
         if (System.getenv("TC_AUTOONLY") != null && phaseT < 4656) phaseT = 4656;
-        if (System.getenv("TC_BOOKONLY") != null && phaseT < 4996) phaseT = 4996;   // 로컬 디버그: 이펙트 구간만
+        if (System.getenv("TC_BOOKONLY") != null && phaseT < 4996) phaseT = 4996;
+        if (System.getenv("TC_ARMONLY") != null && phaseT < 5052) phaseT = 5052;
+        if (System.getenv("TC_VILLONLY") != null && phaseT < 5100) phaseT = 5100;   // 로컬 디버그: 이펙트 구간만
         int s = phaseT;
         double g = -60;
         if (s > 3226 && s < 3300 && s % 2 == 0) serverDo(mc, V185Test::keepAirborne);
@@ -893,7 +911,34 @@ public final class AutoTestClient {
             case 5041 -> shot(mc, "gb7");
             case 5044 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(41); }
             case 5047 -> shot(mc, "gb8");
-            case 5050 -> { mc.setScreen(null); next(11); }
+            case 5048 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(32); }
+            case 5050 -> shot(mc, "gb9");
+            case 5052 -> { mc.setScreen(null); o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::armShowSetup); }
+            // ── v0.24.0 로봇 팔 관절 모션 / 분류기 가림판 (클라이언트에서 동작 단계를 고정해 찍음) ──
+            case 5080, 5081, 5082, 5083 -> armFreeze(mc, new float[]{1.5f, 4.5f, 11f, 16.5f, 21f});
+            case 5084 -> shot(mc, "ar1_phases");
+            case 5086 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), V185Test.armBase.getX() + 6.5, V185Test.armBase.getY() + 0.9, V185Test.armBase.getZ() + 3.9, 180f, 4f));
+            case 5090, 5091, 5092, 5093 -> armFreeze(mc, new float[]{1.5f, 4.5f, 11f, 16.5f, 21f});
+            case 5094 -> shot(mc, "ar2_close");
+            case 5095 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), V185Test.armBase.getX() + 0.5, V185Test.armBase.getY() + 1.6, V185Test.armBase.getZ() + 5.3, 180f, 38f));
+            case 5097, 5098 -> armFreeze(mc, new float[]{1.5f, 4.5f, 11f, 16.5f, 21f});
+            case 5099 -> shot(mc, "ar3_sorter");
+            // ── v0.24.0 산업 마을 ──
+            case 5100 -> { o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::villageGo); }
+            case 5180 -> serverKeep(mc, V185Test::villageBuild);
+            case 5300 -> serverKeep(mc, V185Test::villageCheck);
+            case 5306 -> shot(mc, "vl1_aerial");
+            case 5310 -> serverKeep(mc, sp -> V185Test.villageView(sp, 31.5, 3.5, 12.5, 0f, 12f));
+            case 5330 -> shot(mc, "vl2_plaza");
+            case 5334 -> serverKeep(mc, sp -> V185Test.villageView(sp, 16.5, 3.2, 21.5, -60f, 14f));
+            case 5354 -> shot(mc, "vl3_stalls");
+            case 5358 -> serverKeep(mc, sp -> V185Test.villageView(sp, 38.5, 8.0, 27.5, -140f, 22f));
+            case 5378 -> shot(mc, "vl4_industry");
+            case 5382 -> serverKeep(mc, sp -> V185Test.villageView(sp, 47.5, 2.4, 8.5, -110f, 18f));
+            case 5402 -> shot(mc, "vl5_factory_inside");
+            case 5406 -> serverKeep(mc, sp -> V185Test.villageView(sp, 31.5, 18.5, -14.5, 0f, 30f));
+            case 5426 -> shot(mc, "vl6_gate");
+            case 5430 -> next(11);
             default -> {
             }
         }

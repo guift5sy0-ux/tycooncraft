@@ -805,6 +805,87 @@ public final class V185Test {
         autoLog(sp, "end");
     }
 
+    // ── v0.24.0 로봇 팔 모션 · 산업 마을 ──
+    static BlockPos armBase, villOrigin;
+
+    static void armShowSetup(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        armBase = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, sp.blockPosition().offset(-6, 0, -52));
+        for (int x = -2; x <= 15; x++) for (int y = 0; y <= 4; y++) for (int z = -2; z <= 5; z++)
+            put(sl, armBase.offset(x, y, z), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+        for (int i = 0; i < 5; i++) {
+            BlockPos a = armBase.offset(i * 3, 0, 0);
+            put(sl, a.west(), net.minecraft.world.level.block.Blocks.CHEST.defaultBlockState());
+            put(sl, a, ModBlocks.ROBOT_ARM.get().defaultBlockState().setValue(com.tycooncraft.automation.RobotArmBlock.FACING, net.minecraft.core.Direction.EAST));
+            put(sl, a.east(), ModBlocks.WAREHOUSE.get().defaultBlockState());
+        }
+        put(sl, armBase.offset(-1, 0, 3), ModBlocks.CONVEYOR.get().defaultBlockState().setValue(com.tycooncraft.block.ConveyorBlock.FACING, net.minecraft.core.Direction.EAST));
+        put(sl, armBase.offset(0, 0, 3), ModBlocks.SORTER.get().defaultBlockState().setValue(com.tycooncraft.automation.SorterBlock.FACING, net.minecraft.core.Direction.EAST));
+        ((com.tycooncraft.automation.SorterBlockEntity) sl.getBlockEntity(armBase.offset(0, 0, 3))).setFilter(new ItemStack(net.minecraft.world.item.Items.IRON_INGOT));
+        put(sl, armBase.offset(1, 0, 3), ModBlocks.CONVEYOR.get().defaultBlockState().setValue(com.tycooncraft.block.ConveyorBlock.FACING, net.minecraft.core.Direction.EAST));
+        sp.teleportTo(sl, armBase.getX() + 6.5, armBase.getY() + 2.2, armBase.getZ() + 6.8, 180f, 16f);
+    }
+
+    static void villageGo(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        villOrigin = sp.blockPosition().offset(180, 0, -40);
+        sp.teleportTo(sl, villOrigin.getX() + 32, sp.getY() + 60, villOrigin.getZ() + 32, 0f, 90f);
+        sp.getAbilities().flying = true;
+        sp.onUpdateAbilities();
+    }
+
+    static void villageBuild(ServerPlayer sp) {
+        long t0 = System.nanoTime();
+        var sl = sp.serverLevel();
+        // 청크가 다 올라온 뒤에 땅 높이를 잼 (안 올라온 청크는 높이가 바닥으로 나옴)
+        villOrigin = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, villOrigin.offset(32, 0, 32)).offset(-32, 0, -32);
+        com.tycooncraft.world.StructureBuilder.village(sl, villOrigin);
+        System.out.println("[AUTOTEST] v240 villageBuilt ms=" + (System.nanoTime() - t0) / 1_000_000 + " y=" + villOrigin.getY());
+    }
+
+    static void villageCheck(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        var box = new net.minecraft.world.phys.AABB(villOrigin).expandTowards(64, 12, 64).inflate(2);
+        int traders = 0, residents = 0, babies = 0, minOffers = 999, maxOffers = 0, totalOffers = 0;
+        StringBuilder names = new StringBuilder();
+        for (var v : sl.getEntitiesOfClass(net.minecraft.world.entity.npc.Villager.class, box)) {
+            if (v.hasCustomName()) {
+                traders++;
+                int n = v.getOffers().size();
+                minOffers = Math.min(minOffers, n);
+                maxOffers = Math.max(maxOffers, n);
+                totalOffers += n;
+                names.append(v.getCustomName().getString()).append('(').append(n).append(") ");
+            } else if (v.isBaby()) babies++;
+            else residents++;
+        }
+        int golems = sl.getEntitiesOfClass(net.minecraft.world.entity.animal.IronGolem.class, box).size();
+        int pools = 0;
+        for (String k : new String[]{"food", "builder", "gear", "machines", "buyer", "gun", "engineer", "scrap_buyer", "miner", "chemist", "vehicle", "pharmacist"})
+            pools += com.tycooncraft.world.StructureBuilder.traderOffers("trader.tycooncraft." + k).size();
+        // 새 상인 예시 거래
+        StringBuilder ex = new StringBuilder();
+        for (var v : sl.getEntitiesOfClass(net.minecraft.world.entity.npc.Villager.class, box)) {
+            String key = v.getPersistentData().getString("tycooncraft_trader");
+            if (!key.endsWith("gun") && !key.endsWith("engineer") && !key.endsWith("scrap_buyer")) continue;
+            ex.append(key.substring(19)).append(": ");
+            for (int i = 0; i < Math.min(3, v.getOffers().size()); i++) {
+                var o = v.getOffers().get(i);
+                ex.append(o.getItemCostA().count()).append(' ').append(o.getItemCostA().item().value().getDescription().getString())
+                        .append(" → ").append(o.getResult().getCount()).append(' ').append(o.getResult().getHoverName().getString()).append("; ");
+            }
+            ex.append(" | ");
+        }
+        System.out.println("[AUTOTEST] v240 village traders=" + traders + " residents=" + residents + " babies=" + babies + " golems=" + golems
+                + " offers=" + totalOffers + " (min " + minOffers + " max " + maxOffers + ") pools=" + pools + " names=" + names);
+        System.out.println("[AUTOTEST] v240 examples " + ex);
+        sp.teleportTo(sl, villOrigin.getX() + 32, villOrigin.getY() + 62, villOrigin.getZ() + 32, 0f, 90f);
+    }
+
+    static void villageView(ServerPlayer sp, double x, double y, double z, float yaw, float pitch) {
+        sp.teleportTo(sp.serverLevel(), villOrigin.getX() + x, villOrigin.getY() + y, villOrigin.getZ() + z, yaw, pitch);
+    }
+
     static com.tycooncraft.vehicle.JetEntity landJet;
 
     static void jetLandSetup(ServerPlayer sp) {

@@ -83,43 +83,82 @@ public final class PowerRenderers {
     }
 
     /**
-     * v0.23.0 로봇 팔: 평소엔 집는 쪽(뒤)을 보고 있다가, 옮길 때 앞으로 휙 돌아 내려놓고 돌아온다 (0.5초 + 0.5초).
-     * 머리 모델은 +Z(남) 쪽으로 팔을 뻗은 모양.
+     * v0.23.3 로봇 팔 — 몸통(좌우)·어깨·팔꿈치·손목·집게 따로 움직임. 한 동작 24틱:
+     * 0~3 뒤로 숙여 내려가기(집게 벌림) · 3~5 집기 · 5~8 들어 올리기 · 8~14 앞으로 돌기 ·
+     * 14~17 내려가기 · 17~19 놓기(18틱에 서버가 실제로 넣음) · 19~24 올리며 뒤로 돌아오기
      */
     public static class Arm implements BlockEntityRenderer<com.tycooncraft.automation.RobotArmBlockEntity> {
         public Arm(BlockEntityRendererProvider.Context c) {
+        }
+
+        private static float smooth(float a, float b, float t, float t0, float t1) {
+            float u = Mth.clamp((t - t0) / (t1 - t0), 0f, 1f);
+            u = u * u * (3 - 2 * u);
+            return a + (b - a) * u;
+        }
+
+        /** [몸통 돌림(0=뒤,1=앞), 숙임(0=듦,1=내림), 집게 벌림(0~1), 들고 있음] */
+        static float[] pose(float t) {
+            if (t < 0 || t >= 24) return new float[]{0, 0, 0.55f, 0};
+            float turn = t < 14 ? smooth(0, 1, t, 8, 14) : smooth(1, 0, t, 19, 24);
+            float reach;
+            if (t < 5) reach = smooth(0, 1, t, 0, 3);
+            else if (t < 14) reach = smooth(1, 0, t, 5, 8);
+            else if (t < 19) reach = smooth(0, 1, t, 14, 17);
+            else reach = smooth(1, 0, t, 19, 22);
+            float open;
+            if (t < 3) open = smooth(0.55f, 1, t, 0, 3);
+            else if (t < 17) open = smooth(1, 0, t, 3, 5);
+            else open = smooth(0, 1, t, 17, 19) - smooth(0, 0.45f, t, 20, 24);
+            boolean carry = t >= 4.5f && t < 18f;
+            return new float[]{turn, reach, open, carry ? 1 : 0};
+        }
+
+        @Override
+        public net.minecraft.world.phys.AABB getRenderBoundingBox(com.tycooncraft.automation.RobotArmBlockEntity be) {
+            return new net.minecraft.world.phys.AABB(be.getBlockPos()).inflate(1.2, 0, 1.2).expandTowards(0, 1.2, 0);
         }
 
         @Override
         public void render(com.tycooncraft.automation.RobotArmBlockEntity be, float pt, PoseStack ps, MultiBufferSource buf, int light, int overlay) {
             if (be.getLevel() == null) return;
             var f = be.getBlockState().getValue(com.tycooncraft.automation.RobotArmBlock.FACING);
-            float front = -f.toYRot(), back = front + 180f;
-            float t = (be.getLevel().getGameTime() - be.swingAt + pt) / 10f;
-            float yaw, lift = 0;
-            boolean carry = false;
-            if (t >= 0 && t < 1) {
-                float e = t * t * (3 - 2 * t);
-                yaw = back + 180f * e;
-                lift = Mth.sin(t * Mth.PI) * 2.5f;
-                carry = true;
-            } else if (t >= 1 && t < 2) {
-                float u = t - 1, e = u * u * (3 - 2 * u);
-                yaw = front + 180f * e;
-                lift = Mth.sin(u * Mth.PI) * 1.5f;
-            } else yaw = back;
+            float back = -f.toYRot() + 180f;
+            float t = be.getLevel().getGameTime() - be.swingAt + pt;
+            float[] p = pose(t);
+            float yaw = back - 180f * p[0];
+            float shoulder = Mth.lerp(p[1], -10f, 25f), elbow = Mth.lerp(p[1], -40f, -55f);
+            // 쉬는 동안 살짝 숨쉬듯
+            if (p[3] == 0 && (t < 0 || t >= 24)) shoulder += Mth.sin((be.getLevel().getGameTime() + pt) * 0.08f) * 1.2f;
+            var vc = VehicleModels.cutout(buf);
             ps.pushPose();
-            ps.translate(0.5, (6 + lift) / 16.0, 0.5);
+            ps.translate(0.5, 6 / 16.0, 0.5);
             ps.mulPose(Axis.YP.rotationDegrees(yaw));
-            VehicleModels.part(ps, VehicleModels.cutout(buf), VehicleModels.ROBOT_ARM_HEAD, 1f, light);
-            if (carry && be.carried != null) {
-                ps.translate(0, 6 / 16.0, 8.5 / 16.0);
+            VehicleModels.part(ps, vc, VehicleModels.ROBOT_ARM_TURRET, 1f, light);
+            ps.translate(0, 4 / 16.0, 0);
+            ps.mulPose(Axis.XP.rotationDegrees(shoulder));
+            VehicleModels.part(ps, vc, VehicleModels.ROBOT_ARM_UPPER, 1f, light);
+            ps.translate(0, 10 / 16.0, 0);
+            ps.mulPose(Axis.XP.rotationDegrees(elbow));
+            VehicleModels.part(ps, vc, VehicleModels.ROBOT_ARM_FORE, 1f, light);
+            ps.translate(0, 0, 11 / 16.0);
+            ps.mulPose(Axis.XP.rotationDegrees(-(shoulder + elbow)));   // 집게는 늘 수직
+            VehicleModels.part(ps, vc, VehicleModels.ROBOT_ARM_WRIST, 1f, light);
+            float gap = (0.9f + p[2] * 1.6f) / 16f;
+            for (int side = -1; side <= 1; side += 2) {
+                ps.pushPose();
+                ps.translate(side * gap, 0, 0);
+                VehicleModels.part(ps, vc, VehicleModels.ROBOT_ARM_FINGER, 1f, light);
+                ps.popPose();
+            }
+            if (p[3] > 0 && be.carried != null) {
+                ps.translate(0, -7.0 / 16.0, 0);
+                ps.mulPose(Axis.YP.rotationDegrees(90));   // 팔 옆에서 보면 넓은 면이 보이게
                 ps.scale(0.38f, 0.38f, 0.38f);
                 net.minecraft.client.Minecraft.getInstance().getItemRenderer().renderStatic(new net.minecraft.world.item.ItemStack(be.carried),
                         net.minecraft.world.item.ItemDisplayContext.FIXED, light, overlay, ps, buf, be.getLevel(), 0);
             }
             ps.popPose();
-            // 필터 아이템: 받침 앞면 작은 표시
             if (!be.filter().isEmpty()) renderFilter(be.filter(), f, ps, buf, light, overlay, be.getLevel(), 0.2);
         }
     }
@@ -131,8 +170,19 @@ public final class PowerRenderers {
 
         @Override
         public void render(com.tycooncraft.automation.SorterBlockEntity be, float pt, PoseStack ps, MultiBufferSource buf, int light, int overlay) {
-            if (be.filter().isEmpty() || be.getLevel() == null) return;
+            if (be.getLevel() == null) return;
             var f = be.getBlockState().getValue(com.tycooncraft.automation.SorterBlock.FACING);
+            // 가림판: 평소엔 흐름 방향과 나란히, 왼쪽으로 보낼 때 45° 꺾였다가 돌아옴
+            float t = be.getLevel().getGameTime() - be.flapAt + pt;
+            float swing = t < 0 || t > 12 ? 0 : t < 2 ? t / 2 : t < 8 ? 1 : 1 - (t - 8) / 4;
+            if (be.flapLeft) swing = swing * swing * (3 - 2 * swing);
+            else swing = 0;
+            ps.pushPose();
+            ps.translate(0.5, 8 / 16.0, 0.5);
+            ps.mulPose(Axis.YP.rotationDegrees(-f.toYRot() + 180f + 40f * swing));
+            VehicleModels.part(ps, VehicleModels.cutout(buf), VehicleModels.SORTER_FLAP, 1f, light);
+            ps.popPose();
+            if (be.filter().isEmpty()) return;
             var left = f.getCounterClockWise();
             ps.pushPose();
             ps.translate(0.5 + left.getStepX() * 0.47, 0.32, 0.5 + left.getStepZ() * 0.47);

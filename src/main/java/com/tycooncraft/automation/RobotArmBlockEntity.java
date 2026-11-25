@@ -30,9 +30,12 @@ import net.neoforged.neoforge.items.ItemHandlerHelper;
  * 한 번에 최대 8개, 0.8초마다. 전기 4 ⚡ (전선에 붙여야 움직임). 필터를 정하면 그 아이템만 옮김.
  */
 public class RobotArmBlockEntity extends BlockEntity implements PowerNode {
-    public static final int CYCLE = 16, BATCH = 8, POWER = 4;
+    /** 한 동작 = 24틱(1.2초): 내려가 집기 → 들어 올려 돌기 → 내려놓기(18틱째 실제로 넣음) → 돌아오기 */
+    public static final int CYCLE = 24, DELIVER = 18, BATCH = 12, POWER = 4;
     public static int moves;
     private ItemStack filter = ItemStack.EMPTY;
+    private ItemStack held = ItemStack.EMPTY;
+    private int action = -1;
     private boolean hasWork;
     private float progress;
     /** 클라이언트 애니메이션 */
@@ -67,7 +70,7 @@ public class RobotArmBlockEntity extends BlockEntity implements PowerNode {
 
     @Override
     public int demand(Layer l) {
-        return l == Layer.ELEC && hasWork ? POWER : 0;
+        return l == Layer.ELEC && (hasWork || action >= 0) ? POWER : 0;
     }
 
     public Direction facing() {
@@ -88,25 +91,48 @@ public class RobotArmBlockEntity extends BlockEntity implements PowerNode {
         return !s.isEmpty() && (filter.isEmpty() || ItemStack.isSameItemSameComponents(s, filter));
     }
 
-    public void serverTick() {
-        if (level == null) return;
-        if (!hasWork) {
-            if ((level.getGameTime() + worldPosition.asLong()) % CYCLE == 0) hasWork = move(true);
-            return;
-        }
-        progress += PowerGrid.ratio(level, worldPosition, Layer.ELEC);
-        if (progress < CYCLE) return;
-        progress = 0;
-        hasWork = move(false);
+    public ItemStack held() {
+        return held;
     }
 
-    /** 실제로 옮기거나(simulate=false) 옮길 수 있는지만 본다 */
-    private boolean move(boolean simulate) {
+    public void serverTick() {
+        if (level == null) return;
+        if (action >= 0) {
+            action++;
+            if (action == DELIVER && !held.isEmpty()) {
+                deliver(held);
+                held = ItemStack.EMPTY;
+                setChanged();
+            }
+            if (action >= CYCLE) action = -1;
+        }
+        if (!hasWork) {
+            if ((level.getGameTime() + worldPosition.asLong()) % 8 == 0) hasWork = pick(true);
+            return;
+        }
+        // 전기는 동작하는 동안에도 미리 모아 둠 → 전기가 충분하면 쉬지 않고 연달아 움직임
+        if (progress < CYCLE) progress += PowerGrid.ratio(level, worldPosition, Layer.ELEC);
+        if (action < 0 && progress >= CYCLE) {
+            progress -= CYCLE;
+            hasWork = pick(false);
+        }
+    }
+
+    private IItemHandler target(Direction f) {
+        return level.getCapability(Capabilities.ItemHandler.BLOCK, worldPosition.relative(f), f.getOpposite());
+    }
+
+    private boolean beltAhead(Direction f) {
+        return level.getBlockState(worldPosition.relative(f)).getBlock() instanceof ConveyorBlock;
+    }
+
+    /** 옮길 것을 찾아 집는다 (simulate=true 면 찾기만) */
+    private boolean pick(boolean simulate) {
         Direction f = facing();
-        BlockPos src = worldPosition.relative(f.getOpposite()), dst = worldPosition.relative(f);
+        BlockPos src = worldPosition.relative(f.getOpposite());
         IItemHandler from = level.getCapability(Capabilities.ItemHandler.BLOCK, src, f);
-        IItemHandler to = level.getCapability(Capabilities.ItemHandler.BLOCK, dst, f.getOpposite());
-        boolean dstBelt = to == null && level.getBlockState(dst).getBlock() instanceof ConveyorBlock;
+        IItemHandler to = target(f);
+        boolean dstBelt = to == null && beltAhead(f);
         if (to == null && !dstBelt) return false;
         if (from != null) {
             for (int i = 0; i < from.getSlots(); i++) {
@@ -114,14 +140,12 @@ public class RobotArmBlockEntity extends BlockEntity implements PowerNode {
                 if (!matches(peek)) continue;
                 int can = dstBelt ? peek.getCount() : peek.getCount() - ItemHandlerHelper.insertItemStacked(to, peek, true).getCount();
                 if (can <= 0) continue;
-                if (simulate) return true;
-                ItemStack got = from.extractItem(i, can, false);
-                deliver(got, to, dst, f);
+                if (!simulate) begin(from.extractItem(i, can, false));
                 return true;
             }
             return false;
         }
-        // 상자가 아니면: 그 칸(컨베이어 위 등)에 떨어진 아이템을 집음
+        // 상자가 아니면: 그 칸(컨베이어 위 등)에 떨어진 아이템을 주움
         for (ItemEntity e : level.getEntitiesOfClass(ItemEntity.class, new AABB(src).expandTowards(0, 0.5, 0))) {
             ItemStack s = e.getItem();
             if (!matches(s)) continue;
@@ -132,18 +156,27 @@ public class RobotArmBlockEntity extends BlockEntity implements PowerNode {
             ItemStack got = s.split(can);
             if (s.isEmpty()) e.discard();
             else e.setItem(s);
-            deliver(got, to, dst, f);
+            begin(got);
             return true;
         }
         return false;
     }
 
-    private void deliver(ItemStack got, IItemHandler to, BlockPos dst, Direction f) {
+    private void begin(ItemStack got) {
+        held = got;
+        action = 0;
+        setChanged();
+        level.blockEvent(worldPosition, getBlockState().getBlock(), 1, Item.getId(got.getItem()));
+        level.playSound(null, worldPosition, SoundEvents.PISTON_CONTRACT, SoundSource.BLOCKS, 0.15f, 1.7f);
+    }
+
+    private void deliver(ItemStack got) {
+        Direction f = facing();
+        IItemHandler to = target(f);
         ItemStack rest = to != null ? ItemHandlerHelper.insertItemStacked(to, got, false) : ItemTransfer.output(level, worldPosition, f, got, false);
         if (!rest.isEmpty()) ItemTransfer.spawnAt(level, worldPosition, f, rest);
         moves++;
-        level.blockEvent(worldPosition, getBlockState().getBlock(), 1, Item.getId(got.getItem()));
-        level.playSound(null, worldPosition, SoundEvents.PISTON_EXTEND, SoundSource.BLOCKS, 0.2f, 1.6f + level.random.nextFloat() * 0.2f);
+        level.playSound(null, worldPosition, SoundEvents.PISTON_EXTEND, SoundSource.BLOCKS, 0.15f, 1.8f);
     }
 
     @Override
@@ -162,12 +195,15 @@ public class RobotArmBlockEntity extends BlockEntity implements PowerNode {
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider reg) {
         super.saveAdditional(tag, reg);
         if (!filter.isEmpty()) tag.put("Filter", filter.save(reg));
+        if (!held.isEmpty()) tag.put("Held", held.save(reg));
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider reg) {
         super.loadAdditional(tag, reg);
         filter = tag.contains("Filter") ? ItemStack.parseOptional(reg, tag.getCompound("Filter")) : ItemStack.EMPTY;
+        held = tag.contains("Held") ? ItemStack.parseOptional(reg, tag.getCompound("Held")) : ItemStack.EMPTY;
+        if (!held.isEmpty()) action = 0;   // 들고 있던 건 다시 내려놓기부터
     }
 
     @Override

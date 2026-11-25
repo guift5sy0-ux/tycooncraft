@@ -1,0 +1,145 @@
+{
+ "textures": {
+  "particle": "tycooncraft:block/robot_arm_paint",
+  "p": "tycooncraft:block/robot_arm_paint",
+  "j": "tycooncraft:block/robot_arm_joint"
+ },
+ "elements": [
+  {
+   "from": [
+    7.5,
+    8,
+    2
+   ],
+   "to": [
+    8.5,
+    11,
+    14
+   ],
+   "faces": {
+    "north": {
+     "texture": "#p",
+     "uv": [
+      0,
+      0,
+      1.0,
+      3
+     ]
+    },
+    "east": {
+     "texture": "#p",
+     "uv": [
+      0,
+      0,
+      12,
+      3
+     ]
+    },
+    "south": {
+     "texture": "#p",
+     "uv": [
+      0,
+      0,
+      1.0,
+      3
+     ]
+    },
+    "west": {
+     "texture": "#p",
+     "uv": [
+      0,
+      0,
+      12,
+      3
+     ]
+    },
+    "up": {
+     "texture": "#p",
+     "uv": [
+      0,
+      0,
+      1.0,
+      12
+     ]
+    },
+    "down": {
+     "texture": "#p",
+     "uv": [
+      0,
+      0,
+      1.0,
+      12
+     ]
+    }
+   }
+  },
+  {
+   "from": [
+    7,
+    8,
+    7
+   ],
+   "to": [
+    9,
+    12,
+    9
+   ],
+   "faces": {
+    "north": {
+     "texture": "#j",
+     "uv": [
+      0,
+      0,
+      2,
+      4
+     ]
+    },
+    "east": {
+     "texture": "#j",
+     "uv": [
+      0,
+      0,
+      2,
+      4
+     ]
+    },
+    "south": {
+     "texture": "#j",
+     "uv": [
+      0,
+      0,
+      2,
+      4
+     ]
+    },
+    "west": {
+     "texture": "#j",
+     "uv": [
+      0,
+      0,
+      2,
+      4
+     ]
+    },
+    "up": {
+     "texture": "#j",
+     "uv": [
+      0,
+      0,
+      2,
+      2
+     ]
+    },
+    "down": {
+     "texture": "#j",
+     "uv": [
+      0,
+      0,
+      2,
+      2
+     ]
+    }
+   }
+  }
+ ]
+}

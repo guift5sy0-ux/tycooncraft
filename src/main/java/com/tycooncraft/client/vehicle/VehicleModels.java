@@ -52,8 +52,10 @@ public final class VehicleModels {
     public static final ModelResourceLocation GANG_MG = id("gang_mg");
     public static final ModelResourceLocation CCTV_HEAD = id("cctv_head");
     public static final ModelResourceLocation SHAFT = id("shaft"), ENGINE_FLYWHEEL = id("engine_flywheel"), ENGINE_ROD = id("engine_rod");
-    public static final ModelResourceLocation ROBOT_ARM_HEAD = id("robot_arm_head");
-    public static final ModelResourceLocation[] ALL = {ROBOT_ARM_HEAD, CCTV_HEAD, SHAFT, ENGINE_FLYWHEEL, ENGINE_ROD, GANG_TRUCK_BODY, GANG_TRUCK_WHEEL, GANG_MG, MINER_BODY, MINER_WHEEL, MINER_DRILL, CAR_BODY, CAR_WHEEL, LOCO_BODY, LOCO_WHEELS, HELI_BODY, HELI_ROTOR, HELI_TAIL_ROTOR, DRONE_BODY, DRONE_PROP,
+    public static final ModelResourceLocation ROBOT_ARM_TURRET = id("robot_arm_turret"), ROBOT_ARM_UPPER = id("robot_arm_upper"),
+            ROBOT_ARM_FORE = id("robot_arm_fore"), ROBOT_ARM_WRIST = id("robot_arm_wrist"), ROBOT_ARM_FINGER = id("robot_arm_finger"),
+            SORTER_FLAP = id("sorter_flap");
+    public static final ModelResourceLocation[] ALL = {ROBOT_ARM_TURRET, ROBOT_ARM_UPPER, ROBOT_ARM_FORE, ROBOT_ARM_WRIST, ROBOT_ARM_FINGER, SORTER_FLAP, CCTV_HEAD, SHAFT, ENGINE_FLYWHEEL, ENGINE_ROD, GANG_TRUCK_BODY, GANG_TRUCK_WHEEL, GANG_MG, MINER_BODY, MINER_WHEEL, MINER_DRILL, CAR_BODY, CAR_WHEEL, LOCO_BODY, LOCO_WHEELS, HELI_BODY, HELI_ROTOR, HELI_TAIL_ROTOR, DRONE_BODY, DRONE_PROP,
             DRONE2_BODY, DRONE_PROP2, TANK_HULL, TANK_WHEEL, TANK_TURRET, TANK_BARREL, JET_BODY, ROCKET, SHELL, TURRET_HEAD, TURRET_GUN, CIWS_HEAD, CIWS_GUN, HELM_BODY, HELM_WHEEL, CHUTE_CANOPY, CHUTE_PACK};
 
     private static ModelResourceLocation id(String name) {

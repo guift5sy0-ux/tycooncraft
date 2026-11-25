@@ -23,6 +23,9 @@ import net.neoforged.neoforge.items.IItemHandler;
 public class SorterBlockEntity extends BlockEntity {
     public static int sortedLeft, passed;
     private ItemStack filter = ItemStack.EMPTY;
+    /** 클라이언트: 가림판 애니메이션 */
+    public long flapAt = -100;
+    public boolean flapLeft;
 
     public SorterBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SORTER.get(), pos, state);
@@ -63,8 +66,10 @@ public class SorterBlockEntity extends BlockEntity {
         Direction d = out(s);
         ItemStack rest = ItemTransfer.output(level, worldPosition, d, s, true);
         if (rest.getCount() < s.getCount()) {
-            if (d != getBlockState().getValue(SorterBlock.FACING)) sortedLeft += s.getCount() - rest.getCount();
+            boolean left = d != getBlockState().getValue(SorterBlock.FACING);
+            if (left) sortedLeft += s.getCount() - rest.getCount();
             else passed += s.getCount() - rest.getCount();
+            level.blockEvent(worldPosition, getBlockState().getBlock(), 1, left ? 1 : 0);
         }
         return rest;
     }
@@ -77,6 +82,18 @@ public class SorterBlockEntity extends BlockEntity {
             if (rest.isEmpty()) e.discard();
             else e.setItem(rest);
         }
+    }
+
+    @Override
+    public boolean triggerEvent(int id, int param) {
+        if (id == 1) {
+            if (level != null && level.isClientSide) {
+                flapAt = level.getGameTime();
+                flapLeft = param == 1;
+            }
+            return true;
+        }
+        return super.triggerEvent(id, param);
     }
 
     @Override

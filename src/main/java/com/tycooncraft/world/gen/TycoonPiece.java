@@ -43,7 +43,7 @@ public class TycoonPiece extends StructurePiece {
     /** 바닥(y-1)부터 지붕 위까지 — 지형 다듬기가 이 상자 아래를 메우고 안쪽을 비운다 */
     static BoundingBox box(String kind, BlockPos o) {
         return new BoundingBox(o.getX() - 1, o.getY() - 1, o.getZ() - 1,
-                o.getX() + TycoonStructure.sizeX(kind) + 1, o.getY() + 16, o.getZ() + TycoonStructure.sizeZ(kind) + 1);
+                o.getX() + TycoonStructure.sizeX(kind) + 1, o.getY() + 24, o.getZ() + TycoonStructure.sizeZ(kind) + 1);
     }
 
     @Override

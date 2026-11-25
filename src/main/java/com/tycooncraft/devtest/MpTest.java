@@ -81,7 +81,7 @@ public final class MpTest {
         if (tester != null && joinTick >= 0) {
             int dt = ticks - joinTick;
             if (dt == 1200 && village != null) view(village, 16);
-            if (dt == 1320 || dt == 1380 || dt == 1440) inspect(tester.serverLevel(), "village", village, 32, 32);
+            if (dt == 1320 || dt == 1380 || dt == 1440) inspect(tester.serverLevel(), "village", village, 64, 64);
             if (dt == 1500 && ruin != null) view(ruin, 11);
             if (dt == 1640) inspect(tester.serverLevel(), "ruin", ruin, 22, 14);
             if (dt == 1660) {

@@ -50,8 +50,8 @@ public final class WorldGen {
     private static void tryBuild(ServerPlayer player, String type) {
         ServerLevel level = player.serverLevel();
         RandomSource random = player.getRandom();
-        int sx = type.equals("village") ? 32 : 22;
-        int sz = type.equals("village") ? 32 : 14;
+        int sx = type.equals("village") ? StructureBuilder.VILLAGE_SIZE : 22;
+        int sz = type.equals("village") ? StructureBuilder.VILLAGE_SIZE : 14;
 
         double angle = random.nextDouble() * Math.PI * 2;
         double dist = MIN_DIST + random.nextDouble() * (MAX_DIST - MIN_DIST);

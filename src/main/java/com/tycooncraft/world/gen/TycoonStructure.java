@@ -37,7 +37,7 @@ public class TycoonStructure extends Structure {
 
     static int sizeX(String kind) {
         return switch (kind) {
-            case "village" -> 32;
+            case "village" -> com.tycooncraft.world.StructureBuilder.VILLAGE_SIZE;
             case "hideout" -> 31;
             default -> 22;
         };
@@ -45,7 +45,7 @@ public class TycoonStructure extends Structure {
 
     static int sizeZ(String kind) {
         return switch (kind) {
-            case "village" -> 32;
+            case "village" -> com.tycooncraft.world.StructureBuilder.VILLAGE_SIZE;
             case "hideout" -> 31;
             default -> 14;
         };
