@@ -64,16 +64,17 @@ public class BoilerBlockEntity extends BlockEntity {
         }
         boolean lit = burn > 0;
         if (burn > 0) {
-            burn--;
+            // v0.23.2: 증기가 꽉 찼거나 물이 없으면 불이 잦아듦(연료 안 줄어듦) — 낭비 없음
             if (water > 0 && steam < MAX_STEAM) {
+                burn--;
                 steam = Math.min(MAX_STEAM, steam + STEAM_PER_TICK);
                 water--;
             }
         } else if (steam < MAX_STEAM / 2 && water > 0) {
             ItemStack f = fuel.getStackInSlot(0);
             if (!f.isEmpty()) {
-                // 증기기관용으로 연료가 화로보다 빨리 탐 (석탄 1개 = 800틱)
-                burnMax = burn = Math.max(20, f.getBurnTime(RecipeType.SMELTING) / 2);
+                // v0.23.2: 화로와 같은 시간 (석탄 1개 = 1600틱 = 증기 3200 = 증기기관 160초)
+                burnMax = burn = Math.max(20, f.getBurnTime(RecipeType.SMELTING));
                 ItemStack rem = f.getCraftingRemainingItem();
                 fuel.extractItem(0, 1, false);
                 if (!rem.isEmpty() && fuel.getStackInSlot(0).isEmpty()) fuel.setStackInSlot(0, rem);

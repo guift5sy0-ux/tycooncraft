@@ -16,6 +16,8 @@ import java.util.Map;
  * 계산은 서버 시작·레시피 동기화 때 한 번. 제작법이 없는 것은 아래 표 값을 그대로 쓴다.
  */
 public final class PriceTable {
+    /** v0.23.2: 동력 비용 보정 — 기계 가공 1회마다 (필요 동력 × 가공 시간 ÷ 1000)원을 원가에 더함 */
+    public static final double ENERGY_DIV = 1000;
     public static final double MACHINE_MARKUP = 1.6, CRAFT_MARKUP = 1.15, GUN_MARKUP = 1.25;
     /** 손으로 캐고 파는 원자재·바닐라 값 배율 (v0.18.6: 손노동 수입 ≈ 시간당 500원) */
     public static final double RAW_SCALE = 0.25;
@@ -32,12 +34,12 @@ public final class PriceTable {
     public static synchronized void compute(net.minecraft.world.item.crafting.RecipeManager rm, net.minecraft.core.HolderLookup.Provider reg) {
         Map<Item, Double> p = new LinkedHashMap<>(table());
         for (Item c : Coins.denominations()) p.put(c, 0.0001);   // 제작법에 든 동전은 설치비(되팔아도 돌려받지 못함)
-        record R(Map<Item, Integer> in, Item out, int count, double markup) {}
+        record R(Map<Item, Integer> in, Item out, int count, double markup, double energy) {}
         java.util.List<R> rs = new java.util.ArrayList<>();
         for (com.tycooncraft.machine.MachineType t : com.tycooncraft.machine.MachineType.values())
             if (!t.electricOnly())   // v0.22.0: 고급 전기 기계는 원가 절감(이윤)용 — 판매가를 끌어내리지 않음
-            for (var r : t.recipes()) rs.add(new R(r.inputs(), r.output(), r.outputCount(), MACHINE_MARKUP));
-        for (var r : com.tycooncraft.gun.GunCrafting.all()) rs.add(new R(r.needs(), r.result().getItem(), r.result().getCount(), GUN_MARKUP));
+            for (var r : t.recipes()) rs.add(new R(r.inputs(), r.output(), r.outputCount(), MACHINE_MARKUP, t.power() * (double) t.processTime() / ENERGY_DIV));
+        for (var r : com.tycooncraft.gun.GunCrafting.all()) rs.add(new R(r.needs(), r.result().getItem(), r.result().getCount(), GUN_MARKUP, 0));
         // 작업대 제작법 (이 모드 것만; 재료 선택지가 여럿이면 가장 싼 것)
         java.util.List<java.util.Map.Entry<java.util.List<net.minecraft.world.item.crafting.Ingredient>, net.minecraft.world.item.ItemStack>> crafts = new java.util.ArrayList<>();
         for (var h : rm.getAllRecipesFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING)) {
@@ -57,7 +59,7 @@ public final class PriceTable {
                     if (v == null || v <= 0) { ok = false; break; }
                     sum += v * e.getValue();
                 }
-                if (ok) best.merge(r.out(), sum / r.count() * r.markup(), Math::min);
+                if (ok) best.merge(r.out(), (sum + r.energy()) / r.count() * r.markup(), Math::min);
             }
             for (var c : crafts) {
                 Item out = c.getValue().getItem();
