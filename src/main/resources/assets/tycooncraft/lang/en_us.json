@@ -716,5 +716,8 @@
   "trader.tycooncraft.miner": "Ore Dealer",
   "trader.tycooncraft.chemist": "Chemist",
   "trader.tycooncraft.vehicle": "Mechanic",
-  "trader.tycooncraft.pharmacist": "Pharmacist"
+  "trader.tycooncraft.pharmacist": "Pharmacist",
+  "entity.tycooncraft.village_guard": "Village Guard",
+  "message.tycooncraft.guard.warn": "🚨 No shooting in the village! Fire again within 15s and the guards will open fire",
+  "message.tycooncraft.guard.wanted": "🚨 WANTED! The village guards will shoot you for 1 minute"
 }

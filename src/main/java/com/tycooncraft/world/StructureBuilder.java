@@ -87,6 +87,25 @@ public final class StructureBuilder {
         new StructureBuilder(level, origin).traders();
     }
 
+    /** v0.25.0 경비병: 큰 마을(64)은 입구 4곳+광장 2곳, 옛 마을(32)은 가운데 3명. 모자란 만큼만 채움 */
+    public static int spawnGuards(ServerLevel level, BlockPos origin, int size) {
+        int[][] spots = size >= 60 ? new int[][]{{31, 4}, {31, 59}, {4, 31}, {59, 31}, {26, 30}, {37, 33}} : new int[][]{{16, 8}, {16, 24}, {8, 16}};
+        BlockPos center = origin.offset(size / 2, 0, size / 2);
+        var box = new net.minecraft.world.phys.AABB(origin).expandTowards(size, 12, size).inflate(4);
+        int have = level.getEntitiesOfClass(com.tycooncraft.village.VillageGuard.class, box).size(), made = 0;
+        for (int i = have; i < spots.length; i++) {
+            BlockPos p = level.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, origin.offset(spots[i][0], 0, spots[i][1]));
+            var g = com.tycooncraft.registry.ModEntities.VILLAGE_GUARD.get().create(level);
+            if (g == null) continue;
+            g.moveTo(p.getX() + 0.5, p.getY(), p.getZ() + 0.5, level.random.nextFloat() * 360f, 0f);
+            g.finalizeSpawn(level, level.getCurrentDifficultyAt(p), MobSpawnType.STRUCTURE, null);
+            g.setHome(new BlockPos(center.getX(), p.getY(), center.getZ()));
+            level.addFreshEntity(g);
+            made++;
+        }
+        return made;
+    }
+
     private boolean inside(BlockPos p) {
         return clip == null || clip.isInside(p);
     }

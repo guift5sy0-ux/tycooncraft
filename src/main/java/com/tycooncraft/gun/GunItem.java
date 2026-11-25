@@ -205,6 +205,7 @@ public class GunItem extends Item {
         int before = ammo(stack);
         if (!player.getAbilities().instabuild && player.getRandom().nextFloat() >= 0.15f * saver) setAmmo(stack, before - 1);
         fire(server, player, stack, tier);
+        if (player instanceof net.minecraft.server.level.ServerPlayer sp) com.tycooncraft.village.GuardAlert.onGunfire(sp);
         if (stack.is(ModItems.RT20.get())) rt20Kick(server, player);
         // 쌍권총: 다음 발은 반대쪽 총
         if (isDual()) player.getPersistentData().putBoolean("tycooncraft_dual_left", !player.getPersistentData().getBoolean("tycooncraft_dual_left"));

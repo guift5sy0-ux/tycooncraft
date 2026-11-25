@@ -74,6 +74,7 @@ public class TycoonCraft {
 
     private void attributes(net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent event) {
         event.put(ModEntities.GANGSTER.get(), GunnerEntity.attributes(GunnerEntity.Kind.GANGSTER).build());
+        event.put(ModEntities.VILLAGE_GUARD.get(), com.tycooncraft.village.VillageGuard.attributes().build());
         event.put(ModEntities.MERCENARY.get(), GunnerEntity.attributes(GunnerEntity.Kind.MERCENARY).build());
         event.put(ModEntities.OUTLAW.get(), GunnerEntity.attributes(GunnerEntity.Kind.OUTLAW).build());
         event.put(ModEntities.CARTEL_BOSS.get(), GunnerEntity.attributes(GunnerEntity.Kind.BOSS).build());

@@ -716,5 +716,8 @@
   "trader.tycooncraft.miner": "광물상",
   "trader.tycooncraft.chemist": "화학약품상",
   "trader.tycooncraft.vehicle": "차량 정비사",
-  "trader.tycooncraft.pharmacist": "약사"
+  "trader.tycooncraft.pharmacist": "약사",
+  "entity.tycooncraft.village_guard": "마을 경비병",
+  "message.tycooncraft.guard.warn": "🚨 마을 안에서 총을 쏘지 마세요! 15초 안에 또 쏘면 경비대가 공격합니다",
+  "message.tycooncraft.guard.wanted": "🚨 수배됨! 마을 경비대가 1분 동안 당신을 공격합니다"
 }

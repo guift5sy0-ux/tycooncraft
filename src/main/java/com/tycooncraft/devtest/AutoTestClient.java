@@ -949,7 +949,16 @@ public final class AutoTestClient {
             case 5456 -> serverKeep(mc, sp -> V185Test.villageView(sp, 31.5, 18.5, -14.5, 0f, 30f));
             case 5476 -> shot(mc, "vl6_gate");
             case 5480 -> serverKeep(mc, V185Test::furnaceLog);
-            case 5482 -> next(11);
+            // ── v0.25.0 마을 경비병 ──
+            case 5486 -> serverKeep(mc, V185Test::guardZombie);
+            case 5520 -> shot(mc, "gd1_zombie");
+            case 5640 -> serverKeep(mc, V185Test::guardZombieCheck);
+            case 5650 -> serverKeep(mc, sp -> V185Test.guardGunfire(sp, 1));
+            case 5660 -> serverKeep(mc, sp -> V185Test.guardGunfire(sp, 2));
+            case 5700 -> shot(mc, "gd2_wanted");
+            case 5760 -> serverKeep(mc, V185Test::guardWantedCheck);
+            case 5800 -> serverKeep(mc, V185Test::guardAfterClear);
+            case 5802 -> next(11);
             default -> {
             }
         }

@@ -849,6 +849,7 @@ public final class V185Test {
     }
 
     static void furnaceLog(ServerPlayer sp) {
+        if (armBase == null) return;
         var sl = sp.serverLevel();
         BlockPos fb = armBase.offset(20, 0, 0);
         var ca = (net.minecraft.world.level.block.entity.ChestBlockEntity) sl.getBlockEntity(fb.offset(-1, 0, 0));
@@ -875,6 +876,7 @@ public final class V185Test {
         // 청크가 다 올라온 뒤에 땅 높이를 잼 (안 올라온 청크는 높이가 바닥으로 나옴)
         villOrigin = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, villOrigin.offset(32, 0, 32)).offset(-32, 0, -32);
         com.tycooncraft.world.StructureBuilder.village(sl, villOrigin);
+        System.out.println("[AUTOTEST] v250 guardsSpawned=" + com.tycooncraft.world.StructureBuilder.spawnGuards(sl, villOrigin, 64));
         System.out.println("[AUTOTEST] v240 villageBuilt ms=" + (System.nanoTime() - t0) / 1_000_000 + " y=" + villOrigin.getY());
     }
 
@@ -919,6 +921,55 @@ public final class V185Test {
 
     static void villageView(ServerPlayer sp, double x, double y, double z, float yaw, float pitch) {
         sp.teleportTo(sp.serverLevel(), villOrigin.getX() + x, villOrigin.getY() + y, villOrigin.getZ() + z, yaw, pitch);
+    }
+
+    // ── v0.25.0 마을 경비병 ──
+    static net.minecraft.world.entity.monster.Zombie guardZombie;
+    static float guardPlayerHp;
+
+    /** 1) 마을 안에 좀비 투입 → 경비병이 쏴서 잡는지 */
+    static void guardZombie(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        sp.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        sp.getAbilities().invulnerable = false;
+        sp.getAbilities().flying = false;
+        sp.onUpdateAbilities();
+        guardZombie = net.minecraft.world.entity.EntityType.ZOMBIE.create(sl);
+        guardZombie.moveTo(villOrigin.getX() + 31.5, villOrigin.getY(), villOrigin.getZ() + 12.5, 0, 0);
+        guardZombie.setPersistenceRequired();
+        sl.addFreshEntity(guardZombie);
+        sp.teleportTo(sl, villOrigin.getX() + 33.5, villOrigin.getY() + 1, villOrigin.getZ() + 20.5, 180f, 5f);
+        System.out.println("[AUTOTEST] v250 zombieIn shots=" + com.tycooncraft.village.GuardAlert.shotsFired);
+    }
+
+    static void guardZombieCheck(ServerPlayer sp) {
+        System.out.println("[AUTOTEST] v250 zombieDead=" + !guardZombie.isAlive() + " zombieHp=" + guardZombie.getHealth()
+                + " guardShots=" + com.tycooncraft.village.GuardAlert.shotsFired);
+    }
+
+    /** 2) 플레이어가 총을 쏨: 1발째 경고, 2발째 수배 → 경비병이 플레이어를 쏨 */
+    static void guardGunfire(ServerPlayer sp, int n) {
+        sp.setHealth(sp.getMaxHealth());
+        com.tycooncraft.village.GuardAlert.onGunfire(sp);
+        boolean w = com.tycooncraft.village.GuardAlert.wanted(sp);
+        guardPlayerHp = sp.getHealth();
+        System.out.println("[AUTOTEST] v250 gunfire#" + n + " warnings=" + com.tycooncraft.village.GuardAlert.warnings + " wanted=" + w);
+    }
+
+    static void guardWantedCheck(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        int aiming = sl.getEntitiesOfClass(com.tycooncraft.village.VillageGuard.class, sp.getBoundingBox().inflate(48), g -> g.getTarget() == sp).size();
+        System.out.println("[AUTOTEST] v250 wantedCheck hpBefore=" + guardPlayerHp + " hpNow=" + sp.getHealth() + " guardsTargeting=" + aiming
+                + " shots=" + com.tycooncraft.village.GuardAlert.shotsFired);
+        com.tycooncraft.village.GuardAlert.clear(sp);
+        sp.setHealth(sp.getMaxHealth());
+    }
+
+    static void guardAfterClear(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        int aiming = sl.getEntitiesOfClass(com.tycooncraft.village.VillageGuard.class, sp.getBoundingBox().inflate(48), g -> g.getTarget() == sp).size();
+        System.out.println("[AUTOTEST] v250 afterClear guardsTargeting=" + aiming + " hp=" + sp.getHealth());
+        sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
     }
 
     static com.tycooncraft.vehicle.JetEntity landJet;

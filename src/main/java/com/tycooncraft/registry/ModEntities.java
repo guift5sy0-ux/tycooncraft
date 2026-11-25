@@ -64,6 +64,9 @@ public final class ModEntities {
                     .sized(0.4f, 0.4f).clientTrackingRange(8).updateInterval(1).build("spider_shot"));
 
     // 몹
+    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.village.VillageGuard>> VILLAGE_GUARD = ENTITIES.register("village_guard",
+            () -> EntityType.Builder.<com.tycooncraft.village.VillageGuard>of(com.tycooncraft.village.VillageGuard::new, MobCategory.MISC)
+                    .sized(0.6f, 1.95f).clientTrackingRange(10).build("village_guard"));
     public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> GANGSTER = mob("gangster", GunnerEntity::gangster);
     public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> MERCENARY = mob("mercenary", GunnerEntity::mercenary);
     public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> OUTLAW = mob("outlaw", GunnerEntity::outlaw);
