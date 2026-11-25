@@ -99,11 +99,15 @@ public class RobotArmBlockEntity extends BlockEntity implements PowerNode {
         if (level == null) return;
         if (action >= 0) {
             action++;
+            Direction f = facing();
+            if (action == 8) lid(worldPosition.relative(f.getOpposite()), false);    // 집고 나서 뚜껑 닫기
+            if (action == 14) lid(worldPosition.relative(f), true);                  // 내려놓기 직전 앞 상자 열기
             if (action == DELIVER && !held.isEmpty()) {
                 deliver(held);
                 held = ItemStack.EMPTY;
                 setChanged();
             }
+            if (action == 22) lid(worldPosition.relative(f), false);
             if (action >= CYCLE) action = -1;
         }
         if (!hasWork) {
@@ -118,39 +122,82 @@ public class RobotArmBlockEntity extends BlockEntity implements PowerNode {
         }
     }
 
-    private IItemHandler target(Direction f) {
-        return level.getCapability(Capabilities.ItemHandler.BLOCK, worldPosition.relative(f), f.getOpposite());
+    /** v0.24.1: 상자·통 뚜껑 여닫기 (사람이 열어 둔 상자는 그대로 열린 채) */
+    private void lid(BlockPos p, boolean open) {
+        BlockState st = level.getBlockState(p);
+        if (level.getBlockEntity(p) instanceof net.minecraft.world.level.block.entity.ChestBlockEntity) {
+            int people = net.minecraft.world.level.block.entity.ChestBlockEntity.getOpenCount(level, p);
+            java.util.List<BlockPos> halves = new java.util.ArrayList<>(java.util.List.of(p));
+            if (st.hasProperty(net.minecraft.world.level.block.ChestBlock.TYPE)
+                    && st.getValue(net.minecraft.world.level.block.ChestBlock.TYPE) != net.minecraft.world.level.block.state.properties.ChestType.SINGLE)
+                halves.add(p.relative(net.minecraft.world.level.block.ChestBlock.getConnectedDirection(st)));
+            for (BlockPos h : halves) level.blockEvent(h, level.getBlockState(h).getBlock(), 1, open ? people + 1 : people);
+            if (people == 0) level.playSound(null, p, open ? SoundEvents.CHEST_OPEN : SoundEvents.CHEST_CLOSE, SoundSource.BLOCKS, 0.35f, 1.1f);
+        } else if (st.getBlock() instanceof net.minecraft.world.level.block.BarrelBlock && st.getValue(net.minecraft.world.level.block.BarrelBlock.OPEN) != open) {
+            level.setBlock(p, st.setValue(net.minecraft.world.level.block.BarrelBlock.OPEN, open), 3);
+            level.playSound(null, p, open ? SoundEvents.BARREL_OPEN : SoundEvents.BARREL_CLOSE, SoundSource.BLOCKS, 0.35f, 1.1f);
+        }
+    }
+
+    /**
+     * v0.24.1: 면에 따라 칸이 다른 블록(화로·용광로·훈연기·호퍼 등)도 알맞게:
+     * 넣을 때 옆면(연료) → 윗면(재료) 순으로, 꺼낼 때 옆면 → 아랫면(결과물) 순으로 시도
+     */
+    private IItemHandler inserter(Direction f, ItemStack st) {
+        BlockPos dst = worldPosition.relative(f);
+        for (Direction side : new Direction[]{f.getOpposite(), Direction.UP, Direction.DOWN}) {
+            IItemHandler h = level.getCapability(Capabilities.ItemHandler.BLOCK, dst, side);
+            if (h == null) return null;
+            if (st.isEmpty() || ItemHandlerHelper.insertItemStacked(h, st, true).getCount() < st.getCount()) return h;
+        }
+        return null;
+    }
+
+    private boolean hasTarget(Direction f) {
+        return level.getCapability(Capabilities.ItemHandler.BLOCK, worldPosition.relative(f), f.getOpposite()) != null || beltAhead(f);
     }
 
     private boolean beltAhead(Direction f) {
         return level.getBlockState(worldPosition.relative(f)).getBlock() instanceof ConveyorBlock;
     }
 
+    /** 이만큼을 앞에 내려놓을 수 있나 (컨베이어면 전부) */
+    private int canPlace(Direction f, ItemStack st) {
+        if (beltAhead(f) && level.getCapability(Capabilities.ItemHandler.BLOCK, worldPosition.relative(f), f.getOpposite()) == null) return st.getCount();
+        IItemHandler to = inserter(f, st);
+        return to == null ? 0 : st.getCount() - ItemHandlerHelper.insertItemStacked(to, st, true).getCount();
+    }
+
     /** 옮길 것을 찾아 집는다 (simulate=true 면 찾기만) */
     private boolean pick(boolean simulate) {
         Direction f = facing();
         BlockPos src = worldPosition.relative(f.getOpposite());
-        IItemHandler from = level.getCapability(Capabilities.ItemHandler.BLOCK, src, f);
-        IItemHandler to = target(f);
-        boolean dstBelt = to == null && beltAhead(f);
-        if (to == null && !dstBelt) return false;
-        if (from != null) {
+        if (!hasTarget(f)) return false;
+        boolean anyInv = false;
+        // 면마다 칸이 다른 블록(화로 등)은 아랫면 = 결과물에서만 꺼냄 (연료를 빼 오지 않게)
+        Direction[] faces = level.getBlockEntity(src) instanceof net.minecraft.world.WorldlyContainer ? new Direction[]{Direction.DOWN} : new Direction[]{f};
+        for (Direction side : faces) {
+            IItemHandler from = level.getCapability(Capabilities.ItemHandler.BLOCK, src, side);
+            if (from == null) break;
+            anyInv = true;
             for (int i = 0; i < from.getSlots(); i++) {
                 ItemStack peek = from.extractItem(i, BATCH, true);
                 if (!matches(peek)) continue;
-                int can = dstBelt ? peek.getCount() : peek.getCount() - ItemHandlerHelper.insertItemStacked(to, peek, true).getCount();
+                int can = canPlace(f, peek);
                 if (can <= 0) continue;
-                if (!simulate) begin(from.extractItem(i, can, false));
+                if (!simulate) {
+                    lid(src, true);
+                    begin(from.extractItem(i, can, false));
+                }
                 return true;
             }
-            return false;
         }
+        if (anyInv) return false;
         // 상자가 아니면: 그 칸(컨베이어 위 등)에 떨어진 아이템을 주움
         for (ItemEntity e : level.getEntitiesOfClass(ItemEntity.class, new AABB(src).expandTowards(0, 0.5, 0))) {
             ItemStack s = e.getItem();
             if (!matches(s)) continue;
-            ItemStack take = s.copyWithCount(Math.min(BATCH, s.getCount()));
-            int can = dstBelt ? take.getCount() : take.getCount() - ItemHandlerHelper.insertItemStacked(to, take, true).getCount();
+            int can = canPlace(f, s.copyWithCount(Math.min(BATCH, s.getCount())));
             if (can <= 0) continue;
             if (simulate) return true;
             ItemStack got = s.split(can);
@@ -172,7 +219,7 @@ public class RobotArmBlockEntity extends BlockEntity implements PowerNode {
 
     private void deliver(ItemStack got) {
         Direction f = facing();
-        IItemHandler to = target(f);
+        IItemHandler to = inserter(f, got);
         ItemStack rest = to != null ? ItemHandlerHelper.insertItemStacked(to, got, false) : ItemTransfer.output(level, worldPosition, f, got, false);
         if (!rest.isEmpty()) ItemTransfer.spawnAt(level, worldPosition, f, rest);
         moves++;

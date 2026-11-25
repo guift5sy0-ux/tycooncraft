@@ -823,7 +823,42 @@ public final class V185Test {
         put(sl, armBase.offset(0, 0, 3), ModBlocks.SORTER.get().defaultBlockState().setValue(com.tycooncraft.automation.SorterBlock.FACING, net.minecraft.core.Direction.EAST));
         ((com.tycooncraft.automation.SorterBlockEntity) sl.getBlockEntity(armBase.offset(0, 0, 3))).setFilter(new ItemStack(net.minecraft.world.item.Items.IRON_INGOT));
         put(sl, armBase.offset(1, 0, 3), ModBlocks.CONVEYOR.get().defaultBlockState().setValue(com.tycooncraft.block.ConveyorBlock.FACING, net.minecraft.core.Direction.EAST));
-        sp.teleportTo(sl, armBase.getX() + 6.5, armBase.getY() + 2.2, armBase.getZ() + 6.8, 180f, 16f);
+        // v0.24.1 화로 라인: 상자(원철·석탄) → 팔 → 화로 → 팔 → 상자
+        BlockPos fb = armBase.offset(20, 0, 0);
+        sl.setChunkForced(fb.getX() >> 4, fb.getZ() >> 4, true);   // 마을 시험하러 멀리 가도 계속 돌게
+        sl.setChunkForced((fb.getX() + 3) >> 4, fb.getZ() >> 4, true);
+        sl.setChunkForced((fb.getX() - 1) >> 4, fb.getZ() >> 4, true);
+        for (int x = -2; x <= 5; x++) for (int y = 0; y <= 3; y++) for (int z = -1; z <= 3; z++)
+            put(sl, fb.offset(x, y, z), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+        var E = net.minecraft.core.Direction.EAST;
+        put(sl, fb.offset(-1, 0, 0), net.minecraft.world.level.block.Blocks.CHEST.defaultBlockState());
+        var ca = (net.minecraft.world.level.block.entity.ChestBlockEntity) sl.getBlockEntity(fb.offset(-1, 0, 0));
+        ca.setItem(0, new ItemStack(net.minecraft.world.item.Items.RAW_IRON, 16));
+        ca.setItem(1, new ItemStack(net.minecraft.world.item.Items.COAL, 4));
+        put(sl, fb, ModBlocks.ROBOT_ARM.get().defaultBlockState().setValue(com.tycooncraft.automation.RobotArmBlock.FACING, E));
+        put(sl, fb.offset(1, 0, 0), net.minecraft.world.level.block.Blocks.FURNACE.defaultBlockState()
+                .setValue(net.minecraft.world.level.block.AbstractFurnaceBlock.FACING, net.minecraft.core.Direction.SOUTH));
+        put(sl, fb.offset(2, 0, 0), ModBlocks.ROBOT_ARM.get().defaultBlockState().setValue(com.tycooncraft.automation.RobotArmBlock.FACING, E));
+        put(sl, fb.offset(3, 0, 0), net.minecraft.world.level.block.Blocks.BARREL.defaultBlockState()
+                .setValue(net.minecraft.world.level.block.BarrelBlock.FACING, net.minecraft.core.Direction.UP));
+        put(sl, fb.offset(0, 0, 1), ModBlocks.ACCUMULATOR.get().defaultBlockState());
+        ((com.tycooncraft.power.elec.AccumulatorBlockEntity) sl.getBlockEntity(fb.offset(0, 0, 1))).stored = 200_000;
+        put(sl, fb.offset(1, 0, 1), ModBlocks.POWER_CABLE.get().defaultBlockState());
+        put(sl, fb.offset(2, 0, 1), ModBlocks.POWER_CABLE.get().defaultBlockState());
+        sp.teleportTo(sl, fb.getX() + 1.0, fb.getY() + 1.6, fb.getZ() - 2.6, 0f, 28f);
+    }
+
+    static void furnaceLog(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        BlockPos fb = armBase.offset(20, 0, 0);
+        var ca = (net.minecraft.world.level.block.entity.ChestBlockEntity) sl.getBlockEntity(fb.offset(-1, 0, 0));
+        var fu = (net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity) sl.getBlockEntity(fb.offset(1, 0, 0));
+        var bo = (net.minecraft.world.level.block.entity.BarrelBlockEntity) sl.getBlockEntity(fb.offset(3, 0, 0));
+        int ingots = 0;
+        for (int i = 0; i < bo.getContainerSize(); i++) if (bo.getItem(i).is(net.minecraft.world.item.Items.IRON_INGOT)) ingots += bo.getItem(i).getCount();
+        System.out.println("[AUTOTEST] v241 furnaceLine chestRaw=" + ca.getItem(0).getCount() + " chestCoal=" + ca.getItem(1).getCount()
+                + " furnaceIn=" + fu.getItem(0) + " fuel=" + fu.getItem(1) + " out=" + fu.getItem(2) + " barrelIngots=" + ingots
+                + " lit=" + sl.getBlockState(fb.offset(1, 0, 0)).getValue(net.minecraft.world.level.block.AbstractFurnaceBlock.LIT));
     }
 
     static void villageGo(ServerPlayer sp) {

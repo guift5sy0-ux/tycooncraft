@@ -37,6 +37,14 @@ public final class AutoTestClient {
         KeyMapping.set(k.getKey(), down);
     }
 
+    static boolean lidShot;
+
+    /** 화로 라인 첫 상자의 뚜껑이 열려 있나 (클라이언트) */
+    private static boolean lidOpen(Minecraft mc) {
+        return mc.level != null && V185Test.armBase != null
+                && mc.level.getBlockEntity(V185Test.armBase.offset(19, 0, 0)) instanceof net.minecraft.world.level.block.entity.ChestBlockEntity c && c.getOpenNess(1f) > 0.3f;
+    }
+
     /** 로봇 팔·분류기 애니메이션을 원하는 단계에 멈춰 둠 (클라이언트) */
     private static void armFreeze(Minecraft mc, float[] phases) {
         if (mc.level == null || V185Test.armBase == null) return;
@@ -203,7 +211,7 @@ public final class AutoTestClient {
         if (System.getenv("TC_AUTOONLY") != null && phaseT < 4656) phaseT = 4656;
         if (System.getenv("TC_BOOKONLY") != null && phaseT < 4996) phaseT = 4996;
         if (System.getenv("TC_ARMONLY") != null && phaseT < 5052) phaseT = 5052;
-        if (System.getenv("TC_VILLONLY") != null && phaseT < 5100) phaseT = 5100;   // 로컬 디버그: 이펙트 구간만
+        if (System.getenv("TC_VILLONLY") != null && phaseT < 5150) phaseT = 5150;   // 로컬 디버그: 이펙트 구간만
         int s = phaseT;
         double g = -60;
         if (s > 3226 && s < 3300 && s % 2 == 0) serverDo(mc, V185Test::keepAirborne);
@@ -915,30 +923,33 @@ public final class AutoTestClient {
             case 5050 -> shot(mc, "gb9");
             case 5052 -> { mc.setScreen(null); o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::armShowSetup); }
             // ── v0.24.0 로봇 팔 관절 모션 / 분류기 가림판 (클라이언트에서 동작 단계를 고정해 찍음) ──
-            case 5080, 5081, 5082, 5083 -> armFreeze(mc, new float[]{1.5f, 4.5f, 11f, 16.5f, 21f});
-            case 5084 -> shot(mc, "ar1_phases");
-            case 5086 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), V185Test.armBase.getX() + 6.5, V185Test.armBase.getY() + 0.9, V185Test.armBase.getZ() + 3.9, 180f, 4f));
-            case 5090, 5091, 5092, 5093 -> armFreeze(mc, new float[]{1.5f, 4.5f, 11f, 16.5f, 21f});
-            case 5094 -> shot(mc, "ar2_close");
-            case 5095 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), V185Test.armBase.getX() + 0.5, V185Test.armBase.getY() + 1.6, V185Test.armBase.getZ() + 5.3, 180f, 38f));
-            case 5097, 5098 -> armFreeze(mc, new float[]{1.5f, 4.5f, 11f, 16.5f, 21f});
-            case 5099 -> shot(mc, "ar3_sorter");
+            case 5056, 5060, 5064, 5068, 5072, 5076, 5080, 5084, 5088, 5092, 5096, 5100, 5104, 5108, 5112, 5116, 5120 -> { if (lidOpen(mc) && !lidShot) { lidShot = true; shot(mc, "ar4_chest_lid"); } }
+            case 5126 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), V185Test.armBase.getX() + 6.5, V185Test.armBase.getY() + 2.2, V185Test.armBase.getZ() + 6.8, 180f, 16f));
+            case 5130, 5131, 5132, 5133 -> armFreeze(mc, new float[]{1.5f, 4.5f, 11f, 16.5f, 21f});
+            case 5134 -> shot(mc, "ar1_phases");
+            case 5136 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), V185Test.armBase.getX() + 6.5, V185Test.armBase.getY() + 0.9, V185Test.armBase.getZ() + 3.9, 180f, 4f));
+            case 5140, 5141, 5142, 5143 -> armFreeze(mc, new float[]{1.5f, 4.5f, 11f, 16.5f, 21f});
+            case 5144 -> shot(mc, "ar2_close");
+            case 5145 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), V185Test.armBase.getX() + 0.5, V185Test.armBase.getY() + 1.6, V185Test.armBase.getZ() + 5.3, 180f, 38f));
+            case 5147, 5148 -> armFreeze(mc, new float[]{1.5f, 4.5f, 11f, 16.5f, 21f});
+            case 5149 -> shot(mc, "ar3_sorter");
             // ── v0.24.0 산업 마을 ──
-            case 5100 -> { o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::villageGo); }
-            case 5180 -> serverKeep(mc, V185Test::villageBuild);
-            case 5300 -> serverKeep(mc, V185Test::villageCheck);
-            case 5306 -> shot(mc, "vl1_aerial");
-            case 5310 -> serverKeep(mc, sp -> V185Test.villageView(sp, 31.5, 3.5, 12.5, 0f, 12f));
-            case 5330 -> shot(mc, "vl2_plaza");
-            case 5334 -> serverKeep(mc, sp -> V185Test.villageView(sp, 16.5, 3.2, 21.5, -60f, 14f));
-            case 5354 -> shot(mc, "vl3_stalls");
-            case 5358 -> serverKeep(mc, sp -> V185Test.villageView(sp, 38.5, 8.0, 27.5, -140f, 22f));
-            case 5378 -> shot(mc, "vl4_industry");
-            case 5382 -> serverKeep(mc, sp -> V185Test.villageView(sp, 47.5, 2.4, 8.5, -110f, 18f));
-            case 5402 -> shot(mc, "vl5_factory_inside");
-            case 5406 -> serverKeep(mc, sp -> V185Test.villageView(sp, 31.5, 18.5, -14.5, 0f, 30f));
-            case 5426 -> shot(mc, "vl6_gate");
-            case 5430 -> next(11);
+            case 5150 -> { o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::villageGo); }
+            case 5230 -> serverKeep(mc, V185Test::villageBuild);
+            case 5350 -> serverKeep(mc, V185Test::villageCheck);
+            case 5356 -> shot(mc, "vl1_aerial");
+            case 5360 -> serverKeep(mc, sp -> V185Test.villageView(sp, 31.5, 3.5, 12.5, 0f, 12f));
+            case 5380 -> shot(mc, "vl2_plaza");
+            case 5384 -> serverKeep(mc, sp -> V185Test.villageView(sp, 16.5, 3.2, 21.5, -60f, 14f));
+            case 5404 -> shot(mc, "vl3_stalls");
+            case 5408 -> serverKeep(mc, sp -> V185Test.villageView(sp, 38.5, 8.0, 27.5, -140f, 22f));
+            case 5428 -> shot(mc, "vl4_industry");
+            case 5432 -> serverKeep(mc, sp -> V185Test.villageView(sp, 47.5, 2.4, 8.5, -110f, 18f));
+            case 5452 -> shot(mc, "vl5_factory_inside");
+            case 5456 -> serverKeep(mc, sp -> V185Test.villageView(sp, 31.5, 18.5, -14.5, 0f, 30f));
+            case 5476 -> shot(mc, "vl6_gate");
+            case 5480 -> serverKeep(mc, V185Test::furnaceLog);
+            case 5482 -> next(11);
             default -> {
             }
         }
