@@ -10,7 +10,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "tycooncraft:coin_gold",
+          "name": "tycooncraft:coin_emerald",
           "weight": 15,
           "functions": [
             {
@@ -25,7 +25,7 @@
         },
         {
           "type": "minecraft:item",
-          "name": "tycooncraft:coin_iron",
+          "name": "tycooncraft:coin_gold",
           "weight": 10,
           "functions": [
             {
@@ -40,7 +40,7 @@
         },
         {
           "type": "minecraft:item",
-          "name": "tycooncraft:coin_emerald",
+          "name": "tycooncraft:coin_diamond",
           "weight": 2
         },
         {

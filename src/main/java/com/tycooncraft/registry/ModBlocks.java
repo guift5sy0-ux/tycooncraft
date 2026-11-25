@@ -59,6 +59,14 @@ public final class ModBlocks {
             () -> new com.tycooncraft.automation.SorterBlock(machineProps().strength(2.5f, 6.0f).requiresCorrectToolForDrops().noOcclusion()));
     public static final DeferredBlock<com.tycooncraft.automation.WarehouseBlock> WAREHOUSE = BLOCKS.register("warehouse",
             () -> new com.tycooncraft.automation.WarehouseBlock(machineProps().strength(3.5f, 8.0f).requiresCorrectToolForDrops()));
+    // ── v0.26.0 블랙마켓 ──
+    public static final DeferredBlock<com.tycooncraft.blackmarket.ManholeBlock> MANHOLE = BLOCKS.register("manhole",
+            () -> new com.tycooncraft.blackmarket.ManholeBlock(BlockBehaviour.Properties.of().mapColor(net.minecraft.world.level.material.MapColor.METAL)
+                    .strength(-1.0f, 3_600_000f).sound(net.minecraft.world.level.block.SoundType.NETHERITE_BLOCK).noLootTable()));
+    public static final DeferredBlock<com.tycooncraft.blackmarket.BountyBoardBlock> BOUNTY_BOARD = BLOCKS.register("bounty_board",
+            () -> new com.tycooncraft.blackmarket.BountyBoardBlock(BlockBehaviour.Properties.of().strength(-1.0f, 3_600_000f).sound(net.minecraft.world.level.block.SoundType.WOOD).noLootTable()));
+    public static final DeferredBlock<com.tycooncraft.blackmarket.VaultBlock> BM_VAULT = BLOCKS.register("bm_vault",
+            () -> new com.tycooncraft.blackmarket.VaultBlock(BlockBehaviour.Properties.of().strength(-1.0f, 3_600_000f).sound(net.minecraft.world.level.block.SoundType.NETHERITE_BLOCK).noLootTable()));
     public static final DeferredBlock<com.tycooncraft.cctv.CctvBlock> CCTV = BLOCKS.register("cctv",
             () -> new com.tycooncraft.cctv.CctvBlock(BlockBehaviour.Properties.of().mapColor(net.minecraft.world.level.material.MapColor.METAL)
                     .strength(1.5f).sound(net.minecraft.world.level.block.SoundType.METAL).noOcclusion()));

@@ -80,6 +80,7 @@ public final class VehicleClient {
         event.registerEntityRenderer(ModEntities.SPIDER_SHOT.get(), ctx -> new net.minecraft.client.renderer.entity.ThrownItemRenderer<>(ctx, 1.3f, true));
         event.registerEntityRenderer(ModEntities.GANGSTER.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
         event.registerEntityRenderer(ModEntities.VILLAGE_GUARD.get(), com.tycooncraft.client.mob.GuardRenderer::new);
+        event.registerEntityRenderer(ModEntities.BM_DEALER.get(), com.tycooncraft.client.mob.DealerRenderer::new);
         event.registerEntityRenderer(ModEntities.MERCENARY.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
         event.registerEntityRenderer(ModEntities.OUTLAW.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
         event.registerEntityRenderer(ModEntities.CARTEL_BOSS.get(), com.tycooncraft.client.mob.GunnerRenderer::new);

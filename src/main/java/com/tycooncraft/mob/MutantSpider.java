@@ -121,7 +121,7 @@ public class MutantSpider extends Spider {
     @Override
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
         super.dropCustomDeathLoot(level, source, recentlyHit);
-        spawnAtLocation(new ItemStack(ModItems.COIN_GOLD.get(), 1 + random.nextInt(3)));
+        spawnAtLocation(new ItemStack(com.tycooncraft.economy.Coins.scaled(ModItems.COIN_GOLD.get()), 1 + random.nextInt(3)));
         spawnAtLocation(new ItemStack(Items.STRING, 8 + random.nextInt(8)));
         spawnAtLocation(new ItemStack(Items.SPIDER_EYE, 2));
     }

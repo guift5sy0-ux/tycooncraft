@@ -69,8 +69,9 @@ public class CartelBoss extends GunnerEntity {
     @Override
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
         super.dropCustomDeathLoot(level, source, recentlyHit);
-        spawnAtLocation(new ItemStack(ModItems.COIN_EMERALD.get(), 1 + random.nextInt(2)));
+        spawnAtLocation(new ItemStack(com.tycooncraft.economy.Coins.scaled(ModItems.COIN_EMERALD.get()), 1 + random.nextInt(2)));
         spawnAtLocation(new ItemStack(ModItems.ROCKET.get(), 4));
+        if (random.nextFloat() < 0.3f) spawnAtLocation(new ItemStack(ModItems.BLACK_MARKET_PASS.get()));   // v0.26.0 출입증 30%
         ItemStack loot = new ItemStack(random.nextBoolean() ? ModItems.VSS.get() : ModItems.RPG.get());
         spawnAtLocation(loot);
     }

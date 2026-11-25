@@ -159,9 +159,10 @@ public class GunnerEntity extends Monster implements RangedAttackMob {
     protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
         super.dropCustomDeathLoot(level, source, recentlyHit);
         if (kind == Kind.BOSS) return;   // 보스는 자기 전리품(확정 총)을 따로 떨어뜨림
+        if (random.nextFloat() < 0.03f) spawnAtLocation(new ItemStack(ModItems.BLACK_MARKET_PASS.get()));   // v0.26.0 암시장 출입증 3%
         // 갱단원 전리품은 아주 드물게: 재료(동전 포함) 1%, 탄약 2%, 총은 0.1% (장비 드롭 확률)
-        if (random.nextFloat() < MATERIAL_CHANCE) spawnAtLocation(new ItemStack(ModItems.COIN_IRON.get(), 1 + random.nextInt(kind == Kind.MERCENARY ? 4 : 3)));
-        if (random.nextFloat() < MATERIAL_CHANCE) spawnAtLocation(new ItemStack(ModItems.COIN_COPPER.get(), 2 + random.nextInt(8)));
+        if (random.nextFloat() < MATERIAL_CHANCE) spawnAtLocation(new ItemStack(com.tycooncraft.economy.Coins.scaled(ModItems.COIN_IRON.get()), 1 + random.nextInt(kind == Kind.MERCENARY ? 4 : 3)));
+        if (random.nextFloat() < MATERIAL_CHANCE) spawnAtLocation(new ItemStack(com.tycooncraft.economy.Coins.scaled(ModItems.COIN_COPPER.get()), 2 + random.nextInt(8)));
         Item ammo = kind == Kind.OUTLAW ? ModItems.SHOTGUN_SHELL.get() : kind == Kind.GANGSTER ? ModItems.LIGHT_AMMO.get() : ModItems.HEAVY_AMMO.get();
         if (random.nextFloat() < AMMO_CHANCE) spawnAtLocation(new ItemStack(ammo, 2 + random.nextInt(6)));
     }

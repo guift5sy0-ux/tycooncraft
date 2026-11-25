@@ -1,0 +1,22 @@
+{
+ "type": "tycooncraft:black_market",
+ "generator": {
+  "type": "minecraft:flat",
+  "settings": {
+   "biome": "minecraft:the_void",
+   "layers": [
+    {
+     "block": "minecraft:bedrock",
+     "height": 1
+    },
+    {
+     "block": "minecraft:deepslate",
+     "height": 63
+    }
+   ],
+   "lakes": false,
+   "features": false,
+   "structure_overrides": []
+  }
+ }
+}

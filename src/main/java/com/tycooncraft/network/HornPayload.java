@@ -31,6 +31,7 @@ public record HornPayload() implements CustomPacketPayload {
         registrar.playToServer(VehicleActionPayload.TYPE, VehicleActionPayload.CODEC, VehicleActionPayload::handle);
         com.tycooncraft.ship.ShipPayloads.register(registrar);
         com.tycooncraft.economy.BankPayloads.register(registrar);
+        com.tycooncraft.blackmarket.BountyPayloads.register(registrar);
         com.tycooncraft.gun.GunWorkbenchPayload.register(registrar);
         com.tycooncraft.gear.ShieldBashPayload.register(registrar);
         registrar.playToServer(com.tycooncraft.cctv.CctvAimPayload.TYPE, com.tycooncraft.cctv.CctvAimPayload.CODEC, com.tycooncraft.cctv.CctvAimPayload::handle);

@@ -67,6 +67,9 @@ public final class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.village.VillageGuard>> VILLAGE_GUARD = ENTITIES.register("village_guard",
             () -> EntityType.Builder.<com.tycooncraft.village.VillageGuard>of(com.tycooncraft.village.VillageGuard::new, MobCategory.MISC)
                     .sized(0.6f, 1.95f).clientTrackingRange(10).build("village_guard"));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.blackmarket.BlackMarketDealer>> BM_DEALER = ENTITIES.register("bm_dealer",
+            () -> EntityType.Builder.<com.tycooncraft.blackmarket.BlackMarketDealer>of(com.tycooncraft.blackmarket.BlackMarketDealer::new, MobCategory.MISC)
+                    .sized(0.6f, 1.95f).clientTrackingRange(10).build("bm_dealer"));
     public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> GANGSTER = mob("gangster", GunnerEntity::gangster);
     public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> MERCENARY = mob("mercenary", GunnerEntity::mercenary);
     public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> OUTLAW = mob("outlaw", GunnerEntity::outlaw);

@@ -213,7 +213,8 @@ public final class PowerRenderers {
                 : st.is(ModItems.GENERATOR.get()) ? "generator" : st.is(ModItems.POWER_MOTOR.get()) ? "power_motor"
                 : st.is(ModItems.POWER_CABLE.get()) ? "power_cable" : st.is(ModItems.SOLAR_GENERATOR.get()) ? "solar_generator"
                 : st.is(ModItems.ACCUMULATOR.get()) ? "accumulator" : st.is(ModItems.ROBOT_ARM.get()) ? "robot_arm"
-                : st.is(ModItems.SORTER.get()) ? "sorter" : st.is(ModItems.WAREHOUSE.get()) ? "warehouse" : null;
+                : st.is(ModItems.SORTER.get()) ? "sorter" : st.is(ModItems.WAREHOUSE.get()) ? "warehouse"
+                : st.is(ModItems.BLACK_MARKET_PASS.get()) ? "black_market_pass" : st.is(ModItems.MANHOLE.get()) ? "manhole" : null;
         if (key != null) e.getToolTip().add(Component.translatable("tooltip.tycooncraft." + key).withStyle(ChatFormatting.GRAY));
         if (st.getItem() instanceof BlockItem bi && bi.getBlock() instanceof com.tycooncraft.block.MachineBlock mb)
             e.getToolTip().add(mb.type().electricOnly()

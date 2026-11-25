@@ -18,11 +18,13 @@ import java.util.Map;
 public final class PriceTable {
     /** v0.23.2: 동력 비용 보정 — 기계 가공 1회마다 (필요 동력 × 가공 시간 ÷ 1000)원을 원가에 더함 */
     public static final double ENERGY_DIV = 1000;
+    /** v0.26.0: 경제 규모 10배 (판매가·상점가·보상 전부 이 배율을 따름) */
+    public static final double ECON = 10;
     public static final double MACHINE_MARKUP = 1.6, CRAFT_MARKUP = 1.15, GUN_MARKUP = 1.25;
     /** 손으로 캐고 파는 원자재·바닐라 값 배율 (v0.18.6: 손노동 수입 ≈ 시간당 500원) */
     public static final double RAW_SCALE = 0.25;
     /** 기준: 공장 없이 손으로 1시간 벌면 이 정도 */
-    public static final long MANUAL_HOUR = 500;
+    public static final long MANUAL_HOUR = Math.round(500 * ECON);
     private static Map<Item, Double> prices;
     private static Map<Item, Double> computed;
 
@@ -38,7 +40,7 @@ public final class PriceTable {
         java.util.List<R> rs = new java.util.ArrayList<>();
         for (com.tycooncraft.machine.MachineType t : com.tycooncraft.machine.MachineType.values())
             if (!t.electricOnly())   // v0.22.0: 고급 전기 기계는 원가 절감(이윤)용 — 판매가를 끌어내리지 않음
-            for (var r : t.recipes()) rs.add(new R(r.inputs(), r.output(), r.outputCount(), MACHINE_MARKUP, t.power() * (double) t.processTime() / ENERGY_DIV));
+            for (var r : t.recipes()) rs.add(new R(r.inputs(), r.output(), r.outputCount(), MACHINE_MARKUP, t.power() * (double) t.processTime() / ENERGY_DIV * ECON));
         for (var r : com.tycooncraft.gun.GunCrafting.all()) rs.add(new R(r.needs(), r.result().getItem(), r.result().getCount(), GUN_MARKUP, 0));
         // 작업대 제작법 (이 모드 것만; 재료 선택지가 여럿이면 가장 싼 것)
         java.util.List<java.util.Map.Entry<java.util.List<net.minecraft.world.item.crafting.Ingredient>, net.minecraft.world.item.ItemStack>> crafts = new java.util.ArrayList<>();
@@ -329,7 +331,7 @@ public final class PriceTable {
             p.put(Items.COOKIE, 1.5);
             p.put(Items.PUMPKIN_PIE, 8.0);
             p.put(Items.CAKE, 40.0);
-            p.replaceAll((k, v) -> v * RAW_SCALE);
+            p.replaceAll((k, v) -> v * RAW_SCALE * ECON);
             prices = p;
         }
         return prices;

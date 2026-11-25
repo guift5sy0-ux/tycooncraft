@@ -201,6 +201,13 @@ public class GunItem extends Item {
             return;
         }
         ServerLevel server = (ServerLevel) level;
+        // v0.26.0 밀수품: 5% 확률로 탄 걸림 (발사 안 됨, 잠깐 멈춤)
+        if (com.tycooncraft.blackmarket.DealerTrades.smuggled(stack) && player.getRandom().nextFloat() < 0.05f) {
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.DRY_FIRE.get(), SoundSource.PLAYERS, 1.0f, 0.7f);
+            player.getCooldowns().addCooldown(this, 16);
+            player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.tycooncraft.jam"), true);
+            return;
+        }
         int saver = GunEnchants.level(stack, GunEnchants.AMMO_SAVER);
         int before = ammo(stack);
         if (!player.getAbilities().instabuild && player.getRandom().nextFloat() >= 0.15f * saver) setAmmo(stack, before - 1);
@@ -312,7 +319,7 @@ public class GunItem extends Item {
             return;
         }
         setAmmo(stack, current + loaded);
-        player.getCooldowns().addCooldown(this, reloadTicks(stack));
+        player.getCooldowns().addCooldown(this, com.tycooncraft.blackmarket.BlackMarket.reloadTicks(player, reloadTicks(stack)));
         level.playSound(null, player.getX(), player.getY(), player.getZ(), stats.reloadSound().get(), SoundSource.PLAYERS, 1.0f, 1.0f);
         {} /* v0.18.9: 전투 안내 문구 제거 */
     }

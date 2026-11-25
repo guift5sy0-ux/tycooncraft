@@ -584,7 +584,7 @@ public final class StructureBuilder {
                     potion(ir, 6, Potions.WATER_BREATHING), potion(ir, 10, Potions.STRENGTH), potion(ir, 8, Potions.LEAPING),
                     potion(ir, 6, Potions.SLOW_FALLING), potion(ir, 12, Potions.LONG_REGENERATION), potion(ir, 8, Potions.INVISIBILITY),
                     offer(em, 1, Items.GOLDEN_APPLE, 1), offer(ir, 4, Items.MILK_BUCKET, 1), offer(ir, 4, Items.HONEY_BOTTLE, 2),
-                    offer(go, 1, Items.GOLDEN_CARROT, 8), offer(ir, 3, Items.GLISTERING_MELON_SLICE, 2), offer(em, 15, Items.TOTEM_OF_UNDYING, 1),
+                    offer(go, 1, Items.GOLDEN_CARROT, 8), offer(ir, 3, Items.GLISTERING_MELON_SLICE, 2), offer(em, 4, Items.TOTEM_OF_UNDYING, 1),
                     offer(ir, 6, Items.EXPERIENCE_BOTTLE, 4), offer(ir, 3, Items.BEETROOT_SOUP, 1));
             default -> null;
         };
@@ -598,7 +598,7 @@ public final class StructureBuilder {
     public static final double TRADER_MARKUP = 3.0, TRADER_PAY = 0.8;
 
     /** 핵심 장비는 "손노동 몇 시간어치"로 값을 매김 (권총 = 1시간) */
-    static double hours(Item it) {
+    public static double hours(Item it) {
         if (it == ModItems.PISTOL.get()) return 1;
         if (it == ModItems.DUAL_PISTOLS.get()) return 1.5;
         if (it == ModItems.SMG.get() || it == ModItems.SHOTGUN.get()) return 2;
@@ -679,14 +679,17 @@ public final class StructureBuilder {
                 }
                 continue;
             }
-            if (buyer) {   // 사 주는 값(결과 동전 수)이 흔들림
-                ItemStack r = o.getResult().copy();
-                r.setCount(Mth.clamp(Math.round(r.getCount() * (2.1f - f)), 1, 64));
-                out.add(new MerchantOffer(o.getItemCostA(), o.getItemCostB(), r, Integer.MAX_VALUE, 0, 0f));
+            // 가격표에 없는 것: 적어 둔 동전 금액 × 경제 배율 (v0.26.0)
+            if (buyer) {   // 사 주는 값(결과 동전)이 흔들림
+                long won = Math.max(1, Math.round(com.tycooncraft.economy.Coins.valueOf(o.getResult()) * com.tycooncraft.economy.PriceTable.ECON * (2.1f - f)));
+                out.add(new MerchantOffer(o.getItemCostA(), o.getItemCostB(), oneStack(won), Integer.MAX_VALUE, 0, 0f));
             } else {
                 ItemCost a = o.getItemCostA();
-                ItemCost na = new ItemCost(a.item().value(), Mth.clamp(Math.round(a.count() * f), 1, 64));
-                out.add(new MerchantOffer(na, o.getItemCostB(), o.getResult().copy(), Integer.MAX_VALUE, 0, 0f));
+                long won = Math.max(1, Math.round(com.tycooncraft.economy.Coins.valueOf(new ItemStack(a.item().value(), a.count())) * com.tycooncraft.economy.PriceTable.ECON * f));
+                ItemStack[] c = com.tycooncraft.economy.VillagerCoins.coinsForTest((int) Math.min(Integer.MAX_VALUE, won));
+                out.add(new MerchantOffer(new ItemCost(c[0].getItem(), c[0].getCount()),
+                        c.length > 1 ? Optional.of(new ItemCost(c[1].getItem(), c[1].getCount())) : Optional.empty(),
+                        o.getResult().copy(), Integer.MAX_VALUE, 0, 0f));
             }
         }
         return out;
@@ -862,6 +865,8 @@ public final class StructureBuilder {
                 b.set(i, -1, 29, Blocks.STONE_BRICKS); b.set(i, -1, 34, Blocks.STONE_BRICKS);
             }
         }
+        // v0.26.0 블랙마켓 맨홀 (서쪽 큰길 바닥)
+        b.set(14, -1, 31, ModBlocks.MANHOLE.get());
         // 골목길
         b.fill(9, -1, 19, 9, -1, 44, Blocks.DIRT_PATH);
         b.fill(19, -1, 9, 44, -1, 9, Blocks.DIRT_PATH);

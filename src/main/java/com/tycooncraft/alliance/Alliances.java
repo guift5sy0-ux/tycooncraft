@@ -27,7 +27,7 @@ import java.util.UUID;
  * 창설비 ₩2,000 (통장에서), 최대 10명. /alliance (= /동맹)
  */
 public final class Alliances {
-    public static final long CREATE_COST = 2_000;
+    public static final long CREATE_COST = 20_000;
     public static final int MAX_MEMBERS = 10;
 
     public record Result(boolean ok, Component msg) {

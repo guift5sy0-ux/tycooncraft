@@ -49,6 +49,19 @@ public final class Coins {
         if (!player.getInventory().add(stack)) player.drop(stack, false);
     }
 
+    /** v0.26.0 경제 10배: 같은 개수로 10배 가치인 동전 (1→10→100→1000→1만→10만) */
+    public static Item scaled(Item coin) {
+        if (coin == ModItems.COIN_COPPER.get()) return ModItems.COIN_IRON.get();
+        if (coin == ModItems.COIN_IRON.get()) return ModItems.COIN_GOLD.get();
+        if (coin == ModItems.COIN_GOLD.get()) return ModItems.COIN_EMERALD.get();
+        if (coin == ModItems.COIN_SILVER.get()) return ModItems.BILL_5K.get();
+        if (coin == ModItems.COIN_EMERALD.get()) return ModItems.COIN_DIAMOND.get();
+        if (coin == ModItems.BILL_5K.get()) return ModItems.BILL_50K.get();
+        if (coin == ModItems.COIN_DIAMOND.get()) return ModItems.CHECK_100K.get();
+        if (coin == ModItems.CHECK_100K.get()) return ModItems.GOLD_BAR_1M.get();
+        return coin;
+    }
+
     public static Item coinFor(long value) {
         for (CoinItem coin : denominations()) if (coin.getValue() == value) return coin;
         return ModItems.COIN_COPPER.get();

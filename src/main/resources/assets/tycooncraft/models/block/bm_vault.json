@@ -1,0 +1,12 @@
+{
+ "parent": "minecraft:block/cube",
+ "textures": {
+  "particle": "tycooncraft:block/bm_vault_side",
+  "north": "tycooncraft:block/bm_vault_front",
+  "south": "tycooncraft:block/bm_vault_side",
+  "east": "tycooncraft:block/bm_vault_side",
+  "west": "tycooncraft:block/bm_vault_side",
+  "up": "tycooncraft:block/bm_vault_side",
+  "down": "tycooncraft:block/bm_vault_side"
+ }
+}

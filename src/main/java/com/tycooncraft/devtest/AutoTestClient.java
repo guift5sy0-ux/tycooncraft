@@ -15,14 +15,30 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 /** 개발용 자동 시험 – 클라이언트: 키 입력 흉내, 카메라 전환, 스크린샷, 끝나면 종료 */
 @EventBusSubscriber(modid = TycoonCraft.MODID, value = Dist.CLIENT)
 public final class AutoTestClient {
-    private static int t = -1;
+    private static int t = -1, waitTicks;
 
     @SubscribeEvent
     public static void onTick(ClientTickEvent.Post event) {
         if (!AutoTest.ENABLED) return;
         Minecraft mc = Minecraft.getInstance();
         mc.options.pauseOnLostFocus = false;
-        if (mc.player == null || mc.level == null) return;
+        if (mc.player == null || mc.level == null) {
+            // 월드 열 때 뜨는 확인 창(실험적 설정·백업 등)은 '계속'을 누름
+            if (mc.screen != null && ++waitTicks % 40 == 0) {
+                System.out.println("[AUTOTEST] waiting on screen " + mc.screen.getClass().getName() + " title=" + mc.screen.getTitle().getString());
+                for (var w : mc.screen.children()) {
+                    if (w instanceof net.minecraft.client.gui.components.Button b) System.out.println("[AUTOTEST]   button: " + b.getMessage().getString());
+                }
+                for (var w : mc.screen.children()) {
+                    if (w instanceof net.minecraft.client.gui.components.Button b && b.getMessage().getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents tc
+                            && (tc.getKey().equals("selectWorld.backupJoinSkipButton") || tc.getKey().equals("gui.proceed") || tc.getKey().equals("gui.yes"))) {
+                        b.onPress();
+                        break;
+                    }
+                }
+            }
+            return;
+        }
         if (mc.screen instanceof PauseScreen) mc.setScreen(null);
         t++;
         try {
@@ -211,7 +227,8 @@ public final class AutoTestClient {
         if (System.getenv("TC_AUTOONLY") != null && phaseT < 4656) phaseT = 4656;
         if (System.getenv("TC_BOOKONLY") != null && phaseT < 4996) phaseT = 4996;
         if (System.getenv("TC_ARMONLY") != null && phaseT < 5052) phaseT = 5052;
-        if (System.getenv("TC_VILLONLY") != null && phaseT < 5150) phaseT = 5150;   // 로컬 디버그: 이펙트 구간만
+        if (System.getenv("TC_VILLONLY") != null && phaseT < 5150) phaseT = 5150;
+        if (System.getenv("TC_BMONLY") != null && phaseT < 5802) phaseT = 5802;   // 로컬 디버그: 이펙트 구간만
         int s = phaseT;
         double g = -60;
         if (s > 3226 && s < 3300 && s % 2 == 0) serverDo(mc, V185Test::keepAirborne);
@@ -901,23 +918,23 @@ public final class AutoTestClient {
             case 4767 -> shot(mc, "au2_line_b");
             case 4771 -> shot(mc, "au3_line_c");
             case 4990 -> serverKeep(mc, V185Test::autoEnd);
-            case 4996 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(33); }
+            case 4996 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(2); }
             case 4999 -> shot(mc, "gb0");
-            case 5002 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(34); }
+            case 5002 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(10); }
             case 5005 -> shot(mc, "gb1");
-            case 5008 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(35); }
+            case 5008 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(15); }
             case 5011 -> shot(mc, "gb2");
-            case 5014 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(36); }
+            case 5014 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(29); }
             case 5017 -> shot(mc, "gb3");
-            case 5020 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(37); }
+            case 5020 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(42); }
             case 5023 -> shot(mc, "gb4");
-            case 5026 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(38); }
+            case 5026 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(43); }
             case 5029 -> shot(mc, "gb5");
-            case 5032 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(39); }
+            case 5032 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(44); }
             case 5035 -> shot(mc, "gb6");
-            case 5038 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(40); }
+            case 5038 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(45); }
             case 5041 -> shot(mc, "gb7");
-            case 5044 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(41); }
+            case 5044 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(39); }
             case 5047 -> shot(mc, "gb8");
             case 5048 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(32); }
             case 5050 -> shot(mc, "gb9");
@@ -958,7 +975,25 @@ public final class AutoTestClient {
             case 5700 -> shot(mc, "gd2_wanted");
             case 5760 -> serverKeep(mc, V185Test::guardWantedCheck);
             case 5800 -> serverKeep(mc, V185Test::guardAfterClear);
-            case 5802 -> next(11);
+            // ── v0.26.0 블랙마켓 ──
+            case 5806 -> { o.setCameraType(CameraType.FIRST_PERSON); serverKeep(mc, V185Test::bmEnter); }
+            case 5880 -> serverKeep(mc, V185Test::bmCheck);
+            case 5900 -> shot(mc, "bm1_arrival");
+            case 5904 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), -9.5, 64.2, 4.5, 160f, 8f));
+            case 5924 -> shot(mc, "bm2_alley");
+            case 5928 -> serverKeep(mc, V185Test::bmVault);
+            case 5940 -> shot(mc, "bm3_vault");
+            case 5944 -> serverKeep(mc, V185Test::bmBounty);
+            case 5956 -> shot(mc, "bm4_bounty");
+            case 5960 -> { mc.setScreen(null); serverKeep(mc, V185Test::bmFight); }
+            case 5976 -> shot(mc, "bm5_fight");
+            case 6040 -> serverKeep(mc, V185Test::bmKill);
+            case 6052 -> shot(mc, "bm6_tracked");
+            case 6060 -> serverKeep(mc, V185Test::bmNextDay);
+            case 6090 -> serverKeep(mc, V185Test::bmSquad);
+            case 6120 -> shot(mc, "bm7_squad");
+            case 6130 -> serverKeep(mc, V185Test::bmClaim);
+            case 6134 -> next(11);
             default -> {
             }
         }

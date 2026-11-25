@@ -100,7 +100,7 @@
         },
         {
           "type": "minecraft:item",
-          "name": "tycooncraft:coin_iron",
+          "name": "tycooncraft:coin_gold",
           "weight": 7,
           "functions": [
             {

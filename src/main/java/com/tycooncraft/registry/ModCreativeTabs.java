@@ -87,6 +87,8 @@ public final class ModCreativeTabs {
                         out.accept(ModItems.ROBOT_ARM.get());
                         out.accept(ModItems.SORTER.get());
                         out.accept(ModItems.WAREHOUSE.get());
+                        out.accept(ModItems.BLACK_MARKET_PASS.get());
+                        out.accept(ModItems.MANHOLE.get());
                         out.accept(ModItems.CCTV.get());
                         out.accept(ModItems.CCTV_SCREEN.get());
                         out.accept(ModItems.GUN_WORKBENCH.get());

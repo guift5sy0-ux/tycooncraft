@@ -280,6 +280,9 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> ROBOT_ARM = ITEMS.registerSimpleBlockItem(ModBlocks.ROBOT_ARM);
     public static final DeferredItem<BlockItem> SORTER = ITEMS.registerSimpleBlockItem(ModBlocks.SORTER);
     public static final DeferredItem<BlockItem> WAREHOUSE = ITEMS.registerSimpleBlockItem(ModBlocks.WAREHOUSE);
+    public static final DeferredItem<Item> BLACK_MARKET_PASS = ITEMS.register("black_market_pass",
+            () -> new Item(new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.RARE)));
+    public static final DeferredItem<BlockItem> MANHOLE = ITEMS.registerSimpleBlockItem(ModBlocks.MANHOLE);
     public static final DeferredItem<BlockItem> CCTV = ITEMS.registerSimpleBlockItem(ModBlocks.CCTV);
     public static final DeferredItem<BlockItem> CCTV_SCREEN = ITEMS.registerSimpleBlockItem(ModBlocks.CCTV_SCREEN);
     public static final List<DeferredItem<BlockItem>> MACHINE_ITEMS = new ArrayList<>();

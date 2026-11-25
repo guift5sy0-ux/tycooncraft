@@ -26,7 +26,7 @@ import java.util.Optional;
  * 상인 마을의 상인은 원래 코인 목록으로 되돌린다(불러올 때 바닐라 거래로 바뀌는 문제 방지).
  */
 public final class VillagerCoins {
-    public static final int PAY_PER_EMERALD = 100, GET_PER_EMERALD = 8;
+    public static final int PAY_PER_EMERALD = 1000, GET_PER_EMERALD = 80;   // v0.26.0 경제 10배
     public static int CONVERTED, RESTORED, RESTOCKED;
 
     // ── 금액 → 코인 (한 칸 64개 이하가 되는 가장 큰 단위) ──

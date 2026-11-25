@@ -810,6 +810,13 @@ public final class V185Test {
 
     static void armShowSetup(ServerPlayer sp) {
         var sl = sp.serverLevel();
+        StringBuilder pr = new StringBuilder();
+        for (net.minecraft.world.item.Item it : new net.minecraft.world.item.Item[]{net.minecraft.world.item.Items.RAW_IRON, ModItems.IRON_DUST.get(), net.minecraft.world.item.Items.IRON_INGOT,
+                ModItems.IRON_PLATE.get(), ModItems.IRON_GEAR.get(), ModItems.CIRCUIT.get(), ModItems.MECHANISM.get(), ModItems.ADVANCED_CIRCUIT.get(), ModItems.ENGINE.get(),
+                ModItems.CAR.get(), ModItems.LOCOMOTIVE.get(), ModItems.HELICOPTER.get(), ModItems.DESTROYER_CORE.get(), net.minecraft.world.item.Items.NETHER_STAR, ModItems.machineItem(com.tycooncraft.machine.MachineType.ASSEMBLER),
+                ModItems.TANK.get(), ModItems.STEEL_INGOT.get()})
+            pr.append(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(it).getPath()).append('=').append(Math.round(com.tycooncraft.economy.PriceTable.basePrice(it) * 10) / 10.0).append(' ');
+        System.out.println("[AUTOTEST] v260 prices " + pr + " manualHour=" + com.tycooncraft.economy.PriceTable.MANUAL_HOUR);
         armBase = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, sp.blockPosition().offset(-6, 0, -52));
         for (int x = -2; x <= 15; x++) for (int y = 0; y <= 4; y++) for (int z = -2; z <= 5; z++)
             put(sl, armBase.offset(x, y, z), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
@@ -970,6 +977,145 @@ public final class V185Test {
         int aiming = sl.getEntitiesOfClass(com.tycooncraft.village.VillageGuard.class, sp.getBoundingBox().inflate(48), g -> g.getTarget() == sp).size();
         System.out.println("[AUTOTEST] v250 afterClear guardsTargeting=" + aiming + " hp=" + sp.getHealth());
         sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+    }
+
+    // ── v0.26.0 블랙마켓 ──
+    static BlockPos bmManhole;
+    static com.tycooncraft.blackmarket.BlackMarketDealer bmVictim;
+
+    static void bmEnter(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        sp.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        sp.setHealth(sp.getMaxHealth());
+        if (villOrigin != null) bmManhole = villOrigin.offset(14, -1, 31);
+        else {
+            bmManhole = sp.blockPosition().offset(3, -1, 0);
+            put(sl, bmManhole, ModBlocks.MANHOLE.get().defaultBlockState());
+        }
+        boolean isManhole = sl.getBlockState(bmManhole).is(ModBlocks.MANHOLE.get());
+        boolean memberBefore = com.tycooncraft.blackmarket.BlackMarket.member(sp);
+        // 출입증 들고 맨홀 우클릭
+        sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.BLACK_MARKET_PASS.get(), 2));
+        var hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(bmManhole), net.minecraft.core.Direction.UP, bmManhole, false);
+        sl.getBlockState(bmManhole).useItemOn(sp.getMainHandItem(), sl, sp, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
+        System.out.println("[AUTOTEST] v260 enter manholeInVillage=" + isManhole + " memberBefore=" + memberBefore + " memberAfter=" + com.tycooncraft.blackmarket.BlackMarket.member(sp)
+                + " passLeft=" + sp.getMainHandItem().getCount() + " dim=" + sp.level().dimension().location() + " pos=" + sp.blockPosition());
+        sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+    }
+
+    static void bmCheck(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        var dealers = sl.getEntitiesOfClass(com.tycooncraft.blackmarket.BlackMarketDealer.class, sp.getBoundingBox().inflate(40));
+        StringBuilder sb = new StringBuilder();
+        for (var d : dealers) {
+            var offers = d.getOffers();
+            int smug = 0, buys = 0;
+            for (var o : offers) {
+                if (com.tycooncraft.blackmarket.DealerTrades.smuggled(o.getResult())) smug++;
+                if (com.tycooncraft.economy.Coins.isCoin(o.getResult())) buys++;
+            }
+            sb.append(d.kind()).append(":offers=").append(offers.size()).append(",smuggled=").append(smug).append(",buys=").append(buys);
+            if (!offers.isEmpty()) {
+                var o = offers.get(0);
+                sb.append(",ex=").append(o.getItemCostA().count()).append('x').append(o.getItemCostA().item().value().getDescription().getString())
+                        .append("->").append(o.getResult().getCount()).append('x').append(o.getResult().getHoverName().getString());
+            }
+            sb.append(" | ");
+        }
+        System.out.println("[AUTOTEST] v260 hub dim=" + sl.dimension().location() + " dealers=" + dealers.size() + " exit="
+                + sl.getBlockState(com.tycooncraft.blackmarket.BlackMarketHub.EXIT).getBlock().getClass().getSimpleName() + " " + sb);
+        // 건축 금지
+        var ev = new net.neoforged.neoforge.event.level.BlockEvent.BreakEvent(sl, sp.blockPosition().below(), sl.getBlockState(sp.blockPosition().below()), sp);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(ev);
+        System.out.println("[AUTOTEST] v260 breakBlocked=" + ev.isCanceled());
+        sp.teleportTo(sl, -1.5, 64, 2.5, 180f, 8f);
+    }
+
+    static void bmVault(ServerPlayer sp) {
+        com.tycooncraft.economy.Coins.takeAll(sp);
+        com.tycooncraft.economy.Coins.give(sp, 25_000);
+        var m1 = com.tycooncraft.blackmarket.VaultBlock.buySlot(sp);
+        var m2 = com.tycooncraft.blackmarket.VaultBlock.buySlot(sp);
+        var m3 = com.tycooncraft.blackmarket.VaultBlock.buySlot(sp);
+        var box = com.tycooncraft.blackmarket.VaultData.get(sp.server).box(sp.getUUID());
+        System.out.println("[AUTOTEST] v260 vault unlocked=" + box.unlocked + " walletLeft=" + com.tycooncraft.economy.Coins.wallet(sp) + " third=" + m3.getString());
+        box.items.set(0, new ItemStack(net.minecraft.world.item.Items.DIAMOND, 5));
+        com.tycooncraft.blackmarket.VaultBlock.open(sp);
+    }
+
+    static void bmBounty(ServerPlayer sp) {
+        sp.closeContainer();
+        var s = sp.server;
+        var self = com.tycooncraft.blackmarket.BountyData.post(sp, sp.getGameProfile().getName(), 5000);
+        var none = com.tycooncraft.blackmarket.BountyData.post(sp, "NoSuchPlayer_xyz", 5000);
+        // 다른 사람(가상)이 나에게 건 현상금
+        var d = com.tycooncraft.blackmarket.BountyData.get(s);
+        var b = new com.tycooncraft.blackmarket.BountyData.Bounty();
+        b.target = sp.getUUID();
+        b.placer = java.util.UUID.randomUUID();
+        b.targetName = sp.getGameProfile().getName();
+        b.amount = 50_000;
+        b.expires = System.currentTimeMillis() + 100_000;
+        d.list.add(b);
+        System.out.println("[AUTOTEST] v260 bounty self='" + self.getString() + "' none='" + none.getString() + "' totalOnMe=" + d.totalOn(sp.getUUID()));
+        com.tycooncraft.blackmarket.BountyPayloads.send(sp, null);
+    }
+
+    static void bmFight(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        sp.setHealth(sp.getMaxHealth());
+        bmVictim = sl.getEntitiesOfClass(com.tycooncraft.blackmarket.BlackMarketDealer.class, sp.getBoundingBox().inflate(40), e -> e.kind() == 2).stream().findFirst().orElse(null);
+        if (bmVictim == null) return;
+        sp.teleportTo(sl, bmVictim.getX(), 64, -1.5, 180f, 8f);
+        // 시험용: 맞아도 죽지 않게 (피해 80% 감소)
+        sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.DAMAGE_RESISTANCE, 200, 3));
+        bmVictim.hurt(sp.damageSources().playerAttack(sp), 2f);
+        System.out.println("[AUTOTEST] v260 fight hostile=" + com.tycooncraft.blackmarket.BlackMarket.hostile(sp) + " hp=" + sp.getHealth());
+    }
+
+    static void bmKill(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        float hpAfterFight = sp.getHealth();
+        sp.setHealth(sp.getMaxHealth());
+        if (bmVictim != null) bmVictim.hurt(sp.damageSources().playerAttack(sp), 1000f);
+        var eff = sp.getEffect(com.tycooncraft.registry.ModEffects.TRACKED);
+        double speed = sp.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        sp.removeAllEffects();
+        sp.removeEffect(com.tycooncraft.registry.ModEffects.TRACKED);
+        boolean still = sp.hasEffect(com.tycooncraft.registry.ModEffects.TRACKED);
+        int respawnSameDay = com.tycooncraft.blackmarket.BlackMarketHub.tickDealers(sl);
+        System.out.println("[AUTOTEST] v260 kill hpDuringFight=" + hpAfterFight + " dealerDead=" + (bmVictim != null && !bmVictim.isAlive()) + " tracked=" + (eff != null)
+                + " amp=" + (eff == null ? -1 : eff.getAmplifier()) + " ticks=" + (eff == null ? 0 : eff.getDuration()) + " speed=" + String.format("%.4f", speed)
+                + " afterMilk=" + still + " reload100=" + com.tycooncraft.blackmarket.BlackMarket.reloadTicks(sp, 100) + " respawnSameDay=" + respawnSameDay);
+        com.tycooncraft.blackmarket.BlackMarket.clearHostile(sp);
+    }
+
+    static void bmNextDay(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        var ow = sp.server.overworld();
+        ow.setDayTime(ow.getDayTime() + 24000);
+        int made = com.tycooncraft.blackmarket.BlackMarketHub.tickDealers(sl);
+        System.out.println("[AUTOTEST] v260 nextDay respawned=" + made + " dealers=" + sl.getEntitiesOfClass(com.tycooncraft.blackmarket.BlackMarketDealer.class, sp.getBoundingBox().inflate(40)).size());
+        com.tycooncraft.blackmarket.BlackMarket.leave(sp);
+        System.out.println("[AUTOTEST] v260 leave dim=" + sp.level().dimension().location() + " pos=" + sp.blockPosition() + " manhole=" + bmManhole);
+    }
+
+    static void bmSquad(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        sl.setDayTime(18000);
+        int made = com.tycooncraft.blackmarket.GangHunters.squad(sl, sp);
+        int hunters = sl.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, sp.getBoundingBox().inflate(48), m -> m.getTarget() == sp).size();
+        System.out.println("[AUTOTEST] v260 squad made=" + made + " targetingMe=" + hunters);
+    }
+
+    static void bmClaim(ServerPlayer sp) {
+        var fake = net.neoforged.neoforge.common.util.FakePlayerFactory.get(sp.serverLevel(), new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "Hunter"));
+        long got = com.tycooncraft.blackmarket.BountyData.claim(sp, fake);
+        System.out.println("[AUTOTEST] v260 claim paid=" + got + " hunterBank=" + com.tycooncraft.economy.BankData.get(sp.server).account(fake.getUUID()).balance
+                + " leftOnMe=" + com.tycooncraft.blackmarket.BountyData.get(sp.server).totalOn(sp.getUUID()));
+        for (var m : sp.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.Mob.class, sp.getBoundingBox().inflate(64), m -> m.getTarget() == sp)) m.discard();
+        sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+        sp.setHealth(sp.getMaxHealth());
     }
 
     static com.tycooncraft.vehicle.JetEntity landJet;
