@@ -230,7 +230,8 @@ public final class AutoTestClient {
         if (System.getenv("TC_ARMONLY") != null && phaseT < 5052) phaseT = 5052;
         if (System.getenv("TC_VILLONLY") != null && phaseT < 5150) phaseT = 5150;
         if (System.getenv("TC_BMONLY") != null && phaseT < 5802) phaseT = 5802;
-        if (System.getenv("TC_VARONLY") != null && phaseT < 6134) phaseT = 6134;   // 로컬 디버그: 이펙트 구간만
+        if (System.getenv("TC_VARONLY") != null && phaseT < 6134) phaseT = 6134;
+        if (System.getenv("TC_V28ONLY") != null && phaseT < 6956) phaseT = 6956;   // 로컬 디버그: 이펙트 구간만
         int s = phaseT;
         double g = -60;
         if (s > 3226 && s < 3300 && s % 2 == 0) serverDo(mc, V185Test::keepAirborne);
@@ -1030,7 +1031,38 @@ public final class AutoTestClient {
             case 6927, 6928, 6929, 6930 -> { if (mc.player.getVehicle() instanceof com.tycooncraft.mech.ProtoScout ps && ps.pounceCd() == 0) com.tycooncraft.client.mech.ProtoClient.pounce(ps); }
             case 6931 -> shot(mc, "vr10_pscout_pounce");
             case 6950 -> serverKeep(mc, V185Test::pscoutCheck);
-            case 6954 -> { o.setCameraType(CameraType.FIRST_PERSON); next(11); }
+            case 6954 -> o.setCameraType(CameraType.FIRST_PERSON);
+            case 6960 -> serverKeep(mc, V185Test::v28Targets);
+            case 7000 -> serverKeep(mc, V185Test::v28TargetsCheck);
+            case 7004 -> { o.setCameraType(CameraType.FIRST_PERSON); serverKeep(mc, V185Test::v28Showcase); }
+            case 7014 -> shot(mc, "v28_1_models");
+            case 7016 -> serverKeep(mc, V185Test::v28ShowCarrier);
+            case 7030 -> shot(mc, "v28_2_flying");
+            case 7034 -> serverKeep(mc, V185Test::v28Enter);
+            case 7070 -> serverKeep(mc, V185Test::v28MissionScreen);
+            case 7078 -> shot(mc, "v28_3_missions");
+            case 7080 -> serverKeep(mc, V185Test::v28Supply);
+            case 7088 -> shot(mc, "v28_4_mission_done");
+            case 7090 -> { mc.setScreen(null); serverKeep(mc, V185Test::v28Casino); }
+            case 7104 -> shot(mc, "v28_5_casino_hall");
+            case 7106 -> serverKeep(mc, V185Test::v28SlotsOpen);
+            case 7112 -> serverKeep(mc, V185Test::v28SlotsPlay);
+            case 7120 -> shot(mc, "v28_6_slots_spin");
+            case 7152 -> shot(mc, "v28_7_slots_result");
+            case 7154 -> { mc.setScreen(null); serverKeep(mc, V185Test::v28RouletteOpen); }
+            case 7160 -> serverKeep(mc, V185Test::v28RoulettePlay);
+            case 7200 -> shot(mc, "v28_8_roulette");
+            case 7202 -> { mc.setScreen(null); serverKeep(mc, V185Test::v28ModsOpen); }
+            case 7210 -> shot(mc, "v28_9_mods");
+            case 7212 -> serverKeep(mc, V185Test::v28ModsInstall);
+            case 7220 -> shot(mc, "v28_10_mods_done");
+            case 7222 -> { mc.setScreen(null); serverKeep(mc, V185Test::v28Discount); }
+            case 7230 -> { mc.setScreen(null); serverKeep(mc, V185Test::v28Delivery); }
+            case 7236 -> serverKeep(mc, V185Test::v28Retrieval);
+            case 7270 -> serverKeep(mc, sp -> sp.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, net.minecraft.world.phys.Vec3.atCenterOf(V185Test.retr.target)));
+            case 7274 -> shot(mc, "v28_11_crate");
+            case 7276 -> serverKeep(mc, V185Test::v28RetrievalCheck);
+            case 7280 -> next(11);
             default -> {
             }
         }

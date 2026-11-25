@@ -126,6 +126,27 @@ public class BlackMarketDealer extends AbstractVillager implements RangedAttackM
     @Override
     protected void rewardTradeXp(MerchantOffer offer) {}
 
+    /** v0.28: 거래액 ₩5,000 당 평판 1 */
+    @Override
+    public void notifyTrade(MerchantOffer offer) {
+        super.notifyTrade(offer);
+        if (getTradingPlayer() instanceof ServerPlayer sp) {
+            long won = com.tycooncraft.economy.Coins.valueOf(offer.getCostA()) + com.tycooncraft.economy.Coins.valueOf(offer.getCostB());
+            // v0.28 평판 할인: 동전이 큰 단위라 값을 깎을 수 없어서, 결제 직후 할인분을 현금으로 돌려줌
+            long rebate = Math.round(won * Reputation.DISCOUNT[Reputation.tier(sp)]);
+            if (rebate > 0) {
+                com.tycooncraft.economy.Coins.give(sp, rebate);
+                sp.displayClientMessage(Component.translatable("message.tycooncraft.rep.rebate", com.tycooncraft.economy.Coins.format(rebate)), true);
+            }
+            repAcc += won;
+            int rep = (int) (repAcc / 5000);
+            repAcc %= 5000;
+            if (rep > 0) Reputation.add(sp, rep);
+        }
+    }
+
+    private long repAcc;
+
     @Override
     public boolean showProgressBar() {
         return false;

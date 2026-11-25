@@ -25,34 +25,14 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-/** v0.27.0 정찰 디스트로이어(사족 기계) · 공중 디스트로이어(모체) · 미니 드론 */
+/** 정찰 디스트로이어(사족 기계) · 플라잉 디스트로이어(모체) · 미니 드론 — v0.28 고퀄 모델 */
 public final class CarrierModels {
     public static final ModelLayerLocation SCOUT = new ModelLayerLocation(TycoonCraft.id("scout_destroyer"), "main");
     public static final ModelLayerLocation CARRIER = new ModelLayerLocation(TycoonCraft.id("aerial_destroyer"), "main");
 
     // ═════════ 정찰 디스트로이어 ═════════
     public static LayerDefinition scoutLayer() {
-        MeshDefinition m = new MeshDefinition();
-        PartDefinition r = m.getRoot();
-        PartDefinition body = r.addOrReplaceChild("body", CubeListBuilder.create().texOffs(0, 0).addBox(-4, -3, -6, 8, 5, 12)
-                .texOffs(40, 0).addBox(-0.5f, -7, 3, 1, 4, 1).texOffs(40, 6).addBox(-2.5f, -4, -1, 5, 1, 6), PartPose.offset(0, 16, 0));
-        PartDefinition head = body.addOrReplaceChild("head", CubeListBuilder.create().texOffs(0, 18).addBox(-3, -2, -5, 6, 4, 5)
-                .texOffs(22, 18).addBox(-2.5f, 1.5f, -5.5f, 5, 1, 4), PartPose.offset(0, -0.5f, -6));
-        for (int s = -1; s <= 1; s += 2) {
-            String n = s < 0 ? "l" : "r";
-            // 앞다리 · 뒷다리 (역관절: 윗다리는 바깥·앞뒤로, 아랫다리는 반대로 꺾임)
-            for (int f = 0; f < 2; f++) {
-                float z = f == 0 ? -4 : 4;
-                PartDefinition up = body.addOrReplaceChild("leg_" + n + f, CubeListBuilder.create().texOffs(0, 28).addBox(-1, -0.5f, -1, 2, 5, 2),
-                        PartPose.offsetAndRotation(s * 4.2f, 1, z, f == 0 ? -0.7f : 0.7f, 0, s * -0.35f));
-                up.addOrReplaceChild("low", CubeListBuilder.create().texOffs(8, 28).addBox(-0.75f, 0, -0.75f, 1.5f, 6, 1.5f),
-                        PartPose.offsetAndRotation(0, 4.5f, 0, f == 0 ? 1.25f : -1.25f, 0, s * 0.3f));
-            }
-            // 낫 같은 칼날 팔
-            PartDefinition blade = body.addOrReplaceChild("blade_" + n, CubeListBuilder.create().texOffs(16, 28).addBox(-0.5f, -0.5f, -1, 1, 1, 6)
-                    .texOffs(30, 28).addBox(-0.4f, -0.5f, -9, 0.8f, 3, 8), PartPose.offsetAndRotation(s * 3.6f, -2, -4, -0.9f, s * 0.15f, 0));
-        }
-        return LayerDefinition.create(m, 64, 64);
+        return ScoutDestroyerGeo.createBodyLayer();   // v0.28 고퀄 리메이크 (scripts/gen_destroyers.py)
     }
 
     public static class ScoutModel<T extends net.minecraft.world.entity.LivingEntity> extends HierarchicalModel<T> {
@@ -60,10 +40,15 @@ public final class CarrierModels {
         private final ModelPart[] legs = new ModelPart[4];
         private final ModelPart bl, br;
 
+        private final ModelPart abdomen, mandL, mandR;
+
         public ScoutModel(ModelPart root) {
             this.root = root;
             body = root.getChild("body");
             head = body.getChild("head");
+            abdomen = body.getChild("abdomen");
+            mandL = head.getChild("mandible_l");
+            mandR = head.getChild("mandible_r");
             legs[0] = body.getChild("leg_l0");
             legs[1] = body.getChild("leg_r0");
             legs[2] = body.getChild("leg_l1");
@@ -80,24 +65,37 @@ public final class CarrierModels {
         @Override
         public void setupAnim(T e, float limb, float amount, float age, float yaw, float pitch) {
             root.getAllParts().forEach(ModelPart::resetPose);
-            // 빠른 종종걸음 (대각선 다리끼리)
-            float w = Mth.cos(limb * 1.6f) * 0.7f * amount;
-            legs[0].xRot += w;
-            legs[3].xRot += w;
-            legs[1].xRot -= w;
-            legs[2].xRot -= w;
-            body.y += Mth.abs(Mth.sin(limb * 1.6f)) * -0.8f * amount;
-            body.zRot = Mth.sin(limb * 0.8f) * 0.08f * amount;
+            float amt = Math.min(1f, amount * 1.3f);
+            // 빠른 종종걸음 (대각선 다리끼리) + 아랫다리 굽힘
+            float ph = limb * 1.6f;
+            for (int i = 0; i < 4; i++) {
+                float p = ph + ((i == 0 || i == 3) ? 0 : Mth.PI);
+                legs[i].xRot += Mth.cos(p) * 0.75f * amt;
+                ModelPart low = legs[i].getChild("low");
+                low.zRot += (i % 2 == 0 ? -1 : 1) * Math.max(0f, Mth.sin(p)) * 0.5f * amt;
+            }
+            body.y += Mth.abs(Mth.sin(ph)) * -0.9f * amt;
+            body.zRot = Mth.sin(ph * 0.5f) * 0.07f * amt;
+            body.xRot = 0.08f * amt;                               // 달릴 때 앞으로 숙임
+            abdomen.xRot += Mth.sin(age * 0.12f) * 0.05f + Mth.sin(ph) * 0.06f * amt;
             head.yRot = yaw * Mth.DEG_TO_RAD * 0.7f;
             head.xRot = pitch * Mth.DEG_TO_RAD * 0.5f;
+            float chatter = Mth.sin(age * 0.9f) * 0.12f;           // 집게턱 딸깍임
+            mandL.yRot += chatter;
+            mandR.yRot -= chatter;
             float t = (e instanceof ScoutDestroyer sd ? e.level().getGameTime() - sd.slashAt
                     : e instanceof com.tycooncraft.mech.ProtoScout ps ? e.tickCount - ps.slashAt() : 99) + (age - (int) age);
-            if (t >= 0 && t < 8) {   // 베기: 칼날을 치켜들었다가 내려침
+            if (t >= 0 && t < 8) {   // 베기: 칼날을 치켜들었다가 내려침 (팔뚝·칼날도 펴짐)
                 float u = t / 8f;
                 float sw = u < 0.35f ? -u / 0.35f * 0.9f : -0.9f + (u - 0.35f) / 0.65f * 2.0f;
                 bl.xRot += sw;
                 br.xRot += sw;
-                body.xRot = 0.15f * Mth.sin(u * Mth.PI);
+                float ext = Mth.sin(u * Mth.PI) * 0.6f;
+                bl.getChild("fore").xRot -= ext;
+                br.getChild("fore").xRot -= ext;
+                body.xRot += 0.18f * Mth.sin(u * Mth.PI);
+                mandL.yRot += 0.4f * Mth.sin(u * Mth.PI);
+                mandR.yRot -= 0.4f * Mth.sin(u * Mth.PI);
             } else {
                 bl.xRot += Mth.sin(age * 0.15f) * 0.05f;
                 br.xRot -= Mth.sin(age * 0.15f) * 0.05f;
@@ -125,7 +123,7 @@ public final class CarrierModels {
 
         public ProtoScoutRenderer(EntityRendererProvider.Context ctx) {
             super(ctx, new ScoutModel<>(ctx.bakeLayer(SCOUT)), 1.1f);
-            addLayer(new GlowLayer<>(this, TycoonCraft.id("textures/entity/scout_destroyer_glow.png")));
+            addLayer(new GlowLayer<>(this, TycoonCraft.id("textures/entity/proto_scout_glow.png")));
         }
 
         @Override
@@ -148,29 +146,7 @@ public final class CarrierModels {
 
     // ═════════ 공중 디스트로이어 (모체) ═════════
     public static LayerDefinition carrierLayer() {
-        MeshDefinition m = new MeshDefinition();
-        PartDefinition r = m.getRoot();
-        PartDefinition hull = r.addOrReplaceChild("hull", CubeListBuilder.create()
-                .texOffs(0, 0).addBox(-6, -4, -13, 12, 7, 25)          // 몸통
-                .texOffs(0, 32).addBox(-4, -3, -17, 8, 5, 4)           // 기수
-                .texOffs(24, 32).addBox(-3, -8, -3, 6, 4, 9)           // 함교
-                .texOffs(0, 41).addBox(-1, -11, 2, 2, 3, 1)            // 안테나
-                .texOffs(0, 46).addBox(-14, -1, -4, 28, 2, 10)         // 날개판
-                .texOffs(56, 32).addBox(-1.5f, 3, -14, 3, 2, 3)         // 기수 포탑
-                .texOffs(68, 32).addBox(-0.5f, 3.5f, -19, 1, 1, 5), PartPose.offset(0, 12, 0));
-        // 동력원 3개: 왼쪽·오른쪽 날개 끝, 꼬리
-        float[][] pods = {{13.5f, 0, 1}, {-13.5f, 0, 1}, {0, -1, 13}};
-        for (int i = 0; i < 3; i++) {
-            PartDefinition pod = hull.addOrReplaceChild("pod" + i, CubeListBuilder.create().texOffs(0, 60).addBox(-3, -3, -5, 6, 6, 10)
-                    .texOffs(32, 60).addBox(-3.5f, -3.5f, 4, 7, 7, 1), PartPose.offset(pods[i][0], pods[i][1], pods[i][2]));
-            pod.addOrReplaceChild("glow", CubeListBuilder.create().texOffs(48, 60).addBox(-2, -2, 5, 4, 4, 1, new CubeDeformation(0.1f)), PartPose.ZERO);
-            pod.addOrReplaceChild("rotor", CubeListBuilder.create().texOffs(0, 80).addBox(-7, -0.25f, -0.75f, 14, 0.5f, 1.5f)
-                    .texOffs(0, 84).addBox(-0.75f, -0.25f, -7, 1.5f, 0.5f, 14), PartPose.offset(0, -3.6f, 0));
-        }
-        // 격납고 문 (배 밑)
-        hull.addOrReplaceChild("door_l", CubeListBuilder.create().texOffs(64, 46).addBox(0, 0, -6, 5, 1, 12), PartPose.offset(-5, 3, -1));
-        hull.addOrReplaceChild("door_r", CubeListBuilder.create().texOffs(64, 46).mirror().addBox(-5, 0, -6, 5, 1, 12), PartPose.offset(5, 3, -1));
-        return LayerDefinition.create(m, 128, 128);
+        return FlyingDestroyerGeo.createBodyLayer();   // v0.28 고퀄 리메이크
     }
 
     public static class CarrierModel extends HierarchicalModel<AerialDestroyer> {
@@ -194,6 +170,8 @@ public final class CarrierModels {
         public void setupAnim(AerialDestroyer e, float limb, float amount, float age, float yaw, float pitch) {
             root.getAllParts().forEach(ModelPart::resetPose);
             hull.y += Mth.sin(age * 0.05f) * 0.6f;   // 둥실둥실
+            hull.zRot += Mth.sin(age * 0.031f) * 0.02f;
+            for (int i = 0; i < 3; i++) if (e.core(i) > 0) pods[i].xRot += Mth.sin(age * 0.07f + i) * 0.04f;   // 엔진 미세 조향
             for (int i = 0; i < 3; i++) {
                 boolean alive = e.core(i) > 0;
                 ModelPart rotor = pods[i].getChild("rotor");
@@ -247,36 +225,69 @@ public final class CarrierModels {
         }
     }
 
-    // ═════════ 미니 드론 ═════════
-    public static class DroneRenderer extends EntityRenderer<MiniDrone> {
-        public DroneRenderer(EntityRendererProvider.Context ctx) {
-            super(ctx);
-            shadowRadius = 0.2f;
+    // ═════════ 미니 드론 (v0.28 전용 모델) ═════════
+    public static final ModelLayerLocation DRONE = new ModelLayerLocation(TycoonCraft.id("mini_drone"), "main");
+
+    public static LayerDefinition droneLayer() {
+        return MiniDroneGeo.createBodyLayer();
+    }
+
+    public static class DroneModel extends HierarchicalModel<MiniDrone> {
+        private final ModelPart root, body, gun;
+        private final ModelPart[] rotors = new ModelPart[4];
+
+        public DroneModel(ModelPart root) {
+            this.root = root;
+            body = root.getChild("body");
+            gun = body.getChild("gun");
+            for (int i = 0; i < 4; i++) rotors[i] = body.getChild("arm" + i).getChild("rotor");
         }
 
         @Override
-        public void render(MiniDrone d, float entityYaw, float pt, PoseStack ps, MultiBufferSource buf, int light) {
-            ps.pushPose();
-            float yaw = Mth.rotLerp(pt, d.yRotO, d.getYRot());
-            ps.mulPose(Axis.YP.rotationDegrees(180f - yaw));
-            ps.scale(0.55f, 0.55f, 0.55f);
-            VertexConsumer vc = VehicleModels.buffer(buf);
-            VehicleModels.body(ps, vc, VehicleModels.DRONE2_BODY, 1f, light);
-            float spin = (d.tickCount + pt) * 1.6f;
-            for (float[] m : new float[][]{{12, 9.6f, -12, 1}, {-12, 9.6f, -12, -1}, {12, 9.6f, 12, -1}, {-12, 9.6f, 12, 1}}) {
-                ps.pushPose();
-                VehicleModels.translateUnits(ps, m[0], m[1], m[2]);
-                ps.mulPose(Axis.YP.rotation(spin * m[3]));
-                VehicleModels.part(ps, vc, VehicleModels.DRONE_PROP2, 1f, light);
-                ps.popPose();
-            }
-            ps.popPose();
-            super.render(d, entityYaw, pt, ps, buf, light);
+        public ModelPart root() {
+            return root;
+        }
+
+        @Override
+        public void setupAnim(MiniDrone e, float limb, float amount, float age, float yaw, float pitch) {
+            root.getAllParts().forEach(ModelPart::resetPose);
+            for (int i = 0; i < 4; i++) rotors[i].yRot = age * 1.9f * (i % 2 == 0 ? 1 : -1);
+            body.y += Mth.sin(age * 0.2f + e.getId()) * 0.5f;
+            body.xRot = Math.min(0.35f, amount * 0.6f);       // 앞으로 기울며 비행
+            gun.xRot = pitch * Mth.DEG_TO_RAD * 0.6f;
+        }
+    }
+
+    public static class DroneRenderer extends MobRenderer<MiniDrone, DroneModel> {
+        private static final ResourceLocation TEX = TycoonCraft.id("textures/entity/mini_drone.png");
+        private static final ResourceLocation ALLY = TycoonCraft.id("textures/entity/mini_drone_ally.png");
+
+        public DroneRenderer(EntityRendererProvider.Context ctx) {
+            super(ctx, new DroneModel(ctx.bakeLayer(DRONE)), 0.25f);
+            addLayer(new net.minecraft.client.renderer.entity.layers.RenderLayer<>(this) {
+                private final ResourceLocation g = TycoonCraft.id("textures/entity/mini_drone_glow.png"), ga = TycoonCraft.id("textures/entity/mini_drone_ally_glow.png");
+
+                @Override
+                public void render(PoseStack ps, MultiBufferSource buf, int light, MiniDrone d, float limb, float amt, float pt, float age, float yaw, float pitch) {
+                    VertexConsumer vc = buf.getBuffer(net.minecraft.client.renderer.RenderType.eyes(d.allyClient() ? ga : g));
+                    getParentModel().renderToBuffer(ps, vc, 0xF000F0, net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY);
+                }
+            });
+        }
+
+        @Override
+        protected void scale(MiniDrone e, PoseStack ps, float pt) {
+            ps.scale(0.9f, 0.9f, 0.9f);
+        }
+
+        @Override
+        protected float getFlipDegrees(MiniDrone e) {
+            return 0f;
         }
 
         @Override
         public ResourceLocation getTextureLocation(MiniDrone e) {
-            return TextureAtlas.LOCATION_BLOCKS;
+            return e.allyClient() ? ALLY : TEX;
         }
     }
 

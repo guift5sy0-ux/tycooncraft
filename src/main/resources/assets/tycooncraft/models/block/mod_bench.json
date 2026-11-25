@@ -1,0 +1,8 @@
+{
+ "parent": "minecraft:block/orientable",
+ "textures": {
+  "front": "tycooncraft:block/mod_bench_front",
+  "side": "tycooncraft:block/mod_bench_side",
+  "top": "tycooncraft:block/mod_bench_top"
+ }
+}

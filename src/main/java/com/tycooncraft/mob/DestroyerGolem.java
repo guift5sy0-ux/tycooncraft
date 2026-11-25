@@ -68,12 +68,12 @@ public class DestroyerGolem extends Monster {
         goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.7));
         goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 16f));
         goalSelector.addGoal(8, new RandomLookAroundGoal(this));
-        targetSelector.addGoal(1, new HurtByTargetGoal(this));
+        targetSelector.addGoal(1, new HurtByTargetGoal(this, com.tycooncraft.mob.carrier.ScoutDestroyer.class, com.tycooncraft.mob.carrier.AerialDestroyer.class, com.tycooncraft.mob.carrier.MiniDrone.class));
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
         targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, true));
         // 디스트로이어는 모든 몹에게 적대적 (다른 디스트로이어·갑옷 거치대 제외)
         targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, net.minecraft.world.entity.Mob.class, 10, true, false,
-                e -> !(e instanceof DestroyerGolem) && e.isAlive()));
+                e -> com.tycooncraft.mob.carrier.Destroyers.prey(e)));
     }
 
     @Override

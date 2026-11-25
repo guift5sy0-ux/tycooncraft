@@ -63,11 +63,12 @@ public class ScoutDestroyer extends Monster {
         goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.9));
         goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 10f));
         goalSelector.addGoal(7, new RandomLookAroundGoal(this));
-        targetSelector.addGoal(1, new HurtByTargetGoal(this, ScoutDestroyer.class, AerialDestroyer.class).setAlertOthers());
+        targetSelector.addGoal(1, new HurtByTargetGoal(this, ScoutDestroyer.class, AerialDestroyer.class, MiniDrone.class, com.tycooncraft.mob.DestroyerGolem.class).setAlertOthers());
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
         targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractVillager.class, false));
         targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolem.class, true));
         targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, com.tycooncraft.village.VillageGuard.class, true));
+        targetSelector.addGoal(5, Destroyers.anyMob(this, 10));   // v0.28: 디스트로이어 빼고 전부
     }
 
     /** 저글링처럼: 쫓아갈 때 좌우로 꺾어 뛰고, 가까우면 덮치듯 도약 */
@@ -92,6 +93,11 @@ public class ScoutDestroyer extends Monster {
             setDeltaMovement(fwd.x * 0.75, 0.38, fwd.z * 0.75);
             jukeCd = 18 + random.nextInt(10);
         }
+    }
+
+    @Override
+    public boolean canAttack(LivingEntity e) {
+        return !Destroyers.isDestroyer(e) && super.canAttack(e);
     }
 
     @Override

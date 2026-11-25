@@ -22,7 +22,21 @@ import net.minecraft.world.phys.Vec3;
  * 모체가 사라지면 추락한다.
  */
 public class MiniDrone extends Monster {
-    public static final float DAMAGE = 4f;
+    /** v0.28: 4 → 3.6 (플라잉 디스트로이어 피해 -10%) · 편대 드론은 4 그대로 */
+    public static final float DAMAGE = 3.6f, ALLY_DAMAGE = 4f;
+    private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> ALLY =
+            net.minecraft.network.syncher.SynchedEntityData.defineId(MiniDrone.class, net.minecraft.network.syncher.EntityDataSerializers.BOOLEAN);
+
+    @Override
+    protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder b) {
+        super.defineSynchedData(b);
+        b.define(ALLY, false);
+    }
+
+    /** 클라이언트에서 아군 도색 판정 */
+    public boolean allyClient() {
+        return entityData.get(ALLY);
+    }
     public static final int FIRE_EVERY = 30;
     private Entity carrier;
     private int fireCd = 20;
@@ -31,10 +45,12 @@ public class MiniDrone extends Monster {
     private java.util.UUID owner;
     private int life;
     public static int allyShots;
+    public static double maxLeash;
 
     public void setOwner(net.minecraft.world.entity.player.Player p, int lifeTicks) {
         owner = p.getUUID();
         life = lifeTicks;
+        entityData.set(ALLY, true);
         setCustomName(net.minecraft.network.chat.Component.translatable("entity.tycooncraft.mini_drone.ally", p.getGameProfile().getName()));
         setCustomNameVisible(false);
     }
@@ -85,6 +101,8 @@ public class MiniDrone extends Monster {
             return;
         }
         LivingEntity t = carrier instanceof Mob m ? m.getTarget() : null;
+        // v0.28: 모체에서 50블록 넘게는 못 감 — 목표가 그 밖이면 모체 곁으로 복귀
+        if (t != null && t.distanceToSqr(carrier) > AerialDestroyer.DRONE_LEASH * AerialDestroyer.DRONE_LEASH) t = null;
         Vec3 goal;
         orbit += 0.035f;
         if (t != null && t.isAlive()) {
@@ -99,6 +117,13 @@ public class MiniDrone extends Monster {
         } else {
             goal = carrier.position().add(Math.cos(orbit) * 5, -1.5, Math.sin(orbit) * 5);
         }
+        Vec3 off = goal.subtract(carrier.position());   // 목표점도 모체 반경 안으로
+        if (off.length() > AerialDestroyer.DRONE_LEASH - 2) goal = carrier.position().add(off.normalize().scale(AerialDestroyer.DRONE_LEASH - 2));
+        if (distanceToSqr(carrier) > AerialDestroyer.DRONE_LEASH * AerialDestroyer.DRONE_LEASH) {
+            Vec3 back = carrier.position().subtract(position()).normalize();   // 넘어가 있으면 강하게 끌려 돌아옴
+            setDeltaMovement(back.scale(0.6));
+        }
+        maxLeash = Math.max(maxLeash, Math.sqrt(distanceToSqr(carrier)));
         Vec3 v = goal.subtract(position());
         double d = v.length();
         Vec3 want = d > 0.01 ? v.scale(Math.min(0.45, d * 0.12) / d) : Vec3.ZERO;
@@ -156,7 +181,7 @@ public class MiniDrone extends Monster {
         Vec3 from = position().add(0, getBbHeight() * 0.5, 0);
         Vec3 dir = t.getBoundingBox().getCenter().subtract(from).normalize()
                 .add(random.nextGaussian() * 0.03, random.nextGaussian() * 0.03, random.nextGaussian() * 0.03).normalize();
-        Ballistics.shoot(sl, o, from.add(dir.scale(0.5)), dir, 32, DAMAGE, 0, 1.2f, false, true, damageSources().mobAttack(this),
+        Ballistics.shoot(sl, o, from.add(dir.scale(0.5)), dir, 32, ALLY_DAMAGE, 0, 1.2f, false, true, damageSources().mobAttack(this),
                 e -> e != o && !(e instanceof MiniDrone md && md.ally()) && !(e instanceof net.minecraft.world.entity.player.Player p
                         && (p.getServer() != null && com.tycooncraft.alliance.Alliances.friendly(p.getServer(), owner, p.getUUID()))));
         sl.playSound(null, getX(), getY(), getZ(), ModSounds.PISTOL_FIRE.get(), SoundSource.PLAYERS, 1.0f, 1.7f);
@@ -178,6 +203,7 @@ public class MiniDrone extends Monster {
         if (t.hasUUID("Owner")) {
             owner = t.getUUID("Owner");
             life = t.getInt("Life");
+            entityData.set(ALLY, true);
         }
     }
 
@@ -187,7 +213,7 @@ public class MiniDrone extends Monster {
         Vec3 dir = t.getBoundingBox().getCenter().subtract(from).normalize()
                 .add(random.nextGaussian() * 0.04, random.nextGaussian() * 0.04, random.nextGaussian() * 0.04).normalize();
         Ballistics.shoot(sl, this, from.add(dir.scale(0.5)), dir, 32, DAMAGE, 0, 1.2f, false, true, damageSources().mobAttack(this),
-                e -> !(e instanceof MiniDrone) && !(e instanceof AerialDestroyer) && !(e instanceof ScoutDestroyer));
+                e -> !Destroyers.isDestroyer(e));
         sl.playSound(null, getX(), getY(), getZ(), ModSounds.PISTOL_FIRE.get(), SoundSource.HOSTILE, 1.2f, 1.6f);
     }
 

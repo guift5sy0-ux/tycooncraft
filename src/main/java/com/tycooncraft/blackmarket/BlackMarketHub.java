@@ -22,9 +22,11 @@ import net.minecraft.world.phys.AABB;
 
 /** 암시장 골목 (x -16~16, z -8~8, 바닥 y=63) — 처음 한 번 짓고, 상인은 죽으면 다음 날 다시 나옴 */
 public final class BlackMarketHub {
-    public static final int VERSION = 2;
+    public static final int VERSION = 3;   // v3 (0.28): 카지노 홀 · 의뢰 게시판 · 불법 개조점
     public static final BlockPos[] DEALER_POS = {new BlockPos(-8, 64, -6), new BlockPos(0, 64, -6), new BlockPos(8, 64, -6)};
     public static final BlockPos EXIT = new BlockPos(-15, 63, 0), BOUNTY = new BlockPos(-4, 64, 7), VAULT = new BlockPos(4, 64, 7);
+    public static final BlockPos MISSION = new BlockPos(8, 64, 7), MODS = new BlockPos(13, 64, -7), ROULETTE = new BlockPos(27, 64, 0);
+    public static final int CASINO_X0 = 18, CASINO_X1 = 36;
 
     public static class Data extends SavedData {
         int built;
@@ -113,8 +115,8 @@ public final class BlackMarketHub {
 
     public static void build(ServerLevel l) {
         var rnd = l.random;
-        fill(l, -22, 64, -14, 22, 90, 14, Blocks.AIR);
-        for (var e : l.getEntitiesOfClass(BlackMarketDealer.class, new AABB(-22, 60, -14, 22, 90, 14))) e.discard();   // 다시 지을 때 상인도 새로
+        fill(l, -22, 64, -14, 40, 90, 14, Blocks.AIR);
+        for (var e : l.getEntitiesOfClass(BlackMarketDealer.class, new AABB(-22, 60, -14, 40, 90, 14))) e.discard();   // 다시 지을 때 상인도 새로
         // 바닥: 젖은 아스팔트 느낌 (검정 콘크리트 + 블랙스톤 + 물웅덩이 유리)
         for (int x = -17; x <= 17; x++)
             for (int z = -8; z <= 8; z++) {
@@ -208,6 +210,77 @@ public final class BlackMarketHub {
         set(l, -8, 64, 6, Blocks.POLISHED_BLACKSTONE_STAIRS.defaultBlockState().setValue(StairBlock.FACING, Direction.SOUTH));
         // 환전기·판매소 (암시장 안에서도 돈 정리 가능)
         set(l, 12, 64, 7, ModBlocks.EXCHANGE.get());
+        // ── v3: 의뢰 게시판 (남쪽) · 불법 개조점 (북동쪽 노점) ──
+        BlockState board = ModBlocks.MISSION_BOARD.get().defaultBlockState().setValue(BMBlock.FACING, Direction.NORTH);
+        set(l, MISSION.getX(), 64, MISSION.getZ(), board);
+        set(l, MISSION.getX(), 65, MISSION.getZ(), board);
+        set(l, MISSION.getX() - 1, 67, 7, Blocks.ORANGE_STAINED_GLASS);
+        set(l, MISSION.getX(), 67, 7, Blocks.ORANGE_STAINED_GLASS);
+        set(l, MISSION.getX(), 67, 8, Blocks.SEA_LANTERN);
+        set(l, 10, 64, 7, Blocks.AIR);
+        fill(l, 12, 64, -7, 15, 66, -7, Blocks.AIR);
+        fill(l, 12, 64, -6, 13, 65, -6, Blocks.AIR);
+        set(l, MODS.getX(), 64, MODS.getZ(), ModBlocks.MOD_BENCH.get().defaultBlockState().setValue(BMBlock.FACING, Direction.SOUTH));
+        set(l, MODS.getX() - 1, 64, -7, Blocks.SMITHING_TABLE);
+        set(l, MODS.getX() + 1, 64, -7, Blocks.GRINDSTONE);
+        set(l, MODS.getX() + 2, 64, -7, Blocks.BARREL);
+        fill(l, MODS.getX() - 1, 68, -8, MODS.getX() + 2, 68, -8, Blocks.RED_STAINED_GLASS);
+        set(l, MODS.getX(), 68, -9, Blocks.SEA_LANTERN);
+        set(l, MODS.getX() + 1, 68, -9, Blocks.SEA_LANTERN);
+        set(l, MODS.getX(), 67, -6, Blocks.LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true));
+        fill(l, MODS.getX() - 1, 69, -7, MODS.getX() + 2, 69, -5, Blocks.GRAY_WOOL);
+        // ── v3: 동쪽 벽에 문 → 카지노 홀 (x 18~36) ──
+        fill(l, 17, 64, -1, 17, 66, 1, Blocks.AIR);
+        fill(l, 16, 64, -1, 16, 66, 1, Blocks.AIR);
+        fill(l, 17, 67, -2, 17, 67, 2, Blocks.GOLD_BLOCK);
+        set(l, 17, 68, 0, Blocks.RED_STAINED_GLASS);
+        casino(l);
+    }
+
+    /** 카지노 홀: 붉은 카펫, 금빛 기둥, 슬롯머신 줄, 가운데 룰렛 테이블, 샹들리에 */
+    static void casino(ServerLevel l) {
+        int x0 = CASINO_X0, x1 = CASINO_X1;
+        for (int x = x0; x <= x1; x++)
+            for (int z = -8; z <= 8; z++) {
+                boolean edge = z == -8 || z == 8 || x == x1;
+                if (edge) {
+                    for (int y = 63; y <= 76; y++) set(l, x, y, z, (y == 70 || y == 64 && x % 3 == 0) ? Blocks.GILDED_BLACKSTONE : Blocks.POLISHED_BLACKSTONE_BRICKS);
+                    continue;
+                }
+                set(l, x, 63, z, (x + z) % 2 == 0 ? Blocks.RED_CONCRETE : Blocks.BLACK_CONCRETE);
+                if (Math.abs(z) <= 1) set(l, x, 63, z, Blocks.RED_WOOL);
+            }
+        for (int x = x0 + 1; x < x1; x += 4) {                       // 금 기둥
+            fill(l, x, 64, -7, x, 70, -7, Blocks.GOLD_BLOCK);
+            fill(l, x, 64, 7, x, 70, 7, Blocks.GOLD_BLOCK);
+        }
+        fill(l, x0, 77, -8, x1, 78, 8, Blocks.BARRIER);
+        fill(l, x0, 71, -7, x1 - 1, 71, 7, Blocks.BLACK_STAINED_GLASS);   // 어두운 천장판
+        // 슬롯머신 (북·남 벽을 따라)
+        for (int x = x0 + 2; x < x1 - 1; x += 2) {
+            if ((x - x0 - 1) % 4 == 0) continue;
+            set(l, x, 64, -6, ModBlocks.SLOT_MACHINE.get().defaultBlockState().setValue(BMBlock.FACING, Direction.SOUTH));
+            set(l, x, 65, -6, Blocks.RED_STAINED_GLASS);
+            set(l, x, 64, 6, ModBlocks.SLOT_MACHINE.get().defaultBlockState().setValue(BMBlock.FACING, Direction.NORTH));
+            set(l, x, 65, 6, Blocks.PURPLE_STAINED_GLASS);
+        }
+        // 룰렛 테이블 (가운데) + 둘레 녹색 펠트
+        for (int dx = -2; dx <= 2; dx++)
+            for (int dz = -1; dz <= 1; dz++)
+                set(l, ROULETTE.getX() + dx, 64, ROULETTE.getZ() + dz, Blocks.GREEN_CARPET);
+        set(l, ROULETTE.getX(), 64, ROULETTE.getZ(), ModBlocks.ROULETTE_TABLE.get().defaultBlockState());
+        // 샹들리에 + 숨은 조명
+        for (int x = x0 + 3; x < x1; x += 6) {
+            set(l, x, 70, 0, Blocks.CHAIN.defaultBlockState().setValue(ChainBlock.AXIS, Direction.Axis.Y));
+            set(l, x, 69, 0, Blocks.GOLD_BLOCK);
+            for (Direction d : Direction.Plane.HORIZONTAL)
+                set(l, x + d.getStepX(), 69, d.getStepZ(), Blocks.LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true));
+            set(l, x, 68, 3, Blocks.LIGHT.defaultBlockState().setValue(net.minecraft.world.level.block.LightBlock.LEVEL, 13));
+            set(l, x, 68, -3, Blocks.LIGHT.defaultBlockState().setValue(net.minecraft.world.level.block.LightBlock.LEVEL, 13));
+        }
+        // 안쪽 벽 네온 간판 "CASINO" 느낌의 띠
+        fill(l, x1 - 1, 67, -4, x1 - 1, 68, 4, Blocks.MAGENTA_STAINED_GLASS);
+        fill(l, x1, 67, -4, x1, 68, 4, Blocks.SEA_LANTERN);
     }
 
     private BlackMarketHub() {}

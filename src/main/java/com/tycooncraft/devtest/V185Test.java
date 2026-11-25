@@ -1222,7 +1222,7 @@ public final class V185Test {
                 e -> e.getItem().is(ModItems.FLIGHT_CORE.get())).size();
         int drones = sl.getEntitiesOfClass(com.tycooncraft.mob.carrier.MiniDrone.class, sp.getBoundingBox().inflate(80), e -> e.isAlive() && e.isNoGravity()).size();
         System.out.println("[AUTOTEST] v270 crash carrierDead=" + !carrier.isAlive() + " flightCoreDrops=" + cores + " flyingDronesLeft=" + drones
-                + " crashes=" + com.tycooncraft.mob.carrier.AerialDestroyer.crashes + " coresBroken=" + com.tycooncraft.mob.carrier.AerialDestroyer.coresBroken
+                + " crashes=" + com.tycooncraft.mob.carrier.AerialDestroyer.crashes + " coresBroken=" + com.tycooncraft.mob.carrier.AerialDestroyer.coresBroken + " droneMaxLeash=" + String.format("%.1f", com.tycooncraft.mob.carrier.MiniDrone.maxLeash)
                 + " flightCorePrice=" + com.tycooncraft.economy.PriceTable.basePrice(ModItems.FLIGHT_CORE.get()) + " scoutCorePrice=" + com.tycooncraft.economy.PriceTable.basePrice(ModItems.SCOUT_CORE.get()));
         for (var m : sl.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, sp.getBoundingBox().inflate(100),
                 e -> e instanceof com.tycooncraft.mob.carrier.ScoutDestroyer || e instanceof com.tycooncraft.mob.carrier.MiniDrone)) m.discard();
@@ -1344,6 +1344,270 @@ public final class V185Test {
         System.out.println("[AUTOTEST] v271 pscout item=" + back.getItem() + " protoScoutPrice=" + com.tycooncraft.economy.PriceTable.basePrice(ModItems.PROTO_SCOUT.get())
                 + " coreEnginePrice=" + com.tycooncraft.economy.PriceTable.basePrice(ModItems.SHIP_CORE_ENGINE.get())
                 + " swarmPrice=" + com.tycooncraft.economy.PriceTable.basePrice(ModItems.DRONE_SWARM.get()));
+    }
+
+    // ── v0.28 디스트로이어 적대 범위 · 고퀄 모델 · 블랙마켓 (평판·의뢰·카지노·불법 개조) ──
+    static com.tycooncraft.mob.carrier.ScoutDestroyer tScout, tScout2;
+    static com.tycooncraft.mob.carrier.AerialDestroyer tCarrier;
+    static net.minecraft.world.entity.animal.Cow tCow;
+    static BlockPos owBase;
+
+    static void v28Targets(ServerPlayer sp) {
+        net.minecraft.server.level.ServerLevel ow = sp.server.overworld();
+        for (int cx = -2; cx <= 3; cx++) for (int cz = -3; cz <= 3; cz++) ow.setChunkForced((220 >> 4) + cx, (260 >> 4) + cz, true);   // 청크를 먼저 불러야 지면 높이가 맞음
+        owBase = ow.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, new BlockPos(220, 0, 260));
+        sp.teleportTo(ow, owBase.getX() + 0.5, owBase.getY() + 30, owBase.getZ() - 30.5, 0f, 30f);
+        sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+        ow.setDayTime(6000);
+        tCow = EntityType.COW.create(ow);
+        tCow.moveTo(owBase.getX() + 0.5, owBase.getY(), owBase.getZ() + 0.5, 0, 0);
+        tCow.setNoAi(true);
+        tCow.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(500);
+        tCow.setHealth(500);
+        tCow.setPersistenceRequired();
+        ow.addFreshEntity(tCow);
+        tScout = ModEntities.SCOUT_DESTROYER.get().create(ow);
+        tScout.moveTo(owBase.getX() + 4.5, owBase.getY(), owBase.getZ() + 0.5, 0, 0);
+        tScout.setPersistenceRequired();
+        ow.addFreshEntity(tScout);
+        tScout2 = ModEntities.SCOUT_DESTROYER.get().create(ow);
+        tScout2.moveTo(owBase.getX() - 3.5, owBase.getY(), owBase.getZ() + 0.5, 0, 0);
+        tScout2.setPersistenceRequired();
+        ow.addFreshEntity(tScout2);
+        tCarrier = ModEntities.AERIAL_DESTROYER.get().create(ow);
+        tCarrier.moveTo(owBase.getX() + 0.5, owBase.getY() + 14, owBase.getZ() + 10.5, 0, 0);
+        tCarrier.setPersistenceRequired();
+        ow.addFreshEntity(tCarrier);
+        System.out.println("[AUTOTEST] v280 targets setup cow=" + tCow.blockPosition() + " playerCreative=" + sp.isCreative());
+    }
+
+    static void v28TargetsCheck(ServerPlayer sp) {
+        String a = tScout.getTarget() == null ? "none" : tScout.getTarget().getType().toShortString();
+        String b = tScout2.getTarget() == null ? "none" : tScout2.getTarget().getType().toShortString();
+        String c = tCarrier.getTarget() == null ? "none" : tCarrier.getTarget().getType().toShortString();
+        System.out.println("[AUTOTEST] v280 dbg scoutTick=" + tScout.tickCount + " alive=" + tScout.isAlive() + " pos=" + tScout.blockPosition() + " lvl=" + tScout.level().dimension().location()
+                + " player=" + sp.blockPosition() + " " + sp.level().dimension().location() + " canAtk=" + tScout.canAttack(tCow) + " dist=" + tScout.distanceTo(tCow) + " removed=" + tScout.getRemovalReason() + " diff=" + sp.serverLevel().getDifficulty() + " carrierAlive=" + tCarrier.isAlive() + " " + tCarrier.getRemovalReason());
+        System.out.println("[AUTOTEST] v280 targets scout1=" + a + " scout2=" + b + " carrier=" + c + " cowHp=" + Math.round(tCow.getHealth())
+                + " scoutVsScout=" + (tScout.getTarget() instanceof com.tycooncraft.mob.carrier.ScoutDestroyer)
+                + " maxDrones=" + com.tycooncraft.mob.carrier.AerialDestroyer.MAX_DRONES + " maxScouts=" + com.tycooncraft.mob.carrier.AerialDestroyer.MAX_SCOUTS
+                + " coreHp=" + com.tycooncraft.mob.carrier.AerialDestroyer.CORE_HP + " droneDmg=" + com.tycooncraft.mob.carrier.MiniDrone.DAMAGE
+                + " leashMax=" + String.format("%.1f", com.tycooncraft.mob.carrier.MiniDrone.maxLeash));
+        for (var m : sp.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.Mob.class, sp.getBoundingBox().inflate(120),
+                e -> com.tycooncraft.mob.carrier.Destroyers.isDestroyer(e) || e == tCow)) m.discard();
+    }
+
+    static void v28Showcase(ServerPlayer sp) {
+        net.minecraft.server.level.ServerLevel ow = sp.server.overworld();
+        sp.stopRiding();
+        sp.getInventory().armor.set(2, ItemStack.EMPTY);   // 낙하산 가방 등 벗기 (화면 가림)
+        sp.teleportTo(ow, owBase.getX() + 0.5, owBase.getY() + 1.2, owBase.getZ() - 3.5, 0f, 14f);
+        var sc = ModEntities.SCOUT_DESTROYER.get().create(ow);
+        sc.moveTo(owBase.getX() - 0.6, owBase.getY(), owBase.getZ() + 0.0, 150f, 0);
+        sc.setNoAi(true);
+        sc.setYBodyRot(150f);
+        sc.setYHeadRot(150f);
+        sc.setPersistenceRequired();
+        ow.addFreshEntity(sc);
+        var d1 = ModEntities.MINI_DRONE.get().create(ow);
+        d1.moveTo(owBase.getX() + 1.8, owBase.getY() + 1.6, owBase.getZ() - 1.0, 200f, 0);
+        d1.setNoAi(true);
+        d1.setPersistenceRequired();
+        ow.addFreshEntity(d1);
+        var d2 = ModEntities.MINI_DRONE.get().create(ow);
+        d2.moveTo(owBase.getX() + 2.6, owBase.getY() + 0.9, owBase.getZ() + 0.6, 220f, 0);
+        d2.setOwner(sp, 400);
+        d2.setNoAi(true);
+        ow.addFreshEntity(d2);
+        System.out.println("[AUTOTEST] v280 showcase allySynced=" + d2.allyClient());
+    }
+
+    static void v28ShowCarrier(ServerPlayer sp) {
+        net.minecraft.server.level.ServerLevel ow = sp.server.overworld();
+        for (var m : ow.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, sp.getBoundingBox().inflate(30), com.tycooncraft.mob.carrier.Destroyers::isDestroyer)) m.discard();
+        var c = ModEntities.AERIAL_DESTROYER.get().create(ow);
+        c.moveTo(owBase.getX() + 0.5, owBase.getY() + 8, owBase.getZ() + 16, 150f, 0);
+        c.setNoAi(true);
+        c.setPersistenceRequired();
+        c.setYBodyRot(150f);
+        ow.addFreshEntity(c);
+        sp.teleportTo(ow, owBase.getX() + 0.5, owBase.getY() + 6, owBase.getZ() - 4.5, 0f, 0f);
+        sp.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, c.position().add(0, 2, 0));
+    }
+
+    static long bank0;
+    static int rep0;
+
+    static long bank(ServerPlayer sp) {
+        return com.tycooncraft.economy.BankData.get(sp.server).account(sp.getUUID()).balance;
+    }
+
+    static void v28Enter(ServerPlayer sp) {
+        for (var m : sp.server.overworld().getEntitiesOfClass(net.minecraft.world.entity.Mob.class, sp.getBoundingBox().inflate(60), com.tycooncraft.mob.carrier.Destroyers::isDestroyer)) m.discard();
+        com.tycooncraft.blackmarket.BlackMarket.enter(sp, sp.blockPosition().below());
+        var bm = sp.serverLevel();
+        com.tycooncraft.blackmarket.Reputation.set(sp, 0);
+        int t0 = com.tycooncraft.blackmarket.Reputation.tier(sp);
+        com.tycooncraft.blackmarket.Reputation.add(sp, 120);
+        System.out.println("[AUTOTEST] v280 bm dim=" + bm.dimension().location() + " missionBoard=" + bm.getBlockState(com.tycooncraft.blackmarket.BlackMarketHub.MISSION).getBlock()
+                + " modBench=" + bm.getBlockState(com.tycooncraft.blackmarket.BlackMarketHub.MODS).getBlock() + " roulette=" + bm.getBlockState(com.tycooncraft.blackmarket.BlackMarketHub.ROULETTE).getBlock()
+                + " slot=" + bm.getBlockState(new BlockPos(20, 64, -6)).getBlock() + " door=" + bm.getBlockState(new BlockPos(17, 65, 0)).isAir()
+                + " tier0=" + t0 + " tierAfter120=" + com.tycooncraft.blackmarket.Reputation.tier(sp));
+        sp.teleportTo(bm, 8.5, 64, 4.5, 0f, 10f);
+    }
+
+    static void v28MissionScreen(ServerPlayer sp) {
+        com.tycooncraft.blackmarket.BMBlock.open(sp, com.tycooncraft.blackmarket.BMPayloads.MISSIONS);
+    }
+
+    static void v28Supply(ServerPlayer sp) {
+        var offers = com.tycooncraft.blackmarket.Missions.offers(sp);
+        int idx = -1;
+        for (int i = 0; i < offers.size(); i++) if (offers.get(i).type == com.tycooncraft.blackmarket.Missions.SUPPLY) idx = i;
+        var m = offers.get(idx);
+        bank0 = bank(sp);
+        rep0 = com.tycooncraft.blackmarket.Reputation.points(sp);
+        var r = com.tycooncraft.blackmarket.Missions.accept(sp, idx);
+        var early = com.tycooncraft.blackmarket.Missions.turnIn(sp).getString();
+        sp.getInventory().add(new ItemStack(m.itemType(), m.count));
+        var done = com.tycooncraft.blackmarket.Missions.turnIn(sp).getString();
+        System.out.println("[AUTOTEST] v280 supply item=" + m.item + "x" + m.count + " reward=" + m.reward + " accepted=" + r.getString()
+                + " | early=" + early + " | done=" + done + " bankDelta=" + (bank(sp) - bank0) + " repDelta=" + (com.tycooncraft.blackmarket.Reputation.points(sp) - rep0)
+                + " offersLeft=" + com.tycooncraft.blackmarket.Missions.offers(sp).size());
+        com.tycooncraft.blackmarket.BMPayloads.missions(sp, null);
+    }
+
+    static void v28Casino(ServerPlayer sp) {
+        sp.teleportTo(sp.serverLevel(), 20.5, 64, 0.5, -90f, 5f);
+        // 환급률 시뮬레이션
+        var r = net.minecraft.util.RandomSource.create(7);
+        double slot = 0, rou = 0;
+        int N = 200_000;
+        for (int i = 0; i < N; i++) {
+            slot += com.tycooncraft.blackmarket.Casino.slotPay(com.tycooncraft.blackmarket.Casino.symbol(r), com.tycooncraft.blackmarket.Casino.symbol(r), com.tycooncraft.blackmarket.Casino.symbol(r));
+            rou += com.tycooncraft.blackmarket.Casino.roulettePay(r.nextInt(37), i % 3);
+        }
+        System.out.println("[AUTOTEST] v280 casino rtpSlots=" + String.format("%.3f", slot / N) + " rtpRoulette=" + String.format("%.3f", rou / N)
+                + " maxBetTier1=" + com.tycooncraft.blackmarket.Casino.maxBet(sp));
+    }
+
+    static void v28SlotsOpen(ServerPlayer sp) {
+        sp.getInventory().add(com.tycooncraft.economy.Coins.toStacks(200_000).get(0));
+        com.tycooncraft.economy.Coins.give(sp, 200_000);
+        com.tycooncraft.blackmarket.BMBlock.open(sp, com.tycooncraft.blackmarket.BMPayloads.SLOTS);
+    }
+
+    static long fundsBefore;
+
+    static void v28SlotsPlay(ServerPlayer sp) {
+        fundsBefore = com.tycooncraft.blackmarket.Casino.funds(sp);
+        com.tycooncraft.blackmarket.BMPayloads.handle(sp, new com.tycooncraft.blackmarket.BMPayloads.Act(com.tycooncraft.blackmarket.BMPayloads.SLOTS, 0, 10_000, 0));
+        var over = new net.minecraft.network.chat.Component[1];
+        long[] tooMuch = com.tycooncraft.blackmarket.Casino.play(sp, com.tycooncraft.blackmarket.Casino.SLOTS, 999_999, 0, over);
+        System.out.println("[AUTOTEST] v280 slots spins=" + com.tycooncraft.blackmarket.Casino.spins + " wagered=" + com.tycooncraft.blackmarket.Casino.wagered
+                + " paid=" + com.tycooncraft.blackmarket.Casino.paidOut + " fundsDelta=" + (com.tycooncraft.blackmarket.Casino.funds(sp) - fundsBefore)
+                + " overLimitBlocked=" + (tooMuch == null) + " msg=" + (over[0] == null ? "" : over[0].getString()));
+    }
+
+    static void v28RouletteOpen(ServerPlayer sp) {
+        sp.teleportTo(sp.serverLevel(), 27.5, 64, -2.5, 0f, 30f);
+        com.tycooncraft.blackmarket.BMBlock.open(sp, com.tycooncraft.blackmarket.BMPayloads.ROULETTE);
+    }
+
+    static void v28RoulettePlay(ServerPlayer sp) {
+        com.tycooncraft.blackmarket.BMPayloads.handle(sp, new com.tycooncraft.blackmarket.BMPayloads.Act(com.tycooncraft.blackmarket.BMPayloads.ROULETTE, 0, 10_000, com.tycooncraft.blackmarket.Casino.RED));
+        System.out.println("[AUTOTEST] v280 roulette spins=" + com.tycooncraft.blackmarket.Casino.spins + " paid=" + com.tycooncraft.blackmarket.Casino.paidOut);
+    }
+
+    static float dmg0;
+    static int mag0;
+
+    static void v28ModsOpen(ServerPlayer sp) {
+        sp.teleportTo(sp.serverLevel(), 13.5, 64, -5.0, 180f, 20f);
+        com.tycooncraft.blackmarket.Reputation.set(sp, 1500);
+        ItemStack gun = new ItemStack(ModItems.PISTOL.get());
+        sp.setItemInHand(InteractionHand.MAIN_HAND, gun);
+        var gi = (com.tycooncraft.gun.GunItem) gun.getItem();
+        dmg0 = gi.damage(gun);
+        mag0 = gi.magazine(gun);
+        com.tycooncraft.blackmarket.BMBlock.open(sp, com.tycooncraft.blackmarket.BMPayloads.MODS);
+    }
+
+    static void v28ModsInstall(ServerPlayer sp) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 6; i++) sb.append(com.tycooncraft.blackmarket.IllegalMods.install(sp, i).getString()).append(" / ");
+        String again = com.tycooncraft.blackmarket.IllegalMods.install(sp, 0).getString();
+        ItemStack gun = sp.getMainHandItem();
+        var gi = (com.tycooncraft.gun.GunItem) gun.getItem();
+        System.out.println("[AUTOTEST] v280 mods " + sb + " again=" + again + " mask=" + com.tycooncraft.blackmarket.IllegalMods.mask(gun)
+                + " dmg " + dmg0 + "->" + gi.damage(gun) + " mag " + mag0 + "->" + gi.magazine(gun) + " delay=" + gi.fireDelay(gun)
+                + " scrub=" + com.tycooncraft.blackmarket.IllegalMods.has(gun, com.tycooncraft.blackmarket.IllegalMods.SCRUB));
+        com.tycooncraft.blackmarket.BMPayloads.mods(sp, null);
+    }
+
+    static void v28Discount(ServerPlayer sp) {
+        var bm = sp.serverLevel();
+        var dl = bm.getEntitiesOfClass(com.tycooncraft.blackmarket.BlackMarketDealer.class, sp.getBoundingBox().inflate(40));
+        if (dl.isEmpty()) {
+            System.out.println("[AUTOTEST] v280 discount noDealer");
+            return;
+        }
+        var d = dl.get(0);
+        var o = d.getOffers().get(0);
+        long w0 = com.tycooncraft.economy.Coins.wallet(sp);
+        d.setTradingPlayer(sp);
+        d.notifyTrade(o);
+        d.setTradingPlayer(null);
+        long won = com.tycooncraft.economy.Coins.valueOf(o.getCostA()) + com.tycooncraft.economy.Coins.valueOf(o.getCostB());
+        System.out.println("[AUTOTEST] v280 discount tier=" + com.tycooncraft.blackmarket.Reputation.tier(sp) + " tradeWon=" + won + " rebate=" + (com.tycooncraft.economy.Coins.wallet(sp) - w0));
+    }
+
+    static void v28Delivery(ServerPlayer sp) {
+        net.minecraft.server.level.ServerLevel ow = sp.server.overworld();
+        sp.teleportTo(ow, owBase.getX() + 0.5, owBase.getY(), owBase.getZ() + 0.5, 0f, 10f);
+        sp.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.DAMAGE_RESISTANCE, 1200, 4, false, false));
+        bank0 = bank(sp);
+        rep0 = com.tycooncraft.blackmarket.Reputation.points(sp);
+        var m = com.tycooncraft.blackmarket.Missions.force(sp, com.tycooncraft.blackmarket.Missions.DELIVERY, sp.blockPosition().offset(30, 0, 0));
+        ItemStack pkg = ItemStack.EMPTY;
+        for (int i = 0; i < sp.getInventory().getContainerSize(); i++) if (sp.getInventory().getItem(i).is(ModItems.SMUGGLE_PACKAGE.get())) pkg = sp.getInventory().getItem(i);
+        boolean far = com.tycooncraft.blackmarket.Missions.deliver(sp, pkg);
+        sp.teleportTo(ow, m.target.getX() + 1.5, owBase.getY(), m.target.getZ() + 0.5, 0f, 10f);
+        boolean ok = com.tycooncraft.blackmarket.Missions.deliver(sp, pkg);
+        System.out.println("[AUTOTEST] v280 delivery farRejected=" + !far + " delivered=" + ok + " reward=" + m.reward + " bankDelta=" + (bank(sp) - bank0)
+                + " repDelta=" + (com.tycooncraft.blackmarket.Reputation.points(sp) - rep0) + " active=" + (com.tycooncraft.blackmarket.Missions.active(sp) != null));
+    }
+
+    static com.tycooncraft.blackmarket.Missions.M retr;
+    static int ambush0;
+
+    static void v28Retrieval(ServerPlayer sp) {
+        ambush0 = com.tycooncraft.blackmarket.Missions.ambushes;
+        retr = com.tycooncraft.blackmarket.Missions.force(sp, com.tycooncraft.blackmarket.Missions.RETRIEVAL, sp.blockPosition().offset(0, 0, 14));
+        System.out.println("[AUTOTEST] v280 retrieval target=" + retr.target);
+    }
+
+    static void v28RetrievalCheck(ServerPlayer sp) {
+        net.minecraft.server.level.ServerLevel ow = sp.server.overworld();
+        var be = ow.getBlockEntity(retr.target);
+        boolean barrel = be instanceof net.minecraft.world.level.block.entity.BarrelBlockEntity;
+        ItemStack cargo = barrel ? ((net.minecraft.world.level.block.entity.BarrelBlockEntity) be).removeItem(13, 1) : ItemStack.EMPTY;
+        sp.getInventory().add(cargo);
+        int gang = ow.getEntitiesOfClass(com.tycooncraft.mob.GunnerEntity.class, sp.getBoundingBox().inflate(60)).size()
+                + ow.getEntitiesOfClass(com.tycooncraft.mob.GangTruck.class, sp.getBoundingBox().inflate(60)).size();
+        bank0 = bank(sp);
+        String r = com.tycooncraft.blackmarket.Missions.turnIn(sp).getString();
+        System.out.println("[AUTOTEST] v280 retrieval placed=" + retr.placed + " barrel=" + barrel + " cargo=" + cargo.getItem() + " ambushes=" + (com.tycooncraft.blackmarket.Missions.ambushes - ambush0)
+                + " gangNear=" + gang + " turnIn=" + r + " bankDelta=" + (bank(sp) - bank0));
+        // 포기 시험
+        int rp = com.tycooncraft.blackmarket.Reputation.points(sp);
+        com.tycooncraft.blackmarket.Missions.force(sp, com.tycooncraft.blackmarket.Missions.SUPPLY, null);
+        com.tycooncraft.blackmarket.Missions.abandon(sp);
+        System.out.println("[AUTOTEST] v280 abandon repDelta=" + (com.tycooncraft.blackmarket.Reputation.points(sp) - rp) + " completed=" + com.tycooncraft.blackmarket.Missions.completed
+                + " failed=" + com.tycooncraft.blackmarket.Missions.failed);
+        for (var m : ow.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, sp.getBoundingBox().inflate(80), m -> m.getTarget() == sp)) m.discard();
+        for (var m : ow.getEntitiesOfClass(com.tycooncraft.mob.GangTruck.class, sp.getBoundingBox().inflate(80))) m.discard();
+        sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
     }
 
     static com.tycooncraft.vehicle.JetEntity landJet;

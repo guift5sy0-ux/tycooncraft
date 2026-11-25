@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "tycooncraft:block/mod_bench"
+  },
+  "facing=east": {
+   "model": "tycooncraft:block/mod_bench",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "tycooncraft:block/mod_bench",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "tycooncraft:block/mod_bench",
+   "y": 270
+  }
+ }
+}

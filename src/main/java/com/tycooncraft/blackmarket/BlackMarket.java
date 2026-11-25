@@ -76,6 +76,7 @@ public final class BlackMarket {
         p.teleportTo(bm, SPAWN.getX() + 0.5, SPAWN.getY(), SPAWN.getZ() + 0.5, -90f, 0f);
         bm.playSound(null, SPAWN, SoundEvents.IRON_TRAPDOOR_CLOSE, SoundSource.BLOCKS, 1f, 0.8f);
         p.displayClientMessage(Component.translatable("message.tycooncraft.bm.welcome").withStyle(ChatFormatting.DARK_PURPLE), true);
+        p.sendSystemMessage(Component.translatable("message.tycooncraft.rep.status", Reputation.describe(p)).withStyle(ChatFormatting.DARK_PURPLE));
         entries++;
         return true;
     }
@@ -133,6 +134,7 @@ public final class BlackMarket {
         HOSTILE.put(p.getUUID(), p.level().getGameTime() + HOSTILE_TICKS);
         if (!was) {
             fights++;
+            Reputation.add(p, Reputation.FIGHT);
             p.displayClientMessage(Component.translatable("message.tycooncraft.bm.fight").withStyle(ChatFormatting.RED), true);
             for (BlackMarketDealer d : p.level().getEntitiesOfClass(BlackMarketDealer.class, p.getBoundingBox().inflate(64))) d.setTarget(p);
         }
@@ -141,6 +143,7 @@ public final class BlackMarket {
     /** 상인 처치 → 추적 V (1시간) */
     public static void onDealerKilled(ServerPlayer killer) {
         dealerKills++;
+        Reputation.add(killer, Reputation.DEALER_KILL);
         long until = killer.level().getGameTime() + TRACKED_TICKS;
         persisted(killer).putLong(TRACKED_UNTIL, until);
         applyTracked(killer);
@@ -190,6 +193,7 @@ public final class BlackMarket {
             if (bm != null && !bm.players().isEmpty()) BlackMarketHub.tickDealers(bm);
         }
         GangHunters.tick(s);
+        Missions.tick(s);
     }
 
     private BlackMarket() {}

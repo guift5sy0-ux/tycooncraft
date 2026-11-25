@@ -55,6 +55,7 @@ public final class VehicleClient {
         event.registerLayerDefinition(com.tycooncraft.client.mob.BossModels.GOLEM, com.tycooncraft.client.mob.DestroyerGolemGeo::createBodyLayer);
         event.registerLayerDefinition(com.tycooncraft.client.mob.CarrierModels.SCOUT, com.tycooncraft.client.mob.CarrierModels::scoutLayer);
         event.registerLayerDefinition(com.tycooncraft.client.mob.CarrierModels.CARRIER, com.tycooncraft.client.mob.CarrierModels::carrierLayer);
+        event.registerLayerDefinition(com.tycooncraft.client.mob.CarrierModels.DRONE, com.tycooncraft.client.mob.CarrierModels::droneLayer);
         event.registerLayerDefinition(com.tycooncraft.client.mech.ProtoClient.LAYER, com.tycooncraft.client.mob.ProtoDestroyerGeo::createBodyLayer);
         event.registerLayerDefinition(com.tycooncraft.client.mob.AbyssalWither.LAYER, com.tycooncraft.client.mob.AbyssalWitherGeo::createBodyLayer);
         event.registerLayerDefinition(com.tycooncraft.client.mob.VoidDragon.LAYER, com.tycooncraft.client.mob.DragonArmorGeo::createBodyLayer);

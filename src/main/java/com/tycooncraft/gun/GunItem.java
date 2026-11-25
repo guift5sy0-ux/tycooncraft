@@ -81,12 +81,12 @@ public class GunItem extends Item {
 
     // ── 인챈트 반영 수치 ──
     public int magazine(ItemStack stack) {
-        return Math.round(stats.magazine() * (1 + 0.25f * GunEnchants.level(stack, GunEnchants.EXTENDED_MAG)));
+        return Math.round(stats.magazine() * (1 + 0.25f * GunEnchants.level(stack, GunEnchants.EXTENDED_MAG)) * com.tycooncraft.blackmarket.IllegalMods.magMult(stack));
     }
 
     public int fireDelay(ItemStack stack) {
         if (stack.is(ModItems.VSS.get()) && fireMode(stack) == 1) return 3;
-        return Math.max(1, Math.round(stats.fireDelay() * (1 - 0.15f * GunEnchants.level(stack, GunEnchants.RAPID_FIRE))));
+        return Math.max(1, Math.round(stats.fireDelay() * (1 - 0.15f * GunEnchants.level(stack, GunEnchants.RAPID_FIRE)) * com.tycooncraft.blackmarket.IllegalMods.delayMult(stack)));
     }
 
     public static final int RT20_RELOAD = 280;   // 14초 고정 (인챈트·파츠 무시)
@@ -99,11 +99,11 @@ public class GunItem extends Item {
 
     public float damage(ItemStack stack) {
         float sil = silencerTier(stack) == 1 && !stack.is(ModItems.VSS.get()) ? 0.93f : 1f;
-        return stats.damage() * DAMAGE_SCALE * (1 + 0.15f * GunEnchants.level(stack, GunEnchants.FIREPOWER)) * sil;
+        return stats.damage() * DAMAGE_SCALE * (1 + 0.15f * GunEnchants.level(stack, GunEnchants.FIREPOWER)) * sil * com.tycooncraft.blackmarket.IllegalMods.damageMult(stack);
     }
 
     private float precision(ItemStack stack) {
-        return (1 - 0.25f * GunEnchants.level(stack, GunEnchants.PRECISION)) * GunParts.spreadMult(stack);
+        return (1 - 0.25f * GunEnchants.level(stack, GunEnchants.PRECISION)) * GunParts.spreadMult(stack) * com.tycooncraft.blackmarket.IllegalMods.spreadMult(stack);
     }
 
     // ── 인챈트 가능 ──
@@ -188,7 +188,7 @@ public class GunItem extends Item {
     private void shoot(Level level, Player player, ItemStack stack) {
         if (isDual() && !player.getOffhandItem().isEmpty()) return;
         int tier = silencerTier(stack);
-        float recoil = stats.recoil() * (1 - 0.2f * GunEnchants.level(stack, GunEnchants.PRECISION)) * (tier == 2 ? 0.75f : tier == 1 ? 0.85f : 1f) * GunParts.recoilMult(stack);
+        float recoil = stats.recoil() * (1 - 0.2f * GunEnchants.level(stack, GunEnchants.PRECISION)) * (tier == 2 ? 0.75f : tier == 1 ? 0.85f : 1f) * GunParts.recoilMult(stack) * com.tycooncraft.blackmarket.IllegalMods.recoilMult(stack);
         if (level.isClientSide) {
             // 반동: 화면이 살짝 위로
             player.setXRot(player.getXRot() - recoil);
@@ -212,7 +212,8 @@ public class GunItem extends Item {
         int before = ammo(stack);
         if (!player.getAbilities().instabuild && player.getRandom().nextFloat() >= 0.15f * saver) setAmmo(stack, before - 1);
         fire(server, player, stack, tier);
-        if (player instanceof net.minecraft.server.level.ServerPlayer sp) com.tycooncraft.village.GuardAlert.onGunfire(sp);
+        if (player instanceof net.minecraft.server.level.ServerPlayer sp && !com.tycooncraft.blackmarket.IllegalMods.has(stack, com.tycooncraft.blackmarket.IllegalMods.SCRUB))
+            com.tycooncraft.village.GuardAlert.onGunfire(sp);   // 일련번호 세탁한 총은 경비병이 못 알아챔
         if (stack.is(ModItems.RT20.get())) rt20Kick(server, player);
         // 쌍권총: 다음 발은 반대쪽 총
         if (isDual()) player.getPersistentData().putBoolean("tycooncraft_dual_left", !player.getPersistentData().getBoolean("tycooncraft_dual_left"));
@@ -358,6 +359,7 @@ public class GunItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("tooltip.tycooncraft.gun.ammo", ammo(stack), magazine(stack)).withStyle(ChatFormatting.YELLOW));
+        com.tycooncraft.blackmarket.IllegalMods.tooltip(stack, tooltip);
         String one = String.format(java.util.Locale.ROOT, "%.1f", damage(stack)).replace(".0", "");
         String dmg = stats.pellets() > 1 ? one + " x" + stats.pellets() : one;
         tooltip.add(Component.translatable("tooltip.tycooncraft.gun.stats", dmg, (int) stats.range()).withStyle(ChatFormatting.GRAY));

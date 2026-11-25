@@ -45,8 +45,11 @@ import java.util.List;
  * 동력원 2개가 부서지면 추락 → 땅에 닿으면 대폭발 (충전된 크리퍼의 1.2배).
  */
 public class AerialDestroyer extends Monster {
-    public static final float CORE_HP = 150f, BLAST = 6f * 1.2f;
-    public static final int MAX_SCOUTS = 6, MAX_DRONES = 10, HANGAR_EVERY = 220, DRONE_EVERY = 70;
+    /** v0.28 하향: 동력원 체력 -20% (150→120), 정찰기 최대 2, 드론 최대 6, 드론 피해 -10% */
+    public static final float CORE_HP = 120f, BLAST = 6f * 1.2f;
+    public static final int MAX_SCOUTS = 2, MAX_DRONES = 6, HANGAR_EVERY = 260, DRONE_EVERY = 80;
+    /** 드론이 모체에서 벗어날 수 있는 최대 거리 */
+    public static final double DRONE_LEASH = 50;
     /** 동력원 위치 (몸 기준: x 오른쪽, z 앞) */
     public static final Vec3[] CORE_POS = {new Vec3(-2.2, 1.35, 0.15), new Vec3(2.2, 1.35, 0.15), new Vec3(0, 1.4, -2.1)};
     private static final EntityDataAccessor<Float> C0 = SynchedEntityData.defineId(AerialDestroyer.class, EntityDataSerializers.FLOAT);
@@ -111,11 +114,23 @@ public class AerialDestroyer extends Monster {
         return entityData.get(HATCH);
     }
 
+    /** 높이 떠 있으므로 위아래로도 넓게 찾음 (기본은 위아래 4칸뿐) */
+    private <T extends LivingEntity> NearestAttackableTargetGoal<T> tall(Class<T> c, java.util.function.Predicate<LivingEntity> p) {
+        return new NearestAttackableTargetGoal<>(this, c, 10, false, false, p) {
+            @Override
+            protected net.minecraft.world.phys.AABB getTargetSearchArea(double d) {
+                return mob.getBoundingBox().inflate(d, 48, d);
+            }
+        };
+    }
+
     @Override
     protected void registerGoals() {
-        targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, false));
-        targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, com.tycooncraft.village.VillageGuard.class, false));
+        targetSelector.addGoal(1, new HurtByTargetGoal(this, ScoutDestroyer.class, MiniDrone.class, com.tycooncraft.mob.DestroyerGolem.class));
+        targetSelector.addGoal(2, tall(Player.class, Destroyers::prey));
+        targetSelector.addGoal(3, tall(com.tycooncraft.village.VillageGuard.class, Destroyers::prey));
+        targetSelector.addGoal(4, tall(net.minecraft.world.entity.npc.AbstractVillager.class, Destroyers::prey));
+        targetSelector.addGoal(5, tall(net.minecraft.world.entity.Mob.class, Destroyers::prey));
     }
 
     // ── 피해: 맞은 방향 쪽 동력원으로 ──
@@ -124,7 +139,7 @@ public class AerialDestroyer extends Monster {
         if (src.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) return super.hurt(src, amount);   // /kill 등
         if (level().isClientSide || isInvulnerableTo(src) || !isAlive()) return false;
         if (crashing() || src.is(DamageTypeTags.IS_FALL) || src.is(DamageTypeTags.IS_DROWNING) || src.is(net.minecraft.world.damagesource.DamageTypes.IN_WALL)) return false;
-        if (src.getEntity() instanceof MiniDrone || src.getEntity() instanceof ScoutDestroyer || src.getEntity() == this) return false;
+        if (Destroyers.isDestroyer(src.getEntity()) || src.getEntity() == this) return false;
         Vec3 from = src.getSourcePosition() != null ? src.getSourcePosition() : src.getEntity() != null ? src.getEntity().position() : position();
         int idx = nearestCore(from);
         if (idx < 0) return false;
@@ -221,7 +236,7 @@ public class AerialDestroyer extends Monster {
             return;
         }
         LivingEntity t = getTarget();
-        if (t != null && (!t.isAlive() || t.distanceToSqr(this) > 90 * 90 || (t instanceof Player p && (p.isCreative() || p.isSpectator())))) {
+        if (t != null && (!Destroyers.prey(t) || t.distanceToSqr(this) > 90 * 90)) {
             setTarget(null);
             t = null;
         }

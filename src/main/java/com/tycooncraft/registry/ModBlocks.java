@@ -65,6 +65,14 @@ public final class ModBlocks {
                     .strength(-1.0f, 3_600_000f).sound(net.minecraft.world.level.block.SoundType.NETHERITE_BLOCK).noLootTable()));
     public static final DeferredBlock<com.tycooncraft.blackmarket.BountyBoardBlock> BOUNTY_BOARD = BLOCKS.register("bounty_board",
             () -> new com.tycooncraft.blackmarket.BountyBoardBlock(BlockBehaviour.Properties.of().strength(-1.0f, 3_600_000f).sound(net.minecraft.world.level.block.SoundType.WOOD).noLootTable()));
+    public static final DeferredBlock<com.tycooncraft.blackmarket.BMBlock> MISSION_BOARD = BLOCKS.register("mission_board",
+            () -> new com.tycooncraft.blackmarket.BMBlock(BlockBehaviour.Properties.of().strength(-1.0f, 3_600_000f).sound(net.minecraft.world.level.block.SoundType.WOOD).noLootTable(), 0));
+    public static final DeferredBlock<com.tycooncraft.blackmarket.BMBlock> SLOT_MACHINE = BLOCKS.register("slot_machine",
+            () -> new com.tycooncraft.blackmarket.BMBlock(BlockBehaviour.Properties.of().strength(-1.0f, 3_600_000f).sound(net.minecraft.world.level.block.SoundType.METAL).lightLevel(s -> 9).noLootTable(), 1));
+    public static final DeferredBlock<com.tycooncraft.blackmarket.BMBlock> ROULETTE_TABLE = BLOCKS.register("roulette_table",
+            () -> new com.tycooncraft.blackmarket.BMBlock(BlockBehaviour.Properties.of().strength(-1.0f, 3_600_000f).sound(net.minecraft.world.level.block.SoundType.WOOD).noOcclusion().noLootTable(), 2));
+    public static final DeferredBlock<com.tycooncraft.blackmarket.BMBlock> MOD_BENCH = BLOCKS.register("mod_bench",
+            () -> new com.tycooncraft.blackmarket.BMBlock(BlockBehaviour.Properties.of().strength(-1.0f, 3_600_000f).sound(net.minecraft.world.level.block.SoundType.ANVIL).noLootTable(), 3));
     public static final DeferredBlock<com.tycooncraft.blackmarket.VaultBlock> BM_VAULT = BLOCKS.register("bm_vault",
             () -> new com.tycooncraft.blackmarket.VaultBlock(BlockBehaviour.Properties.of().strength(-1.0f, 3_600_000f).sound(net.minecraft.world.level.block.SoundType.NETHERITE_BLOCK).noLootTable()));
     public static final DeferredBlock<com.tycooncraft.cctv.CctvBlock> CCTV = BLOCKS.register("cctv",

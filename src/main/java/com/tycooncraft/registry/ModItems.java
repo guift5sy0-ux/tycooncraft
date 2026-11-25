@@ -284,6 +284,10 @@ public final class ModItems {
     public static final DeferredItem<Item> BLACK_MARKET_PASS = ITEMS.register("black_market_pass",
             () -> new Item(new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.RARE)));
     public static final DeferredItem<BlockItem> MANHOLE = ITEMS.registerSimpleBlockItem(ModBlocks.MANHOLE);
+    public static final DeferredItem<com.tycooncraft.blackmarket.MissionItem> SMUGGLE_PACKAGE = ITEMS.register("smuggle_package",
+            () -> new com.tycooncraft.blackmarket.MissionItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON), true));
+    public static final DeferredItem<com.tycooncraft.blackmarket.MissionItem> STOLEN_CARGO = ITEMS.register("stolen_cargo",
+            () -> new com.tycooncraft.blackmarket.MissionItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON), false));
     public static final DeferredItem<com.tycooncraft.mob.carrier.DroneSwarmItem> DRONE_SWARM = ITEMS.register("drone_swarm",
             () -> new com.tycooncraft.mob.carrier.DroneSwarmItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.EPIC)));
     public static final DeferredItem<com.tycooncraft.mech.ProtoDestroyerItem> PROTO_SCOUT = ITEMS.register("proto_scout",
