@@ -70,6 +70,16 @@ public final class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.blackmarket.BlackMarketDealer>> BM_DEALER = ENTITIES.register("bm_dealer",
             () -> EntityType.Builder.<com.tycooncraft.blackmarket.BlackMarketDealer>of(com.tycooncraft.blackmarket.BlackMarketDealer::new, MobCategory.MISC)
                     .sized(0.6f, 1.95f).clientTrackingRange(10).build("bm_dealer"));
+    // v0.27.0 디스트로이어 변종: 공중 모체 + 정찰 + 미니 드론
+    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.mob.carrier.ScoutDestroyer>> SCOUT_DESTROYER = ENTITIES.register("scout_destroyer",
+            () -> EntityType.Builder.<com.tycooncraft.mob.carrier.ScoutDestroyer>of(com.tycooncraft.mob.carrier.ScoutDestroyer::new, MobCategory.MONSTER)
+                    .sized(0.95f, 0.85f).clientTrackingRange(10).build("scout_destroyer"));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.mob.carrier.AerialDestroyer>> AERIAL_DESTROYER = ENTITIES.register("aerial_destroyer",
+            () -> EntityType.Builder.<com.tycooncraft.mob.carrier.AerialDestroyer>of(com.tycooncraft.mob.carrier.AerialDestroyer::new, MobCategory.MONSTER)
+                    .sized(5.0f, 2.4f).clientTrackingRange(16).fireImmune().build("aerial_destroyer"));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.mob.carrier.MiniDrone>> MINI_DRONE = ENTITIES.register("mini_drone",
+            () -> EntityType.Builder.<com.tycooncraft.mob.carrier.MiniDrone>of(com.tycooncraft.mob.carrier.MiniDrone::new, MobCategory.MONSTER)
+                    .sized(0.6f, 0.35f).clientTrackingRange(10).build("mini_drone"));
     public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> GANGSTER = mob("gangster", GunnerEntity::gangster);
     public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> MERCENARY = mob("mercenary", GunnerEntity::mercenary);
     public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> OUTLAW = mob("outlaw", GunnerEntity::outlaw);

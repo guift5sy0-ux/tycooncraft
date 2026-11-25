@@ -759,5 +759,17 @@
   "message.tycooncraft.vault.full": "All slots unlocked",
   "message.tycooncraft.vault.no_money": "Not enough money (₩%s per slot)",
   "tooltip.tycooncraft.black_market_pass": "Right-click a manhole to register and enter the Black Market",
-  "tooltip.tycooncraft.manhole": "Leads to the Black Market (registered only) · unbreakable once placed"
+  "tooltip.tycooncraft.manhole": "Leads to the Black Market (registered only) · unbreakable once placed",
+  "entity.tycooncraft.scout_destroyer": "Scout Destroyer",
+  "entity.tycooncraft.aerial_destroyer": "Aerial Destroyer",
+  "entity.tycooncraft.mini_drone": "Mini Drone",
+  "entity.tycooncraft.aerial_destroyer.cores": "Aerial Destroyer · Engines %s/3",
+  "entity.tycooncraft.aerial_destroyer.crashing": "Aerial Destroyer · CRASHING! Take cover!",
+  "item.tycooncraft.scout_core": "Scout Core",
+  "item.tycooncraft.flight_core": "Flight Core",
+  "item.tycooncraft.scout_destroyer_spawn_egg": "Scout Destroyer Spawn Egg",
+  "item.tycooncraft.aerial_destroyer_spawn_egg": "Aerial Destroyer Spawn Egg",
+  "message.tycooncraft.carrier.incoming": "✈ A huge engine roars above... Aerial Destroyer incoming!",
+  "tooltip.tycooncraft.scout_core": "Scout Destroyer core",
+  "tooltip.tycooncraft.flight_core": "Aerial Destroyer flight core"
 }

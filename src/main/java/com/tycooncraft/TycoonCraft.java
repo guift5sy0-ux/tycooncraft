@@ -76,6 +76,9 @@ public class TycoonCraft {
         event.put(ModEntities.GANGSTER.get(), GunnerEntity.attributes(GunnerEntity.Kind.GANGSTER).build());
         event.put(ModEntities.VILLAGE_GUARD.get(), com.tycooncraft.village.VillageGuard.attributes().build());
         event.put(ModEntities.BM_DEALER.get(), com.tycooncraft.blackmarket.BlackMarketDealer.attributes().build());
+        event.put(ModEntities.SCOUT_DESTROYER.get(), com.tycooncraft.mob.carrier.ScoutDestroyer.attributes().build());
+        event.put(ModEntities.AERIAL_DESTROYER.get(), com.tycooncraft.mob.carrier.AerialDestroyer.attributes().build());
+        event.put(ModEntities.MINI_DRONE.get(), com.tycooncraft.mob.carrier.MiniDrone.attributes().build());
         event.put(ModEntities.MERCENARY.get(), GunnerEntity.attributes(GunnerEntity.Kind.MERCENARY).build());
         event.put(ModEntities.OUTLAW.get(), GunnerEntity.attributes(GunnerEntity.Kind.OUTLAW).build());
         event.put(ModEntities.CARTEL_BOSS.get(), GunnerEntity.attributes(GunnerEntity.Kind.BOSS).build());
@@ -90,6 +93,11 @@ public class TycoonCraft {
             event.register(type, net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND, net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                     net.minecraft.world.entity.monster.Monster::checkMonsterSpawnRules, net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.Operation.REPLACE);
         }
+        // v0.27.0 정찰 디스트로이어: 밤에 떼로 (조건 통과 후 1/3)
+        event.register(ModEntities.SCOUT_DESTROYER.get(), net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND, net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                (type, level, reason, pos, random) -> net.minecraft.world.entity.monster.Monster.checkMonsterSpawnRules(type, level, reason, pos, random)
+                        && (reason != net.minecraft.world.entity.MobSpawnType.NATURAL || random.nextInt(3) == 0),
+                net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent.Operation.REPLACE);
         // 보스급: 자연 스폰은 드물게 (조건 통과 후에도 1/5~1/8)
         event.register(ModEntities.DESTROYER_GOLEM.get(), net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND, net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 (type, level, reason, pos, random) -> net.minecraft.world.entity.monster.Monster.checkMonsterSpawnRules(type, level, reason, pos, random)

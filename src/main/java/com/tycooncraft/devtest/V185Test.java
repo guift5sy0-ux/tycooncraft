@@ -1133,6 +1133,102 @@ public final class V185Test {
         sp.setHealth(sp.getMaxHealth());
     }
 
+    // ── v0.27.0 디스트로이어 변종 ──
+    static java.util.List<com.tycooncraft.mob.carrier.ScoutDestroyer> scoutList = new java.util.ArrayList<>();
+    static com.tycooncraft.mob.carrier.AerialDestroyer carrier;
+    static BlockPos varBase;
+    static double scoutSide;
+
+    static void scoutSpawn(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        sp.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.DAMAGE_RESISTANCE, 2400, 4, false, false));
+        sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.REGENERATION, 2400, 2, false, false));
+        sl.setDayTime(6000);   // 스크린샷이 보이게 낮에 시험
+        varBase = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, sp.blockPosition().offset(-160, 0, 120));
+        sp.teleportTo(sl, varBase.getX() + 0.5, varBase.getY(), varBase.getZ() + 0.5, 0f, 10f);
+        scoutList.clear();
+        for (int i = 0; i < 3; i++) {
+            var sc = ModEntities.SCOUT_DESTROYER.get().create(sl);
+            sc.moveTo(varBase.getX() + 0.5 + (i - 1) * 2, varBase.getY(), varBase.getZ() + 16.5, 180f, 0);
+            sc.finalizeSpawn(sl, sl.getCurrentDifficultyAt(varBase), net.minecraft.world.entity.MobSpawnType.COMMAND, null);
+            sc.setTarget(sp);
+            sl.addFreshEntity(sc);
+            scoutList.add(sc);
+        }
+        scoutSide = 0;
+    }
+
+    /** 정찰기가 곧장 오지 않고 옆으로 꺾는지: 플레이어 쪽 축(z)에 수직인 x 이동량 누적 */
+    static double[] lastX = new double[3];
+
+    static void scoutTrack(ServerPlayer sp) {
+        for (int i = 0; i < scoutList.size(); i++) {
+            var sc = scoutList.get(i);
+            if (lastX[i] != 0) scoutSide += Math.abs(sc.getX() - lastX[i]);
+            lastX[i] = sc.getX();
+        }
+    }
+
+    static void scoutCheck(ServerPlayer sp) {
+        int alive = 0;
+        double dist = 0;
+        for (var sc : scoutList) if (sc.isAlive()) {
+            alive++;
+            dist += sc.distanceTo(sp);
+        }
+        System.out.println("[AUTOTEST] v270 scouts alive=" + alive + " avgDist=" + String.format("%.1f", alive == 0 ? -1 : dist / alive)
+                + " sideMove=" + String.format("%.1f", scoutSide) + " playerHurt=" + (sp.getLastHurtByMob() instanceof com.tycooncraft.mob.carrier.ScoutDestroyer));
+        for (var sc : scoutList) sc.discard();
+        // 공중 모체
+        var sl = sp.serverLevel();
+        carrier = ModEntities.AERIAL_DESTROYER.get().create(sl);
+        carrier.moveTo(varBase.getX() + 0.5, varBase.getY() + 16, varBase.getZ() + 24.5, 180f, 0);
+        carrier.finalizeSpawn(sl, sl.getCurrentDifficultyAt(varBase), net.minecraft.world.entity.MobSpawnType.COMMAND, null);
+        carrier.setTarget(sp);
+        sl.addFreshEntity(carrier);
+        sp.teleportTo(sl, varBase.getX() + 0.5, varBase.getY(), varBase.getZ() + 0.5, 0f, -25f);
+    }
+
+    static void carrierMid(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        int drones = sl.getEntitiesOfClass(com.tycooncraft.mob.carrier.MiniDrone.class, sp.getBoundingBox().inflate(80)).size();
+        int scouts = sl.getEntitiesOfClass(com.tycooncraft.mob.carrier.ScoutDestroyer.class, sp.getBoundingBox().inflate(80)).size();
+        System.out.println("[AUTOTEST] v270 carrier alive=" + carrier.isAlive() + " y=" + String.format("%.1f", carrier.getY() - varBase.getY())
+                + " dist=" + String.format("%.1f", carrier.distanceTo(sp)) + " drones=" + drones + " scouts=" + scouts
+                + " launchedDrones=" + com.tycooncraft.mob.carrier.AerialDestroyer.dronesLaunched + " launchedScouts=" + com.tycooncraft.mob.carrier.AerialDestroyer.scoutsLaunched
+                + " playerHp=" + sp.getHealth() + " lastHurtBy=" + (sp.getLastHurtByMob() == null ? "-" : sp.getLastHurtByMob().getType().toShortString()));
+    }
+
+    /** 왼쪽 → 오른쪽 동력원을 차례로 쏴서 떨어뜨림 */
+    static void carrierShootCore(ServerPlayer sp, int side) {
+        var sl = sp.serverLevel();
+        var c = carrier.coreWorld(side);
+        var dir = c.subtract(carrier.position().add(0, 1.2, 0)).normalize();
+        var from = c.add(dir.scale(6));
+        sp.teleportTo(sl, from.x, from.y, from.z, sp.getYRot(), sp.getXRot());
+        float before0 = carrier.core(0), before1 = carrier.core(1), before2 = carrier.core(2);
+        for (int k = 0; k < 3; k++) carrier.hurt(sp.damageSources().playerAttack(sp), 70f);
+        System.out.println("[AUTOTEST] v270 shootSide=" + side + " cores " + before0 + "/" + before1 + "/" + before2 + " -> "
+                + carrier.core(0) + "/" + carrier.core(1) + "/" + carrier.core(2) + " alive=" + carrier.coresAlive() + " crashing=" + carrier.crashing());
+        sp.teleportTo(sl, carrier.getX() + 30, varBase.getY() + 1, carrier.getZ(), 90f, -10f);
+    }
+
+    static int beforeAir;
+
+    static void carrierCrashCheck(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        int cores = sl.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, sp.getBoundingBox().inflate(80),
+                e -> e.getItem().is(ModItems.FLIGHT_CORE.get())).size();
+        int drones = sl.getEntitiesOfClass(com.tycooncraft.mob.carrier.MiniDrone.class, sp.getBoundingBox().inflate(80), e -> e.isAlive() && e.isNoGravity()).size();
+        System.out.println("[AUTOTEST] v270 crash carrierDead=" + !carrier.isAlive() + " flightCoreDrops=" + cores + " flyingDronesLeft=" + drones
+                + " crashes=" + com.tycooncraft.mob.carrier.AerialDestroyer.crashes + " coresBroken=" + com.tycooncraft.mob.carrier.AerialDestroyer.coresBroken
+                + " flightCorePrice=" + com.tycooncraft.economy.PriceTable.basePrice(ModItems.FLIGHT_CORE.get()) + " scoutCorePrice=" + com.tycooncraft.economy.PriceTable.basePrice(ModItems.SCOUT_CORE.get()));
+        for (var m : sl.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, sp.getBoundingBox().inflate(100),
+                e -> e instanceof com.tycooncraft.mob.carrier.ScoutDestroyer || e instanceof com.tycooncraft.mob.carrier.MiniDrone)) m.discard();
+        sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+    }
+
     static com.tycooncraft.vehicle.JetEntity landJet;
 
     static void jetLandSetup(ServerPlayer sp) {

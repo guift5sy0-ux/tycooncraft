@@ -85,11 +85,13 @@ public final class ModCreativeTabs {
                         out.accept(ModItems.WAREHOUSE.get());
                         out.accept(ModItems.BLACK_MARKET_PASS.get());
                         out.accept(ModItems.MANHOLE.get());
+                        out.accept(ModItems.SCOUT_CORE.get());
+                        out.accept(ModItems.FLIGHT_CORE.get());
                         out.accept(ModItems.CCTV.get());
                         out.accept(ModItems.CCTV_SCREEN.get());
                         out.accept(ModItems.GUN_WORKBENCH.get());
                         out.accept(ModItems.CARTEL_FLARE.get());
-                        for (var v : java.util.List.of(ModItems.GANGSTER_EGG, ModItems.MERCENARY_EGG, ModItems.OUTLAW_EGG, ModItems.SPIDER_EGG, ModItems.BOSS_EGG, ModItems.GANG_TRUCK_EGG, ModItems.GOLEM_EGG,
+                        for (var v : java.util.List.of(ModItems.GANGSTER_EGG, ModItems.MERCENARY_EGG, ModItems.OUTLAW_EGG, ModItems.SPIDER_EGG, ModItems.BOSS_EGG, ModItems.GANG_TRUCK_EGG, ModItems.GOLEM_EGG, ModItems.SCOUT_DESTROYER_EGG, ModItems.AERIAL_DESTROYER_EGG,
                                 ModItems.DESTROYER_CORE, ModItems.PROTO_DESTROYER)) out.accept(v.get());
                     })
                     .build());

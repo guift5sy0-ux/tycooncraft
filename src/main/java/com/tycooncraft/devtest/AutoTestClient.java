@@ -229,7 +229,8 @@ public final class AutoTestClient {
         if (System.getenv("TC_BOOKONLY") != null && phaseT < 4996) phaseT = 4996;
         if (System.getenv("TC_ARMONLY") != null && phaseT < 5052) phaseT = 5052;
         if (System.getenv("TC_VILLONLY") != null && phaseT < 5150) phaseT = 5150;
-        if (System.getenv("TC_BMONLY") != null && phaseT < 5802) phaseT = 5802;   // 로컬 디버그: 이펙트 구간만
+        if (System.getenv("TC_BMONLY") != null && phaseT < 5802) phaseT = 5802;
+        if (System.getenv("TC_VARONLY") != null && phaseT < 6134) phaseT = 6134;   // 로컬 디버그: 이펙트 구간만
         int s = phaseT;
         double g = -60;
         if (s > 3226 && s < 3300 && s % 2 == 0) serverDo(mc, V185Test::keepAirborne);
@@ -919,7 +920,7 @@ public final class AutoTestClient {
             case 4767 -> shot(mc, "au2_line_b");
             case 4771 -> shot(mc, "au3_line_c");
             case 4990 -> serverKeep(mc, V185Test::autoEnd);
-            case 4996 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(29); }
+            case 4996 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(25); }
             case 4999 -> shot(mc, "gb0");
             case 5002 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(1); }
             case 5005 -> shot(mc, "gb1");
@@ -994,7 +995,26 @@ public final class AutoTestClient {
             case 6090 -> serverKeep(mc, V185Test::bmSquad);
             case 6120 -> shot(mc, "bm7_squad");
             case 6130 -> serverKeep(mc, V185Test::bmClaim);
-            case 6134 -> next(11);
+            // ── v0.27.0 디스트로이어 변종 ──
+            case 6136 -> { o.setCameraType(CameraType.FIRST_PERSON); serverKeep(mc, V185Test::scoutSpawn); }
+            case 6140, 6150, 6160, 6170, 6180, 6190, 6200 -> serverKeep(mc, V185Test::scoutTrack);
+            case 6158 -> shot(mc, "vr1_scouts");
+            case 6230 -> serverKeep(mc, V185Test::scoutCheck);
+            case 6400 -> serverKeep(mc, V185Test::carrierMid);
+            case 6404 -> serverKeep(mc, sp -> sp.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, V185Test.carrier.position().add(0, 1.5, 0)));
+            case 6408 -> shot(mc, "vr2_carrier");
+            case 6412 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), V185Test.carrier.getX() + 7, V185Test.carrier.getY() + 2.5, V185Test.carrier.getZ() + 7, 135f, 5f));
+            case 6414 -> serverKeep(mc, sp -> sp.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, V185Test.carrier.position().add(0, 1.5, 0)));
+            case 6418 -> shot(mc, "vr3_carrier_close");
+            case 6420 -> serverKeep(mc, sp -> V185Test.carrierShootCore(sp, 0));
+            case 6440 -> serverKeep(mc, sp -> sp.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, V185Test.carrier.position().add(0, 1.5, 0)));
+            case 6444 -> shot(mc, "vr4_core_down");
+            case 6450 -> serverKeep(mc, sp -> V185Test.carrierShootCore(sp, 1));
+            case 6470 -> serverKeep(mc, sp -> sp.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, V185Test.carrier.position()));
+            case 6476 -> shot(mc, "vr5_crashing");
+            case 6700 -> shot(mc, "vr6_crater");
+            case 6704 -> serverKeep(mc, V185Test::carrierCrashCheck);
+            case 6708 -> next(11);
             default -> {
             }
         }

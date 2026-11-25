@@ -283,6 +283,12 @@ public final class ModItems {
     public static final DeferredItem<Item> BLACK_MARKET_PASS = ITEMS.register("black_market_pass",
             () -> new Item(new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.RARE)));
     public static final DeferredItem<BlockItem> MANHOLE = ITEMS.registerSimpleBlockItem(ModBlocks.MANHOLE);
+    public static final DeferredItem<Item> SCOUT_CORE = ITEMS.register("scout_core", () -> new Item(new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON)));
+    public static final DeferredItem<Item> FLIGHT_CORE = ITEMS.register("flight_core", () -> new Item(new Item.Properties().rarity(net.minecraft.world.item.Rarity.EPIC).fireResistant()));
+    public static final DeferredItem<net.neoforged.neoforge.common.DeferredSpawnEggItem> SCOUT_DESTROYER_EGG = ITEMS.register("scout_destroyer_spawn_egg",
+            () -> new net.neoforged.neoforge.common.DeferredSpawnEggItem(ModEntities.SCOUT_DESTROYER, 0x2A2D33, 0xE83020, new Item.Properties()));
+    public static final DeferredItem<net.neoforged.neoforge.common.DeferredSpawnEggItem> AERIAL_DESTROYER_EGG = ITEMS.register("aerial_destroyer_spawn_egg",
+            () -> new net.neoforged.neoforge.common.DeferredSpawnEggItem(ModEntities.AERIAL_DESTROYER, 0x4A4F58, 0x30C0FF, new Item.Properties()));
     public static final DeferredItem<BlockItem> CCTV = ITEMS.registerSimpleBlockItem(ModBlocks.CCTV);
     public static final DeferredItem<BlockItem> CCTV_SCREEN = ITEMS.registerSimpleBlockItem(ModBlocks.CCTV_SCREEN);
     public static final List<DeferredItem<BlockItem>> MACHINE_ITEMS = new ArrayList<>();

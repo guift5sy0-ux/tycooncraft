@@ -26,6 +26,14 @@ public final class BossBar {
         }
     }
 
+    public void setName(Component c) {
+        event.setName(c);
+    }
+
+    public void setProgress(float f) {
+        event.setProgress(f);
+    }
+
     public void setDarken(boolean b) {
         event.setDarkenScreen(b);
     }

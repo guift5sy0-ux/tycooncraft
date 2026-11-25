@@ -53,6 +53,8 @@ public final class VehicleClient {
     @SubscribeEvent
     public static void layers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(com.tycooncraft.client.mob.BossModels.GOLEM, com.tycooncraft.client.mob.DestroyerGolemGeo::createBodyLayer);
+        event.registerLayerDefinition(com.tycooncraft.client.mob.CarrierModels.SCOUT, com.tycooncraft.client.mob.CarrierModels::scoutLayer);
+        event.registerLayerDefinition(com.tycooncraft.client.mob.CarrierModels.CARRIER, com.tycooncraft.client.mob.CarrierModels::carrierLayer);
         event.registerLayerDefinition(com.tycooncraft.client.mech.ProtoClient.LAYER, com.tycooncraft.client.mob.ProtoDestroyerGeo::createBodyLayer);
         event.registerLayerDefinition(com.tycooncraft.client.mob.AbyssalWither.LAYER, com.tycooncraft.client.mob.AbyssalWitherGeo::createBodyLayer);
         event.registerLayerDefinition(com.tycooncraft.client.mob.VoidDragon.LAYER, com.tycooncraft.client.mob.DragonArmorGeo::createBodyLayer);
@@ -81,6 +83,9 @@ public final class VehicleClient {
         event.registerEntityRenderer(ModEntities.GANGSTER.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
         event.registerEntityRenderer(ModEntities.VILLAGE_GUARD.get(), com.tycooncraft.client.mob.GuardRenderer::new);
         event.registerEntityRenderer(ModEntities.BM_DEALER.get(), com.tycooncraft.client.mob.DealerRenderer::new);
+        event.registerEntityRenderer(ModEntities.SCOUT_DESTROYER.get(), com.tycooncraft.client.mob.CarrierModels.ScoutRenderer::new);
+        event.registerEntityRenderer(ModEntities.AERIAL_DESTROYER.get(), com.tycooncraft.client.mob.CarrierModels.CarrierRenderer::new);
+        event.registerEntityRenderer(ModEntities.MINI_DRONE.get(), com.tycooncraft.client.mob.CarrierModels.DroneRenderer::new);
         event.registerEntityRenderer(ModEntities.MERCENARY.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
         event.registerEntityRenderer(ModEntities.OUTLAW.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
         event.registerEntityRenderer(ModEntities.CARTEL_BOSS.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
