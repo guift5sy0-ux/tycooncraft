@@ -99,7 +99,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     public static int DOCK_CARRIED;
     public static int TURRET_SHOTS, BLAST_CELLS, CONVEYOR_PUSHES, CRASHES;
     private double vspeed, fuelAcc;
-    private int fuel, floats, boosters;
+    private int fuel, floats, boosters, coreEngines;
     private boolean air;
     private int inAge, soundT;
     private int lerpSteps;
@@ -217,6 +217,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         motors = 0;
         boosters = 0;
         floats = 0;
+        coreEngines = 0;
         helm = -1;
         for (int i = 0; i < cells.size(); i++) {
             Cell c = cells.get(i);
@@ -226,12 +227,15 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             if (c.state.getBlock() instanceof ShipMotorBlock) motors++;
             if (c.state.getBlock() instanceof ShipBoosterBlock) boosters++;
             if (c.state.getBlock() instanceof ShipFloatBlock) floats++;
+            if (c.state.is(com.tycooncraft.registry.ModBlocks.SHIP_CORE_ENGINE.get())) coreEngines++;
             if (c.state.getBlock() instanceof com.tycooncraft.block.ConveyorBlock) hasConveyor = true;
             if (c.state.getBlock() instanceof com.tycooncraft.turret.TurretBlock || c.state.getBlock() instanceof com.tycooncraft.turret.CiwsBlock) hasTurret = true;
             index.put(key(c.x, c.y, c.z), i);
             if (c.state.getBlock() instanceof ShipHelmBlock) helm = i;
         }
-        air = floats > 0 && floats * ShipFuel.LIFT_PER_FLOAT >= cells.size();
+        // v0.27.1: 비행 코어 엔진 1개 = 부유체 40개분 부양
+        int lift = floats * ShipFuel.LIFT_PER_FLOAT + coreEngines * CORE_LIFT * ShipFuel.LIFT_PER_FLOAT;
+        air = (floats > 0 || coreEngines > 0) && lift >= cells.size();
         if (!keepPivot) {
             pivotX = (mx + 1) / 2.0;
             pivotZ = (mz + 1) / 2.0;
@@ -344,6 +348,24 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
                 SoundSource.BLOCKS, 0.6f, 1f);
         CONTAINERS_OPENED++;
         return true;
+    }
+
+    public static final int CORE_THRUST = 6, CORE_LIFT = 40;
+    public static final double CORE_FUEL = 0.6;
+
+    public int coreEngineCount() {
+        return coreEngines;
+    }
+
+    public boolean airship() {
+        return air;
+    }
+
+    public double vmaxForTest() {
+        int n = Math.max(1, cells.size());
+        double thrust = motors + 3.0 * boosters + (CORE_THRUST - 1.0) * coreEngines;
+        double cap = coreEngines > 0 ? 1.25 : boosters > 0 ? 0.95 : 0.6;
+        return Math.min(cap, 0.12 + 0.16 * Math.sqrt(thrust) * Math.sqrt(80.0 / Math.max(80, n)));
     }
 
     public int boosterCount() {
@@ -531,8 +553,9 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         if (tickCount % 20 == 0) refuelFromHoppers();
         boolean powered = motors > 0 && emp == 0 && fuel > 0;
         int n = Math.max(1, cells.size());
-        double thrust = motors + 3.0 * boosters;          // 부스터 = 엔진 4개
-        double vmax = Math.min(boosters > 0 ? 0.95 : 0.6, 0.12 + 0.16 * Math.sqrt(thrust) * Math.sqrt(80.0 / Math.max(80, n)));
+        double thrust = motors + 3.0 * boosters + (CORE_THRUST - 1.0) * coreEngines;   // 부스터 = 엔진 4개, 코어 엔진 = 엔진 6개
+        double vcap = coreEngines > 0 ? 1.25 : boosters > 0 ? 0.95 : 0.6;
+        double vmax = Math.min(vcap, 0.12 + 0.16 * Math.sqrt(thrust) * Math.sqrt(80.0 / Math.max(80, n)));
         double target = !powered ? 0 : inF > 0 ? vmax * inF : inF < 0 ? vmax * 0.4 * inF : 0;
         speed += (target - speed) * (target == 0 ? 0.02 : boosters > 0 ? 0.06 : 0.035);
         if (Math.abs(speed) < 1e-4) speed = 0;
@@ -569,6 +592,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         if (powered) {
             double use = Math.abs(speed) / Math.max(vmax, 0.01) * ShipFuel.thrustUse(n) * (1 + 2.0 * boosters / Math.max(1, motors));
             if (airborne || vspeed > 0.01) use += ShipFuel.liftUse(n) * (vspeed > 0.01 ? 1.5 : 1.0);
+            if (coreEngines > 0) use *= CORE_FUEL;   // 비행 코어 엔진: 연료 40% 절약
             fuelAcc += use;
             int whole = (int) fuelAcc;
             if (whole > 0) {

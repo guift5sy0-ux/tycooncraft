@@ -43,6 +43,7 @@
     "tycooncraft:arc_furnace",
     "tycooncraft:robot_arm",
     "tycooncraft:sorter",
-    "tycooncraft:warehouse"
+    "tycooncraft:warehouse",
+    "tycooncraft:ship_core_engine"
   ]
 }

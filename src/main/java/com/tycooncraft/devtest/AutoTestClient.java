@@ -1014,7 +1014,23 @@ public final class AutoTestClient {
             case 6476 -> shot(mc, "vr5_crashing");
             case 6700 -> shot(mc, "vr6_crater");
             case 6704 -> serverKeep(mc, V185Test::carrierCrashCheck);
-            case 6708 -> next(11);
+            case 6708 -> serverKeep(mc, V185Test::coreShipSetup);
+            case 6712, 6716, 6720, 6724, 6728, 6732, 6736, 6740, 6744, 6748, 6752, 6756, 6760, 6764, 6768, 6772, 6776, 6780 -> serverKeep(mc, V185Test::coreShipFly);
+            case 6742 -> shot(mc, "vr7_core_airship");
+            case 6784 -> serverKeep(mc, V185Test::coreShipCheck);
+            case 6790 -> serverKeep(mc, V185Test::swarmLaunch);
+            case 6830 -> shot(mc, "vr8_drone_swarm");
+            case 6880 -> serverKeep(mc, V185Test::swarmCheck);
+            case 6884 -> serverKeep(mc, V185Test::swarmGone);
+            case 6890 -> serverKeep(mc, V185Test::pscoutSetup);
+            case 6896, 6904, 6912, 6920 -> serverKeep(mc, V185Test::pscoutSlash);
+            case 6899 -> { o.setCameraType(CameraType.THIRD_PERSON_BACK); }
+            case 6906 -> shot(mc, "vr9_pscout_slash");
+            case 6926 -> serverKeep(mc, V185Test::pscoutPounce);
+            case 6927 -> { if (mc.player.getVehicle() instanceof com.tycooncraft.mech.ProtoScout ps) com.tycooncraft.client.mech.ProtoClient.pounce(ps); }
+            case 6931 -> shot(mc, "vr10_pscout_pounce");
+            case 6950 -> serverKeep(mc, V185Test::pscoutCheck);
+            case 6954 -> { o.setCameraType(CameraType.FIRST_PERSON); next(11); }
             default -> {
             }
         }

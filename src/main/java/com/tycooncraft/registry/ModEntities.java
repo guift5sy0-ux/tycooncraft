@@ -95,6 +95,9 @@ public final class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.mech.ProtoDestroyer>> PROTO_DESTROYER = ENTITIES.register("proto_destroyer",
             () -> EntityType.Builder.<com.tycooncraft.mech.ProtoDestroyer>of(com.tycooncraft.mech.ProtoDestroyer::new, MobCategory.MISC)
                     .sized(2.8f, 4.3f).eyeHeight(3.6f).clientTrackingRange(10).fireImmune().build("proto_destroyer"));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.mech.ProtoScout>> PROTO_SCOUT = ENTITIES.register("proto_scout",
+            () -> EntityType.Builder.<com.tycooncraft.mech.ProtoScout>of(com.tycooncraft.mech.ProtoScout::new, MobCategory.MISC)
+                    .sized(1.7f, 1.5f).clientTrackingRange(10).fireImmune().build("proto_scout"));
     public static final DeferredHolder<EntityType<?>, EntityType<MutantSpider>> MUTANT_SPIDER = ENTITIES.register("mutant_spider",
             () -> EntityType.Builder.<MutantSpider>of(MutantSpider::new, MobCategory.MONSTER)
                     .sized(4.2f, 2.7f).clientTrackingRange(10).build("mutant_spider"));

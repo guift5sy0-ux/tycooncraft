@@ -99,13 +99,16 @@ public final class ShipAssembler {
             minZ = Math.min(minZ, p.getZ());
         }
         if (motors == 0) return fail(player, "no_motor");
-        int floats = 0, fuel = 0;
+        int floats = 0, fuel = 0, cores = 0;
         for (BlockPos p : found) {
             if (level.getBlockState(p).getBlock() instanceof ShipFloatBlock) floats++;
+            if (level.getBlockState(p).is(com.tycooncraft.registry.ModBlocks.SHIP_CORE_ENGINE.get())) cores++;
             if (level.getBlockEntity(p) instanceof ShipMotorBlockEntity m) fuel += m.fuel();
         }
-        boolean air = floats > 0 && floats * ShipFuel.LIFT_PER_FLOAT >= found.size();
-        if (floats > 0 && !air) return fail(player, "not_enough_floats", floats, floats * ShipFuel.LIFT_PER_FLOAT, found.size(),
+        // v0.27.1: 비행 코어 엔진 1개 = 부유체 40개분
+        int liftUnits = floats + cores * ShipEntity.CORE_LIFT;
+        boolean air = liftUnits > 0 && liftUnits * ShipFuel.LIFT_PER_FLOAT >= found.size();
+        if (liftUnits > 0 && !air) return fail(player, "not_enough_floats", floats, floats * ShipFuel.LIFT_PER_FLOAT, found.size(),
                 (found.size() + ShipFuel.LIFT_PER_FLOAT - 1) / ShipFuel.LIFT_PER_FLOAT);
         // 바닥줄 일부가 물에 닿아 있어야 함 (부유체가 충분하면 어디서든)
         int bottom = 0, wet = 0;

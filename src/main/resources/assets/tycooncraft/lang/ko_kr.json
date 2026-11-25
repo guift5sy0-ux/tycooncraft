@@ -770,6 +770,20 @@
   "item.tycooncraft.scout_destroyer_spawn_egg": "정찰 디스트로이어 생성 알",
   "item.tycooncraft.aerial_destroyer_spawn_egg": "공중 디스트로이어 생성 알",
   "message.tycooncraft.carrier.incoming": "✈ 하늘에서 거대한 엔진 소리가… 공중 디스트로이어 접근!",
-  "tooltip.tycooncraft.scout_core": "정찰 디스트로이어의 코어. 판매 ₩2,000 · 프로토 디스트로이어-정찰 재료 (예정)",
-  "tooltip.tycooncraft.flight_core": "공중 디스트로이어의 비행 코어. 판매 ₩25,000 · 상위 비행체 재료 (예정)"
+  "tooltip.tycooncraft.scout_core": "정찰 디스트로이어의 코어. 판매 ₩2,000 · 프로토 디스트로이어-정찰 재료",
+  "tooltip.tycooncraft.flight_core": "공중 디스트로이어의 비행 코어. 판매 ₩25,000 · 비행 코어 엔진·드론 편대 재료",
+  "block.tycooncraft.ship_core_engine": "비행 코어 엔진",
+  "item.tycooncraft.drone_swarm": "드론 편대 발사기",
+  "item.tycooncraft.proto_scout": "프로토 디스트로이어-정찰",
+  "entity.tycooncraft.proto_scout": "프로토 디스트로이어-정찰",
+  "entity.tycooncraft.mini_drone.ally": "%s의 편대 드론",
+  "message.tycooncraft.drone_swarm.launch": "드론 편대 %s기 발진!",
+  "tooltip.tycooncraft.drone_swarm": "우클릭: 미니 드론 6기 동시 발진 (1분) · 각자 적을 찾아 사격 · 재사용 90초",
+  "tooltip.tycooncraft.ship_core_engine": "운송기 엔진 상위호환: 엔진 6개분 추진 · 부유체 40개분 부양 · 최고속도↑ · 연료 40% 절약",
+  "tooltip.tycooncraft.proto_scout.1": "땅에 우클릭해 배치 → 우클릭으로 탑승 · 탄약 필요 없음",
+  "tooltip.tycooncraft.proto_scout.2": "좌클릭(누르기) 양날 베기 · 우클릭 덮치기(도약 후 착지 충격) · 스페이스 높은 점프",
+  "tooltip.tycooncraft.proto_scout.3": "A/D 두 번 빠르게: 옆 회피 대시 · 아주 빠르고 날렵함",
+  "tooltip.tycooncraft.proto_scout.4": "웅크리고 빈손 우클릭: 회수 · 철/강철 주괴: 수리",
+  "hud.tycooncraft.proto_scout.pounce": "덮치기 %s",
+  "hud.tycooncraft.proto_scout.keys": "좌클릭 베기 · 우클릭 덮치기 · A/D×2 대시"
 }

@@ -603,6 +603,7 @@ public final class StructureBuilder {
         return it instanceof com.tycooncraft.gun.GunItem || it instanceof com.tycooncraft.gun.GrenadeItem || it instanceof com.tycooncraft.gear.GearItem
                 || it instanceof com.tycooncraft.gear.PoliceShieldItem || it instanceof com.tycooncraft.vehicle.VehicleItem || it instanceof com.tycooncraft.vehicle.DroneItem
                 || com.tycooncraft.gun.GunCrafting.isGunOrAmmo(it) || it == ModItems.PARACHUTE.get() || it == ModItems.FUEL_CANISTER.get()
+                || it instanceof com.tycooncraft.mob.carrier.DroneSwarmItem || it instanceof com.tycooncraft.mech.ProtoDestroyerItem
                 || it == ModItems.SILENCER.get() || it == ModItems.SILENCER_ADVANCED.get();
     }
 

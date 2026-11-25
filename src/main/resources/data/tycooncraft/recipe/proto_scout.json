@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "CNC",
+    "BEB",
+    "CNC"
+  ],
+  "key": {
+    "C": {
+      "item": "tycooncraft:scout_core"
+    },
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "B": {
+      "item": "minecraft:iron_sword"
+    },
+    "E": {
+      "item": "tycooncraft:engine"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:proto_scout",
+    "count": 1
+  }
+}

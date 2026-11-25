@@ -55,7 +55,7 @@ public final class CarrierModels {
         return LayerDefinition.create(m, 64, 64);
     }
 
-    public static class ScoutModel extends HierarchicalModel<ScoutDestroyer> {
+    public static class ScoutModel<T extends net.minecraft.world.entity.LivingEntity> extends HierarchicalModel<T> {
         private final ModelPart root, body, head;
         private final ModelPart[] legs = new ModelPart[4];
         private final ModelPart bl, br;
@@ -78,7 +78,7 @@ public final class CarrierModels {
         }
 
         @Override
-        public void setupAnim(ScoutDestroyer e, float limb, float amount, float age, float yaw, float pitch) {
+        public void setupAnim(T e, float limb, float amount, float age, float yaw, float pitch) {
             root.getAllParts().forEach(ModelPart::resetPose);
             // 빠른 종종걸음 (대각선 다리끼리)
             float w = Mth.cos(limb * 1.6f) * 0.7f * amount;
@@ -90,7 +90,8 @@ public final class CarrierModels {
             body.zRot = Mth.sin(limb * 0.8f) * 0.08f * amount;
             head.yRot = yaw * Mth.DEG_TO_RAD * 0.7f;
             head.xRot = pitch * Mth.DEG_TO_RAD * 0.5f;
-            float t = (e.level().getGameTime() - e.slashAt) + (age - (int) age);
+            float t = (e instanceof ScoutDestroyer sd ? e.level().getGameTime() - sd.slashAt
+                    : e instanceof com.tycooncraft.mech.ProtoScout ps ? e.tickCount - ps.slashAt() : 99) + (age - (int) age);
             if (t >= 0 && t < 8) {   // 베기: 칼날을 치켜들었다가 내려침
                 float u = t / 8f;
                 float sw = u < 0.35f ? -u / 0.35f * 0.9f : -0.9f + (u - 0.35f) / 0.65f * 2.0f;
@@ -104,17 +105,44 @@ public final class CarrierModels {
         }
     }
 
-    public static class ScoutRenderer extends MobRenderer<ScoutDestroyer, ScoutModel> {
+    public static class ScoutRenderer extends MobRenderer<ScoutDestroyer, ScoutModel<ScoutDestroyer>> {
         private static final ResourceLocation TEX = TycoonCraft.id("textures/entity/scout_destroyer.png");
 
         public ScoutRenderer(EntityRendererProvider.Context ctx) {
-            super(ctx, new ScoutModel(ctx.bakeLayer(SCOUT)), 0.5f);
+            super(ctx, new ScoutModel<>(ctx.bakeLayer(SCOUT)), 0.5f);
             addLayer(new GlowLayer<>(this, TycoonCraft.id("textures/entity/scout_destroyer_glow.png")));
         }
 
         @Override
         public ResourceLocation getTextureLocation(ScoutDestroyer e) {
             return TEX;
+        }
+    }
+
+    /** v0.27.1 프로토 디스트로이어-정찰: 정찰 디스트로이어 모델을 2.3배로, 강철·금색 도장 */
+    public static class ProtoScoutRenderer extends MobRenderer<com.tycooncraft.mech.ProtoScout, ScoutModel<com.tycooncraft.mech.ProtoScout>> {
+        private static final ResourceLocation TEX = TycoonCraft.id("textures/entity/proto_scout.png");
+
+        public ProtoScoutRenderer(EntityRendererProvider.Context ctx) {
+            super(ctx, new ScoutModel<>(ctx.bakeLayer(SCOUT)), 1.1f);
+            addLayer(new GlowLayer<>(this, TycoonCraft.id("textures/entity/scout_destroyer_glow.png")));
+        }
+
+        @Override
+        protected void scale(com.tycooncraft.mech.ProtoScout e, com.mojang.blaze3d.vertex.PoseStack ps, float pt) {
+            ps.scale(2.3f, 2.3f, 2.3f);
+        }
+
+        @Override
+        public ResourceLocation getTextureLocation(com.tycooncraft.mech.ProtoScout e) {
+            return TEX;
+        }
+
+        @Override
+        public void render(com.tycooncraft.mech.ProtoScout e, float yaw, float pt, com.mojang.blaze3d.vertex.PoseStack ps, net.minecraft.client.renderer.MultiBufferSource buf, int light) {
+            net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+            if (mc.options.getCameraType().isFirstPerson() && mc.player != null && mc.player.getVehicle() == e) return;
+            super.render(e, yaw, pt, ps, buf, light);
         }
     }
 

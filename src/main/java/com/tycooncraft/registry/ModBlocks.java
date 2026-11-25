@@ -82,6 +82,9 @@ public final class ModBlocks {
     // ── 배 ──
     public static final DeferredBlock<com.tycooncraft.ship.ShipMotorBlock> SHIP_MOTOR = BLOCKS.register("ship_motor",
             () -> new com.tycooncraft.ship.ShipMotorBlock(machineProps().strength(2.0f, 6.0f)));
+    /** v0.27.1 비행 코어 엔진: 운송기 엔진의 상위호환 (엔진 6개분 추진 + 부유체 40개분 부양 + 연료 40% 절약) */
+    public static final DeferredBlock<com.tycooncraft.ship.ShipMotorBlock> SHIP_CORE_ENGINE = BLOCKS.register("ship_core_engine",
+            () -> new com.tycooncraft.ship.ShipMotorBlock(machineProps().strength(3.0f, 12.0f).lightLevel(s -> 10)));
     public static final DeferredBlock<com.tycooncraft.ship.ShipHelmBlock> SHIP_HELM = BLOCKS.register("ship_helm",
             () -> new com.tycooncraft.ship.ShipHelmBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).sound(SoundType.WOOD).strength(1.5f).noOcclusion()));
     public static final DeferredBlock<com.tycooncraft.setter.SetterBlock> SETTER = BLOCKS.register("setter",

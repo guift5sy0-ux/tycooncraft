@@ -75,7 +75,7 @@ public class VillageGuard extends PathfinderMob implements RangedAttackMob {
         targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, 10, true, false,
                 p -> p instanceof Player pl && GuardAlert.wanted(pl)));
         targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 5, true, false,
-                m -> m instanceof Enemy && !(m instanceof VillageGuard) && inVillage(m)));
+                m -> m instanceof Enemy && !(m instanceof VillageGuard) && !(m instanceof com.tycooncraft.mob.carrier.MiniDrone md && md.ally()) && inVillage(m)));
     }
 
     /** 경비 구역 안인가 (근무지 반경) */

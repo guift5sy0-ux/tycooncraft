@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PFP",
+    "MSM"
+  ],
+  "key": {
+    "P": {
+      "item": "tycooncraft:steel_plate"
+    },
+    "F": {
+      "item": "tycooncraft:flight_core"
+    },
+    "M": {
+      "item": "tycooncraft:ship_motor"
+    },
+    "S": {
+      "item": "tycooncraft:steel_gear"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:ship_core_engine",
+    "count": 1
+  }
+}

@@ -5,6 +5,7 @@ import com.tycooncraft.client.mob.GlowLayer;
 import com.tycooncraft.client.mob.ProtoDestroyerGeo;
 import com.tycooncraft.mech.MechActionPayload;
 import com.tycooncraft.mech.ProtoDestroyer;
+import com.tycooncraft.mech.ProtoScout;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.model.HierarchicalModel;
@@ -125,7 +126,7 @@ public final class ProtoClient {
     /** 조종석 안의 탑승자는 보이지 않게 (3인칭에서 기체 위로 튀어나오지 않음) */
     @SubscribeEvent
     public static void hideRider(net.neoforged.neoforge.client.event.RenderLivingEvent.Pre<?, ?> e) {
-        if (e.getEntity() instanceof net.minecraft.world.entity.player.Player p && p.getVehicle() instanceof ProtoDestroyer) e.setCanceled(true);
+        if (e.getEntity() instanceof net.minecraft.world.entity.player.Player p && (p.getVehicle() instanceof ProtoDestroyer || p.getVehicle() instanceof ProtoScout)) e.setCanceled(true);
     }
 
     /** 걸을 때·착지할 때 조종석 화면이 묵직하게 흔들림 */
@@ -156,6 +157,7 @@ public final class ProtoClient {
     @SubscribeEvent
     public static void onTick(ClientTickEvent.Post e) {
         Minecraft mc = Minecraft.getInstance();
+        if (scoutTick(mc)) return;
         ProtoDestroyer m = piloting();
         if (m == null || mc.screen != null) {
             jumpWas = false;
@@ -173,6 +175,13 @@ public final class ProtoClient {
 
     @SubscribeEvent
     public static void onClick(InputEvent.InteractionKeyMappingTriggered e) {
+        ProtoScout sc = scouting();
+        if (sc != null && !e.isPickBlock()) {
+            e.setCanceled(true);
+            e.setSwingHand(false);
+            if (e.isUseItem()) pounce(sc);
+            return;
+        }
         ProtoDestroyer m = piloting();
         if (m == null || e.isPickBlock()) return;
         e.setCanceled(true);
@@ -183,6 +192,7 @@ public final class ProtoClient {
     @SubscribeEvent
     public static void camera(CalculateDetachedCameraDistanceEvent e) {
         if (piloting() != null) e.setDistance(Math.max(e.getDistance(), 9f));
+        else if (scouting() != null) e.setDistance(Math.max(e.getDistance(), 6f));
     }
 
     @SubscribeEvent
@@ -209,6 +219,80 @@ public final class ProtoClient {
                 m.rocketCd() > 0 || (!cr && rockets == 0) ? 0xFF909090 : 0xFF80FF80);
         g.drawString(font, Component.translatable(m.slamCd() > 0 ? "hud.tycooncraft.proto.stomp_wait" : "hud.tycooncraft.proto.stomp"), x, y + 29,
                 m.slamCd() > 0 ? 0xFF909090 : 0xFF80FF80);
+    }
+
+    // ── 프로토 디스트로이어-정찰 ─────────────────────────────────
+    private static int leftTap, rightTap;
+    private static boolean leftWas, rightWas;
+
+    private static ProtoScout scouting() {
+        Minecraft mc = Minecraft.getInstance();
+        return mc.player != null && mc.player.getVehicle() instanceof ProtoScout m && m.getControllingPassenger() == mc.player ? m : null;
+    }
+
+    private static void sendScout(ProtoScout m, int act) {
+        PacketDistributor.sendToServer(new MechActionPayload(m.getId(), (byte) act));
+    }
+
+    /** 덮치기: 바라보는 방향으로 크게 도약 (움직임은 조종하는 클라이언트가 담당) */
+    public static void pounce(ProtoScout m) {
+        if (m.pounceCd() > 0 || !m.onGround()) return;
+        Minecraft mc = Minecraft.getInstance();
+        float yaw = mc.player.getYRot() * Mth.DEG_TO_RAD;
+        m.setDeltaMovement(-Mth.sin(yaw) * 1.5, 0.62, Mth.cos(yaw) * 1.5);
+        sendScout(m, ProtoScout.ACT_POUNCE);
+    }
+
+    private static boolean scoutTick(Minecraft mc) {
+        ProtoScout m = scouting();
+        if (m == null) return false;
+        if (mc.screen != null) {
+            jumpWas = false;
+            return true;
+        }
+        if (mc.options.keyAttack.isDown()) sendScout(m, ProtoScout.ACT_SLASH);
+        boolean j = mc.options.keyJump.isDown();
+        if (j && !jumpWas && m.onGround()) {
+            var dm = m.getDeltaMovement();
+            m.setDeltaMovement(dm.x, ProtoScout.JUMP_VEL, dm.z);
+            sendScout(m, ProtoScout.ACT_JUMP);
+        }
+        jumpWas = j;
+        // A/D 두 번 빠르게 → 옆 회피 대시 (저글링처럼 변칙 기동)
+        boolean l = mc.options.keyLeft.isDown(), r = mc.options.keyRight.isDown();
+        if (leftTap > 0) leftTap--;
+        if (rightTap > 0) rightTap--;
+        if (l && !leftWas) { if (leftTap > 0) dash(m, 1); leftTap = 6; }
+        if (r && !rightWas) { if (rightTap > 0) dash(m, -1); rightTap = 6; }
+        leftWas = l;
+        rightWas = r;
+        return true;
+    }
+
+    private static int dashCd;
+
+    private static void dash(ProtoScout m, int side) {
+        if (m.tickCount < dashCd || !m.onGround()) return;
+        dashCd = m.tickCount + ProtoScout.DASH_CD;
+        float yaw = m.getYRot() * Mth.DEG_TO_RAD;
+        m.setDeltaMovement(Mth.cos(yaw) * 1.6 * side, 0.25, Mth.sin(yaw) * 1.6 * side);
+        sendScout(m, ProtoScout.ACT_DASH);
+    }
+
+    @SubscribeEvent
+    public static void scoutHud(RenderGuiEvent.Post e) {
+        ProtoScout m = scouting();
+        Minecraft mc = Minecraft.getInstance();
+        if (m == null || mc.options.hideGui) return;
+        GuiGraphics g = e.getGuiGraphics();
+        int x = 8, y = 10;
+        var font = mc.font;
+        g.fill(x - 4, y - 4, x + 200, y + 30, 0x90000000);
+        g.drawString(font, Component.translatable("entity.tycooncraft.proto_scout"), x, y - 1, 0xFFE0C050);
+        bar(g, x, y + 9, m.getHealth() / m.getMaxHealth(), 0xFFD03A2A, Component.translatable("hud.tycooncraft.proto.hp", Math.round(m.getHealth())), font);
+        String pc = m.pounceCd() > 0 ? String.format("%.1fs", m.pounceCd() / 20f) : "READY";
+        g.drawString(font, Component.translatable("hud.tycooncraft.proto_scout.pounce", pc), x + 96, y + 9, m.pounceCd() > 0 ? 0xFF909090 : 0xFF80FF80);
+        g.drawString(font, Component.translatable("hud.tycooncraft.proto_scout.keys"), x, y + 19, 0xFFB0B0B0);
     }
 
     private static void bar(GuiGraphics g, int x, int y, float f, int col, Component label, net.minecraft.client.gui.Font font) {

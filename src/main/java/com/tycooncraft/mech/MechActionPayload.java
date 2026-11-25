@@ -28,7 +28,10 @@ public record MechActionPayload(int entityId, byte action) implements CustomPack
 
     public static void handle(MechActionPayload p, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
-            if (ctx.player() instanceof ServerPlayer sp && sp.level().getEntity(p.entityId()) instanceof ProtoDestroyer m) m.action(sp, p.action());
+            if (!(ctx.player() instanceof ServerPlayer sp)) return;
+            var e = sp.level().getEntity(p.entityId());
+            if (e instanceof ProtoDestroyer m) m.action(sp, p.action());
+            else if (e instanceof ProtoScout s) s.action(sp, p.action());
         });
     }
 }

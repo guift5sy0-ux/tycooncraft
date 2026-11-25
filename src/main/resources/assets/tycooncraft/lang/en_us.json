@@ -771,5 +771,19 @@
   "item.tycooncraft.aerial_destroyer_spawn_egg": "Aerial Destroyer Spawn Egg",
   "message.tycooncraft.carrier.incoming": "✈ A huge engine roars above... Aerial Destroyer incoming!",
   "tooltip.tycooncraft.scout_core": "Scout Destroyer core",
-  "tooltip.tycooncraft.flight_core": "Aerial Destroyer flight core"
+  "tooltip.tycooncraft.flight_core": "Aerial Destroyer flight core",
+  "block.tycooncraft.ship_core_engine": "Flight Core Engine",
+  "item.tycooncraft.drone_swarm": "Drone Swarm Launcher",
+  "item.tycooncraft.proto_scout": "Proto Destroyer-Scout",
+  "entity.tycooncraft.proto_scout": "Proto Destroyer-Scout",
+  "entity.tycooncraft.mini_drone.ally": "%s's Squadron Drone",
+  "message.tycooncraft.drone_swarm.launch": "Drone squadron of %s launched!",
+  "tooltip.tycooncraft.drone_swarm": "Right-click: launch 6 mini drones (1 min) · each hunts targets · 90s cooldown",
+  "tooltip.tycooncraft.ship_core_engine": "Upgraded ship engine: thrust of 6 engines · lift of 40 floats · higher top speed · 40% less fuel",
+  "tooltip.tycooncraft.proto_scout.1": "Right-click ground to deploy → right-click to ride · no ammo needed",
+  "tooltip.tycooncraft.proto_scout.2": "Hold LMB twin-blade slash · RMB pounce (leap + landing impact) · Space high jump",
+  "tooltip.tycooncraft.proto_scout.3": "Double-tap A/D: side dash · very fast and agile",
+  "tooltip.tycooncraft.proto_scout.4": "Sneak + empty hand: pick up · iron/steel ingot: repair",
+  "hud.tycooncraft.proto_scout.pounce": "Pounce %s",
+  "hud.tycooncraft.proto_scout.keys": "LMB slash · RMB pounce · A/D×2 dash"
 }

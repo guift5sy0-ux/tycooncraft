@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DFD",
+    "CBC"
+  ],
+  "key": {
+    "D": {
+      "item": "tycooncraft:drone"
+    },
+    "F": {
+      "item": "tycooncraft:flight_core"
+    },
+    "C": {
+      "item": "tycooncraft:advanced_circuit"
+    },
+    "B": {
+      "item": "minecraft:redstone_block"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:drone_swarm",
+    "count": 1
+  }
+}

@@ -258,6 +258,7 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> CONVEYOR = ITEMS.registerSimpleBlockItem(ModBlocks.CONVEYOR);
     public static final DeferredItem<BlockItem> TRANSMISSION = ITEMS.registerSimpleBlockItem(ModBlocks.TRANSMISSION);
     public static final DeferredItem<BlockItem> SHIP_MOTOR = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_MOTOR);
+    public static final DeferredItem<BlockItem> SHIP_CORE_ENGINE = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_CORE_ENGINE);
     public static final DeferredItem<BlockItem> SHIP_BOOSTER = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_BOOSTER);
     public static final DeferredItem<BlockItem> SETTER = ITEMS.registerSimpleBlockItem(ModBlocks.SETTER);
     public static final DeferredItem<BlockItem> SHIP_HELM = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_HELM);
@@ -283,6 +284,10 @@ public final class ModItems {
     public static final DeferredItem<Item> BLACK_MARKET_PASS = ITEMS.register("black_market_pass",
             () -> new Item(new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.RARE)));
     public static final DeferredItem<BlockItem> MANHOLE = ITEMS.registerSimpleBlockItem(ModBlocks.MANHOLE);
+    public static final DeferredItem<com.tycooncraft.mob.carrier.DroneSwarmItem> DRONE_SWARM = ITEMS.register("drone_swarm",
+            () -> new com.tycooncraft.mob.carrier.DroneSwarmItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.EPIC)));
+    public static final DeferredItem<com.tycooncraft.mech.ProtoDestroyerItem> PROTO_SCOUT = ITEMS.register("proto_scout",
+            () -> new com.tycooncraft.mech.ProtoDestroyerItem(new Item.Properties().stacksTo(1).fireResistant().rarity(net.minecraft.world.item.Rarity.EPIC), true));
     public static final DeferredItem<Item> SCOUT_CORE = ITEMS.register("scout_core", () -> new Item(new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON)));
     public static final DeferredItem<Item> FLIGHT_CORE = ITEMS.register("flight_core", () -> new Item(new Item.Properties().rarity(net.minecraft.world.item.Rarity.EPIC).fireResistant()));
     public static final DeferredItem<net.neoforged.neoforge.common.DeferredSpawnEggItem> SCOUT_DESTROYER_EGG = ITEMS.register("scout_destroyer_spawn_egg",

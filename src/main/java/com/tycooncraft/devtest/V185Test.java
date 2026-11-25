@@ -1229,6 +1229,123 @@ public final class V185Test {
         sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
     }
 
+    // ── v0.27.1 비행 코어 엔진 · 드론 편대 · 프로토-정찰 ──
+    static com.tycooncraft.ship.ShipEntity coreShip;
+    static double coreY0;
+
+    static void coreShipSetup(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        BlockPos g = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, varBase.offset(30, 0, 0));
+        int x0 = g.getX(), y = g.getY() + 1, z0 = g.getZ();
+        BlockPos helm = AirshipTest.build(sl, x0, y, z0, 0);   // 부유체 없음
+        sl.setBlockAndUpdate(new BlockPos(x0 + 1, y + 1, z0), ModBlocks.SHIP_CORE_ENGINE.get().defaultBlockState()
+                .setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, net.minecraft.core.Direction.NORTH));
+        coreShip = com.tycooncraft.ship.ShipAssembler.assemble(sl, helm, sp);
+        if (coreShip != null) {
+            coreShip.autopilot = true;
+            coreShip.setFuel(2000);
+            coreY0 = coreShip.getY();
+        }
+        // 비교: 엔진 2개 + 부유체 운송기의 최고속도 공식 (코어 0)
+        double plain = Math.min(0.6, 0.12 + 0.16 * Math.sqrt(2) * Math.sqrt(80.0 / 80));
+        System.out.println("[AUTOTEST] v271 coreShip assembled=" + (coreShip != null) + (coreShip == null ? "" : " coreEngines=" + coreShip.coreEngineCount()
+                + " airship=" + coreShip.airship() + " vmax=" + String.format("%.3f", coreShip.vmaxForTest()) + " plainVmax=" + String.format("%.3f", plain))
+                + " recipe=" + sl.getRecipeManager().byKey(com.tycooncraft.TycoonCraft.id("ship_core_engine")).isPresent());
+        sp.teleportTo(sl, x0 + 2.5, y + 3, z0 - 14, 0f, -12f);
+    }
+
+    static void coreShipFly(ServerPlayer sp) {
+        if (coreShip != null && coreShip.isAlive()) coreShip.testInput(coreShip.getY() - coreY0 < 6 ? 0 : 1, 0, coreShip.getY() - coreY0 < 6 ? 1 : 0);
+    }
+
+    static void coreShipCheck(ServerPlayer sp) {
+        if (coreShip == null) return;
+        System.out.println("[AUTOTEST] v271 coreShip rise=" + String.format("%.2f", coreShip.getY() - coreY0) + " speed=" + String.format("%.3f", coreShip.shipSpeed())
+                + " fuelLeft=" + coreShip.fuel());
+        coreShip.setFuel(0);
+        coreShip.discard();
+    }
+
+    static Zombie swarmTarget;
+
+    static void swarmLaunch(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        sp.teleportTo(sl, varBase.getX() + 0.5, varBase.getY(), varBase.getZ() + 0.5, 0f, -10f);
+        swarmTarget = EntityType.ZOMBIE.create(sl);
+        swarmTarget.moveTo(varBase.getX() + 0.5, varBase.getY(), varBase.getZ() + 10.5, 180, 0);
+        swarmTarget.setNoAi(true);
+        swarmTarget.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
+        swarmTarget.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(300);
+        swarmTarget.setHealth(300);
+        sl.addFreshEntity(swarmTarget);
+        int n = com.tycooncraft.mob.carrier.DroneSwarmItem.launch(sl, sp);
+        System.out.println("[AUTOTEST] v271 swarm launched=" + n + " recipe=" + sl.getRecipeManager().byKey(com.tycooncraft.TycoonCraft.id("drone_swarm")).isPresent());
+    }
+
+    static void swarmCheck(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        var ds = sl.getEntitiesOfClass(com.tycooncraft.mob.carrier.MiniDrone.class, sp.getBoundingBox().inflate(40), d -> d.ally());
+        System.out.println("[AUTOTEST] v271 swarm drones=" + ds.size() + " allyShots=" + com.tycooncraft.mob.carrier.MiniDrone.allyShots
+                + " targetHp=" + Math.round(swarmTarget.getHealth()) + "/300 playerHp=" + sp.getHealth() + " seenAsEnemy=" + (!ds.isEmpty() && ds.get(0).canBeSeenAsEnemy()));
+        swarmTarget.discard();
+    }
+
+    static void swarmGone(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        for (var d : sl.getEntitiesOfClass(com.tycooncraft.mob.carrier.MiniDrone.class, sp.getBoundingBox().inflate(60), d -> d.ally())) d.discard();
+    }
+
+    static com.tycooncraft.mech.ProtoScout pscout;
+    static Zombie pscoutTarget;
+
+    static void pscoutSetup(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        BlockPos p = varBase.offset(-20, 0, 0);
+        p = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, p);
+        pscout = com.tycooncraft.mech.ProtoDestroyerItem.spawnScout(sl, p, sp, new ItemStack(ModItems.PROTO_SCOUT.get()), 0f);
+        sp.teleportTo(sl, p.getX() + 0.5, p.getY(), p.getZ() - 2.5, 0f, 0f);
+        var r = pscout.interact(sp, InteractionHand.MAIN_HAND);
+        sp.setYRot(0);
+        sp.setXRot(15);
+        pscoutTarget = EntityType.ZOMBIE.create(sl);
+        pscoutTarget.moveTo(p.getX() + 0.5, p.getY(), p.getZ() + 3.0, 180, 0);
+        pscoutTarget.setNoAi(true);
+        pscoutTarget.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
+        pscoutTarget.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(300);
+        pscoutTarget.setHealth(300);
+        sl.addFreshEntity(pscoutTarget);
+        System.out.println("[AUTOTEST] v271 pscout spawned=" + (pscout != null) + " mount=" + r + " riding=" + (sp.getVehicle() == pscout)
+                + " hp=" + pscout.getHealth() + " recipe=" + sl.getRecipeManager().byKey(com.tycooncraft.TycoonCraft.id("proto_scout")).isPresent());
+    }
+
+    static void pscoutSlash(ServerPlayer sp) {
+        if (pscout != null) pscout.action(sp, com.tycooncraft.mech.ProtoScout.ACT_SLASH);
+    }
+
+    static float pscoutHpAfterSlash;
+    static Vec3 pscoutStart;
+
+    static void pscoutPounce(ServerPlayer sp) {
+        pscoutHpAfterSlash = pscoutTarget.getHealth();
+        Vec3 f = pscout.forward();
+        pscoutTarget.teleportTo(pscout.getX() + f.x * 8, pscout.getY(), pscout.getZ() + f.z * 8);
+        pscoutStart = pscout.position();
+    }
+
+    static void pscoutCheck(ServerPlayer sp) {
+        System.out.println("[AUTOTEST] v271 pscout slashes=" + com.tycooncraft.mech.ProtoScout.slashes + " pounces=" + com.tycooncraft.mech.ProtoScout.pounces
+                + " hits=" + com.tycooncraft.mech.ProtoScout.hits + " targetHp 300->" + Math.round(pscoutHpAfterSlash) + "->" + Math.round(pscoutTarget.getHealth())
+                + " riding=" + (sp.getVehicle() == pscout) + " leap=" + String.format("%.1f", pscout.position().distanceTo(pscoutStart))
+                + " speedAttr=" + pscout.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED));
+        sp.stopRiding();
+        ItemStack back = pscout.toItem();
+        pscout.discard();
+        pscoutTarget.discard();
+        System.out.println("[AUTOTEST] v271 pscout item=" + back.getItem() + " protoScoutPrice=" + com.tycooncraft.economy.PriceTable.basePrice(ModItems.PROTO_SCOUT.get())
+                + " coreEnginePrice=" + com.tycooncraft.economy.PriceTable.basePrice(ModItems.SHIP_CORE_ENGINE.get())
+                + " swarmPrice=" + com.tycooncraft.economy.PriceTable.basePrice(ModItems.DRONE_SWARM.get()));
+    }
+
     static com.tycooncraft.vehicle.JetEntity landJet;
 
     static void jetLandSetup(ServerPlayer sp) {

@@ -100,7 +100,7 @@ public final class PriceTable {
     private static boolean derivable(Item it) {
         var id = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(it);
         return id.getNamespace().equals(com.tycooncraft.TycoonCraft.MODID) && !(it instanceof CoinItem) && it != ModItems.DESTROYER_CORE.get() && it != ModItems.VENOM_SPIT.get()
-                && it != ModItems.SCOUT_CORE.get() && it != ModItems.FLIGHT_CORE.get()
+                && it != ModItems.SCOUT_CORE.get() && it != ModItems.FLIGHT_CORE.get() && it != ModItems.PROTO_SCOUT.get()
                 && it != ModItems.RAW_BAUXITE.get() && it != ModItems.ROCK_SALT.get() && it != ModItems.SULFUR.get();
     }
 
@@ -327,6 +327,7 @@ public final class PriceTable {
             p.put(ModItems.VENOM_SPIT.get(), 200.0);
             p.put(ModItems.SCOUT_CORE.get(), 800.0);      // v0.27.0 ₩2,000
             p.put(ModItems.FLIGHT_CORE.get(), 10000.0);   // v0.27.0 ₩25,000
+            p.put(ModItems.PROTO_SCOUT.get(), 9000.0);    // v0.27.1
             // 농산물·식품
             p.put(Items.WHEAT, 1.0);
             p.put(Items.POTATO, 0.8);
