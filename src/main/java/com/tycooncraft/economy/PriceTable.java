@@ -20,7 +20,7 @@ public final class PriceTable {
     public static final double ENERGY_DIV = 1000;
     /** v0.26.0: 경제 규모 10배 (판매가·상점가·보상 전부 이 배율을 따름) */
     public static final double ECON = 10;
-    public static final double MACHINE_MARKUP = 1.6, CRAFT_MARKUP = 1.15, GUN_MARKUP = 1.25;
+    public static final double MACHINE_MARKUP = 1.5, CRAFT_MARKUP = 1.15, GUN_MARKUP = 1.25;
     /** 손으로 캐고 파는 원자재·바닐라 값 배율 (v0.18.6: 손노동 수입 ≈ 시간당 500원) */
     public static final double RAW_SCALE = 0.25;
     /** 기준: 공장 없이 손으로 1시간 벌면 이 정도 */

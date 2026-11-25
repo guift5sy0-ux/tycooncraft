@@ -37,8 +37,11 @@ public class MarketData extends SavedData {
         return saturation.getOrDefault(BuiltInRegistries.ITEM.getKey(item), 0.0);
     }
 
+    /** v0.27.0 판매 수수료 5% (돈이 너무 많이 풀리지 않게) */
+    public static final double SELL_FEE = 0.05;
+
     public double currentPrice(Item item) {
-        return PriceTable.basePrice(item) * multiplier(saturationOf(item));
+        return PriceTable.basePrice(item) * multiplier(saturationOf(item)) * (1 - SELL_FEE);
     }
 
     public static boolean canSell(ItemStack stack) {
@@ -54,7 +57,7 @@ public class MarketData extends SavedData {
         if (base <= 0) return -1;
         int count = stack.getCount();
         double before = saturationOf(item);
-        double total = base * multiplier(before + count / 2.0) * count;
+        double total = base * multiplier(before + count / 2.0) * count * (1 - SELL_FEE);
         saturation.put(BuiltInRegistries.ITEM.getKey(item), before + count);
         setDirty();
         return total;

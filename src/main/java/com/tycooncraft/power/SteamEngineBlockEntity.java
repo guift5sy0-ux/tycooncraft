@@ -35,8 +35,8 @@ public class SteamEngineBlockEntity extends RotatingBlockEntity {
         producing = false;
         if (level == null) return;
         // 일할 기계가 있을 때만 증기를 씀 (놀 때 석탄 낭비 없음). 잠깐 쉬는 틈엔 관성으로 1초 정도 더 돎
-        var net = PowerGrid.net(level, worldPosition);
-        boolean wanted = net != null && net.demand > 0;
+        var net = PowerGrid.net(level, worldPosition, Layer.ELEC);   // v0.27.0: 증기기관이 바로 전기를 만듦
+        boolean wanted = net != null && net.want > 0;
         if (!wanted && ++idle > 20) return;
         if (wanted) idle = 0;
         for (Direction d : Direction.values()) {

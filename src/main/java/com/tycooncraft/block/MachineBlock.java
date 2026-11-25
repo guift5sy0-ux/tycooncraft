@@ -101,7 +101,7 @@ public class MachineBlock extends BaseEntityBlock {
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, net.minecraft.world.entity.LivingEntity who, net.minecraft.world.item.ItemStack st) {
         super.setPlacedBy(level, pos, state, who, st);
-        if (level.isClientSide || !(who instanceof Player p)) return;
+        if (level.isClientSide || !(who instanceof Player p) || !type().electricOnly()) return;
         for (Direction d : Direction.values())
             if (level.getBlockEntity(pos.relative(d)) instanceof com.tycooncraft.power.PowerNode n && !(n instanceof MachineBlockEntity)) return;
         p.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.tycooncraft.tip.machine"), true);

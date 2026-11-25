@@ -304,12 +304,11 @@ public final class StructureBuilder {
         Block c = ModBlocks.CONVEYOR.get();
         b.line(2, 0, 5, c, m(MachineType.CRUSHER), c, m(MachineType.SMELTER), c, m(MachineType.PRESS), c, ModBlocks.SELL_STATION.get());
         b.set(1, 0, 5, Blocks.AIR);
-        // v0.21.0 동력: 보일러(아래 물 원천) → 증기기관 → 기어박스 → 천장 회전축이 기계 위를 지나며 돌림
+        // v0.27.0 전기: 보일러(아래 물 원천) → 증기기관 → 기계 위를 지나는 전선 (기계는 1.5배 빨라짐)
         b.set(11, -1, 5, Blocks.WATER);
         b.set(11, 0, 5, ModBlocks.BOILER.get().defaultBlockState().setValue(com.tycooncraft.power.BoilerBlock.FACING, Direction.SOUTH));
         b.set(10, 0, 5, ModBlocks.STEAM_ENGINE.get().defaultBlockState().setValue(com.tycooncraft.power.SteamEngineBlock.FACING, Direction.SOUTH));
-        b.set(10, 1, 5, ModBlocks.POWER_GEARBOX.get().defaultBlockState());
-        for (int x = 2; x <= 9; x++) b.set(x, 1, 5, ModBlocks.SHAFT.get().defaultBlockState().setValue(com.tycooncraft.power.ShaftBlock.AXIS, Direction.Axis.X));
+        for (int x = 2; x <= 10; x++) b.set(x, 1, 5, ModBlocks.POWER_CABLE.get().defaultBlockState());
         if (b.inside(b.at(11, 0, 5)) && b.level.getBlockEntity(b.at(11, 0, 5)) instanceof com.tycooncraft.power.BoilerBlockEntity boiler)
             boiler.fuel().insertItem(0, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.COAL, 16), false);
         // 작업 공간
@@ -537,9 +536,9 @@ public final class StructureBuilder {
                     offer(go, 2, ModItems.GUN_WORKBENCH.get(), 1), offer(go, 8, ModItems.VEST_1.get(), 1), offer(go, 16, ModItems.VEST_2.get(), 1),
                     offer(go, 3, ModItems.PARACHUTE.get(), 1));
             case "trader.tycooncraft.engineer" -> List.of(
-                    offer(go, 2, ModItems.BOILER.get(), 1), offer(go, 2, ModItems.STEAM_ENGINE.get(), 1), offer(ir, 4, ModItems.SHAFT.get(), 8),
-                    offer(ir, 6, ModItems.POWER_GEARBOX.get(), 1), offer(go, 4, ModItems.GENERATOR.get(), 1), offer(ir, 6, ModItems.POWER_CABLE.get(), 16),
-                    offer(go, 3, ModItems.SOLAR_GENERATOR.get(), 1), offer(go, 6, ModItems.ACCUMULATOR.get(), 1), offer(go, 4, ModItems.POWER_MOTOR.get(), 1),
+                    offer(go, 2, ModItems.BOILER.get(), 1), offer(go, 2, ModItems.STEAM_ENGINE.get(), 1),
+                    offer(ir, 6, ModItems.POWER_CABLE.get(), 16), offer(ir, 10, ModItems.POWER_CABLE.get(), 32),
+                    offer(go, 3, ModItems.SOLAR_GENERATOR.get(), 1), offer(go, 6, ModItems.ACCUMULATOR.get(), 1),
                     offer(go, 5, ModItems.ROBOT_ARM.get(), 1), offer(go, 2, ModItems.SORTER.get(), 2), offer(go, 1, ModItems.WAREHOUSE.get(), 1),
                     offer(em, 3, ModItems.machineItem(MachineType.INDUCTION_FURNACE), 1), offer(em, 5, ModItems.machineItem(MachineType.ARC_FURNACE), 1),
                     offer(ir, 8, ModItems.CIRCUIT.get(), 4), offer(go, 2, ModItems.ADVANCED_CIRCUIT.get(), 2), offer(go, 3, ModItems.ELECTRIC_MOTOR.get(), 1),
@@ -595,7 +594,8 @@ public final class StructureBuilder {
                 net.minecraft.world.item.alchemy.PotionContents.createItemStack(Items.POTION, p), Integer.MAX_VALUE, 0, 0f);
     }
 
-    public static final double TRADER_MARKUP = 3.0, TRADER_PAY = 0.8;
+    /** v0.27.0 물가 조정: 상점은 기준가의 2배(이전 3배), 시간 기준 장비(총·기계)는 0.7배 */
+    public static final double TRADER_MARKUP = 2.0, TRADER_PAY = 0.8, HOURS_BUY = 0.7;
 
     /** 핵심 장비는 "손노동 몇 시간어치"로 값을 매김 (권총 = 1시간) */
     public static double hours(Item it) {
@@ -624,7 +624,7 @@ public final class StructureBuilder {
     public static long stockOf(String trader, MerchantOffer o) {
         Item it = o.getResult().getItem();
         double h = hours(it);
-        if (h > 0) return Math.round(h * com.tycooncraft.economy.PriceTable.MANUAL_HOUR * o.getResult().getCount());
+        if (h > 0) return Math.round(h * com.tycooncraft.economy.PriceTable.MANUAL_HOUR * HOURS_BUY * o.getResult().getCount());
         return Math.round(com.tycooncraft.economy.PriceTable.basePrice(it) * o.getResult().getCount() * TRADER_MARKUP);
     }
 
@@ -659,7 +659,7 @@ public final class StructureBuilder {
                     : com.tycooncraft.economy.PriceTable.basePrice(o.getResult().getItem());
             double hrs = buyer ? 0 : hours(o.getResult().getItem());
             if (hrs > 0) {   // 시간 기준 장비 (±흔들림 포함)
-                long won = Math.round(hrs * com.tycooncraft.economy.PriceTable.MANUAL_HOUR * o.getResult().getCount() * f);
+                long won = Math.round(hrs * com.tycooncraft.economy.PriceTable.MANUAL_HOUR * HOURS_BUY * o.getResult().getCount() * f);
                 ItemStack[] c = com.tycooncraft.economy.VillagerCoins.coinsForTest((int) won);
                 out.add(new MerchantOffer(new ItemCost(c[0].getItem(), c[0].getCount()),
                         c.length > 1 ? Optional.of(new ItemCost(c[1].getItem(), c[1].getCount())) : Optional.empty(),
@@ -958,13 +958,11 @@ public final class StructureBuilder {
         // 증기 설비 + 축 + 기계 줄 (석탄은 손님 몫)
         set(x + 12, 0, z + 3, ModBlocks.BOILER.get().defaultBlockState().setValue(com.tycooncraft.power.BoilerBlock.FACING, Direction.SOUTH));
         set(x + 11, 0, z + 3, ModBlocks.STEAM_ENGINE.get().defaultBlockState().setValue(com.tycooncraft.power.SteamEngineBlock.FACING, Direction.SOUTH));
-        set(x + 11, 1, z + 3, ModBlocks.POWER_GEARBOX.get());
-        for (int i = 2; i <= 10; i++)
-            set(x + i, 1, z + 3, ModBlocks.SHAFT.get().defaultBlockState().setValue(com.tycooncraft.power.ShaftBlock.AXIS, Direction.Axis.X));
+        for (int i = 2; i <= 11; i++) set(x + i, 1, z + 3, ModBlocks.POWER_CABLE.get());
         Block[] ms = {m(MachineType.CRUSHER), m(MachineType.SMELTER), m(MachineType.PRESS), m(MachineType.LATHE), m(MachineType.WIRE_DRAWER)};
         for (int i = 0; i < ms.length; i++) set(x + 2 + i * 2, 0, z + 3, ms[i].defaultBlockState().setValue(MachineBlock.FACING, Direction.SOUTH));
         // 전기 구역: 발전기 - 전선 - 유도로·로봇 팔
-        set(x + 12, 0, z + 10, ModBlocks.GENERATOR.get().defaultBlockState().setValue(com.tycooncraft.power.elec.GeneratorBlock.FACING, Direction.NORTH));
+        set(x + 12, 0, z + 10, ModBlocks.SOLAR_GENERATOR.get());
         for (int i = 3; i <= 11; i++) set(x + i, 0, z + 11, ModBlocks.POWER_CABLE.get());
         set(x + 3, 0, z + 10, ModBlocks.WAREHOUSE.get());
         set(x + 4, 0, z + 10, ModBlocks.ROBOT_ARM.get().defaultBlockState().setValue(com.tycooncraft.automation.RobotArmBlock.FACING, Direction.EAST));

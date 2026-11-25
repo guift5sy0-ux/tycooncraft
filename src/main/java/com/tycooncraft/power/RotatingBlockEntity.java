@@ -32,6 +32,37 @@ public abstract class RotatingBlockEntity extends BlockEntity implements PowerNo
         if (level != null) PowerGrid.remove(level, worldPosition);
     }
 
+    // ── v0.27.0 축 시스템 삭제: 옛 회전축·분배기도 전선처럼 전기를 잇는다 ──
+    @Override
+    public boolean in(Layer l) {
+        return l == Layer.ELEC;
+    }
+
+    @Override
+    public boolean conducts(Layer l, net.minecraft.core.Direction d) {
+        return l == Layer.ELEC && conducts(d);
+    }
+
+    @Override
+    public boolean drives(Layer l, net.minecraft.core.Direction d) {
+        return l == Layer.ELEC && drives(d);
+    }
+
+    @Override
+    public int supply(Layer l) {
+        return l == Layer.ELEC ? supply() : 0;
+    }
+
+    @Override
+    public int demand(Layer l) {
+        return 0;
+    }
+
+    @Override
+    public void onNetState(Layer l, boolean running, float ratio) {
+        if (l == Layer.ELEC) onNetState(running, ratio);
+    }
+
     @Override
     public void onNetState(boolean running, float ratio) {
         if (running != spinning) {

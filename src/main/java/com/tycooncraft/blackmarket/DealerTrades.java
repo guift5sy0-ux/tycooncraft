@@ -135,8 +135,11 @@ public final class DealerTrades {
         return d != null && d.copyTag().getBoolean(SMUGGLED);
     }
 
+    /** v0.27.0 물가 조정: 암상인 판매가 30% 인하 */
+    public static final double PRICE_CUT = 0.7;
+
     static MerchantOffer sell(long won, ItemStack res, int uses, RandomSource r) {
-        won = Math.max(1, Math.round(won * (0.9 + r.nextFloat() * 0.25)));
+        won = Math.max(1, Math.round(won * PRICE_CUT * (0.9 + r.nextFloat() * 0.25)));
         ItemStack[] c = VillagerCoins.coinsForTest((int) Math.min(Integer.MAX_VALUE, won));
         return new MerchantOffer(new ItemCost(c[0].getItem(), c[0].getCount()),
                 c.length > 1 ? Optional.of(new ItemCost(c[1].getItem(), c[1].getCount())) : Optional.empty(), res, uses, 0, 0f);

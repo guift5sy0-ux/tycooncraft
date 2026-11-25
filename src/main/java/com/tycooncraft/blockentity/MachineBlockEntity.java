@@ -234,9 +234,11 @@ public class MachineBlockEntity extends BlockEntity implements com.tycooncraft.p
         }
 
         MachineRecipe recipe = findRecipe();
+        // v0.27.0: 동력 없어도 기본 속도로 돎. 전선(전기)에 이으면 최대 1.5배 (전기 전용 기계만 전기 필수)
         onElec = type().electricOnly() || com.tycooncraft.power.PowerGrid.net(level, worldPosition, com.tycooncraft.power.Layer.ELEC) != null;
-        float ratio = com.tycooncraft.power.PowerGrid.ratio(level, worldPosition, onElec ? com.tycooncraft.power.Layer.ELEC : com.tycooncraft.power.Layer.MECH);
-        powerPct = Math.round(ratio * 100);
+        float elec = onElec ? com.tycooncraft.power.PowerGrid.ratio(level, worldPosition, com.tycooncraft.power.Layer.ELEC) : 0f;
+        float ratio = type().electricOnly() ? elec : 1f + (ELEC_SPEED - 1f) * elec;
+        powerPct = Math.round(elec * 100);
         wantsPower = recipe != null;
         if (recipe == null) {
             if (progress != 0) {
@@ -246,7 +248,7 @@ public class MachineBlockEntity extends BlockEntity implements com.tycooncraft.p
             return;
         }
         // 동력이 없으면 멈춤, 모자라면 그만큼 느리게
-        powerAcc += ratio * (onElec && !type().electricOnly() ? ELEC_SPEED : 1f);
+        powerAcc += ratio;
         if (powerAcc < 1f) return;
         int steps = (int) powerAcc;   // 전기(1.5배)면 한 틱에 2칸 나갈 때도 있음
         powerAcc -= steps;

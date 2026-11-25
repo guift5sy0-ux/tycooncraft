@@ -77,10 +77,6 @@ public final class ModCreativeTabs {
                         out.accept(ModItems.FACTORY_KIT.get());
                         out.accept(ModItems.BOILER.get());
                         out.accept(ModItems.STEAM_ENGINE.get());
-                        out.accept(ModItems.SHAFT.get());
-                        out.accept(ModItems.POWER_GEARBOX.get());
-                        out.accept(ModItems.GENERATOR.get());
-                        out.accept(ModItems.POWER_MOTOR.get());
                         out.accept(ModItems.POWER_CABLE.get());
                         out.accept(ModItems.SOLAR_GENERATOR.get());
                         out.accept(ModItems.ACCUMULATOR.get());

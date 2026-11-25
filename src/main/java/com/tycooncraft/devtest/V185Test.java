@@ -630,10 +630,10 @@ public final class V185Test {
     static void powerMid(ServerPlayer sp) {
         var sl = sp.serverLevel();
         int out = sl.getBlockEntity(pwBase) instanceof com.tycooncraft.blockentity.MachineBlockEntity m ? m.output().getStackInSlot(0).getCount() : -1;
-        System.out.println("[AUTOTEST] v210 noPower crusherOut=" + out + " ratio=" + com.tycooncraft.power.PowerGrid.ratio(sl, pwBase));
+        System.out.println("[AUTOTEST] v210 noPower crusherOut=" + out + " ratio=" + com.tycooncraft.power.PowerGrid.ratio(sl, pwBase, com.tycooncraft.power.Layer.ELEC));
         // 회전축 3개(기계 위) → 증기기관 → 보일러
         for (int x = 0; x <= 2; x++)
-            sl.setBlockAndUpdate(pwBase.offset(x, 1, 0), ModBlocks.SHAFT.get().defaultBlockState().setValue(com.tycooncraft.power.ShaftBlock.AXIS, net.minecraft.core.Direction.Axis.X));
+            sl.setBlockAndUpdate(pwBase.offset(x, 1, 0), ModBlocks.POWER_CABLE.get().defaultBlockState());   // v0.27.0 축 대신 전선
         sl.setBlockAndUpdate(pwBase.offset(3, 0, 0), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
         sl.setBlockAndUpdate(pwBase.offset(3, 1, 0), ModBlocks.STEAM_ENGINE.get().defaultBlockState().setValue(com.tycooncraft.power.SteamEngineBlock.FACING, net.minecraft.core.Direction.SOUTH));
         sl.setBlockAndUpdate(pwBase.offset(4, 0, 0), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
@@ -645,10 +645,10 @@ public final class V185Test {
     static void powerEnd(ServerPlayer sp) {
         var sl = sp.serverLevel();
         int out = sl.getBlockEntity(pwBase) instanceof com.tycooncraft.blockentity.MachineBlockEntity m ? m.output().getStackInSlot(0).getCount() : -1;
-        var net = com.tycooncraft.power.PowerGrid.net(sl, pwBase);
-        boolean spin = sl.getBlockEntity(pwBase.offset(1, 1, 0)) instanceof com.tycooncraft.power.ShaftBlockEntity sh && sh.spinning();
+        var net = com.tycooncraft.power.PowerGrid.net(sl, pwBase, com.tycooncraft.power.Layer.ELEC);
+        boolean spin = sl.getBlockEntity(pwBase.offset(3, 1, 0)) instanceof com.tycooncraft.power.SteamEngineBlockEntity se && se.spinning();
         int water = sl.getBlockEntity(pwBase.offset(4, 1, 0)) instanceof com.tycooncraft.power.BoilerBlockEntity b ? b.water : -1;
-        System.out.println("[AUTOTEST] v210 powered crusherOut=" + out + " ratio=" + com.tycooncraft.power.PowerGrid.ratio(sl, pwBase)
+        System.out.println("[AUTOTEST] v210 powered crusherOut=" + out + " ratio=" + com.tycooncraft.power.PowerGrid.ratio(sl, pwBase, com.tycooncraft.power.Layer.ELEC)
                 + " supply=" + (net == null ? -1 : net.supply) + " demand=" + (net == null ? -1 : net.demand) + " nodes=" + (net == null ? 0 : net.nodes.size())
                 + " shaftSpin=" + spin + " coalBurned=" + com.tycooncraft.power.BoilerBlockEntity.coalBurned + " water=" + water + " rebuilds=" + com.tycooncraft.power.PowerGrid.rebuilds);
         // 공장 키트에 동력이 이어져 있는지 (분쇄기 위치)
