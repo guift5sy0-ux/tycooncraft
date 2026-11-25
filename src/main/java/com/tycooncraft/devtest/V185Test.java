@@ -813,7 +813,7 @@ public final class V185Test {
         StringBuilder pr = new StringBuilder();
         for (net.minecraft.world.item.Item it : new net.minecraft.world.item.Item[]{net.minecraft.world.item.Items.RAW_IRON, ModItems.IRON_DUST.get(), net.minecraft.world.item.Items.IRON_INGOT,
                 ModItems.IRON_PLATE.get(), ModItems.IRON_GEAR.get(), ModItems.CIRCUIT.get(), ModItems.MECHANISM.get(), ModItems.ADVANCED_CIRCUIT.get(), ModItems.ENGINE.get(),
-                ModItems.CAR.get(), ModItems.LOCOMOTIVE.get(), ModItems.HELICOPTER.get(), ModItems.DESTROYER_CORE.get(), net.minecraft.world.item.Items.NETHER_STAR, ModItems.machineItem(com.tycooncraft.machine.MachineType.ASSEMBLER),
+                ModItems.CAR.get(), ModItems.LOCOMOTIVE.get(), ModItems.HELICOPTER.get(), ModItems.DESTROYER_CORE.get(), net.minecraft.world.item.Items.NETHER_STAR, net.minecraft.world.item.Items.ELYTRA, net.minecraft.world.item.Items.DRAGON_EGG, ModItems.VENOM_SPIT.get(), net.minecraft.world.item.Items.WITHER_SKELETON_SKULL, ModItems.machineItem(com.tycooncraft.machine.MachineType.ASSEMBLER),
                 ModItems.TANK.get(), ModItems.STEEL_INGOT.get()})
             pr.append(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(it).getPath()).append('=').append(Math.round(com.tycooncraft.economy.PriceTable.basePrice(it) * 10) / 10.0).append(' ');
         System.out.println("[AUTOTEST] v260 prices " + pr + " manualHour=" + com.tycooncraft.economy.PriceTable.MANUAL_HOUR);

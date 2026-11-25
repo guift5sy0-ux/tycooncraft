@@ -134,7 +134,7 @@ public final class PriceTable {
             // 1차: 가루
             p.put(ModItems.COAL_DUST.get(), 1.5);
             p.put(ModItems.SULFUR.get(), 3.0);
-            p.put(ModItems.DESTROYER_CORE.get(), 300.0);
+            p.put(ModItems.DESTROYER_CORE.get(), 4000.0);   // v0.26.2 보스 소재 대폭 인상 (×2.5 = ₩10,000)
             p.put(ModItems.COPPER_DUST.get(), 1.5);
             p.put(ModItems.IRON_DUST.get(), 3.5);
             p.put(ModItems.GOLD_DUST.get(), 8.0);
@@ -316,8 +316,14 @@ public final class PriceTable {
             p.put(Items.NETHERITE_SCRAP, 200.0);
             p.put(Items.NETHERITE_INGOT, 900.0);
             p.put(Items.BEACON, 2500.0);
-            p.put(Items.DRAGON_EGG, 20000.0);
-            p.put(ModItems.VENOM_SPIT.get(), 5.0);
+            p.put(Items.DRAGON_EGG, 60000.0);
+            // v0.26.2 보스 소재 (판매가 = 표값 × 2.5)
+            p.put(Items.NETHER_STAR, 12000.0);
+            p.put(Items.WITHER_SKELETON_SKULL, 1600.0);
+            p.put(Items.DRAGON_BREATH, 400.0);
+            p.put(Items.ELYTRA, 12000.0);
+            p.put(Items.DRAGON_HEAD, 4000.0);
+            p.put(ModItems.VENOM_SPIT.get(), 200.0);
             // 농산물·식품
             p.put(Items.WHEAT, 1.0);
             p.put(Items.POTATO, 0.8);

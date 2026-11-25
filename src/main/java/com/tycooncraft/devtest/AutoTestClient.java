@@ -919,7 +919,7 @@ public final class AutoTestClient {
             case 4767 -> shot(mc, "au2_line_b");
             case 4771 -> shot(mc, "au3_line_c");
             case 4990 -> serverKeep(mc, V185Test::autoEnd);
-            case 4996 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(0); }
+            case 4996 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(29); }
             case 4999 -> shot(mc, "gb0");
             case 5002 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(1); }
             case 5005 -> shot(mc, "gb1");
