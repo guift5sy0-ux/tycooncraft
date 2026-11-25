@@ -957,6 +957,9 @@ public final class V185Test {
     /** 2) 플레이어가 총을 쏨: 1발째 경고, 2발째 수배 → 경비병이 플레이어를 쏨 */
     static void guardGunfire(ServerPlayer sp, int n) {
         sp.setHealth(sp.getMaxHealth());
+        // 시험용: 경비대에 맞아도 죽지 않게 (뒤 시험이 이어지도록)
+        sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.DAMAGE_RESISTANCE, 200, 3));
+        sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.REGENERATION, 200, 2));
         com.tycooncraft.village.GuardAlert.onGunfire(sp);
         boolean w = com.tycooncraft.village.GuardAlert.wanted(sp);
         guardPlayerHp = sp.getHealth();
