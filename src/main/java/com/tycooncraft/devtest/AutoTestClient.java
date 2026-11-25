@@ -1027,7 +1027,7 @@ public final class AutoTestClient {
             case 6899 -> { o.setCameraType(CameraType.THIRD_PERSON_BACK); }
             case 6906 -> shot(mc, "vr9_pscout_slash");
             case 6926 -> serverKeep(mc, V185Test::pscoutPounce);
-            case 6927 -> { if (mc.player.getVehicle() instanceof com.tycooncraft.mech.ProtoScout ps) com.tycooncraft.client.mech.ProtoClient.pounce(ps); }
+            case 6927, 6928, 6929, 6930 -> { if (mc.player.getVehicle() instanceof com.tycooncraft.mech.ProtoScout ps && ps.pounceCd() == 0) com.tycooncraft.client.mech.ProtoClient.pounce(ps); }
             case 6931 -> shot(mc, "vr10_pscout_pounce");
             case 6950 -> serverKeep(mc, V185Test::pscoutCheck);
             case 6954 -> { o.setCameraType(CameraType.FIRST_PERSON); next(11); }
