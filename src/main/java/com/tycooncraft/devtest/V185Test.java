@@ -162,6 +162,42 @@ public final class V185Test {
         StringBuilder names = new StringBuilder();
         for (ItemStack st : k) names.append(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(st.getItem()).getPath()).append(',');
         System.out.println("[AUTOTEST] v300 starterKit=" + names);
+        armor40(sp);
+    }
+
+    /** v0.31: 방어력 40 · 방탄복 인챈트 */
+    static void armor40(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        var z = EntityType.ZOMBIE.spawn(sl, sp.blockPosition().offset(3, 0, 3), MobSpawnType.MOB_SUMMONED);
+        z.setNoAi(true);
+        z.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(ModItems.HELMET_4.get()));
+        z.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, new ItemStack(ModItems.VEST_4.get()));
+        z.setItemSlot(net.minecraft.world.entity.EquipmentSlot.LEGS, new ItemStack(ModItems.JUGGERNAUT_LEGGINGS.get()));
+        z.setItemSlot(net.minecraft.world.entity.EquipmentSlot.FEET, new ItemStack(ModItems.COMBAT_BOOTS.get()));
+        z.tick();
+        z.setHealth(z.getMaxHealth());
+        int armorSeen = z.getArmorValue();
+        float hp0 = z.getHealth();
+        z.hurt(sl.damageSources().playerAttack(sp), 10f);
+        float taken = hp0 - z.getHealth();
+        float expect = 10f * (1 - com.tycooncraft.gear.ExtendedArmor.reduction(z.getArmorValue(), (float) z.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR_TOUGHNESS), 10f));
+        z.discard();
+        var reg = sl.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+        ItemStack vest = new ItemStack(ModItems.VEST_3.get());
+        var prot = reg.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.PROTECTION);
+        var thorns = reg.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.THORNS);
+        var bullet = reg.getOrThrow(com.tycooncraft.gun.GunEnchants.BULLET_PROTECTION);
+        var table = net.minecraft.world.item.enchantment.EnchantmentHelper.selectEnchantment(sl.random, vest, 30,
+                reg.get(net.minecraft.tags.EnchantmentTags.IN_ENCHANTING_TABLE).map(h -> h.stream()).orElseThrow());
+        StringBuilder tb = new StringBuilder();
+        for (var inst : table) tb.append(inst.enchantment.getRegisteredName()).append(inst.level).append(',');
+        vest.enchant(bullet, 4);
+        sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, vest);
+        float bp = com.tycooncraft.gun.Ballistics.bulletProtection(sp);
+        sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, ItemStack.EMPTY);
+        System.out.println(String.format("[AUTOTEST] v310 armor40 armor=%d taken=%.2f expect=%.2f prot=%s thorns=%s bulletOk=%s foil=%s bp=%.2f table=%s",
+                armorSeen, taken, expect,
+                vest.supportsEnchantment(prot), vest.supportsEnchantment(thorns), vest.supportsEnchantment(bullet), vest.hasFoil(), bp, tb));
     }
 
     static BlockPos kitOrigin;

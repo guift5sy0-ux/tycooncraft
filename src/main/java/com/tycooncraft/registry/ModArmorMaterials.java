@@ -17,10 +17,10 @@ import java.util.List;
 public final class ModArmorMaterials {
     public static final DeferredRegister<ArmorMaterial> MATERIALS = DeferredRegister.create(Registries.ARMOR_MATERIAL, TycoonCraft.MODID);
 
-    // v0.19.5 방어력: 1단계 = 철, 2단계 = 다이아보다 1 낮음, 3단계 = 다이아, 4단계(저거넛) = 네더라이트보다 높음 (총알 피해 감소는 별도로 그대로)
+    // v0.31 방어력(세트 합): 1단계 15(철) · 2단계 20(다이아) · 3단계 26 · 4단계 저거넛 40(최대) (총알 피해 감소는 별도로 그대로)
     public static final DeferredHolder<ArmorMaterial, ArmorMaterial> TACTICAL_LIGHT = tactical("tactical_light", 2, 6, 5, 2, 0f, 0f);
-    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> TACTICAL_MEDIUM = tactical("tactical_medium", 2, 7, 5, 2, 1f, 0.03f);
-    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> TACTICAL_HEAVY = tactical("tactical_heavy", 3, 8, 6, 3, 2f, 0.06f);
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> TACTICAL_MEDIUM = tactical("tactical_medium", 3, 8, 6, 3, 1f, 0.03f);
+    public static final DeferredHolder<ArmorMaterial, ArmorMaterial> TACTICAL_HEAVY = tactical("tactical_heavy", 4, 10, 8, 4, 2f, 0.06f);
     public static final DeferredHolder<ArmorMaterial, ArmorMaterial> PARACHUTE = MATERIALS.register("parachute", () -> new ArmorMaterial(
             Util.make(new EnumMap<>(ArmorItem.Type.class), m -> {
                 for (ArmorItem.Type t : ArmorItem.Type.values()) m.put(t, 0);
@@ -30,10 +30,10 @@ public final class ModArmorMaterials {
     /** 중장갑(저거넛) 세트: 4부위 모두 방어력 */
     public static final DeferredHolder<ArmorMaterial, ArmorMaterial> JUGGERNAUT = MATERIALS.register("juggernaut", () -> new ArmorMaterial(
             Util.make(new EnumMap<>(ArmorItem.Type.class), m -> {
-                m.put(ArmorItem.Type.HELMET, 4);
-                m.put(ArmorItem.Type.CHESTPLATE, 9);
-                m.put(ArmorItem.Type.LEGGINGS, 7);
-                m.put(ArmorItem.Type.BOOTS, 4);
+                m.put(ArmorItem.Type.HELMET, 7);
+                m.put(ArmorItem.Type.CHESTPLATE, 15);
+                m.put(ArmorItem.Type.LEGGINGS, 12);
+                m.put(ArmorItem.Type.BOOTS, 6);
                 m.put(ArmorItem.Type.BODY, 0);
             }), 12, SoundEvents.ARMOR_EQUIP_NETHERITE, () -> Ingredient.of(ModItems.STEEL_PLATE.get()),
             List.of(new ArmorMaterial.Layer(TycoonCraft.id("juggernaut"))), 3.5f, 0.12f));

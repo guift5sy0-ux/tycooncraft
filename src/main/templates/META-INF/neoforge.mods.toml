@@ -49,8 +49,8 @@ enumExtensions="META-INF/enumextensions.json"
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-친구들과 공장을 짓고, 가공품을 팔아 돈을 버는 경제·공장 모드.
-Build factories with friends, process goods and sell them for coins.
+돈을 벌어 탈것·비행선·방어 장치를 만들고 갱단·디스트로이어와 싸우는 모드.
+Earn coins, craft vehicles, airships and defenses, and fight gangs and destroyers.
 '''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.

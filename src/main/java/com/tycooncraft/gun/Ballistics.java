@@ -58,18 +58,27 @@ public final class Ballistics {
         return target instanceof LivingEntity le && le.getBbHeight() > 0.9f && hit.y >= le.getEyeY() - 0.28;
     }
 
+    /** v0.31: 총알 보호 인챈트 - 4부위 레벨 합 × 2% (최대 IV×4 = 32%) */
+    public static float bulletProtection(LivingEntity le) {
+        int lv = 0;
+        for (EquipmentSlot s : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET})
+            lv += Math.min(4, GunEnchants.level(le.getItemBySlot(s), GunEnchants.BULLET_PROTECTION));
+        return 1f - 0.02f * lv;
+    }
+
     /** 방어구를 반영한 최종 총알 피해 */
     public static float damage(Entity target, float base, boolean head, float headMult) {
         if (!(target instanceof LivingEntity le)) return base;
+        float bp = bulletProtection(le);
         if (head) {
             int h = helmetTier(le);
             float mult = 1 + (headMult - 1) * (1 - HELMET_BONUS_CUT[h]);
-            return base * mult * (1 - HELMET_CUT[h]);
+            return base * mult * (1 - HELMET_CUT[h]) * bp;
         }
         ItemStack lg = le.getItemBySlot(EquipmentSlot.LEGS), ft = le.getItemBySlot(EquipmentSlot.FEET);
         float legs = lg.is(ModItems.JUGGERNAUT_LEGGINGS.get()) ? 0.93f : lg.is(ModItems.PANTS_3.get()) ? 0.94f : lg.is(ModItems.PANTS_2.get()) ? 0.95f : lg.is(ModItems.PANTS_1.get()) ? 0.96f : 1f;
         float boots = ft.is(ModItems.COMBAT_BOOTS.get()) ? 0.95f : ft.is(ModItems.BOOTS_3.get()) ? 0.96f : ft.is(ModItems.BOOTS_2.get()) ? 0.97f : ft.is(ModItems.BOOTS_1.get()) ? 0.98f : 1f;
-        return base * (1 - VEST_CUT[vestTier(le)]) * legs * boots;
+        return base * (1 - VEST_CUT[vestTier(le)]) * legs * boots * bp;
     }
 
     /** 다음 한 발의 총알 모양 (서버 스레드 전용): 종류 0 일반 1 화염 2 심판자 3 기관포, 속도(블록/틱), 소음기 여부 */

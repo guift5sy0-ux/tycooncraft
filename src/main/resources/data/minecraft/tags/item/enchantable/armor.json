@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "tycooncraft:vest_1",
+    "tycooncraft:vest_2",
+    "tycooncraft:vest_3",
+    "tycooncraft:vest_4",
+    "tycooncraft:helmet_1",
+    "tycooncraft:helmet_2",
+    "tycooncraft:helmet_3",
+    "tycooncraft:helmet_4",
+    "tycooncraft:pants_1",
+    "tycooncraft:pants_2",
+    "tycooncraft:pants_3",
+    "tycooncraft:juggernaut_leggings",
+    "tycooncraft:boots_1",
+    "tycooncraft:boots_2",
+    "tycooncraft:boots_3",
+    "tycooncraft:combat_boots"
+  ]
+}

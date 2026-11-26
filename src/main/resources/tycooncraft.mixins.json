@@ -4,7 +4,8 @@
   "package": "com.tycooncraft.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "EntityCollideMixin"
+    "EntityCollideMixin",
+    "RangedAttributeMixin"
   ],
   "injectors": {
     "defaultRequire": 1

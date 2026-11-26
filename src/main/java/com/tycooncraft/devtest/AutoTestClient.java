@@ -210,7 +210,8 @@ public final class AutoTestClient {
         if (System.getenv("TC_VARONLY") != null && phaseT < 6134) phaseT = 6134;
         if (System.getenv("TC_V28ONLY") != null && phaseT < 6956) phaseT = 6956;
         if (System.getenv("TC_FARONLY") != null && phaseT < 7230) phaseT = 7230;
-        if (System.getenv("TC_UCONLY") != null && phaseT < 7430) phaseT = 7430;   // 로컬 디버그: 이펙트 구간만
+        if (System.getenv("TC_UCONLY") != null && phaseT < 7430) phaseT = 7430;
+        if (System.getenv("TC_ARMORONLY") != null && phaseT < 2976) phaseT = 2976;   // 로컬 디버그: 이펙트 구간만
         int s = phaseT;
         double g = -60;
         if (s > 3226 && s < 3300 && s % 2 == 0) serverDo(mc, V185Test::keepAirborne);
@@ -749,6 +750,25 @@ public final class AutoTestClient {
             // ── v0.18.7: 공장 키트 ──
             case 2978 -> serverDo(mc, V185Test::kit);
             case 2990 -> mc.getToasts().clear();
+            case 2982 -> serverDo(mc, sp -> {   // v0.31: 방어력 40 HUD
+                sp.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+                sp.getAbilities().flying = true; sp.getAbilities().mayfly = true; sp.onUpdateAbilities();
+                sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.HELMET_4.get()));
+                var v = new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.VEST_4.get());
+                v.enchant(sp.serverLevel().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(com.tycooncraft.gun.GunEnchants.BULLET_PROTECTION), 4);
+                sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, v);
+                sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.LEGS, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.PANTS_3.get()));
+                sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.FEET, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.COMBAT_BOOTS.get()));
+                sp.getInventory().selected = 0;
+                sp.getInventory().setItem(0, v.copy());
+            });
+            case 2986 -> { shot(mc, "v31_armor_hud"); serverDo(mc, sp -> System.out.println("[AUTOTEST] v310 hud serverArmor=" + sp.getArmorValue() + " clientArmor=" + mc.player.getArmorValue() + " mode=" + sp.gameMode.getGameModeForPlayer())); }
+            case 2987 -> serverDo(mc, sp -> {
+                for (var sl : new net.minecraft.world.entity.EquipmentSlot[]{net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET})
+                    sp.setItemSlot(sl, net.minecraft.world.item.ItemStack.EMPTY);
+                sp.getInventory().setItem(0, net.minecraft.world.item.ItemStack.EMPTY);
+                sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+            });
             case 3216 -> serverDo(mc, V185Test::bash);
             case 3220 -> serverDo(mc, V185Test::bashCheck);
             case 3226 -> serverDo(mc, V185Test::dragonRest);
