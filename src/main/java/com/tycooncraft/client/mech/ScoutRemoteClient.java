@@ -102,9 +102,14 @@ public final class ScoutRemoteClient {
         }
         ProtoScout m = mech(mc);
         if (m == null || m.isRemoved()) {
-            if (seen || ++wait > 60) end(mc);
+            // 잠깐 안 보일 수 있음(청크 넘어갈 때) → 3초까지 기다렸다가 포기
+            if (++wait > 60) {
+                if (!stopSent) PacketDistributor.sendToServer(new ScoutRemote.Input(id, 0, 0, false, 0, 0, false, ScoutRemote.Input.STOP));
+                end(mc);
+            }
             return;
         }
+        wait = 0;
         seen = true;
         framesLinked++;
         if (mc.getCameraEntity() != m) mc.setCameraEntity(m);

@@ -1636,6 +1636,62 @@ public final class V185Test {
         sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
     }
 
+    // ── v0.28.2 프로토-정찰 원거리(300) 원격 조종 ──
+    static com.tycooncraft.mech.ProtoScout far;
+    static Vec3 farBody;
+    static int farTick0;
+
+    static void farSetup(ServerPlayer sp) {
+        var ow = sp.serverLevel();
+        farBody = sp.position();
+        far = com.tycooncraft.mech.ProtoDestroyerItem.spawnScout(ow, sp.blockPosition().offset(2, 0, 0), sp, new ItemStack(ModItems.PROTO_SCOUT.get()), 0f);
+        far.interact(sp, InteractionHand.MAIN_HAND);
+        System.out.println("[AUTOTEST] v282 far start piloted=" + (far.pilot() == sp) + " invul=" + sp.isInvulnerable()
+                + " bodies=" + ow.getEntitiesOfClass(com.tycooncraft.mech.PilotBody.class, sp.getBoundingBox().inflate(8)).size());
+    }
+
+    static void farMove(ServerPlayer sp) {
+        // 실제로는 걸어가며 조금씩 이동 — 테스트에선 한 번에 옮기고 조종자도 같이 붙임(매 틱 하는 일과 같음)
+        far.teleportTo(farBody.x + 220, farBody.y + 2, farBody.z);
+        sp.absMoveTo(far.getX(), far.getY(), far.getZ());
+        sp.serverLevel().getChunkSource().move(sp);
+        farTick0 = far.tickCount;
+    }
+
+    static void farWalk(ServerPlayer sp) {
+        far.testInput(1f, 0f, -90f);
+    }
+
+    static void farCheck(ServerPlayer sp) {
+        var bodies = sp.server.overworld().getEntitiesOfClass(com.tycooncraft.mech.PilotBody.class, new net.minecraft.world.phys.AABB(BlockPos.containing(farBody)).inflate(8));
+        System.out.println("[AUTOTEST] v282 far ticking=" + (far.tickCount - farTick0) + " alive=" + far.isAlive() + " piloted=" + (far.pilot() == sp)
+                + " bodyDist=" + String.format("%.0f", far.bodyDistance()) + " playerAtMech=" + String.format("%.1f", sp.position().distanceTo(far.position()))
+                + " bodyEntity=" + bodies.size() + " invul=" + sp.isInvulnerable());
+    }
+
+    static void farHitBody(ServerPlayer sp) {
+        var bodies = sp.server.overworld().getEntitiesOfClass(com.tycooncraft.mech.PilotBody.class, new net.minecraft.world.phys.AABB(BlockPos.containing(farBody)).inflate(8));
+        float hp = sp.getHealth();
+        if (!bodies.isEmpty()) bodies.get(0).hurt(sp.damageSources().generic(), 3f);
+        System.out.println("[AUTOTEST] v282 bodyHit forwarded=" + com.tycooncraft.mech.PilotBody.hitsForwarded + " piloted=" + (far.pilot() == sp)
+                + " backHome=" + String.format("%.1f", sp.position().distanceTo(farBody)) + " invul=" + sp.isInvulnerable()
+                + " invis=" + sp.hasEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY) + " hp " + hp + "->" + sp.getHealth()
+                + " tag=" + sp.getPersistentData().contains(com.tycooncraft.mech.ProtoScout.PILOT_TAG));
+    }
+
+    static void farRelink(ServerPlayer sp) {
+        far.startRemote(sp);
+        far.teleportTo(farBody.x + 320, farBody.y + 2, farBody.z);
+        sp.absMoveTo(far.getX(), far.getY(), far.getZ());
+        sp.serverLevel().getChunkSource().move(sp);
+    }
+
+    static void farLost(ServerPlayer sp) {
+        System.out.println("[AUTOTEST] v282 signalLost piloted=" + (far.pilot() == sp) + " backHome=" + String.format("%.1f", sp.position().distanceTo(farBody))
+                + " invul=" + sp.isInvulnerable());
+        far.discard();
+    }
+
     static com.tycooncraft.vehicle.JetEntity landJet;
 
     static void jetLandSetup(ServerPlayer sp) {

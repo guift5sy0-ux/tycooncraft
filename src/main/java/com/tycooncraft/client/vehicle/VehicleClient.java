@@ -74,6 +74,7 @@ public final class VehicleClient {
         event.registerEntityRenderer(ModEntities.DESTROYER_GOLEM.get(), com.tycooncraft.client.mob.BossRenderers.Golem::new);
         event.registerEntityRenderer(ModEntities.PROTO_DESTROYER.get(), com.tycooncraft.client.mech.ProtoClient.Renderer::new);
         event.registerEntityRenderer(ModEntities.PROTO_SCOUT.get(), com.tycooncraft.client.mob.CarrierModels.ProtoScoutRenderer::new);
+        event.registerEntityRenderer(ModEntities.PILOT_BODY.get(), com.tycooncraft.client.mech.PilotBodyRenderer::new);
         // 바닐라 보스 외형 교체
         event.registerEntityRenderer(net.minecraft.world.entity.EntityType.WITHER, com.tycooncraft.client.mob.AbyssalWither.Renderer::new);
         event.registerEntityRenderer(net.minecraft.world.entity.EntityType.ENDER_DRAGON, com.tycooncraft.client.mob.VoidDragon.Renderer::new);

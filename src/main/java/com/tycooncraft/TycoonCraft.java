@@ -87,6 +87,7 @@ public class TycoonCraft {
         event.put(ModEntities.DESTROYER_GOLEM.get(), com.tycooncraft.mob.DestroyerGolem.attributes().build());
         event.put(ModEntities.PROTO_DESTROYER.get(), com.tycooncraft.mech.ProtoDestroyer.attributes().build());
         event.put(ModEntities.PROTO_SCOUT.get(), com.tycooncraft.mech.ProtoScout.attributes().build());
+        event.put(ModEntities.PILOT_BODY.get(), com.tycooncraft.mech.PilotBody.attributes().build());
     }
 
     private void spawnPlacements(net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent event) {

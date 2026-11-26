@@ -231,7 +231,8 @@ public final class AutoTestClient {
         if (System.getenv("TC_VILLONLY") != null && phaseT < 5150) phaseT = 5150;
         if (System.getenv("TC_BMONLY") != null && phaseT < 5802) phaseT = 5802;
         if (System.getenv("TC_VARONLY") != null && phaseT < 6134) phaseT = 6134;
-        if (System.getenv("TC_V28ONLY") != null && phaseT < 6956) phaseT = 6956;   // 로컬 디버그: 이펙트 구간만
+        if (System.getenv("TC_V28ONLY") != null && phaseT < 6956) phaseT = 6956;
+        if (System.getenv("TC_FARONLY") != null && phaseT < 7230) phaseT = 7230;   // 로컬 디버그: 이펙트 구간만
         int s = phaseT;
         double g = -60;
         if (s > 3226 && s < 3300 && s % 2 == 0) serverDo(mc, V185Test::keepAirborne);
@@ -1065,7 +1066,21 @@ public final class AutoTestClient {
             case 7270 -> serverKeep(mc, sp -> sp.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, net.minecraft.world.phys.Vec3.atCenterOf(V185Test.retr.target)));
             case 7274 -> shot(mc, "v28_11_crate");
             case 7276 -> serverKeep(mc, V185Test::v28RetrievalCheck);
-            case 7280 -> next(11);
+            case 7280 -> serverKeep(mc, V185Test::farSetup);
+            case 7286 -> serverKeep(mc, V185Test::farMove);
+            case 7290, 7294, 7298, 7302, 7306, 7310, 7314, 7318, 7322, 7326, 7330, 7334, 7338, 7342, 7346, 7350 -> serverKeep(mc, V185Test::farWalk);
+            case 7352 -> {
+                var cam = mc.getCameraEntity();
+                boolean chunk = cam != null && mc.level.hasChunk(cam.getBlockX() >> 4, cam.getBlockZ() >> 4);
+                System.out.println("[AUTOTEST] v282 client camIsMech=" + (cam instanceof com.tycooncraft.mech.ProtoScout) + " camChunkLoaded=" + chunk
+                        + " remote=" + com.tycooncraft.client.mech.ScoutRemoteClient.active() + " camDist=" + (cam == null ? -1 : (int) cam.distanceTo(mc.player)));
+            }
+            case 7354 -> shot(mc, "v28_12_far_remote");
+            case 7356 -> serverKeep(mc, V185Test::farCheck);
+            case 7360 -> serverKeep(mc, V185Test::farHitBody);
+            case 7370 -> serverKeep(mc, V185Test::farRelink);
+            case 7400 -> serverKeep(mc, V185Test::farLost);
+            case 7404 -> next(11);
             default -> {
             }
         }

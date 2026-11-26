@@ -77,6 +77,9 @@ public final class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.mob.carrier.AerialDestroyer>> AERIAL_DESTROYER = ENTITIES.register("aerial_destroyer",
             () -> EntityType.Builder.<com.tycooncraft.mob.carrier.AerialDestroyer>of(com.tycooncraft.mob.carrier.AerialDestroyer::new, MobCategory.MONSTER)
                     .sized(5.0f, 2.4f).clientTrackingRange(16).fireImmune().build("aerial_destroyer"));
+    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.mech.PilotBody>> PILOT_BODY = ENTITIES.register("pilot_body",
+            () -> EntityType.Builder.<com.tycooncraft.mech.PilotBody>of(com.tycooncraft.mech.PilotBody::new, MobCategory.MISC)
+                    .sized(0.6f, 1.8f).clientTrackingRange(10).noSave().build("pilot_body"));
     public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.mob.carrier.MiniDrone>> MINI_DRONE = ENTITIES.register("mini_drone",
             () -> EntityType.Builder.<com.tycooncraft.mob.carrier.MiniDrone>of(com.tycooncraft.mob.carrier.MiniDrone::new, MobCategory.MONSTER)
                     .sized(0.6f, 0.35f).clientTrackingRange(10).build("mini_drone"));

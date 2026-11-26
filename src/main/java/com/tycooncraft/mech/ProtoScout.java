@@ -42,7 +42,17 @@ public class ProtoScout extends PathfinderMob {
     public static final int ACT_SLASH = 1, ACT_POUNCE = 2, ACT_JUMP = 4, ACT_DASH = 5;
     public static final int MAX_HP = 120, SLASH_CD = 7, POUNCE_CD = 50, DASH_CD = 24;
     public static final float SLASH_DMG = 7f, POUNCE_DMG = 10f;
-    public static final double JUMP_VEL = 0.62, RANGE = 80;
+    /** v0.28.2: 조종 가능 거리 80 → 300블록 (조종 중 서버에서 플레이어를 기계 쪽에 붙여 청크를 불러옴) */
+    public static final double JUMP_VEL = 0.62, RANGE = 300;
+    public static final String PILOT_TAG = "tycooncraft_scout_pilot";
+    /** 조종자 UUID → 조종 중인 기계 */
+    public static final java.util.Map<UUID, ProtoScout> ACTIVE = new java.util.concurrent.ConcurrentHashMap<>();
+    static final net.minecraft.server.level.TicketType<net.minecraft.world.level.ChunkPos> TICKET =
+            net.minecraft.server.level.TicketType.create("tycooncraft_proto_scout", java.util.Comparator.comparingLong(net.minecraft.world.level.ChunkPos::toLong), 60);
+    private Vec3 bodyPos;
+    private float bodyYaw, bodyPitch;
+    private boolean addedInvis, wasInvul;
+    @Nullable private PilotBody body;
     private static final EntityDataAccessor<Integer> PILOT = SynchedEntityData.defineId(ProtoScout.class, EntityDataSerializers.INT);
     /** 원격 조종자 */
     @Nullable private ServerPlayer pilot;
@@ -132,7 +142,30 @@ public class ProtoScout extends PathfinderMob {
 
     public void startRemote(ServerPlayer sp) {
         if (pilot != null && pilot != sp) stopRemote();
+        if (pilot == sp) return;
         pilot = sp;
+        ACTIVE.put(sp.getUUID(), this);
+        // 몸 자리 기억 + 대역 몸 세우기 + 조종 중엔 무적·투명 (튕겨도 접속 때 복구)
+        bodyPos = sp.position();
+        bodyYaw = sp.getYRot();
+        bodyPitch = sp.getXRot();
+        wasInvul = sp.isInvulnerable();
+        sp.setInvulnerable(true);
+        addedInvis = !sp.hasEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY);
+        if (addedInvis) sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.INVISIBILITY, -1, 0, false, false, false));
+        CompoundTag t = new CompoundTag();
+        t.putDouble("x", bodyPos.x);
+        t.putDouble("y", bodyPos.y);
+        t.putDouble("z", bodyPos.z);
+        t.putString("dim", sp.level().dimension().location().toString());
+        t.putBoolean("invul", wasInvul);
+        t.putBoolean("invis", addedInvis);
+        sp.getPersistentData().put(PILOT_TAG, t);
+        body = com.tycooncraft.registry.ModEntities.PILOT_BODY.get().create(level());
+        if (body != null) {
+            body.setup(sp, this);
+            level().addFreshEntity(body);
+        }
         lastInput = tickCount;
         entityData.set(PILOT, sp.getId());
         links++;
@@ -141,13 +174,49 @@ public class ProtoScout extends PathfinderMob {
     }
 
     public void stopRemote() {
-        if (pilot != null) ScoutRemote.link(pilot, -1);
+        if (pilot != null) {
+            ScoutRemote.link(pilot, -1);
+            returnToBody(pilot);
+        }
+        if (body != null) body.discard();
+        body = null;
+        if (pilot != null) ACTIVE.remove(pilot.getUUID(), this);
         pilot = null;
         entityData.set(PILOT, -1);
         inFwd = inStrafe = 0;
         inJump = inSlash = false;
         setZza(0);
         setXxa(0);
+    }
+
+    /** 플레이어를 원래 몸 자리로 되돌리고 무적·투명을 풂 */
+    void returnToBody(ServerPlayer p) {
+        if (bodyPos != null && p.isAlive()) p.teleportTo(p.serverLevel(), bodyPos.x, bodyPos.y, bodyPos.z, bodyYaw, bodyPitch);
+        p.fallDistance = 0;
+        restore(p);
+    }
+
+    /** 무적·투명 원상복구 (접속할 때 남아 있으면 그 자리로 되돌림) */
+    public static void restore(ServerPlayer p) {
+        CompoundTag t = p.getPersistentData().getCompound(PILOT_TAG);
+        if (t.isEmpty()) return;
+        p.setInvulnerable(t.getBoolean("invul"));
+        if (t.getBoolean("invis")) p.removeEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY);
+        p.getPersistentData().remove(PILOT_TAG);
+    }
+
+    /** 조종 중 접속이 끊기거나 다시 들어올 때 */
+    public static void recover(ServerPlayer p) {
+        CompoundTag t = p.getPersistentData().getCompound(PILOT_TAG);
+        if (t.isEmpty()) return;
+        var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, net.minecraft.resources.ResourceLocation.parse(t.getString("dim")));
+        var lvl = p.server.getLevel(key);
+        if (lvl != null) p.teleportTo(lvl, t.getDouble("x"), t.getDouble("y"), t.getDouble("z"), p.getYRot(), p.getXRot());
+        restore(p);
+    }
+
+    public double bodyDistance() {
+        return bodyPos == null || pilot == null ? 0 : Math.sqrt(Math.pow(bodyPos.x - getX(), 2) + Math.pow(bodyPos.z - getZ(), 2));
     }
 
     @Nullable
@@ -192,8 +261,8 @@ public class ProtoScout extends PathfinderMob {
     protected void customServerAiStep() {
         super.customServerAiStep();
         if (pilot == null) return;
-        if (!pilot.isAlive() || pilot.level() != level() || pilot.distanceTo(this) > RANGE || tickCount - lastInput > 40) {
-            if (pilot.isAlive() && pilot.distanceTo(this) > RANGE)
+        if (!pilot.isAlive() || pilot.hasDisconnected() || pilot.level() != level() || bodyDistance() > RANGE || tickCount - lastInput > 40) {
+            if (pilot.isAlive() && bodyDistance() > RANGE)
                 pilot.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.tycooncraft.proto_scout.signal_lost"), true);
             stopRemote();
             return;
@@ -217,7 +286,7 @@ public class ProtoScout extends PathfinderMob {
 
     @Override
     public void remove(RemovalReason r) {
-        if (pilot != null) ScoutRemote.link(pilot, -1);
+        if (pilot != null && !level().isClientSide) stopRemote();   // 부서지거나 회수되면 몸으로 복귀
         super.remove(r);
     }
 
@@ -320,6 +389,15 @@ public class ProtoScout extends PathfinderMob {
     public void tick() {
         super.tick();
         if (level().isClientSide) return;
+        // 바닐라 관전 카메라처럼: 서버에서만 플레이어를 기계 위치로 옮겨 그 주변 청크·엔티티를 받게 함
+        // (조종자 화면의 내 몸은 원래 자리에 그대로 있고, 다른 사람에겐 대역 몸이 보임)
+        if (pilot != null && pilot.isAlive()) {
+            // 기계 주변 청크를 직접 붙잡아 둠 (조종자 위치와 상관없이 계속 움직이게)
+            ((ServerLevel) level()).getChunkSource().addRegionTicket(TICKET, chunkPosition(), 2, chunkPosition());
+            pilot.absMoveTo(getX(), getY() + 0.1, getZ(), pilot.getYRot(), pilot.getXRot());
+            pilot.serverLevel().getChunkSource().move(pilot);
+            pilot.fallDistance = 0;
+        }
         if (slashCd > 0) slashCd--;
         if (dashCd > 0) dashCd--;
         if (pounceCd() > 0) entityData.set(POUNCE_T, pounceCd() - 1);

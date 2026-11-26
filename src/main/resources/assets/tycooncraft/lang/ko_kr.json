@@ -780,9 +780,9 @@
   "message.tycooncraft.drone_swarm.launch": "드론 편대 %s기 발진!",
   "tooltip.tycooncraft.drone_swarm": "우클릭: 미니 드론 6기 동시 발진 (1분) · 각자 적을 찾아 사격 · 재사용 90초",
   "tooltip.tycooncraft.ship_core_engine": "운송기 엔진 상위호환: 엔진 6개분 추진 · 부유체 40개분 부양 · 최고속도↑ · 연료 40% 절약",
-  "tooltip.tycooncraft.proto_scout.1": "땅에 우클릭해 배치 → 빈손 우클릭으로 원격 조종 (최대 80블록)",
+  "tooltip.tycooncraft.proto_scout.1": "땅에 우클릭해 배치 → 빈손 우클릭으로 원격 조종 (최대 300블록)",
   "tooltip.tycooncraft.proto_scout.2": "좌클릭(누르기) 베기 · 우클릭 덮치기 · 스페이스 점프",
-  "tooltip.tycooncraft.proto_scout.3": "A/D 두 번: 옆 대시 · Shift: 조종 끝 (조종 중 내 몸은 제자리)",
+  "tooltip.tycooncraft.proto_scout.3": "A/D 두 번: 옆 대시 · Shift: 조종 끝 · 조종 중 내 몸이 맞으면 끊김",
   "tooltip.tycooncraft.proto_scout.4": "웅크리고 빈손 우클릭: 회수 · 철/강철 주괴: 수리",
   "hud.tycooncraft.proto_scout.pounce": "덮치기 %s",
   "hud.tycooncraft.proto_scout.keys": "좌클릭 베기 · 우클릭 덮치기 · 스페이스 점프 · A/D×2 대시 · Shift 끝",
@@ -877,5 +877,8 @@
   "message.tycooncraft.mods.done": "🔧 %s 완료",
   "message.tycooncraft.rep.rebate": "🕶 평판 할인: ₩%s 돌려받음",
   "hud.tycooncraft.proto_scout.remote": "원격 조종 · PROTO-SCOUT",
-  "message.tycooncraft.proto_scout.signal_lost": "📡 신호가 끊겼다 (80블록 초과)"
+  "message.tycooncraft.proto_scout.signal_lost": "📡 신호가 끊겼다 (300블록 초과)",
+  "entity.tycooncraft.pilot_body": "조종 중인 몸",
+  "entity.tycooncraft.pilot_body.name": "%s (원격 조종 중)",
+  "message.tycooncraft.proto_scout.body_hit": "⚠ 몸이 공격받았다! 원격 조종이 끊겼다"
 }
