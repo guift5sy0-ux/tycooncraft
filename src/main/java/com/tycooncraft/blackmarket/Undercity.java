@@ -291,7 +291,7 @@ public final class Undercity {
 
     @SuppressWarnings("unchecked")
     static EntityType<GunnerEntity> pick(RandomSource r, boolean nearVariantHideout) {
-        float v = nearVariantHideout ? 0.55f : 0.25f;
+        float v = nearVariantHideout ? 0.40f : 0.15f;
         if (r.nextFloat() < v) {
             int k = r.nextInt(10);
             return k < 4 ? ModEntities.ENFORCER.get() : k < 7 ? ModEntities.BRUTE.get() : ModEntities.MARKSMAN.get();
@@ -305,7 +305,10 @@ public final class Undercity {
     }
 
     /** 플레이어 한 명 주변(72칸) 최대 거주 갱단 수 */
-    public static final int LOCAL_CAP = 14;
+    public static final int LOCAL_CAP = 10;
+    /** 골목 서쪽 문 앞: 이 반경 안에는 갱단이 새로 생기지 않음 */
+    public static final BlockPos GATE = new BlockPos(-18, 64, 0);
+    public static final int GATE_SAFE = 40;
 
     /** 5초마다: 골목 안에 들어온 갱단은 밖으로, 플레이어 주변 갱단이 모자라면 24~64칸 떨어진 안 보이는 곳에 보충 */
     public static void tick(ServerLevel l) {
@@ -355,7 +358,7 @@ public final class Undercity {
                 if (Math.abs(x) >= HALF - 2 || Math.abs(z) >= HALF - 2) continue;
                 p = new BlockPos(x, FLOOR + 1, z);
             }
-            if (plaza(p.getX(), p.getZ()) || !l.isPositionEntityTicking(p)) continue;
+            if (plaza(p.getX(), p.getZ()) || p.distSqr(GATE) < GATE_SAFE * GATE_SAFE || !l.isPositionEntityTicking(p)) continue;
             if (!l.getBlockState(p).isAir() || !l.getBlockState(p.above()).isAir() || l.getBlockState(p.below()).isAir()) continue;
             final BlockPos fp = p;
             if (l.players().stream().anyMatch(o -> o.blockPosition().distSqr(fp) < 24 * 24)) continue;

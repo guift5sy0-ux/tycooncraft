@@ -1105,10 +1105,17 @@ public final class AutoTestClient {
             case 7550 -> { mc.setScreen(null); serverKeep(mc, V185Test::ucHideoutView); }
             case 7602 -> serverKeep(mc, V185Test::ucLineup);
             case 7640 -> shot(mc, "v29_3_variants");
-            case 7642 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), -36.5, 64, 0.5, 90f, -6f));
-            case 7670 -> shot(mc, "v29_1_street");
-            case 7672 -> serverKeep(mc, V185Test::ucLeave);
-            case 7682 -> next(11);
+            case 7642 -> serverKeep(mc, V185Test::msSetup);
+            case 7650 -> serverKeep(mc, V185Test::msAim);
+            case 7662 -> {
+                shot(mc, "v29_4_sniper_aim");
+                System.out.println("[AUTOTEST] v291 beamsDrawn=" + com.tycooncraft.client.mob.GunnerRenderer.beamsDrawn);
+            }
+            case 7680 -> serverKeep(mc, V185Test::msCheck);
+            case 7682 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), -36.5, 64, 0.5, 90f, -6f));
+            case 7710 -> shot(mc, "v29_1_street");
+            case 7712 -> serverKeep(mc, V185Test::ucLeave);
+            case 7722 -> next(11);
             default -> {
             }
         }

@@ -47,9 +47,10 @@ public class GunnerEntity extends Monster implements RangedAttackMob {
         OUTLAW(30, 0.29, 3.2f, 6, 0.10f, 40, 12, 18),
         BOSS(420, 0.27, 7.0f, 1, 0.035f, 7, 30, 44),
         // v0.29 언더시티 변종 갱단 (더 강함)
-        ENFORCER(70, 0.25, 5.5f, 1, 0.05f, 6, 24, 40),      // 집행자: 중무장, 빠른 연사
-        BRUTE(60, 0.33, 3.6f, 8, 0.11f, 30, 12, 32),        // 돌격대: 빠르게 붙어서 산탄
-        MARKSMAN(34, 0.27, 14f, 1, 0.006f, 60, 42, 56);     // 저격수: 멀리서 한 방
+        // v0.29.1 조정: 집행자는 피해를 크게 낮춘 탱커, 돌격대 산탄 약화, 저격수는 쏘기 1초 전 붉은 조준선
+        ENFORCER(95, 0.23, 2.5f, 1, 0.06f, 15, 22, 40),     // 집행자: 맷집 탱커 (초당 피해 약 3)
+        BRUTE(60, 0.33, 3.0f, 6, 0.11f, 30, 12, 32),        // 돌격대: 빠르게 붙어서 산탄 (근접 초당 약 12)
+        MARKSMAN(34, 0.27, 14f, 1, 0.006f, 60, 42, 56);     // 저격수: 멀리서 한 방 (조준선 1초 뒤 발사)
 
         final double health, speed;
         final float damage, spread;
@@ -90,7 +91,7 @@ public class GunnerEntity extends Monster implements RangedAttackMob {
                 .add(Attributes.FOLLOW_RANGE, k.follow)
                 .add(Attributes.ARMOR, k == Kind.BOSS ? 14 : k == Kind.ENFORCER ? 12 : k == Kind.BRUTE ? 8 : k == Kind.MERCENARY ? 4 : 2)
                 .add(Attributes.ARMOR_TOUGHNESS, k == Kind.ENFORCER ? 4 : 0)
-                .add(Attributes.KNOCKBACK_RESISTANCE, k == Kind.BOSS ? 1.0 : k == Kind.ENFORCER || k == Kind.BRUTE ? 0.6 : 0.1)
+                .add(Attributes.KNOCKBACK_RESISTANCE, k == Kind.BOSS ? 1.0 : k == Kind.ENFORCER ? 0.9 : k == Kind.BRUTE ? 0.6 : 0.1)
                 .add(Attributes.ATTACK_DAMAGE, 4);
     }
 
@@ -150,11 +151,67 @@ public class GunnerEntity extends Monster implements RangedAttackMob {
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
+        if (kind == Kind.MARKSMAN) tickAim();
         setAggressive(getTarget() != null);
+    }
+
+    // ── 저격수 조준선: 쏘기 전에 AIM_TICKS 동안 붉은 선을 보여 주고 쏨 ──
+    public static final int AIM_TICKS = 20;
+    private static final net.minecraft.network.syncher.EntityDataAccessor<Integer> AIM =
+            net.minecraft.network.syncher.SynchedEntityData.defineId(GunnerEntity.class, net.minecraft.network.syncher.EntityDataSerializers.INT);
+    private int aimStart = -1;
+    public static int aimsStarted, aimShots;
+
+    @Override
+    protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder b) {
+        super.defineSynchedData(b);
+        b.define(AIM, -1);
+    }
+
+    /** 조준 중인 대상 엔티티 id (-1 없음) */
+    public int aimTarget() {
+        return entityData.get(AIM);
+    }
+
+    /** 조준 시작 후 지난 틱 (클라이언트 표시용, 대략) */
+    public int aimTicks() {
+        return aimStart < 0 ? 0 : tickCount - aimStart;
     }
 
     @Override
     public void performRangedAttack(LivingEntity target, float pull) {
+        if (kind == Kind.MARKSMAN) {
+            if (aimStart < 0) {                       // 바로 쏘지 않고 조준부터
+                aimStart = tickCount;
+                entityData.set(AIM, target.getId());
+                aimsStarted++;
+                playSound(SoundEvents.CROSSBOW_LOADING_START.value(), 1.2f, 0.6f);
+            }
+            return;
+        }
+        fire(target);
+    }
+
+    private void tickAim() {
+        if (aimStart < 0) return;
+        LivingEntity t = getTarget();
+        if (t == null || !t.isAlive() || t.getId() != aimTarget()) {
+            aimStart = -1;
+            entityData.set(AIM, -1);
+            return;
+        }
+        getLookControl().setLookAt(t, 30f, 30f);
+        if (tickCount - aimStart >= AIM_TICKS) {
+            aimStart = -1;
+            entityData.set(AIM, -1);
+            if (hasLineOfSight(t)) {
+                aimShots++;
+                fire(t);
+            }
+        }
+    }
+
+    private void fire(LivingEntity target) {
         if (!(level() instanceof ServerLevel sl)) return;
         Vec3 from = getEyePosition();
         Vec3 aim = target.getBoundingBox().getCenter().add(0, target.getBbHeight() * (random.nextFloat() < 0.15f ? 0.35 : 0.05), 0);

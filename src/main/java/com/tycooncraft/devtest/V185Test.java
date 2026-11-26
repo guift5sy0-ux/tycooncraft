@@ -1744,6 +1744,9 @@ public final class V185Test {
         for (var g : gangs) kinds.merge(g.kind().name(), 1, Integer::sum);
         int inHub = 0;
         for (var g : gangs) if (com.tycooncraft.blackmarket.Undercity.inHub(g.getX(), g.getZ())) inHub++;
+        double minGate = 999;
+        for (var g : gangs) minGate = Math.min(minGate, Math.sqrt(g.blockPosition().distSqr(com.tycooncraft.blackmarket.Undercity.GATE)));
+        System.out.println("[AUTOTEST] v291 minDistFromGate=" + String.format("%.0f", minGate));
         System.out.println("[AUTOTEST] v290 residents=" + gangs.size() + " kinds=" + kinds + " inHub=" + inHub + " spawned=" + com.tycooncraft.blackmarket.Undercity.spawned);
     }
 
@@ -1824,6 +1827,30 @@ public final class V185Test {
             g.setYBodyRot(90f);
             g.setYHeadRot(90f);
         }
+    }
+
+    static com.tycooncraft.mob.GunnerEntity sniper;
+    static float sniperHp0;
+
+    static void msSetup(ServerPlayer sp) {
+        var bm = sp.serverLevel();
+        for (var g : bm.getEntitiesOfClass(com.tycooncraft.mob.GunnerEntity.class, sp.getBoundingBox().inflate(200))) g.discard();
+        sp.teleportTo(bm, -40.5, 64, 0.5, 90f, 0f);
+        sniper = com.tycooncraft.blackmarket.Undercity.spawnAt(bm, ModEntities.MARKSMAN.get(), new BlockPos(-58, 64, 3));
+        sniper.setTarget(sp);
+        System.out.println("[AUTOTEST] v291 balance enforcerDps=" + String.format("%.1f", 2.5f * 20 / 15) + " bruteBurst=" + (6 * 3.0f)
+                + " localCap=" + com.tycooncraft.blackmarket.Undercity.LOCAL_CAP + " gateSafe=" + com.tycooncraft.blackmarket.Undercity.GATE_SAFE);
+    }
+
+    static void msAim(ServerPlayer sp) {
+        sniperHp0 = sp.getHealth();
+        sniper.performRangedAttack(sp, 1f);
+    }
+
+    static void msCheck(ServerPlayer sp) {
+        System.out.println("[AUTOTEST] v291 sniper aimsStarted=" + com.tycooncraft.mob.GunnerEntity.aimsStarted + " aimShots=" + com.tycooncraft.mob.GunnerEntity.aimShots
+                + " aimNow=" + sniper.aimTarget() + " hp " + sniperHp0 + "->" + sp.getHealth());
+        sniper.discard();
     }
 
     static void ucLeave(ServerPlayer sp) {
