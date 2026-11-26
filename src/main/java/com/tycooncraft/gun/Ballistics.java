@@ -58,12 +58,12 @@ public final class Ballistics {
         return target instanceof LivingEntity le && le.getBbHeight() > 0.9f && hit.y >= le.getEyeY() - 0.28;
     }
 
-    /** v0.31: 총알 보호 인챈트 - 4부위 레벨 합 × 2% (최대 IV×4 = 32%) */
+    /** v0.31.1: 총알 보호 인챈트 - 4부위 레벨 합 × 0.6% (최대 IV×4 = 9.6%) */
     public static float bulletProtection(LivingEntity le) {
         int lv = 0;
         for (EquipmentSlot s : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET})
             lv += Math.min(4, GunEnchants.level(le.getItemBySlot(s), GunEnchants.BULLET_PROTECTION));
-        return 1f - 0.02f * lv;
+        return 1f - 0.006f * lv;
     }
 
     /** 방어구를 반영한 최종 총알 피해 */

@@ -24,7 +24,7 @@ public final class GunEnchants {
     public static final ResourceKey<Enchantment> INCENDIARY = key("incendiary");
     public static final ResourceKey<Enchantment> AMMO_SAVER = key("ammo_saver");
     public static final ResourceKey<Enchantment> HEADHUNTER = key("headhunter");
-    /** v0.31: 방어구용 - 총알 피해 감소 (부위·레벨당 2%) */
+    /** v0.31: 방어구용 - 총알 피해 감소 (부위·레벨당 0.6%) */
     public static final ResourceKey<Enchantment> BULLET_PROTECTION = key("bullet_protection");
 
     private static ResourceKey<Enchantment> key(String name) {

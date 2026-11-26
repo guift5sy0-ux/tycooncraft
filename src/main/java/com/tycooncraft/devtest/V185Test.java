@@ -170,10 +170,13 @@ public final class V185Test {
         var sl = sp.serverLevel();
         var z = EntityType.ZOMBIE.spawn(sl, sp.blockPosition().offset(3, 0, 3), MobSpawnType.MOB_SUMMONED);
         z.setNoAi(true);
-        z.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(ModItems.HELMET_4.get()));
-        z.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, new ItemStack(ModItems.VEST_4.get()));
-        z.setItemSlot(net.minecraft.world.entity.EquipmentSlot.LEGS, new ItemStack(ModItems.JUGGERNAUT_LEGGINGS.get()));
-        z.setItemSlot(net.minecraft.world.entity.EquipmentSlot.FEET, new ItemStack(ModItems.COMBAT_BOOTS.get()));
+        var protH = sl.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getOrThrow(net.minecraft.world.item.enchantment.Enchantments.PROTECTION);
+        net.minecraft.world.item.Item[] set = {ModItems.HELMET_4.get(), ModItems.VEST_4.get(), ModItems.JUGGERNAUT_LEGGINGS.get(), ModItems.COMBAT_BOOTS.get()};
+        net.minecraft.world.entity.EquipmentSlot[] slots = {net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; i++) z.setItemSlot(slots[i], new ItemStack(set[i]));
+        z.tick();
+        int plain = z.getArmorValue();
+        for (int i = 0; i < 4; i++) { ItemStack st = new ItemStack(set[i]); st.enchant(protH, 4); z.setItemSlot(slots[i], st); }
         z.tick();
         z.setHealth(z.getMaxHealth());
         int armorSeen = z.getArmorValue();
@@ -195,7 +198,7 @@ public final class V185Test {
         sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, vest);
         float bp = com.tycooncraft.gun.Ballistics.bulletProtection(sp);
         sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, ItemStack.EMPTY);
-        System.out.println(String.format("[AUTOTEST] v310 armor40 armor=%d taken=%.2f expect=%.2f prot=%s thorns=%s bulletOk=%s foil=%s bp=%.2f table=%s",
+        System.out.println(String.format("[AUTOTEST] v310 armor40 plain=" + plain + " prot4=%d taken=%.2f expect=%.2f prot=%s thorns=%s bulletOk=%s foil=%s bp=%.2f table=%s",
                 armorSeen, taken, expect,
                 vest.supportsEnchantment(prot), vest.supportsEnchantment(thorns), vest.supportsEnchantment(bullet), vest.hasFoil(), bp, tb));
     }
