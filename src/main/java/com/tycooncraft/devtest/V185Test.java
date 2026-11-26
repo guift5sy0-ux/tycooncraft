@@ -184,6 +184,14 @@ public final class V185Test {
         z.hurt(sl.damageSources().playerAttack(sp), 10f);
         float taken = hp0 - z.getHealth();
         float expect = 10f * (1 - com.tycooncraft.gear.ExtendedArmor.reduction(z.getArmorValue(), (float) z.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR_TOUGHNESS), 10f));
+        z.invulnerableTime = 0;
+        z.setHealth(z.getMaxHealth());
+        com.tycooncraft.gun.Ballistics.BULLET_HIT = true;
+        z.hurt(sl.damageSources().playerAttack(sp), 10f);
+        com.tycooncraft.gun.Ballistics.BULLET_HIT = false;
+        float bulletTaken = z.getMaxHealth() - z.getHealth();
+        float bulletExpect = 10f * (1 - com.tycooncraft.gear.ExtendedArmor.reduction(armorSeen * 0.4f, (float) z.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR_TOUGHNESS), 10f));
+        System.out.println(String.format("[AUTOTEST] v312 bulletArmor taken=%.2f expect=%.2f", bulletTaken, bulletExpect));
         z.discard();
         var reg = sl.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
         ItemStack vest = new ItemStack(ModItems.VEST_3.get());

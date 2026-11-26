@@ -30,6 +30,9 @@ import java.util.function.Predicate;
  */
 public final class Ballistics {
     public static int BLOCKED;
+    /** v0.31.2: 지금 들어가는 피해가 총알인지 (서버 스레드) → 방어력 60% 무시 */
+    public static boolean BULLET_HIT;
+    public static final float BULLET_ARMOR_IGNORE = 0.6f;
     /** 방탄조끼 등급별 몸통 총알 피해 감소 */
     private static final float[] VEST_CUT = {0f, 0.20f, 0.25f, 0.30f, 0.35f};
     /** 방탄모 등급별 헤드샷 '추가' 피해 감소 + 머리 피해 자체 감소 */
@@ -147,7 +150,10 @@ public final class Ballistics {
             target.invulnerableTime = 0;
             // 엔더 드래곤 같은 다중 부위 몹: 실제 체력은 본체에 있으므로 본체의 무적 시간도 풀어 준다
             if (target instanceof net.neoforged.neoforge.entity.PartEntity<?> part) part.getParent().invulnerableTime = 0;
-            if (target.hurt(src, d)) {
+            BULLET_HIT = true;
+            boolean landed;
+            try { landed = target.hurt(src, d); } finally { BULLET_HIT = false; }
+            if (landed) {
                 if (onHit != null) onHit.accept(target);
                 if (fire) target.igniteForSeconds(4);
                 if (head) {
