@@ -187,11 +187,19 @@ public final class V185Test {
         z.invulnerableTime = 0;
         z.setHealth(z.getMaxHealth());
         com.tycooncraft.gun.Ballistics.BULLET_HIT = true;
+        com.tycooncraft.gun.Ballistics.BULLET_RAW = 10f;
         z.hurt(sl.damageSources().playerAttack(sp), 10f);
         com.tycooncraft.gun.Ballistics.BULLET_HIT = false;
         float bulletTaken = z.getMaxHealth() - z.getHealth();
-        float bulletExpect = 10f * (1 - com.tycooncraft.gear.ExtendedArmor.reduction(armorSeen * 0.4f, (float) z.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR_TOUGHNESS), 10f));
+        float bulletExpect = 10f * (1 - com.tycooncraft.gear.ExtendedArmor.reduction(com.tycooncraft.gun.Ballistics.bulletArmor(z), (float) z.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR_TOUGHNESS), 10f));
         System.out.println(String.format("[AUTOTEST] v312 bulletArmor taken=%.2f expect=%.2f", bulletTaken, bulletExpect));
+        z.invulnerableTime = 0;
+        z.setHealth(z.getMaxHealth());
+        com.tycooncraft.gun.Ballistics.BULLET_HIT = true;
+        com.tycooncraft.gun.Ballistics.BULLET_RAW = 10f;   // 조끼 등으로 이미 6까지 줄어든 총알
+        z.hurt(sl.damageSources().playerAttack(sp), 6f);
+        com.tycooncraft.gun.Ballistics.BULLET_HIT = false;
+        System.out.println(String.format("[AUTOTEST] v313 bulletCap taken=%.2f floor=3.00 bulletArmor=%.1f", z.getMaxHealth() - z.getHealth(), com.tycooncraft.gun.Ballistics.bulletArmor(z)));
         z.discard();
         var reg = sl.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
         ItemStack vest = new ItemStack(ModItems.VEST_3.get());
@@ -204,9 +212,9 @@ public final class V185Test {
         for (var inst : table) tb.append(inst.enchantment.getRegisteredName()).append(inst.level).append(',');
         vest.enchant(bullet, 4);
         sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, vest);
-        float bp = com.tycooncraft.gun.Ballistics.bulletProtection(sp);
+        float bp = com.tycooncraft.gun.Ballistics.bulletArmor(sp);
         sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, ItemStack.EMPTY);
-        System.out.println(String.format("[AUTOTEST] v310 armor40 plain=" + plain + " prot4=%d taken=%.2f expect=%.2f prot=%s thorns=%s bulletOk=%s foil=%s bp=%.2f table=%s",
+        System.out.println(String.format("[AUTOTEST] v310 armor40 plain=" + plain + " prot4=%d taken=%.2f expect=%.2f prot=%s thorns=%s bulletOk=%s foil=%s bulletArmorVest=%.2f table=%s",
                 armorSeen, taken, expect,
                 vest.supportsEnchantment(prot), vest.supportsEnchantment(thorns), vest.supportsEnchantment(bullet), vest.hasFoil(), bp, tb));
     }

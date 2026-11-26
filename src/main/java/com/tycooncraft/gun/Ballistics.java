@@ -61,27 +61,42 @@ public final class Ballistics {
         return target instanceof LivingEntity le && le.getBbHeight() > 0.9f && hit.y >= le.getEyeY() - 0.28;
     }
 
-    /** v0.31.1: 총알 보호 인챈트 - 4부위 레벨 합 × 0.6% (최대 IV×4 = 9.6%) */
-    public static float bulletProtection(LivingEntity le) {
+    /** v0.31.3: 총알 보호 인챈트 - 4부위 레벨 합 (레벨당 총알 상대 방어력 +1.1) */
+    public static final float BULLET_PROT_ARMOR = 1.1f;
+    /** 총알 피해는 방어구·인챈트를 다 합쳐도 최대 70%까지만 줄어듦 */
+    public static final float BULLET_MAX_CUT = 0.70f;
+    /** 지금 들어가는 총알의 '방어구 없을 때' 피해 (서버 스레드, 상한 계산용) */
+    public static float BULLET_RAW;
+
+    public static int bulletProtection(LivingEntity le) {
         int lv = 0;
         for (EquipmentSlot s : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET})
             lv += Math.min(4, GunEnchants.level(le.getItemBySlot(s), GunEnchants.BULLET_PROTECTION));
-        return 1f - 0.006f * lv;
+        return lv;
     }
 
-    /** 방어구를 반영한 최종 총알 피해 */
+    /** 총알 상대 방어력: 방어력의 60% 무시 + 총알 보호 레벨당 1.1 */
+    public static float bulletArmor(LivingEntity le) {
+        return le.getArmorValue() * (1f - BULLET_ARMOR_IGNORE) + BULLET_PROT_ARMOR * bulletProtection(le);
+    }
+
+    /** 방어구를 반영한 최종 총알 피해 (방어력 몫은 hurt 안에서 ExtendedArmor가 처리) */
     public static float damage(Entity target, float base, boolean head, float headMult) {
         if (!(target instanceof LivingEntity le)) return base;
-        float bp = bulletProtection(le);
+        float raw = head ? base * headMult : base;
+        float d;
         if (head) {
             int h = helmetTier(le);
             float mult = 1 + (headMult - 1) * (1 - HELMET_BONUS_CUT[h]);
-            return base * mult * (1 - HELMET_CUT[h]) * bp;
+            d = base * mult * (1 - HELMET_CUT[h]);
+        } else {
+            ItemStack lg = le.getItemBySlot(EquipmentSlot.LEGS), ft = le.getItemBySlot(EquipmentSlot.FEET);
+            float legs = lg.is(ModItems.JUGGERNAUT_LEGGINGS.get()) ? 0.93f : lg.is(ModItems.PANTS_3.get()) ? 0.94f : lg.is(ModItems.PANTS_2.get()) ? 0.95f : lg.is(ModItems.PANTS_1.get()) ? 0.96f : 1f;
+            float boots = ft.is(ModItems.COMBAT_BOOTS.get()) ? 0.95f : ft.is(ModItems.BOOTS_3.get()) ? 0.96f : ft.is(ModItems.BOOTS_2.get()) ? 0.97f : ft.is(ModItems.BOOTS_1.get()) ? 0.98f : 1f;
+            d = base * (1 - VEST_CUT[vestTier(le)]) * legs * boots;
         }
-        ItemStack lg = le.getItemBySlot(EquipmentSlot.LEGS), ft = le.getItemBySlot(EquipmentSlot.FEET);
-        float legs = lg.is(ModItems.JUGGERNAUT_LEGGINGS.get()) ? 0.93f : lg.is(ModItems.PANTS_3.get()) ? 0.94f : lg.is(ModItems.PANTS_2.get()) ? 0.95f : lg.is(ModItems.PANTS_1.get()) ? 0.96f : 1f;
-        float boots = ft.is(ModItems.COMBAT_BOOTS.get()) ? 0.95f : ft.is(ModItems.BOOTS_3.get()) ? 0.96f : ft.is(ModItems.BOOTS_2.get()) ? 0.97f : ft.is(ModItems.BOOTS_1.get()) ? 0.98f : 1f;
-        return base * (1 - VEST_CUT[vestTier(le)]) * legs * boots * bp;
+        BULLET_RAW = raw;
+        return Math.max(d, raw * (1 - BULLET_MAX_CUT));
     }
 
     /** 다음 한 발의 총알 모양 (서버 스레드 전용): 종류 0 일반 1 화염 2 심판자 3 기관포, 속도(블록/틱), 소음기 여부 */
@@ -146,7 +161,7 @@ public final class Ballistics {
             impact = hit.getLocation();
             boolean head = isHead(target, impact);
             float d = damage(target, dmg * (n == 0 ? 1f : 0.7f), head, headMult);
-            if (nextAntiMaterial && armoredTarget(target)) d *= ANTI_MATERIAL_MULT;
+            if (nextAntiMaterial && armoredTarget(target)) { d *= ANTI_MATERIAL_MULT; BULLET_RAW *= ANTI_MATERIAL_MULT; }
             target.invulnerableTime = 0;
             // 엔더 드래곤 같은 다중 부위 몹: 실제 체력은 본체에 있으므로 본체의 무적 시간도 풀어 준다
             if (target instanceof net.neoforged.neoforge.entity.PartEntity<?> part) part.getParent().invulnerableTime = 0;

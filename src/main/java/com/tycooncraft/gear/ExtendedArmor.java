@@ -28,18 +28,31 @@ public final class ExtendedArmor {
     @SubscribeEvent
     public static void onIncoming(LivingIncomingDamageEvent e) {
         LivingEntity le = e.getEntity();
+        if (e.getSource().is(DamageTypeTags.BYPASSES_ARMOR)) return;
         boolean bullet = com.tycooncraft.gun.Ballistics.BULLET_HIT;
-        if ((!bullet && le.getArmorValue() <= 20) || le.getArmorValue() <= 0 || e.getSource().is(DamageTypeTags.BYPASSES_ARMOR)) return;
+        if (bullet) {
+            // v0.31.3: 총알 - 방어력 60% 무시 + 총알 보호(레벨당 1.1), 총 감소는 최대 70%
+            float raw = com.tycooncraft.gun.Ballistics.BULLET_RAW;
+            float eff = com.tycooncraft.gun.Ballistics.bulletArmor(le);
+            e.getContainer().addModifier(DamageContainer.Reduction.ARMOR, (c, vanillaCut) -> {
+                float dmg = c.getNewDamage();
+                if (dmg <= 0) return vanillaCut;
+                float tough = (float) le.getAttributeValue(Attributes.ARMOR_TOUGHNESS);
+                float cut = dmg * reduction(eff, tough, dmg);
+                float floor = raw * (1f - com.tycooncraft.gun.Ballistics.BULLET_MAX_CUT);
+                return Mth.clamp(cut, 0f, Math.max(0f, dmg - floor));
+            });
+            return;
+        }
+        if (le.getArmorValue() <= 20) return;
         e.getContainer().addModifier(DamageContainer.Reduction.ARMOR, (c, vanillaCut) -> {
             float dmg = c.getNewDamage();
             if (dmg <= 0) return vanillaCut;
             float armor = le.getArmorValue(), tough = (float) le.getAttributeValue(Attributes.ARMOR_TOUGHNESS);
             float vanillaRate = Mth.clamp(armor - dmg / (2f + tough / 4f), armor * 0.2f, 20f) / 25f;
             if (vanillaRate <= 0) return vanillaCut;
-            // v0.31.2: 총알은 방어력의 60%를 무시
-            float eff = bullet ? armor * (1f - com.tycooncraft.gun.Ballistics.BULLET_ARMOR_IGNORE) : armor;
             // 무기의 방어 관통(브리치 등)이 바닐라 몫에 준 비율을 그대로 유지
-            float rate = Mth.clamp(vanillaCut / dmg * reduction(eff, tough, dmg) / vanillaRate, 0f, 0.95f);
+            float rate = Mth.clamp(vanillaCut / dmg * reduction(armor, tough, dmg) / vanillaRate, 0f, 0.95f);
             return dmg * rate;
         });
     }
