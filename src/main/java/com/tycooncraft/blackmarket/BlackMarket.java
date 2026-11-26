@@ -77,6 +77,7 @@ public final class BlackMarket {
         bm.playSound(null, SPAWN, SoundEvents.IRON_TRAPDOOR_CLOSE, SoundSource.BLOCKS, 1f, 0.8f);
         p.displayClientMessage(Component.translatable("message.tycooncraft.bm.welcome").withStyle(ChatFormatting.DARK_PURPLE), true);
         p.sendSystemMessage(Component.translatable("message.tycooncraft.rep.status", Reputation.describe(p)).withStyle(ChatFormatting.DARK_PURPLE));
+        p.sendSystemMessage(Component.translatable("message.tycooncraft.undercity.enter").withStyle(ChatFormatting.DARK_RED));
         entries++;
         return true;
     }
@@ -130,6 +131,7 @@ public final class BlackMarket {
         if (v.level().isClientSide || !isBM(v.level())) return;
         if (!(e.getSource().getEntity() instanceof ServerPlayer p) || p == v || p.isCreative()) return;
         if (!(v instanceof Player) && !(v instanceof BlackMarketDealer)) return;
+        if (!Undercity.inHub(v.getX(), v.getZ())) return;   // v0.29: 골목 밖 언더시티는 무법지대 (상인이 끼어들지 않음)
         boolean was = hostile(p);
         HOSTILE.put(p.getUUID(), p.level().getGameTime() + HOSTILE_TICKS);
         if (!was) {
@@ -190,7 +192,11 @@ public final class BlackMarket {
         MinecraftServer s = e.getServer();
         if (s.getTickCount() % 100 == 0) {
             ServerLevel bm = s.getLevel(DIM);
-            if (bm != null && !bm.players().isEmpty()) BlackMarketHub.tickDealers(bm);
+            if (bm != null && !bm.players().isEmpty()) {
+                BlackMarketHub.tickDealers(bm);
+                Undercity.recall(bm);
+                Undercity.tick(bm);
+            }
         }
         GangHunters.tick(s);
         Missions.tick(s);

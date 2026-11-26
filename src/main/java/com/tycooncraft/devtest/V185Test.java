@@ -1692,6 +1692,147 @@ public final class V185Test {
         far.discard();
     }
 
+    // ── v0.28.3 조종석 1인칭 (낮·평지) ──
+    static void cockpitSetup(ServerPlayer sp) {
+        var ow = sp.server.overworld();
+        sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+        ow.setDayTime(6000);
+        BlockPos p = owBase.offset(-30, 0, 0);
+        proto = com.tycooncraft.mech.ProtoDestroyerItem.spawn(ow, p, sp, new ItemStack(ModItems.PROTO_DESTROYER.get()), 0f);
+        sp.teleportTo(ow, p.getX() + 0.5, p.getY(), p.getZ() - 2.5, 0f, 0f);
+        proto.interact(sp, InteractionHand.MAIN_HAND);
+        sp.setYRot(0);
+        sp.setXRot(5);
+        protoTarget = EntityType.ZOMBIE.create(ow);
+        protoTarget.moveTo(p.getX() + 2.5, p.getY(), p.getZ() + 14.5, 180, 0);
+        protoTarget.setNoAi(true);
+        protoTarget.setPersistenceRequired();
+        protoTarget.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
+        protoTarget.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(400);
+        protoTarget.setHealth(400);
+        ow.addFreshEntity(protoTarget);
+        System.out.println("[AUTOTEST] v283 cockpit riding=" + (sp.getVehicle() == proto));
+    }
+
+    static void cockpitDone(ServerPlayer sp) {
+        sp.stopRiding();
+        proto.discard();
+        protoTarget.discard();
+    }
+
+    // ── v0.29 언더시티 ──
+    static void ucEnter(ServerPlayer sp) {
+        sp.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.DAMAGE_RESISTANCE, 6000, 4, false, false));
+        sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.REGENERATION, 6000, 3, false, false));
+        long t0 = System.currentTimeMillis();
+        com.tycooncraft.blackmarket.BlackMarket.enter(sp, sp.blockPosition().below());
+        long ms = System.currentTimeMillis() - t0;
+        var bm = sp.serverLevel();
+        System.out.println("[AUTOTEST] v290 undercity buildMs=" + ms + " hideouts=" + com.tycooncraft.blackmarket.Undercity.HIDEOUTS.size()
+                + " chests=" + com.tycooncraft.blackmarket.Undercity.CHESTS.size() + " gate=" + bm.getBlockState(new BlockPos(-17, 65, 0)).isAir()
+                + " floor=" + bm.getBlockState(new BlockPos(-60, 63, 0)).getBlock() + " ceil=" + bm.getBlockState(new BlockPos(-60, 100, 40)).getBlock()
+                + " hubIntact=" + bm.getBlockState(com.tycooncraft.blackmarket.BlackMarketHub.MISSION).getBlock());
+        sp.teleportTo(bm, -24.5, 64, 0.5, 90f, 0f);
+    }
+
+    static void ucPopulate(ServerPlayer sp) {
+        var bm = sp.serverLevel();
+        for (int i = 0; i < 10; i++) com.tycooncraft.blackmarket.Undercity.tick(bm);
+        var gangs = bm.getEntitiesOfClass(com.tycooncraft.mob.GunnerEntity.class, sp.getBoundingBox().inflate(72, 40, 72), com.tycooncraft.blackmarket.Undercity::resident);
+        java.util.Map<String, Integer> kinds = new java.util.TreeMap<>();
+        for (var g : gangs) kinds.merge(g.kind().name(), 1, Integer::sum);
+        int inHub = 0;
+        for (var g : gangs) if (com.tycooncraft.blackmarket.Undercity.inHub(g.getX(), g.getZ())) inHub++;
+        System.out.println("[AUTOTEST] v290 residents=" + gangs.size() + " kinds=" + kinds + " inHub=" + inHub + " spawned=" + com.tycooncraft.blackmarket.Undercity.spawned);
+    }
+
+    static com.tycooncraft.mob.GunnerEntity intruder;
+
+    static void ucIntruder(ServerPlayer sp) {
+        intruder = com.tycooncraft.blackmarket.Undercity.spawnAt(sp.serverLevel(), ModEntities.GANGSTER.get(), new BlockPos(0, 64, 0));
+    }
+
+    static void ucIntruderCheck(ServerPlayer sp) {
+        com.tycooncraft.blackmarket.Undercity.tick(sp.serverLevel());
+        System.out.println("[AUTOTEST] v290 dbg intruderReason=" + intruder.getRemovalReason() + " alive=" + intruder.isAlive() + " hp=" + intruder.getHealth()
+                + " diff=" + sp.serverLevel().getDifficulty() + " lastDmg=" + (intruder.getLastDamageSource() == null ? "-" : intruder.getLastDamageSource().getMsgId())
+                + " player=" + sp.blockPosition() + " dim=" + sp.level().dimension().location() + " ticks=" + intruder.tickCount);
+        System.out.println("[AUTOTEST] v290 intruder expelled=" + !com.tycooncraft.blackmarket.Undercity.inHub(intruder.getX(), intruder.getZ())
+                + " pos=" + intruder.blockPosition());
+    }
+
+    static void ucChest(ServerPlayer sp) {
+        var bm = sp.serverLevel();
+        BlockPos c = com.tycooncraft.blackmarket.Undercity.CHESTS.get(0);
+        sp.teleportTo(bm, c.getX() + 0.5, c.getY(), c.getZ() - 1.5, 0f, 30f);
+        var be = (com.tycooncraft.blackmarket.LockedChestBlockEntity) bm.getBlockEntity(c);
+        for (int i = 0; i < sp.getInventory().getContainerSize(); i++) if (sp.getInventory().getItem(i).is(ModItems.UNDERCITY_KEY.get())) sp.getInventory().setItem(i, ItemStack.EMPTY);
+        boolean noKey = com.tycooncraft.blackmarket.LockedChestBlock.tryOpen(sp, be);
+        sp.getInventory().add(new ItemStack(ModItems.UNDERCITY_KEY.get(), 1));
+        int filled = be.filled();
+        boolean withKey = com.tycooncraft.blackmarket.LockedChestBlock.tryOpen(sp, be);
+        int keysLeft = sp.getInventory().countItem(ModItems.UNDERCITY_KEY.get());
+        boolean stateOpen = !bm.getBlockState(c).getValue(com.tycooncraft.blackmarket.LockedChestBlock.LOCKED);
+        sp.closeContainer();
+        boolean again = com.tycooncraft.blackmarket.LockedChestBlock.tryOpen(sp, be);   // 하루 안에는 열쇠 없이 다시 열림
+        sp.closeContainer();
+        for (int i = 0; i < 27; i++) be.setItem(i, ItemStack.EMPTY);
+        // 하루 지난 것처럼
+        var tag = be.saveWithoutMetadata(bm.registryAccess());
+        tag.putLong("OpenedAt", bm.getGameTime() - com.tycooncraft.blackmarket.LockedChestBlockEntity.RESTOCK - 5);
+        be.loadWithComponents(tag, bm.registryAccess());
+        boolean afterDay = com.tycooncraft.blackmarket.LockedChestBlock.tryOpen(sp, be);
+        sp.closeContainer();
+        System.out.println("[AUTOTEST] v290 chest noKeyOpened=" + noKey + " lootStacks=" + filled + " withKeyOpened=" + withKey + " keysLeft=" + keysLeft
+                + " stateOpen=" + stateOpen + " reopenSameDay=" + again + " afterDayOpened=" + afterDay + " relocked=" + be.locked() + " refilled=" + be.filled()
+                + " unlocks=" + com.tycooncraft.blackmarket.LockedChestBlock.unlocks + " denied=" + com.tycooncraft.blackmarket.LockedChestBlock.denied);
+    }
+
+    static void ucKeyDrops(ServerPlayer sp) {
+        var bm = sp.serverLevel();
+        BlockPos at = sp.blockPosition();
+        int kills0 = com.tycooncraft.blackmarket.Undercity.kills;
+        for (int i = 0; i < 12; i++) {
+            var type = i % 3 == 0 ? ModEntities.ENFORCER.get() : i % 3 == 1 ? ModEntities.BRUTE.get() : ModEntities.MARKSMAN.get();
+            var g = com.tycooncraft.blackmarket.Undercity.spawnAt(bm, type, at.offset(2, 0, 2));
+            g.setNoAi(true);
+            g.hurt(sp.damageSources().playerAttack(sp), 9999f);
+        }
+        int keys = 0;
+        for (var it : bm.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, sp.getBoundingBox().inflate(8)))
+            if (it.getItem().is(ModItems.UNDERCITY_KEY.get())) keys += it.getItem().getCount();
+        System.out.println("[AUTOTEST] v290 variantKills=" + (com.tycooncraft.blackmarket.Undercity.kills - kills0) + " keysDropped=" + keys + " hostile=" + com.tycooncraft.blackmarket.BlackMarket.hostile(sp));
+        for (var it : bm.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, sp.getBoundingBox().inflate(8))) it.discard();
+    }
+
+    static void ucHideoutView(ServerPlayer sp) {
+        var bm = sp.serverLevel();
+        BlockPos h = com.tycooncraft.blackmarket.Undercity.HIDEOUTS.get(0);
+        sp.teleportTo(bm, h.getX() + 0.5, h.getY() + 1, h.getZ() - 9.5, 0f, -8f);
+        for (var g : bm.getEntitiesOfClass(com.tycooncraft.mob.GunnerEntity.class, sp.getBoundingBox().inflate(40))) g.setNoAi(true);
+    }
+
+    static void ucLineup(ServerPlayer sp) {
+        var bm = sp.serverLevel();
+        sp.teleportTo(bm, -30.5, 64, 0.5, -90f, 0f);
+        var types = java.util.List.of(ModEntities.ENFORCER.get(), ModEntities.BRUTE.get(), ModEntities.MARKSMAN.get());
+        for (int i = 0; i < 3; i++) {
+            var g = com.tycooncraft.blackmarket.Undercity.spawnAt(bm, types.get(i), new BlockPos(-26, 64, -2 + i * 2));
+            g.setNoAi(true);
+            g.setYRot(90f);
+            g.setYBodyRot(90f);
+            g.setYHeadRot(90f);
+        }
+    }
+
+    static void ucLeave(ServerPlayer sp) {
+        var bm = sp.serverLevel();
+        for (var g : bm.getEntitiesOfClass(com.tycooncraft.mob.GunnerEntity.class, sp.getBoundingBox().inflate(200))) g.discard();
+        com.tycooncraft.blackmarket.BlackMarket.leave(sp);
+        sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+    }
+
     static com.tycooncraft.vehicle.JetEntity landJet;
 
     static void jetLandSetup(ServerPlayer sp) {

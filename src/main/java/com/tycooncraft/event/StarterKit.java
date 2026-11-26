@@ -75,6 +75,8 @@ public final class StarterKit {
             {"18-5. 의뢰 게시판", "매일 3건 · 한 번에 하나\n제한 2일\n\n배달: 밀수 화물을 지상\n 접선 지점에서 우클릭\n회수: 지상의 도난 화물\n 통에서 꺼내 가져오기\n 갱단이 지키고 있음!\n납품: 물건을 바로 넘김\n\n보상은 은행으로 입금"},
             {"18-6. 카지노", "골목 동쪽 문 안쪽\n\n슬롯머신\n 3개 일치 최대 ×100\n 해골 나오면 꽝\n룰렛\n 빨강/검정 ×2\n 초록(0) ×36\n\n베팅 한도 (평판별)\n ₩1만~₩50만\n당첨금은 현금 지급"},
             {"18-7. 불법 개조점", "총을 들고 개조대 우클릭\n\n과압탄 피해+20% (단골)\n확장 드럼 탄창+50%\n해머 연사+20% (동업자)\n반동 억제 -35%\n총열 탄퍼짐-30% (간부)\n일련번호 세탁 (대부)\n 경비병이 총성 무시\n\n개조는 영구 · 평판 할인"},
+            {"18-8. 언더시티", "맨홀 아래 지하 도시\n블랙마켓은 그 한가운데\n골목 서쪽 문으로 나감\n\n골목 밖 = 갱단 영역\n 상인이 안 지켜줌\n 갱단이 사는 은신처 8곳\n (붉은 띠 건물)\n\n변종 갱단: 더 강함\n 집행자 · 돌격대 · 저격수"},
+            {"18-9. 갱단 금고", "은신처의 잠긴 상자\n열쇠 1개 = 한 번 열기\n (열쇠는 사라짐)\n\n열쇠: 언더시티 갱단이\n 떨어뜨림\n 일반 20% · 변종 60%\n\n내용: 현금·탄약·강철\n 다이아·로켓·총·열쇠\n하루 뒤 다시 채워지고 잠김"},
             {"14. 명령어", "/guide /starter\n/sell /sell all\n/price /prices\n\n(관리자)\n/tycoon factory\n/tycoon village\n/tycoon ruin\n/tycoon nearest"},
     };
 
@@ -109,7 +111,7 @@ public final class StarterKit {
     }
 
     /** v0.23.1: 가이드 내용이 바뀌면 올림 → 기존 플레이어도 접속 시 새 책을 받음 */
-    public static final int GUIDE_VERSION = 34;
+    public static final int GUIDE_VERSION = 35;
 
     public static void updateGuide(Player player) {
         CompoundTag p = persisted(player);

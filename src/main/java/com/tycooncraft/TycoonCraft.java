@@ -81,6 +81,9 @@ public class TycoonCraft {
         event.put(ModEntities.MINI_DRONE.get(), com.tycooncraft.mob.carrier.MiniDrone.attributes().build());
         event.put(ModEntities.MERCENARY.get(), GunnerEntity.attributes(GunnerEntity.Kind.MERCENARY).build());
         event.put(ModEntities.OUTLAW.get(), GunnerEntity.attributes(GunnerEntity.Kind.OUTLAW).build());
+        event.put(ModEntities.ENFORCER.get(), GunnerEntity.attributes(GunnerEntity.Kind.ENFORCER).build());
+        event.put(ModEntities.BRUTE.get(), GunnerEntity.attributes(GunnerEntity.Kind.BRUTE).build());
+        event.put(ModEntities.MARKSMAN.get(), GunnerEntity.attributes(GunnerEntity.Kind.MARKSMAN).build());
         event.put(ModEntities.CARTEL_BOSS.get(), GunnerEntity.attributes(GunnerEntity.Kind.BOSS).build());
         event.put(ModEntities.MUTANT_SPIDER.get(), com.tycooncraft.mob.MutantSpider.attributes().build());
         event.put(ModEntities.GANG_TRUCK.get(), com.tycooncraft.mob.GangTruck.attributes().build());

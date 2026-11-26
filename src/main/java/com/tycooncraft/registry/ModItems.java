@@ -163,6 +163,21 @@ public final class ModItems {
             () -> new com.tycooncraft.miner.AutoMinerItem(new Item.Properties()));
 
     public static final DeferredItem<FlareItem> CARTEL_FLARE = ITEMS.register("cartel_flare", () -> new FlareItem(new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> ENFORCER_EGG = ITEMS.register("gang_enforcer_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.ENFORCER, 0x141418, 0x6A0E10, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> BRUTE_EGG = ITEMS.register("gang_brute_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.BRUTE, 0x2A1430, 0xE04020, new Item.Properties()));
+    public static final DeferredItem<DeferredSpawnEggItem> MARKSMAN_EGG = ITEMS.register("gang_marksman_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.MARKSMAN, 0x26301C, 0xC8B060, new Item.Properties()));
+    /** v0.29 언더시티 갱단 금고 열쇠 (1회용) */
+    public static final DeferredItem<Item> UNDERCITY_KEY = ITEMS.register("undercity_key",
+            () -> new Item(new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON)) {
+                @Override
+                public void appendHoverText(net.minecraft.world.item.ItemStack st, TooltipContext ctx, java.util.List<net.minecraft.network.chat.Component> tip, net.minecraft.world.item.TooltipFlag f) {
+                    tip.add(net.minecraft.network.chat.Component.translatable("tooltip.tycooncraft.undercity_key").withStyle(net.minecraft.ChatFormatting.GRAY));
+                }
+            });
+    public static final DeferredItem<BlockItem> LOCKED_CHEST = ITEMS.registerSimpleBlockItem(ModBlocks.LOCKED_CHEST);
     public static final DeferredItem<DeferredSpawnEggItem> GANGSTER_EGG = ITEMS.register("gangster_spawn_egg",
             () -> new DeferredSpawnEggItem(ModEntities.GANGSTER, 0x1C1C20, 0xB01E22, new Item.Properties()));
     public static final DeferredItem<DeferredSpawnEggItem> MERCENARY_EGG = ITEMS.register("mercenary_spawn_egg",

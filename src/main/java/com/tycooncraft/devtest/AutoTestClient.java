@@ -222,6 +222,7 @@ public final class AutoTestClient {
     /** 신규 콘텐츠: 몹·포탑, 낙하산, 전차, 전투기, 쌍권총, VSS, RPG */
     private static void later(Minecraft mc) {
         var o = mc.options;
+        if (System.getenv("TC_PROTOONLY") != null && phaseT < 3352) phaseT = 3352;
         if (System.getenv("TC_FXONLY") != null && phaseT < 3828) phaseT = 3828;   // 로컬 디버그: 이펙트 구간만
         if (System.getenv("TC_ELECONLY") != null && phaseT < 4350) phaseT = 4350;
         if (System.getenv("TC_POWONLY") != null && phaseT < 4078) phaseT = 4078;
@@ -232,7 +233,8 @@ public final class AutoTestClient {
         if (System.getenv("TC_BMONLY") != null && phaseT < 5802) phaseT = 5802;
         if (System.getenv("TC_VARONLY") != null && phaseT < 6134) phaseT = 6134;
         if (System.getenv("TC_V28ONLY") != null && phaseT < 6956) phaseT = 6956;
-        if (System.getenv("TC_FARONLY") != null && phaseT < 7230) phaseT = 7230;   // 로컬 디버그: 이펙트 구간만
+        if (System.getenv("TC_FARONLY") != null && phaseT < 7230) phaseT = 7230;
+        if (System.getenv("TC_UCONLY") != null && phaseT < 7430) phaseT = 7430;   // 로컬 디버그: 이펙트 구간만
         int s = phaseT;
         double g = -60;
         if (s > 3226 && s < 3300 && s % 2 == 0) serverDo(mc, V185Test::keepAirborne);
@@ -843,7 +845,13 @@ public final class AutoTestClient {
             case 3404 -> shot(mc, "95_proto_rockets");
             case 3410 -> o.setCameraType(CameraType.FIRST_PERSON);
             case 3418 -> shot(mc, "95b_proto_firstperson");
-            case 3420 -> o.setCameraType(CameraType.THIRD_PERSON_BACK);
+            case 3412, 3414, 3416 -> serverKeep(mc, V185Test::protoFire);
+            case 3419 -> key(o.keyUp, true);
+            case 3426 -> {
+                shot(mc, "95c_cockpit_walk");
+                System.out.println("[AUTOTEST] v283 cockpit frames=" + com.tycooncraft.client.mech.CockpitHud.frames);
+            }
+            case 3428 -> { key(o.keyUp, false); o.setCameraType(CameraType.THIRD_PERSON_BACK); }
             case 3430 -> { serverKeep(mc, V185Test::protoSlam); key(o.keyJump, true); }
             case 3433 -> key(o.keyJump, false);
             case 3446 -> shot(mc, "96_proto_slam");
@@ -1080,7 +1088,27 @@ public final class AutoTestClient {
             case 7360 -> serverKeep(mc, V185Test::farHitBody);
             case 7370 -> serverKeep(mc, V185Test::farRelink);
             case 7400 -> serverKeep(mc, V185Test::farLost);
-            case 7404 -> next(11);
+            case 7404 -> { o.setCameraType(CameraType.FIRST_PERSON); serverKeep(mc, V185Test::cockpitSetup); }
+            case 7416 -> shot(mc, "v28_13_cockpit");
+            case 7418, 7420, 7422, 7424, 7426 -> serverKeep(mc, V185Test::protoFire);
+            case 7425 -> shot(mc, "v28_14_cockpit_fire");
+            case 7430 -> {
+                System.out.println("[AUTOTEST] v283 cockpit frames=" + com.tycooncraft.client.mech.CockpitHud.frames);
+                serverKeep(mc, V185Test::cockpitDone);
+            }
+            case 7434 -> { o.setCameraType(CameraType.FIRST_PERSON); serverKeep(mc, V185Test::ucEnter); }
+            case 7522 -> serverKeep(mc, V185Test::ucPopulate);
+            case 7526 -> serverKeep(mc, V185Test::ucIntruder);
+            case 7532 -> serverKeep(mc, V185Test::ucIntruderCheck);
+            case 7536 -> serverKeep(mc, V185Test::ucKeyDrops);
+            case 7542 -> serverKeep(mc, V185Test::ucChest);
+            case 7550 -> { mc.setScreen(null); serverKeep(mc, V185Test::ucHideoutView); }
+            case 7602 -> serverKeep(mc, V185Test::ucLineup);
+            case 7640 -> shot(mc, "v29_3_variants");
+            case 7642 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), -36.5, 64, 0.5, 90f, -6f));
+            case 7670 -> shot(mc, "v29_1_street");
+            case 7672 -> serverKeep(mc, V185Test::ucLeave);
+            case 7682 -> next(11);
             default -> {
             }
         }

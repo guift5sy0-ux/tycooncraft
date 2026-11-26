@@ -26,6 +26,9 @@ public class GunnerRenderer extends HumanoidMobRenderer<GunnerEntity, GunnerMode
             case MERCENARY -> "mercenary";
             case OUTLAW -> "outlaw";
             case BOSS -> "cartel_boss";
+            case ENFORCER -> "gang_enforcer";
+            case BRUTE -> "gang_brute";
+            case MARKSMAN -> "gang_marksman";
         };
         return TycoonCraft.id("textures/entity/" + name + ".png");
     }
@@ -33,6 +36,8 @@ public class GunnerRenderer extends HumanoidMobRenderer<GunnerEntity, GunnerMode
     @Override
     protected void scale(GunnerEntity e, PoseStack ps, float pt) {
         if (e.kind() == GunnerEntity.Kind.BOSS) ps.scale(1.4f, 1.4f, 1.4f);
+        else if (e.kind() == GunnerEntity.Kind.BRUTE) ps.scale(1.1f, 1.1f, 1.1f);
+        else if (e.kind() == GunnerEntity.Kind.ENFORCER) ps.scale(1.02f, 1.02f, 1.02f);
         else ps.scale(0.9375f, 0.9375f, 0.9375f);
     }
 }

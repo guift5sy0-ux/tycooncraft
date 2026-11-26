@@ -1,0 +1,8 @@
+{
+ "parent": "minecraft:block/orientable",
+ "textures": {
+  "front": "tycooncraft:block/locked_chest_front_open",
+  "side": "tycooncraft:block/locked_chest_side",
+  "top": "tycooncraft:block/locked_chest_top"
+ }
+}

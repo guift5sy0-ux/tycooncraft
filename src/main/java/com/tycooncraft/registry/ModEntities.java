@@ -86,6 +86,10 @@ public final class ModEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> GANGSTER = mob("gangster", GunnerEntity::gangster);
     public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> MERCENARY = mob("mercenary", GunnerEntity::mercenary);
     public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> OUTLAW = mob("outlaw", GunnerEntity::outlaw);
+    // v0.29 언더시티 변종 갱단
+    public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> ENFORCER = mob("gang_enforcer", GunnerEntity::enforcer);
+    public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> BRUTE = mob("gang_brute", GunnerEntity::brute);
+    public static final DeferredHolder<EntityType<?>, EntityType<GunnerEntity>> MARKSMAN = mob("gang_marksman", GunnerEntity::marksman);
     public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.mob.GangTruck>> GANG_TRUCK = ENTITIES.register("gang_truck",
             () -> EntityType.Builder.<com.tycooncraft.mob.GangTruck>of(com.tycooncraft.mob.GangTruck::new, MobCategory.MONSTER)
                     .sized(2.4f, 2.0f).eyeHeight(1.8f).passengerAttachments(2.0f).clientTrackingRange(10).build("gang_truck"));

@@ -15,6 +15,8 @@ public final class ModBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
             DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, TycoonCraft.MODID);
 
+    public static final java.util.function.Supplier<BlockEntityType<com.tycooncraft.blackmarket.LockedChestBlockEntity>> LOCKED_CHEST =
+            BLOCK_ENTITY_TYPES.register("locked_chest", () -> BlockEntityType.Builder.of(com.tycooncraft.blackmarket.LockedChestBlockEntity::new, ModBlocks.LOCKED_CHEST.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.turret.CiwsBlockEntity>> CIWS =
             BLOCK_ENTITY_TYPES.register("ciws",
                     () -> BlockEntityType.Builder.of(com.tycooncraft.turret.CiwsBlockEntity::new, ModBlocks.CIWS.get()).build(null));

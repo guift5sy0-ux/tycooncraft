@@ -37,7 +37,7 @@ public final class ProtoClient {
 
     public static class Model extends HierarchicalModel<ProtoDestroyer> {
         private final ModelPart root;
-        private final Map<String, ModelPart> b;
+        final Map<String, ModelPart> b;
 
         public Model(ModelPart root) {
             this.root = root;
@@ -113,12 +113,27 @@ public final class ProtoClient {
             return TEX;
         }
 
-        /** 1인칭으로 조종 중이면 기체를 그리지 않음 (바닐라는 탑승 중인 탈것을 shouldRender 와 무관하게 그리므로 여기서 막음) */
+        /**
+         * v0.28.3 조종석 1인칭: 몸통·다리는 숨기고 양팔(개틀링·로켓 포드)만 그려서
+         * 조종석 창 밖으로 내 기체의 팔이 보이게 함 (발사 시 총열 회전·반동이 그대로 보임)
+         */
         @Override
         public void render(ProtoDestroyer e, float yaw, float pt, com.mojang.blaze3d.vertex.PoseStack ps, net.minecraft.client.renderer.MultiBufferSource buf, int light) {
             Minecraft mc = Minecraft.getInstance();
-            if (mc.options.getCameraType().isFirstPerson() && mc.player != null && mc.player.getVehicle() == e) return;
-            super.render(e, yaw, pt, ps, buf, light);
+            boolean cockpit = mc.options.getCameraType().isFirstPerson() && mc.player != null && mc.player.getVehicle() == e;
+            if (!cockpit) {
+                super.render(e, yaw, pt, ps, buf, light);
+                return;
+            }
+            ModelPart root = getModel().root();
+            root.getAllParts().forEach(p -> p.skipDraw = true);
+            var bones = getModel().b;
+            for (String n : new String[]{"arm_left", "arm_right"}) bones.get(n).getAllParts().forEach(p -> p.skipDraw = false);
+            try {
+                super.render(e, yaw, pt, ps, buf, light);
+            } finally {
+                root.getAllParts().forEach(p -> p.skipDraw = false);
+            }
         }
     }
 
@@ -189,7 +204,7 @@ public final class ProtoClient {
     public static void hud(RenderGuiEvent.Post e) {
         ProtoDestroyer m = piloting();
         Minecraft mc = Minecraft.getInstance();
-        if (m == null || mc.options.hideGui) return;
+        if (m == null || mc.options.hideGui || CockpitHud.cockpit() != null) return;   // 1인칭은 조종석 화면(CockpitHud)
         GuiGraphics g = e.getGuiGraphics();
         int w = g.guiWidth(), h = g.guiHeight();
         int x = 8, y = 10;   // 왼쪽 위 (체력 하트·핫바와 겹치지 않게)

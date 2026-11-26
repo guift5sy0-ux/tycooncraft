@@ -91,6 +91,9 @@ public final class VehicleClient {
         event.registerEntityRenderer(ModEntities.MINI_DRONE.get(), com.tycooncraft.client.mob.CarrierModels.DroneRenderer::new);
         event.registerEntityRenderer(ModEntities.MERCENARY.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
         event.registerEntityRenderer(ModEntities.OUTLAW.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
+        event.registerEntityRenderer(ModEntities.ENFORCER.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
+        event.registerEntityRenderer(ModEntities.BRUTE.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
+        event.registerEntityRenderer(ModEntities.MARKSMAN.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
         event.registerEntityRenderer(ModEntities.CARTEL_BOSS.get(), com.tycooncraft.client.mob.GunnerRenderer::new);
         event.registerEntityRenderer(ModEntities.MUTANT_SPIDER.get(), com.tycooncraft.client.mob.MutantSpiderRenderer::new);
         event.registerBlockEntityRenderer(com.tycooncraft.registry.ModBlockEntities.TURRET.get(), TurretRenderer::new);

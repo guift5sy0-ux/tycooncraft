@@ -65,6 +65,9 @@ public final class ModBlocks {
                     .strength(-1.0f, 3_600_000f).sound(net.minecraft.world.level.block.SoundType.NETHERITE_BLOCK).noLootTable()));
     public static final DeferredBlock<com.tycooncraft.blackmarket.BountyBoardBlock> BOUNTY_BOARD = BLOCKS.register("bounty_board",
             () -> new com.tycooncraft.blackmarket.BountyBoardBlock(BlockBehaviour.Properties.of().strength(-1.0f, 3_600_000f).sound(net.minecraft.world.level.block.SoundType.WOOD).noLootTable()));
+    /** v0.29 언더시티 갱단 금고 상자: 열쇠 1개로 한 번 열림, 하루 뒤 다시 채워지고 잠김 */
+    public static final DeferredBlock<com.tycooncraft.blackmarket.LockedChestBlock> LOCKED_CHEST = BLOCKS.register("locked_chest",
+            () -> new com.tycooncraft.blackmarket.LockedChestBlock(BlockBehaviour.Properties.of().strength(-1.0f, 3_600_000f).sound(net.minecraft.world.level.block.SoundType.WOOD).noLootTable()));
     public static final DeferredBlock<com.tycooncraft.blackmarket.BMBlock> MISSION_BOARD = BLOCKS.register("mission_board",
             () -> new com.tycooncraft.blackmarket.BMBlock(BlockBehaviour.Properties.of().strength(-1.0f, 3_600_000f).sound(net.minecraft.world.level.block.SoundType.WOOD).noLootTable(), 0));
     public static final DeferredBlock<com.tycooncraft.blackmarket.BMBlock> SLOT_MACHINE = BLOCKS.register("slot_machine",

@@ -22,7 +22,7 @@ import net.minecraft.world.phys.AABB;
 
 /** 암시장 골목 (x -16~16, z -8~8, 바닥 y=63) — 처음 한 번 짓고, 상인은 죽으면 다음 날 다시 나옴 */
 public final class BlackMarketHub {
-    public static final int VERSION = 3;   // v3 (0.28): 카지노 홀 · 의뢰 게시판 · 불법 개조점
+    public static final int VERSION = 4;   // v3 (0.28): 카지노 홀 · 의뢰 게시판 · 불법 개조점 / v4 (0.29): 언더시티
     public static final BlockPos[] DEALER_POS = {new BlockPos(-8, 64, -6), new BlockPos(0, 64, -6), new BlockPos(8, 64, -6)};
     public static final BlockPos EXIT = new BlockPos(-15, 63, 0), BOUNTY = new BlockPos(-4, 64, 7), VAULT = new BlockPos(4, 64, 7);
     public static final BlockPos MISSION = new BlockPos(8, 64, 7), MODS = new BlockPos(13, 64, -7), ROULETTE = new BlockPos(27, 64, 0);
@@ -60,6 +60,7 @@ public final class BlackMarketHub {
         Data d = Data.get(l);
         if (d.built >= VERSION) return;
         build(l);
+        Undercity.build(l);
         d.built = VERSION;
         d.setDirty();
         tickDealers(l);
