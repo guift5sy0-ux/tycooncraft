@@ -60,7 +60,7 @@ public final class MpTest {
             var s = level.getBlockState(p);
             if (s.is(net.minecraft.world.level.block.Blocks.SPAWNER)) spawners++;
             else if (s.is(net.minecraft.world.level.block.Blocks.CHEST)) chests++;
-            else if (s.getBlock() instanceof com.tycooncraft.block.MachineBlock || s.is(com.tycooncraft.registry.ModBlocks.BROKEN_MACHINE.get())) machines++;
+            else if (s.is(com.tycooncraft.registry.ModBlocks.BROKEN_MACHINE.get())) machines++;
             else if (s.is(com.tycooncraft.registry.ModBlocks.EXCHANGE.get())) exchanges++;
             else if (s.is(net.minecraft.world.level.block.Blocks.LANTERN)) lanterns++;
         }
@@ -93,11 +93,10 @@ public final class MpTest {
                         var ch = l.getChunk(cx, cz);
                         for (net.minecraft.core.BlockPos p : net.minecraft.core.BlockPos.betweenClosed(cx * 16, -60, cz * 16, cx * 16 + 15, 100, cz * 16 + 15)) {
                             var s = ch.getBlockState(p);
-                            if (s.is(com.tycooncraft.registry.ModBlocks.BAUXITE_ORE.get()) || s.is(com.tycooncraft.registry.ModBlocks.DEEPSLATE_BAUXITE_ORE.get())) baux++;
-                            else if (s.is(com.tycooncraft.registry.ModBlocks.ROCK_SALT_ORE.get())) salt++;
+                            if (s.is(net.minecraft.world.level.block.Blocks.IRON_ORE)) baux++;
                         }
                     }
-                System.out.println("[MPTEST] ores 5x5 chunks bauxite=" + baux + " rockSalt=" + salt);
+                System.out.println("[MPTEST] ores 5x5 chunks iron=" + baux);
             }
             if (dt == 1840 && hideout != null) {
                 var l = tester.serverLevel();

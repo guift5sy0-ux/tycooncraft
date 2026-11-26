@@ -1,9 +1,6 @@
 package com.tycooncraft.world;
 
 import com.tycooncraft.TycoonCraft;
-import com.tycooncraft.block.ConveyorBlock;
-import com.tycooncraft.block.MachineBlock;
-import com.tycooncraft.machine.MachineType;
 import com.tycooncraft.registry.ModBlocks;
 import com.tycooncraft.registry.ModItems;
 import net.minecraft.ChatFormatting;
@@ -176,17 +173,6 @@ public final class StructureBuilder {
         }
     }
 
-    /** 기계·컨베이어를 동쪽으로 흐르게 한 줄 설치 */
-    private void line(int x, int y, int z, Block... blocks) {
-        for (int i = 0; i < blocks.length; i++) {
-            Block b = blocks[i];
-            BlockState s = b.defaultBlockState();
-            if (b instanceof MachineBlock) s = s.setValue(MachineBlock.FACING, Direction.EAST);
-            else if (b instanceof ConveyorBlock) s = s.setValue(ConveyorBlock.FACING, Direction.EAST);
-            set(x + i, y, z, s);
-        }
-    }
-
     private <T extends Mob> T spawnMob(EntityType<T> type, int x, int y, int z) {
         return spawnMob(type, x, y, z, null);
     }
@@ -254,74 +240,6 @@ public final class StructureBuilder {
         fill(0, 8, 0, 22, 8, 14, Blocks.DEEPSLATE_TILE_SLAB);
         for (int z : new int[]{5, 9}) fill(1, -1, z, 12, -1, z, Blocks.YELLOW_CONCRETE);
         fill(14, -1, 2, 21, -1, 12, Blocks.SMOOTH_STONE);
-    }
-
-    /** 작동하는 공장: 라인 3개 + 조립 작업장 */
-    public static void factory(ServerLevel level, BlockPos origin, boolean working) {
-        StructureBuilder b = new StructureBuilder(level, origin);
-        b.factoryShell();
-        for (int[] p : new int[][]{{4, 3}, {4, 11}, {11, 3}, {11, 11}, {18, 3}, {18, 11}, {11, 7}}) b.set(p[0], 7, p[1], Blocks.SEA_LANTERN);
-        Block c = ModBlocks.CONVEYOR.get(), s = ModBlocks.SELL_STATION.get();
-        b.line(2, 0, 3, c, m(MachineType.CRUSHER), c, m(MachineType.SMELTER), c, m(MachineType.PRESS), c, m(MachineType.LATHE), c, s);
-        b.line(2, 0, 7, c, m(MachineType.CRUSHER), c, m(MachineType.SMELTER), c, m(MachineType.WIRE_DRAWER), c, c, c, s);
-        b.line(2, 0, 11, c, m(MachineType.CRUSHER), c, m(MachineType.SMELTER), c, m(MachineType.ALLOY_FURNACE), c, m(MachineType.PRESS), c, s);
-        b.line(16, 0, 7, c, m(MachineType.ASSEMBLER), c, s);
-        b.set(15, 0, 2, Blocks.CRAFTING_TABLE);
-        b.set(15, 0, 12, ModBlocks.EXCHANGE.get());
-        for (int x = 16; x <= 20; x++) {
-            b.chest(x, 0, 2, Direction.SOUTH, null);
-            b.chest(x, 0, 12, Direction.NORTH, null);
-        }
-    }
-
-    public static final int KIT_W = 15, KIT_D = 11;
-
-    /** 공장 키트: 기본 공장 (분쇄 → 제련 → 압착 → 판매 라인 + 작업 공간). 네 면 모두 출입구 */
-    public static void starterFactory(ServerLevel level, BlockPos origin) {
-        StructureBuilder b = new StructureBuilder(level, origin);
-        int X = KIT_W - 1, Z = KIT_D - 1;
-        b.fill(0, 0, 0, X, 7, Z, Blocks.AIR);
-        b.foundation(0, -5, 0, X, -2, Z, Blocks.STONE_BRICKS);
-        b.hollow(0, -1, 0, X, 5, Z, Blocks.STONE_BRICKS);
-        b.fill(1, -1, 1, X - 1, -1, Z - 1, Blocks.POLISHED_ANDESITE);
-        for (int x = 1; x < X; x++) b.set(x, -1, 4, Blocks.YELLOW_CONCRETE);
-        for (int x = 1; x < X; x++) b.set(x, -1, 6, Blocks.YELLOW_CONCRETE);
-        // 기둥 + 창
-        for (int x : new int[]{0, 7, X}) for (int z : new int[]{0, Z}) b.fill(x, 0, z, x, 4, z, Blocks.DEEPSLATE_BRICKS);
-        for (int z : new int[]{0, 5, Z}) for (int x : new int[]{0, X}) b.fill(x, 0, z, x, 4, z, Blocks.DEEPSLATE_BRICKS);
-        for (int[] seg : new int[][]{{1, 2}, {12, 13}}) for (int z : new int[]{0, Z}) b.fill(seg[0], 2, z, seg[1], 3, z, Blocks.GLASS);
-        for (int z : new int[]{0, Z}) b.fill(8, 2, z, 11, 3, z, Blocks.GLASS);
-        for (int x : new int[]{0, X}) { b.fill(x, 2, 1, x, 3, 3, Blocks.GLASS); b.fill(x, 2, 7, x, 3, 9, Blocks.GLASS); }
-        // 출입구 (앞뒤 넓게, 양옆 작게)
-        for (int z : new int[]{0, Z}) b.fill(3, 0, z, 6, 2, z, Blocks.AIR);
-        for (int x : new int[]{0, X}) b.fill(x, 0, 4, x, 2, 6, Blocks.AIR);
-        b.fill(0, 4, 4, 0, 4, 6, Blocks.STONE_BRICKS);
-        b.fill(X, 4, 4, X, 4, 6, Blocks.STONE_BRICKS);
-        // 지붕 + 조명
-        b.fill(0, 6, 0, X, 6, Z, Blocks.DEEPSLATE_TILE_SLAB);
-        for (int[] p : new int[][]{{3, 2}, {11, 2}, {3, 8}, {11, 8}, {7, 5}}) b.set(p[0], 5, p[1], Blocks.SEA_LANTERN);
-        // 생산 라인: 원석을 첫 벨트에 던지면 → 분쇄 → 제련 → 압착 → 판매
-        Block c = ModBlocks.CONVEYOR.get();
-        b.line(2, 0, 5, c, m(MachineType.CRUSHER), c, m(MachineType.SMELTER), c, m(MachineType.PRESS), c, ModBlocks.SELL_STATION.get());
-        b.set(1, 0, 5, Blocks.AIR);
-        // v0.27.0 전기: 보일러(아래 물 원천) → 증기기관 → 기계 위를 지나는 전선 (기계는 1.5배 빨라짐)
-        b.set(11, -1, 5, Blocks.WATER);
-        b.set(11, 0, 5, ModBlocks.BOILER.get().defaultBlockState().setValue(com.tycooncraft.power.BoilerBlock.FACING, Direction.SOUTH));
-        b.set(10, 0, 5, ModBlocks.STEAM_ENGINE.get().defaultBlockState().setValue(com.tycooncraft.power.SteamEngineBlock.FACING, Direction.SOUTH));
-        for (int x = 2; x <= 10; x++) b.set(x, 1, 5, ModBlocks.POWER_CABLE.get().defaultBlockState());
-        if (b.inside(b.at(11, 0, 5)) && b.level.getBlockEntity(b.at(11, 0, 5)) instanceof com.tycooncraft.power.BoilerBlockEntity boiler)
-            boiler.fuel().insertItem(0, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.COAL, 16), false);
-        // 작업 공간
-        b.set(2, 0, 1, Blocks.CRAFTING_TABLE);
-        b.set(9, 0, 1, Blocks.FURNACE.defaultBlockState().setValue(net.minecraft.world.level.block.FurnaceBlock.FACING, Direction.SOUTH));
-        b.set(10, 0, 1, Blocks.FURNACE.defaultBlockState().setValue(net.minecraft.world.level.block.FurnaceBlock.FACING, Direction.SOUTH));
-        b.set(12, 0, 1, ModBlocks.EXCHANGE.get());
-        for (int x = 9; x <= 12; x++) b.chest(x, 0, Z - 1, Direction.NORTH, null);
-        b.set(2, 0, Z - 1, Blocks.SMITHING_TABLE);
-    }
-
-    private static Block m(MachineType type) {
-        return ModBlocks.machine(type);
     }
 
     /** 폐공장: 무너지고 고장난 공장 + 재료 상자 + 몹·스포너 */
@@ -503,13 +421,10 @@ public final class StructureBuilder {
                     offer(ir, 6, Items.IRON_SHOVEL, 1), offer(ir, 4, Items.SHEARS, 1), offer(ir, 8, Items.SPYGLASS, 1),
                     offer(go, 8, ModItems.VEST_1.get(), 1), offer(go, 5, ModItems.HELMET_1.get(), 1), offer(go, 5, ModItems.PANTS_1.get(), 1),
                     offer(go, 4, ModItems.BOOTS_1.get(), 1), offer(go, 18, ModItems.POLICE_SHIELD.get(), 1));
-            case "trader.tycooncraft.machines" -> List.of(
-                    offer(ir, 4, ModItems.CONVEYOR.get(), 8), offer(ir, 6, ModItems.LIFT_UP.get(), 2), offer(ir, 6, ModItems.LIFT_DOWN.get(), 2),
-                    offer(ir, 12, ModItems.SELL_STATION.get(), 1), offer(ir, 12, ModItems.machineItem(MachineType.CRUSHER), 1),
-                    offer(ir, 12, ModItems.machineItem(MachineType.SMELTER), 1), offer(ir, 16, ModItems.machineItem(MachineType.PRESS), 1),
-                    offer(go, 4, ModItems.machineItem(MachineType.ALLOY_FURNACE), 1), offer(go, 4, ModItems.machineItem(MachineType.WIRE_DRAWER), 1),
-                    offer(go, 4, ModItems.machineItem(MachineType.LATHE), 1), offer(em, 4, ModItems.machineItem(MachineType.ASSEMBLER), 1),
-                    offer(go, 10, ModItems.machineItem(MachineType.CHEMICAL_REACTOR), 1), offer(go, 10, ModItems.machineItem(MachineType.ELECTROLYZER), 1),
+            case "trader.tycooncraft.machines" -> List.of(   // v0.30 장치상: 자체 효과가 있는 장치 + 레드스톤 부품
+                    offer(ir, 6, ModItems.LIFT_UP.get(), 2), offer(ir, 6, ModItems.LIFT_DOWN.get(), 2), offer(ir, 12, ModItems.SELL_STATION.get(), 1),
+                    offer(go, 3, ModItems.SETTER.get(), 1), offer(go, 6, ModItems.TURRET.get(), 1), offer(em, 2, ModItems.EMP_GENERATOR.get(), 1),
+                    offer(go, 2, ModItems.CCTV.get(), 1), offer(go, 3, ModItems.CCTV_SCREEN.get(), 1), offer(go, 2, ModItems.GUN_WORKBENCH.get(), 1),
                     offer(ir, 8, Items.HOPPER, 1), offer(ir, 2, Items.CHEST, 2), offer(ir, 2, Items.BARREL, 2), offer(ir, 4, Items.REDSTONE, 16),
                     offer(ir, 6, Items.PISTON, 2), offer(ir, 6, Items.OBSERVER, 2), offer(ir, 4, Items.REPEATER, 2), offer(ir, 6, Items.COMPARATOR, 1),
                     offer(ir, 4, Items.RAIL, 16), offer(go, 1, Items.POWERED_RAIL, 8), offer(ir, 8, Items.MINECART, 1),
@@ -535,44 +450,36 @@ public final class StructureBuilder {
                     offer(go, 1, ModItems.GUN_BARREL.get(), 2), offer(go, 2, ModItems.GUN_RECEIVER.get(), 1), offer(go, 1, ModItems.GUN_STOCK.get(), 1),
                     offer(go, 2, ModItems.GUN_WORKBENCH.get(), 1), offer(go, 8, ModItems.VEST_1.get(), 1), offer(go, 16, ModItems.VEST_2.get(), 1),
                     offer(go, 3, ModItems.PARACHUTE.get(), 1));
-            case "trader.tycooncraft.engineer" -> List.of(
-                    offer(go, 2, ModItems.BOILER.get(), 1), offer(go, 2, ModItems.STEAM_ENGINE.get(), 1),
-                    offer(ir, 6, ModItems.POWER_CABLE.get(), 16), offer(ir, 10, ModItems.POWER_CABLE.get(), 32),
-                    offer(go, 3, ModItems.SOLAR_GENERATOR.get(), 1), offer(go, 6, ModItems.ACCUMULATOR.get(), 1),
-                    offer(go, 5, ModItems.ROBOT_ARM.get(), 1), offer(go, 2, ModItems.SORTER.get(), 2), offer(go, 1, ModItems.WAREHOUSE.get(), 1),
-                    offer(em, 3, ModItems.machineItem(MachineType.INDUCTION_FURNACE), 1), offer(em, 5, ModItems.machineItem(MachineType.ARC_FURNACE), 1),
-                    offer(ir, 8, ModItems.CIRCUIT.get(), 4), offer(go, 2, ModItems.ADVANCED_CIRCUIT.get(), 2), offer(go, 3, ModItems.ELECTRIC_MOTOR.get(), 1),
-                    offer(ir, 6, ModItems.COPPER_COIL.get(), 4), offer(go, 1, ModItems.BATTERY_CELL.get(), 2), offer(ir, 8, ModItems.BALL_BEARING.get(), 8),
-                    offer(ir, 4, ModItems.BOLT.get(), 32), offer(go, 2, ModItems.TRANSFORMER.get(), 1), offer(ir, 6, ModItems.STEEL_GEAR.get(), 4),
-                    offer(go, 2, ModItems.CCTV.get(), 1), offer(go, 3, ModItems.CCTV_SCREEN.get(), 1));
-            case "trader.tycooncraft.scrap_buyer" -> List.of(   // 공산품 매입: 시세(판매소 포화)와 상관없이 일정한 값
+            case "trader.tycooncraft.engineer" -> List.of(   // v0.30 기술자: 부품 (전기·자동화 삭제)
+                    offer(ir, 8, ModItems.CIRCUIT.get(), 4), offer(go, 2, ModItems.ADVANCED_CIRCUIT.get(), 2), offer(go, 2, ModItems.MECHANISM.get(), 2),
+                    offer(go, 9, ModItems.ENGINE.get(), 1), offer(ir, 6, ModItems.STEEL_GEAR.get(), 4), offer(ir, 6, ModItems.STEEL_ROD.get(), 8),
+                    offer(ir, 5, ModItems.GOLD_WIRE.get(), 8), offer(ir, 6, ModItems.RUBBER.get(), 8), offer(ir, 6, ModItems.STEEL_INGOT.get(), 8),
+                    offer(go, 3, ModItems.SHIP_MOTOR.get(), 1), offer(ir, 6, ModItems.SHIP_FLOAT.get(), 4), offer(go, 2, ModItems.SHIP_BOOSTER.get(), 1),
+                    offer(go, 3, ModItems.SETTER.get(), 1), offer(go, 2, ModItems.CCTV.get(), 1), offer(go, 3, ModItems.CCTV_SCREEN.get(), 1),
+                    offer(ir, 6, ModItems.LIFT_UP.get(), 2), offer(go, 6, ModItems.TURRET.get(), 1));
+            case "trader.tycooncraft.scrap_buyer" -> List.of(   // 부품 매입: 시세(판매소 포화)와 상관없이 일정한 값
                     offer(ModItems.IRON_PLATE.get(), 16, cu, 40), offer(ModItems.COPPER_PLATE.get(), 16, cu, 40), offer(ModItems.STEEL_INGOT.get(), 8, cu, 20),
                     offer(ModItems.STEEL_PLATE.get(), 8, cu, 30), offer(ModItems.IRON_GEAR.get(), 8, cu, 30), offer(ModItems.STEEL_GEAR.get(), 4, cu, 30),
                     offer(ModItems.CIRCUIT.get(), 4, cu, 25), offer(ModItems.ADVANCED_CIRCUIT.get(), 2, ir, 6), offer(ModItems.MECHANISM.get(), 2, ir, 6),
                     offer(ModItems.COPPER_WIRE.get(), 32, cu, 30), offer(ModItems.STEEL_ROD.get(), 16, cu, 30), offer(ModItems.ENGINE.get(), 1, ir, 7),
-                    offer(ModItems.ELECTRIC_MOTOR.get(), 1, ir, 9), offer(ModItems.BALL_BEARING.get(), 8, cu, 30), offer(ModItems.BOLT.get(), 32, cu, 20),
-                    offer(ModItems.H_BEAM.get(), 4, cu, 40), offer(ModItems.REBAR.get(), 16, cu, 40), offer(ModItems.CEMENT.get(), 16, cu, 30),
-                    offer(ModItems.PLASTIC_PELLET.get(), 16, cu, 30), offer(ModItems.ALUMINUM_INGOT.get(), 8, cu, 40), offer(ModItems.MICROCHIP.get(), 4, ir, 5),
-                    offer(ModItems.GOLD_WIRE.get(), 16, ir, 5), offer(ModItems.STEEL_PIPE.get(), 8, cu, 40), offer(ModItems.PCB.get(), 4, ir, 4));
+                    offer(ModItems.GOLD_WIRE.get(), 16, ir, 5), offer(ModItems.GOLD_PLATE.get(), 8, ir, 5), offer(ModItems.RUBBER.get(), 16, cu, 30),
+                    offer(ModItems.IRON_ROD.get(), 16, cu, 25));
             case "trader.tycooncraft.miner" -> List.of(
                     offer(ir, 2, Items.COAL, 16), offer(ir, 3, Items.RAW_IRON, 16), offer(ir, 3, Items.RAW_COPPER, 16), offer(ir, 6, Items.RAW_GOLD, 8),
-                    offer(ir, 3, Items.REDSTONE, 16), offer(ir, 3, Items.LAPIS_LAZULI, 16), offer(ir, 4, ModItems.SULFUR.get(), 8),
-                    offer(ir, 4, ModItems.RAW_BAUXITE.get(), 8), offer(ir, 3, ModItems.ROCK_SALT.get(), 8), offer(ir, 4, Items.QUARTZ, 16),
+                    offer(ir, 3, Items.REDSTONE, 16), offer(ir, 3, Items.LAPIS_LAZULI, 16), offer(ir, 4, Items.QUARTZ, 16),
                     offer(ir, 3, Items.AMETHYST_SHARD, 8), offer(ir, 2, Items.CLAY_BALL, 16), offer(ir, 6, Items.OBSIDIAN, 4), offer(go, 2, Items.DIAMOND, 1),
                     offer(ir, 2, Items.FLINT, 16), offer(ir, 4, Items.IRON_INGOT, 8), offer(ir, 4, Items.COPPER_INGOT, 16), offer(ir, 6, Items.GOLD_INGOT, 4),
                     offer(ir, 2, Items.COAL_BLOCK, 2), offer(ir, 4, Items.GLOWSTONE_DUST, 8), offer(ir, 2, Items.SAND, 32), offer(ir, 2, Items.GRAVEL, 32));
-            case "trader.tycooncraft.chemist" -> List.of(
-                    offer(ir, 4, ModItems.SULFURIC_ACID.get(), 2), offer(ir, 4, ModItems.CAUSTIC_SODA.get(), 2), offer(ir, 5, ModItems.GAS_CYLINDER.get(), 1),
-                    offer(ir, 5, ModItems.CHLORINE_CYLINDER.get(), 1), offer(ir, 3, ModItems.PLASTIC_PELLET.get(), 8), offer(ir, 4, ModItems.EPOXY_RESIN.get(), 2),
-                    offer(ir, 2, ModItems.LATEX.get(), 4), offer(ir, 3, ModItems.RUBBER.get(), 8), offer(ir, 2, ModItems.QUICKLIME.get(), 8),
-                    offer(ir, 3, ModItems.COKE.get(), 8), offer(ir, 4, ModItems.GRAPHITE.get(), 4), offer(ir, 2, ModItems.SILICA_DUST.get(), 8),
-                    offer(ir, 4, ModItems.ALUMINA.get(), 4), offer(ir, 2, ModItems.SALT.get(), 8), offer(ir, 2, Items.GLASS_BOTTLE, 8),
-                    offer(ir, 4, Items.GUNPOWDER, 8), offer(ir, 6, Items.BLAZE_POWDER, 4), offer(ir, 3, Items.SLIME_BALL, 4),
-                    offer(ir, 4, ModItems.FIBERGLASS.get(), 4), offer(ir, 3, ModItems.GASKET.get(), 8));
+            case "trader.tycooncraft.chemist" -> List.of(   // v0.30 화약상 (화학 재료 삭제)
+                    offer(ir, 4, Items.GUNPOWDER, 8), offer(ir, 6, Items.BLAZE_POWDER, 4), offer(ir, 3, Items.SLIME_BALL, 4), offer(ir, 8, Items.TNT, 2),
+                    offer(ir, 3, ModItems.RUBBER.get(), 8), offer(ir, 4, Items.GLOWSTONE_DUST, 8), offer(ir, 2, Items.GLASS_BOTTLE, 8),
+                    offer(ir, 8, ModItems.FRAG_GRENADE.get(), 2), offer(ir, 6, ModItems.FLASH_GRENADE.get(), 2), offer(ir, 5, ModItems.SMOKE_GRENADE.get(), 2),
+                    offer(go, 3, ModItems.ROCKET.get(), 2), offer(ir, 4, Items.FIREWORK_ROCKET, 8), offer(ir, 6, ModItems.FUEL_CANISTER.get(), 2),
+                    offer(ir, 3, Items.FIRE_CHARGE, 4), offer(ir, 6, Items.MAGMA_CREAM, 2));
             case "trader.tycooncraft.vehicle" -> List.of(
                     offer(ir, 6, ModItems.FUEL_CANISTER.get(), 2), offer(ir, 4, ModItems.WHEEL.get(), 4), offer(go, 9, ModItems.ENGINE.get(), 1),
-                    offer(go, 2, ModItems.TRANSMISSION.get(), 1), offer(ir, 6, ModItems.STEEL_PLATE.get(), 8), offer(em, 1, ModItems.CAR.get(), 1),
-                    offer(em, 2, ModItems.LOCOMOTIVE.get(), 1), offer(em, 3, ModItems.HELICOPTER.get(), 1), offer(go, 4, ModItems.DRILL_HEAD.get(), 1),
+                    offer(ir, 6, ModItems.STEEL_PLATE.get(), 8), offer(em, 1, ModItems.CAR.get(), 1),
+                    offer(em, 2, ModItems.LOCOMOTIVE.get(), 1), offer(em, 3, ModItems.HELICOPTER.get(), 1), offer(go, 6, ModItems.DRONE.get(), 1),
                     offer(ir, 4, Items.RAIL, 32), offer(go, 1, Items.POWERED_RAIL, 16), offer(ir, 8, Items.MINECART, 1),
                     offer(go, 3, ModItems.SHIP_MOTOR.get(), 1), offer(go, 2, ModItems.SHIP_HELM.get(), 1), offer(ir, 6, ModItems.SHIP_FLOAT.get(), 4),
                     offer(go, 2, ModItems.SHIP_BOOSTER.get(), 1), offer(ir, 4, Items.SADDLE, 1), offer(ir, 6, Items.OAK_BOAT, 1),
@@ -624,13 +531,6 @@ public final class StructureBuilder {
         if (it == ModItems.HELMET_1.get() || it == ModItems.PANTS_1.get()) return 0.4;
         if (it == ModItems.BOOTS_1.get()) return 0.3;
         if (it == ModItems.SELL_STATION.get()) return 0.2;
-        if (it == ModItems.machineItem(MachineType.CRUSHER) || it == ModItems.machineItem(MachineType.SMELTER)) return 0.6;
-        if (it == ModItems.machineItem(MachineType.PRESS)) return 1;
-        if (it == ModItems.machineItem(MachineType.WIRE_DRAWER) || it == ModItems.machineItem(MachineType.LATHE) || it == ModItems.machineItem(MachineType.ALLOY_FURNACE)) return 1.5;
-        if (it == ModItems.machineItem(MachineType.ASSEMBLER)) return 4;
-        if (it == ModItems.machineItem(MachineType.CHEMICAL_REACTOR) || it == ModItems.machineItem(MachineType.ELECTROLYZER)) return 5;
-        if (it == ModItems.machineItem(MachineType.INDUCTION_FURNACE)) return 4;
-        if (it == ModItems.machineItem(MachineType.ARC_FURNACE)) return 6;
         return 0;
     }
 
@@ -952,7 +852,7 @@ public final class StructureBuilder {
         set(x, 3, z, Blocks.LANTERN);
     }
 
-    /** 공장 건물 16×14: 벽돌 벽·유리창·굴뚝, 안에 보일러·증기기관·축·기계 */
+    /** 공방 건물 16×14: 벽돌 벽·유리창·굴뚝, 안에 작업대·용광로·장치 전시 (v0.30: 기계·전기 삭제) */
     private void industryHall(int x, int z) {
         hollow(x, -1, z, x + 15, 6, z + 13, Blocks.BRICKS);
         fill(x + 1, -1, z + 1, x + 14, -1, z + 12, Blocks.POLISHED_ANDESITE);
@@ -970,21 +870,24 @@ public final class StructureBuilder {
         // 굴뚝
         fill(x + 13, 0, z + 2, x + 14, 14, z + 3, Blocks.BRICKS);
         fill(x + 13, 15, z + 2, x + 14, 15, z + 3, Blocks.CAMPFIRE.defaultBlockState().setValue(net.minecraft.world.level.block.CampfireBlock.SIGNAL_FIRE, true));
-        // 증기 설비 + 축 + 기계 줄 (석탄은 손님 몫)
-        set(x + 12, 0, z + 3, ModBlocks.BOILER.get().defaultBlockState().setValue(com.tycooncraft.power.BoilerBlock.FACING, Direction.SOUTH));
-        set(x + 11, 0, z + 3, ModBlocks.STEAM_ENGINE.get().defaultBlockState().setValue(com.tycooncraft.power.SteamEngineBlock.FACING, Direction.SOUTH));
-        for (int i = 2; i <= 11; i++) set(x + i, 1, z + 3, ModBlocks.POWER_CABLE.get());
-        Block[] ms = {m(MachineType.CRUSHER), m(MachineType.SMELTER), m(MachineType.PRESS), m(MachineType.LATHE), m(MachineType.WIRE_DRAWER)};
-        for (int i = 0; i < ms.length; i++) set(x + 2 + i * 2, 0, z + 3, ms[i].defaultBlockState().setValue(MachineBlock.FACING, Direction.SOUTH));
-        // 전기 구역: 발전기 - 전선 - 유도로·로봇 팔
-        set(x + 12, 0, z + 10, ModBlocks.SOLAR_GENERATOR.get());
-        for (int i = 3; i <= 11; i++) set(x + i, 0, z + 11, ModBlocks.POWER_CABLE.get());
-        set(x + 3, 0, z + 10, ModBlocks.WAREHOUSE.get());
-        set(x + 4, 0, z + 10, ModBlocks.ROBOT_ARM.get().defaultBlockState().setValue(com.tycooncraft.automation.RobotArmBlock.FACING, Direction.EAST));
-        set(x + 5, 0, z + 10, m(MachineType.INDUCTION_FURNACE).defaultBlockState().setValue(MachineBlock.FACING, Direction.NORTH));
-        set(x + 6, 0, z + 10, ModBlocks.ROBOT_ARM.get().defaultBlockState().setValue(com.tycooncraft.automation.RobotArmBlock.FACING, Direction.EAST));
-        set(x + 7, 0, z + 10, ModBlocks.WAREHOUSE.get());
-        set(x + 9, 0, z + 10, ModBlocks.ACCUMULATOR.get());
+        // v0.30 공방: 작업대·제작대·화로·용광로 + 자체 효과 장치 전시 (운송기 엔진·부유체·부스터·세터·리프트·포탑)
+        Direction S = Direction.SOUTH, N = Direction.NORTH;
+        set(x + 2, 0, z + 3, Blocks.CRAFTING_TABLE);
+        set(x + 3, 0, z + 3, ModBlocks.GUN_WORKBENCH.get());
+        set(x + 4, 0, z + 3, Blocks.CRAFTING_TABLE);
+        set(x + 6, 0, z + 3, Blocks.FURNACE.defaultBlockState().setValue(net.minecraft.world.level.block.FurnaceBlock.FACING, S));
+        set(x + 7, 0, z + 3, Blocks.BLAST_FURNACE.defaultBlockState().setValue(net.minecraft.world.level.block.BlastFurnaceBlock.FACING, S));
+        set(x + 8, 0, z + 3, Blocks.BLAST_FURNACE.defaultBlockState().setValue(net.minecraft.world.level.block.BlastFurnaceBlock.FACING, S));
+        set(x + 10, 0, z + 3, Blocks.ANVIL);
+        set(x + 11, 0, z + 3, Blocks.SMITHING_TABLE);
+        set(x + 3, 0, z + 10, ModBlocks.SHIP_MOTOR.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, N));
+        set(x + 4, 0, z + 10, ModBlocks.SHIP_FLOAT.get());
+        set(x + 5, 0, z + 10, ModBlocks.SHIP_BOOSTER.get());
+        set(x + 6, 0, z + 10, ModBlocks.SHIP_HELM.get());
+        set(x + 8, 0, z + 10, ModBlocks.SETTER.get());
+        set(x + 9, 0, z + 10, ModBlocks.LIFT_UP.get());
+        set(x + 11, 0, z + 10, ModBlocks.TURRET.get());
+        set(x + 12, 0, z + 10, ModBlocks.CCTV_SCREEN.get());
         for (int i = 2; i <= 13; i += 11) set(x + i, 5, z + 6, Blocks.LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true));
         set(x + 1, 0, z + 1, Blocks.CRAFTING_TABLE);
         chest(x + 1, 0, z + 12, Direction.EAST, VILLAGE_CHEST);
@@ -1008,8 +911,8 @@ public final class StructureBuilder {
         fill(x + 3, 0, z, x + 5, 2, z, Blocks.AIR);
         fill(x - 1, 5, z - 1, x + 9, 5, z + 8, Blocks.SPRUCE_SLAB);
         fill(x + 1, 0, z + 5, x + 7, 1, z + 6, Blocks.BARREL);
-        set(x + 1, 0, z + 1, ModBlocks.WAREHOUSE.get());
-        set(x + 7, 0, z + 1, ModBlocks.WAREHOUSE.get());
+        chest(x + 1, 0, z + 1, Direction.SOUTH, null);
+        chest(x + 7, 0, z + 1, Direction.SOUTH, null);
         chest(x + 4, 0, z + 6, Direction.NORTH, VILLAGE_CHEST);
         for (int[] c : new int[][]{{1, 10}, {2, 10}, {1, 11}, {5, 12}, {6, 12}, {6, 11}}) set(x + c[0], 0, z + c[1], Blocks.BARREL);
         set(x + 1, 1, z + 10, Blocks.BARREL);

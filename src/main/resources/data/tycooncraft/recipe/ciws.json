@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BBB",
+    "ATA",
+    "SMS"
+  ],
+  "key": {
+    "B": {
+      "item": "tycooncraft:gun_barrel"
+    },
+    "A": {
+      "item": "tycooncraft:advanced_circuit"
+    },
+    "T": {
+      "item": "tycooncraft:turret"
+    },
+    "S": {
+      "item": "tycooncraft:steel_plate"
+    },
+    "M": {
+      "item": "tycooncraft:mechanism"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:ciws",
+    "count": 1
+  }
+}

@@ -97,7 +97,7 @@ public final class V185Test {
                 ModItems.IRON_GEAR.get(), ModItems.CIRCUIT.get(), ModItems.MECHANISM.get(), ModItems.ADVANCED_CIRCUIT.get(), ModItems.GUN_RECEIVER.get(),
                 ModItems.GUN_BARREL.get(), ModItems.PISTOL.get(), ModItems.RIFLE.get(), ModItems.SNIPER.get(), ModItems.LIGHT_AMMO.get(), ModItems.ENGINE.get(),
                 ModItems.CAR.get(), ModItems.TANK.get(), ModItems.TURRET.get(), ModItems.POLICE_SHIELD.get(), ModItems.GUN_WORKBENCH.get(),
-                ModItems.VEST_3.get(), ModItems.ELECTRIC_MOTOR.get(), ModItems.INDUSTRIAL_ROBOT_ARM.get()})
+                ModItems.VEST_3.get(), ModItems.SHIP_MOTOR.get(), ModItems.SHIP_FLOAT.get()})
             b.append(price(it)).append(' ');
         int missing = 0;
         StringBuilder miss = new StringBuilder();
@@ -115,7 +115,7 @@ public final class V185Test {
             for (MerchantOffer o : com.tycooncraft.world.StructureBuilder.traderOffers("trader.tycooncraft." + k)) {
                 Item it = o.getResult().getItem();
                 if (it == ModItems.PISTOL.get() || it == ModItems.RIFLE.get() || it == ModItems.SMG.get() || it == ModItems.POLICE_SHIELD.get()
-                        || it == ModItems.machineItem(com.tycooncraft.machine.MachineType.ASSEMBLER) || it == ModItems.machineItem(com.tycooncraft.machine.MachineType.PRESS)) {
+                        || it == ModItems.TURRET.get() || it == ModItems.SETTER.get()) {
                     var one = com.tycooncraft.world.StructureBuilder.stockOf(k, o);
                     tg.append(o.getResult().getHoverName().getString()).append('=').append(one).append("원 ");
                 }
@@ -156,38 +156,16 @@ public final class V185Test {
         sp.serverLevel().setBlockAndUpdate(turret, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
     }
 
-    /** v0.18.7: 공장 키트 */
+    /** 시작 도구 (v0.30: 공장 키트 삭제 → 제작대) */
     static void kit(ServerPlayer sp) {
-        var sl = sp.serverLevel();
-        sp.getInventory().clearContent();
         var k = com.tycooncraft.event.StarterKit.kit();
         StringBuilder names = new StringBuilder();
-        for (ItemStack s : k) names.append(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(s.getItem()).getPath()).append(',');
-        sp.teleportTo(sl, -60.5, sp.getY(), -120.5, 180f, 10f);   // 북쪽을 봄
-        sp.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(ModItems.FACTORY_KIT.get()));
-        BlockPos o = com.tycooncraft.item.FactoryKitItem.originFor(sp);
-        boolean built = com.tycooncraft.item.FactoryKitItem.build(sp);
-        boolean crusher = sl.getBlockState(o.offset(3, 0, 5)).getBlock() == ModBlocks.machine(com.tycooncraft.machine.MachineType.CRUSHER);
-        boolean sell = sl.getBlockState(o.offset(9, 0, 5)).is(ModBlocks.SELL_STATION.get());
-        boolean again = com.tycooncraft.item.FactoryKitItem.build(sp);   // 같은 자리 다시 → 기계가 있어 거절
-        System.out.println("[AUTOTEST] v187 starterKit=" + names + " built=" + built + " crusher=" + crusher + " sell=" + sell + " rebuildRefused=" + !again
-                + " origin=" + o.toShortString() + " playerZ=" + sp.getZ());
-        // 원석을 첫 벨트에 → 잠시 뒤 판매소까지 가는지
-        var raw = new net.minecraft.world.entity.item.ItemEntity(sl, o.getX() + 2.5, o.getY() + 0.8, o.getZ() + 5.5, new ItemStack(Items.RAW_IRON, 8));
-        sl.addFreshEntity(raw);
-        kitOrigin = o;
-        sp.teleportTo(sl, o.getX() + 7.5, o.getY(), o.getZ() + 1.5, 160f, 25f);
+        for (ItemStack st : k) names.append(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(st.getItem()).getPath()).append(',');
+        System.out.println("[AUTOTEST] v300 starterKit=" + names);
     }
 
     static BlockPos kitOrigin;
 
-    static void kitCheck(ServerPlayer sp) {
-        var sl = sp.serverLevel();
-        long bal = 0;
-        if (sl.getBlockEntity(kitOrigin.offset(9, 0, 5)) instanceof com.tycooncraft.blockentity.SellStationBlockEntity st) bal = st.balance();
-        System.out.println("[AUTOTEST] v187 factoryLine sellStationBalance=" + bal);
-        sp.teleportTo(sl, kitOrigin.getX() + 7.5, kitOrigin.getY() + 1, kitOrigin.getZ() - 8.5, 0f, 12f);
-    }
 
     static Zombie bashTarget;
     static float bashHp;
@@ -613,272 +591,12 @@ public final class V185Test {
     }
 
     // ── v0.21.0 증기 동력 ──
-    static BlockPos pwBase;
 
-    static void powerSetup(ServerPlayer sp) {
-        var sl = sp.serverLevel();
-        pwBase = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, sp.blockPosition().offset(0, 0, -14));
-        for (int x = -2; x <= 7; x++) for (int y = 0; y <= 3; y++) for (int z = -2; z <= 2; z++)
-            sl.setBlockAndUpdate(pwBase.offset(x, y, z), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
-        sl.setBlockAndUpdate(pwBase, ModBlocks.machine(com.tycooncraft.machine.MachineType.CRUSHER).defaultBlockState());
-        if (sl.getBlockEntity(pwBase) instanceof com.tycooncraft.blockentity.MachineBlockEntity m)
-            m.inputs().insertItem(0, new ItemStack(net.minecraft.world.item.Items.RAW_IRON, 32), false);
-        sp.teleportTo(sl, pwBase.getX() + 2.5, pwBase.getY(), pwBase.getZ() + 6.5, 180f, 12f);
-        System.out.println("[AUTOTEST] v210 powerSetup crusher placed (no power yet)");
-    }
-
-    static void powerMid(ServerPlayer sp) {
-        var sl = sp.serverLevel();
-        int out = sl.getBlockEntity(pwBase) instanceof com.tycooncraft.blockentity.MachineBlockEntity m ? m.output().getStackInSlot(0).getCount() : -1;
-        System.out.println("[AUTOTEST] v210 noPower crusherOut=" + out + " ratio=" + com.tycooncraft.power.PowerGrid.ratio(sl, pwBase, com.tycooncraft.power.Layer.ELEC));
-        // 회전축 3개(기계 위) → 증기기관 → 보일러
-        for (int x = 0; x <= 2; x++)
-            sl.setBlockAndUpdate(pwBase.offset(x, 1, 0), ModBlocks.POWER_CABLE.get().defaultBlockState());   // v0.27.0 축 대신 전선
-        sl.setBlockAndUpdate(pwBase.offset(3, 0, 0), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
-        sl.setBlockAndUpdate(pwBase.offset(3, 1, 0), ModBlocks.STEAM_ENGINE.get().defaultBlockState().setValue(com.tycooncraft.power.SteamEngineBlock.FACING, net.minecraft.core.Direction.SOUTH));
-        sl.setBlockAndUpdate(pwBase.offset(4, 0, 0), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
-        sl.setBlockAndUpdate(pwBase.offset(4, 1, 0), ModBlocks.BOILER.get().defaultBlockState().setValue(com.tycooncraft.power.BoilerBlock.FACING, net.minecraft.core.Direction.SOUTH));
-        if (sl.getBlockEntity(pwBase.offset(4, 1, 0)) instanceof com.tycooncraft.power.BoilerBlockEntity b)
-            b.fuel().insertItem(0, new ItemStack(net.minecraft.world.item.Items.COAL, 8), false);
-    }
-
-    static void powerEnd(ServerPlayer sp) {
-        var sl = sp.serverLevel();
-        int out = sl.getBlockEntity(pwBase) instanceof com.tycooncraft.blockentity.MachineBlockEntity m ? m.output().getStackInSlot(0).getCount() : -1;
-        var net = com.tycooncraft.power.PowerGrid.net(sl, pwBase, com.tycooncraft.power.Layer.ELEC);
-        boolean spin = sl.getBlockEntity(pwBase.offset(3, 1, 0)) instanceof com.tycooncraft.power.SteamEngineBlockEntity se && se.spinning();
-        int water = sl.getBlockEntity(pwBase.offset(4, 1, 0)) instanceof com.tycooncraft.power.BoilerBlockEntity b ? b.water : -1;
-        System.out.println("[AUTOTEST] v210 powered crusherOut=" + out + " ratio=" + com.tycooncraft.power.PowerGrid.ratio(sl, pwBase, com.tycooncraft.power.Layer.ELEC)
-                + " supply=" + (net == null ? -1 : net.supply) + " demand=" + (net == null ? -1 : net.demand) + " nodes=" + (net == null ? 0 : net.nodes.size())
-                + " shaftSpin=" + spin + " coalBurned=" + com.tycooncraft.power.BoilerBlockEntity.coalBurned + " water=" + water + " rebuilds=" + com.tycooncraft.power.PowerGrid.rebuilds);
-        // 공장 키트에 동력이 이어져 있는지 (분쇄기 위치)
-        if (kitOrigin != null) {
-            BlockPos kc = kitOrigin.offset(3, 0, 5);
-            var kn = com.tycooncraft.power.PowerGrid.net(sl, kc);
-            System.out.println("[AUTOTEST] v210 kit crusherNet=" + (kn != null) + " nodes=" + (kn == null ? 0 : kn.nodes.size())
-                    + " boiler=" + sl.getBlockState(kitOrigin.offset(11, 0, 5)).getBlock().getClass().getSimpleName()
-                    + " water=" + (sl.getBlockEntity(kitOrigin.offset(11, 0, 5)) instanceof com.tycooncraft.power.BoilerBlockEntity kb ? kb.water + " fuel=" + kb.fuel().getStackInSlot(0).getCount() : "-"));
-            sp.teleportTo(sl, kitOrigin.getX() + 12.5, kitOrigin.getY() + 1, kitOrigin.getZ() + 8.5, 120f, 18f);
-        }
-    }
-
-    // ── v0.22.0 전기 ──
-    static BlockPos elBase;
+    // ── v0.24.0 로봇 팔 모션 · 산업 마을 ──
+    static BlockPos villOrigin;
 
     private static void put(net.minecraft.server.level.ServerLevel sl, BlockPos p, net.minecraft.world.level.block.state.BlockState s) {
         sl.setBlockAndUpdate(p, s);
-    }
-
-    private static com.tycooncraft.blockentity.MachineBlockEntity mach(net.minecraft.server.level.ServerLevel sl, BlockPos p, com.tycooncraft.machine.MachineType t,
-                                                                      net.minecraft.world.item.Item a, int an, net.minecraft.world.item.Item b, int bn) {
-        put(sl, p, ModBlocks.machine(t).defaultBlockState());
-        var m = (com.tycooncraft.blockentity.MachineBlockEntity) sl.getBlockEntity(p);
-        m.inputs().insertItem(0, new ItemStack(a, an), false);
-        if (b != null) m.inputs().insertItem(1, new ItemStack(b, bn), false);
-        return m;
-    }
-
-    static void elecSetup(ServerPlayer sp) {
-        var sl = sp.serverLevel();
-        sl.setDayTime(6000);
-        elBase = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, sp.blockPosition().offset(-4, 0, -26));
-        for (int x = -2; x <= 13; x++) for (int y = 0; y <= 4; y++) for (int z = -3; z <= 4; z++)
-            put(sl, elBase.offset(x, y, z), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
-        var S = net.minecraft.core.Direction.SOUTH;
-        put(sl, elBase, ModBlocks.BOILER.get().defaultBlockState().setValue(com.tycooncraft.power.BoilerBlock.FACING, S));
-        ((com.tycooncraft.power.BoilerBlockEntity) sl.getBlockEntity(elBase)).fuel().insertItem(0, new ItemStack(net.minecraft.world.item.Items.COAL, 16), false);
-        put(sl, elBase.offset(1, 0, 0), ModBlocks.STEAM_ENGINE.get().defaultBlockState().setValue(com.tycooncraft.power.SteamEngineBlock.FACING, S));
-        put(sl, elBase.offset(2, 0, 0), ModBlocks.GENERATOR.get().defaultBlockState().setValue(com.tycooncraft.power.elec.GeneratorBlock.FACING, S));
-        for (int x = 3; x <= 8; x++) put(sl, elBase.offset(x, 0, 0), ModBlocks.POWER_CABLE.get().defaultBlockState());
-        var I = net.minecraft.world.item.Items.RAW_IRON;
-        mach(sl, elBase.offset(4, 0, 1), com.tycooncraft.machine.MachineType.INDUCTION_FURNACE, I, 64, null, 0);
-        mach(sl, elBase.offset(5, 0, 1), com.tycooncraft.machine.MachineType.CRUSHER, I, 64, null, 0);
-        put(sl, elBase.offset(6, 0, -1), ModBlocks.ACCUMULATOR.get().defaultBlockState());
-        ((com.tycooncraft.power.elec.AccumulatorBlockEntity) sl.getBlockEntity(elBase.offset(6, 0, -1))).stored = 50_000;
-        put(sl, elBase.offset(7, 0, -1), ModBlocks.SOLAR_GENERATOR.get().defaultBlockState());
-        // 전동기 → 회전축 → 프레스 (전기로 옛 축 기계 돌리기)
-        put(sl, elBase.offset(9, 0, 0), ModBlocks.ELECTRIC_MOTOR.get().defaultBlockState().setValue(com.tycooncraft.power.elec.GeneratorBlock.FACING, net.minecraft.core.Direction.WEST));
-        put(sl, elBase.offset(10, 0, 0), ModBlocks.SHAFT.get().defaultBlockState().setValue(com.tycooncraft.power.ShaftBlock.AXIS, net.minecraft.core.Direction.Axis.X));
-        put(sl, elBase.offset(11, 0, 0), ModBlocks.SHAFT.get().defaultBlockState().setValue(com.tycooncraft.power.ShaftBlock.AXIS, net.minecraft.core.Direction.Axis.X));
-        mach(sl, elBase.offset(11, 0, 1), com.tycooncraft.machine.MachineType.PRESS, net.minecraft.world.item.Items.JUNGLE_LOG, 32, null, 0);
-        // 전기 전용 기계를 전선 없이 → 멈춰 있어야 함
-        mach(sl, elBase.offset(0, 0, 3), com.tycooncraft.machine.MachineType.ARC_FURNACE, net.minecraft.world.item.Items.IRON_INGOT, 16, ModItems.GRAPHITE.get(), 8);
-        sp.teleportTo(sl, elBase.getX() + 5.5, elBase.getY() + 4.5, elBase.getZ() + 7.5, 180f, 35f);
-        System.out.println("[AUTOTEST] v220 elecSetup cable0=" + sl.getBlockState(elBase.offset(3, 0, 0)));
-    }
-
-    private static int outOf(net.minecraft.server.level.ServerLevel sl, BlockPos p) {
-        return sl.getBlockEntity(p) instanceof com.tycooncraft.blockentity.MachineBlockEntity m ? m.output().getStackInSlot(0).getCount() : -1;
-    }
-
-    private static void elecLog(ServerPlayer sp, String tag) {
-        var sl = sp.serverLevel();
-        var L = com.tycooncraft.power.Layer.ELEC;
-        var e = com.tycooncraft.power.PowerGrid.net(sl, elBase.offset(3, 0, 0), L);
-        var m = com.tycooncraft.power.PowerGrid.net(sl, elBase.offset(10, 0, 0));
-        var acc = (com.tycooncraft.power.elec.AccumulatorBlockEntity) sl.getBlockEntity(elBase.offset(6, 0, -1));
-        var gen = (com.tycooncraft.power.elec.GeneratorBlockEntity) sl.getBlockEntity(elBase.offset(2, 0, 0));
-        var sol = (com.tycooncraft.power.elec.SolarBlockEntity) sl.getBlockEntity(elBase.offset(7, 0, -1));
-        var mot = (com.tycooncraft.power.elec.MotorBlockEntity) sl.getBlockEntity(elBase.offset(9, 0, 0));
-        System.out.println("[AUTOTEST] v220 " + tag + " induction=" + outOf(sl, elBase.offset(4, 0, 1)) + " crusher=" + outOf(sl, elBase.offset(5, 0, 1))
-                + " press=" + outOf(sl, elBase.offset(11, 0, 1)) + " arcNoCable=" + outOf(sl, elBase.offset(0, 0, 3))
-                + " elecNodes=" + (e == null ? 0 : e.nodes.size()) + " supply=" + (e == null ? -1 : e.supply) + " demand=" + (e == null ? -1 : e.demand)
-                + " ratio=" + (e == null ? -1 : e.ratio) + " stored=" + acc.stored + " gen=" + gen.output() + " solar=" + sol.output() + " motor=" + mot.output()
-                + " shaftNet=" + (m == null ? -1 : m.supply + "/" + m.demand) + " coal=" + com.tycooncraft.power.BoilerBlockEntity.coalBurned
-                + " cableState=" + sl.getBlockState(elBase.offset(4, 0, 0)).getValue(com.tycooncraft.power.elec.CableBlock.prop(net.minecraft.core.Direction.SOUTH)));
-    }
-
-    static void elecMid(ServerPlayer sp) {
-        elecLog(sp, "mid");
-    }
-
-    static void elecView2(ServerPlayer sp) {
-        sp.teleportTo(sp.serverLevel(), elBase.getX() + 6.5, elBase.getY() + 1.8, elBase.getZ() + 3.6, 160f, 30f);
-    }
-
-    static void elecEnd(ServerPlayer sp) {
-        elecLog(sp, "end");
-        // 밤: 태양광 0 확인
-        sp.serverLevel().setDayTime(18000);
-    }
-
-    // ── v0.23.0 자동화 ──
-    static BlockPos auBase;
-
-    private static int count(net.minecraft.server.level.ServerLevel sl, BlockPos p, net.minecraft.world.item.Item it) {
-        if (!(sl.getBlockEntity(p) instanceof com.tycooncraft.automation.WarehouseBlockEntity w)) return -1;
-        int n = 0;
-        for (int i = 0; i < w.inv.getContainerSize(); i++) if (w.inv.getItem(i).is(it)) n += w.inv.getItem(i).getCount();
-        return n;
-    }
-
-    static void autoSetup(ServerPlayer sp) {
-        var sl = sp.serverLevel();
-        auBase = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, sp.blockPosition().offset(-4, 0, -40));
-        for (int x = -2; x <= 9; x++) for (int y = 0; y <= 4; y++) for (int z = -3; z <= 3; z++)
-            put(sl, auBase.offset(x, y, z), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
-        var E = net.minecraft.core.Direction.EAST;
-        put(sl, auBase, ModBlocks.WAREHOUSE.get().defaultBlockState());
-        var wa = (com.tycooncraft.automation.WarehouseBlockEntity) sl.getBlockEntity(auBase);
-        wa.inv.setItem(0, new ItemStack(net.minecraft.world.item.Items.RAW_IRON, 64));
-        wa.inv.setItem(1, new ItemStack(net.minecraft.world.item.Items.COBBLESTONE, 32));
-        put(sl, auBase.offset(1, 0, 0), ModBlocks.ROBOT_ARM.get().defaultBlockState().setValue(com.tycooncraft.automation.RobotArmBlock.FACING, E));
-        ((com.tycooncraft.automation.RobotArmBlockEntity) sl.getBlockEntity(auBase.offset(1, 0, 0))).setFilter(new ItemStack(net.minecraft.world.item.Items.RAW_IRON));
-        put(sl, auBase.offset(2, 0, 0), ModBlocks.machine(com.tycooncraft.machine.MachineType.INDUCTION_FURNACE).defaultBlockState()
-                .setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING, net.minecraft.core.Direction.SOUTH));
-        put(sl, auBase.offset(3, 0, 0), ModBlocks.ROBOT_ARM.get().defaultBlockState().setValue(com.tycooncraft.automation.RobotArmBlock.FACING, E));
-        put(sl, auBase.offset(4, 0, 0), ModBlocks.CONVEYOR.get().defaultBlockState().setValue(com.tycooncraft.block.ConveyorBlock.FACING, E));
-        put(sl, auBase.offset(5, 0, 0), ModBlocks.SORTER.get().defaultBlockState().setValue(com.tycooncraft.automation.SorterBlock.FACING, E));
-        ((com.tycooncraft.automation.SorterBlockEntity) sl.getBlockEntity(auBase.offset(5, 0, 0))).setFilter(new ItemStack(net.minecraft.world.item.Items.IRON_INGOT));
-        put(sl, auBase.offset(5, 0, -1), ModBlocks.WAREHOUSE.get().defaultBlockState());
-        put(sl, auBase.offset(6, 0, 0), ModBlocks.WAREHOUSE.get().defaultBlockState());
-        // 전기: 꽉 찬 축전지 + 전선
-        put(sl, auBase.offset(1, 0, 1), ModBlocks.ACCUMULATOR.get().defaultBlockState());
-        ((com.tycooncraft.power.elec.AccumulatorBlockEntity) sl.getBlockEntity(auBase.offset(1, 0, 1))).stored = 200_000;
-        put(sl, auBase.offset(2, 0, 1), ModBlocks.POWER_CABLE.get().defaultBlockState());
-        put(sl, auBase.offset(3, 0, 1), ModBlocks.POWER_CABLE.get().defaultBlockState());
-        // 분류 안 되는 물건(조약돌)을 벨트에 올림 → 앞(창고 C)으로 가야 함
-        com.tycooncraft.blockentity.ItemTransfer.spawnAt(sl, auBase.offset(4, 0, 0), E, new ItemStack(net.minecraft.world.item.Items.COBBLESTONE, 8));
-        sp.teleportTo(sl, auBase.getX() + 3.5, auBase.getY() + 1.9, auBase.getZ() - 3.8, 0f, 20f);
-        System.out.println("[AUTOTEST] v230 autoSetup ok");
-    }
-
-    private static void autoLog(ServerPlayer sp, String tag) {
-        var sl = sp.serverLevel();
-        var I = net.minecraft.world.item.Items.IRON_INGOT;
-        var raw = net.minecraft.world.item.Items.RAW_IRON;
-        var cob = net.minecraft.world.item.Items.COBBLESTONE;
-        System.out.println("[AUTOTEST] v230 " + tag + " A.raw=" + count(sl, auBase, raw) + " A.cobble=" + count(sl, auBase, cob)
-                + " B.ingot(left)=" + count(sl, auBase.offset(5, 0, -1), I) + " B.cobble=" + count(sl, auBase.offset(5, 0, -1), cob)
-                + " C.ingot(fwd)=" + count(sl, auBase.offset(6, 0, 0), I) + " C.cobble=" + count(sl, auBase.offset(6, 0, 0), cob)
-                + " armMoves=" + com.tycooncraft.automation.RobotArmBlockEntity.moves + " sortedLeft=" + com.tycooncraft.automation.SorterBlockEntity.sortedLeft
-                + " passed=" + com.tycooncraft.automation.SorterBlockEntity.passed
-                + " armPower=" + com.tycooncraft.power.PowerGrid.ratio(sl, auBase.offset(1, 0, 0), com.tycooncraft.power.Layer.ELEC)
-                + " arm2Power=" + com.tycooncraft.power.PowerGrid.ratio(sl, auBase.offset(3, 0, 0), com.tycooncraft.power.Layer.ELEC));
-    }
-
-    static void autoMid(ServerPlayer sp) {
-        autoLog(sp, "mid");
-    }
-
-    static void autoEnd(ServerPlayer sp) {
-        autoLog(sp, "end");
-    }
-
-    // ── v0.24.0 로봇 팔 모션 · 산업 마을 ──
-    static BlockPos armBase, villOrigin;
-
-    static void armShowSetup(ServerPlayer sp) {
-        var sl = sp.serverLevel();
-        StringBuilder pr = new StringBuilder();
-        for (net.minecraft.world.item.Item it : new net.minecraft.world.item.Item[]{net.minecraft.world.item.Items.RAW_IRON, ModItems.IRON_DUST.get(), net.minecraft.world.item.Items.IRON_INGOT,
-                ModItems.IRON_PLATE.get(), ModItems.IRON_GEAR.get(), ModItems.CIRCUIT.get(), ModItems.MECHANISM.get(), ModItems.ADVANCED_CIRCUIT.get(), ModItems.ENGINE.get(),
-                ModItems.CAR.get(), ModItems.LOCOMOTIVE.get(), ModItems.HELICOPTER.get(), ModItems.DESTROYER_CORE.get(), net.minecraft.world.item.Items.NETHER_STAR, net.minecraft.world.item.Items.ELYTRA, net.minecraft.world.item.Items.DRAGON_EGG, ModItems.VENOM_SPIT.get(), net.minecraft.world.item.Items.WITHER_SKELETON_SKULL, ModItems.machineItem(com.tycooncraft.machine.MachineType.ASSEMBLER),
-                ModItems.TANK.get(), ModItems.STEEL_INGOT.get()})
-            pr.append(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(it).getPath()).append('=').append(Math.round(com.tycooncraft.economy.PriceTable.basePrice(it) * 10) / 10.0).append(' ');
-        System.out.println("[AUTOTEST] v260 prices " + pr + " manualHour=" + com.tycooncraft.economy.PriceTable.MANUAL_HOUR);
-        // v0.26.2 상점 구매가 (상인 진열 계산 그대로)
-        StringBuilder buy = new StringBuilder();
-        for (String key : new String[]{"trader.tycooncraft.gun", "trader.tycooncraft.vehicle", "trader.tycooncraft.gear", "trader.tycooncraft.engineer"}) {
-            var pool = com.tycooncraft.world.StructureBuilder.traderStock(key, net.minecraft.util.RandomSource.create(1));
-            for (var o : pool) {
-                long won = com.tycooncraft.economy.Coins.valueOf(new ItemStack(o.getItemCostA().item().value(), o.getItemCostA().count()))
-                        + o.getItemCostB().map(c -> com.tycooncraft.economy.Coins.valueOf(new ItemStack(c.item().value(), c.count()))).orElse(0L);
-                buy.append(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(o.getResult().getItem()).getPath()).append('x').append(o.getResult().getCount())
-                        .append('=').append(won).append(' ');
-            }
-        }
-        System.out.println("[AUTOTEST] v262 buy " + buy);
-        armBase = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, sp.blockPosition().offset(-6, 0, -52));
-        for (int x = -2; x <= 15; x++) for (int y = 0; y <= 4; y++) for (int z = -2; z <= 5; z++)
-            put(sl, armBase.offset(x, y, z), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
-        for (int i = 0; i < 5; i++) {
-            BlockPos a = armBase.offset(i * 3, 0, 0);
-            put(sl, a.west(), net.minecraft.world.level.block.Blocks.CHEST.defaultBlockState());
-            put(sl, a, ModBlocks.ROBOT_ARM.get().defaultBlockState().setValue(com.tycooncraft.automation.RobotArmBlock.FACING, net.minecraft.core.Direction.EAST));
-            put(sl, a.east(), ModBlocks.WAREHOUSE.get().defaultBlockState());
-        }
-        put(sl, armBase.offset(-1, 0, 3), ModBlocks.CONVEYOR.get().defaultBlockState().setValue(com.tycooncraft.block.ConveyorBlock.FACING, net.minecraft.core.Direction.EAST));
-        put(sl, armBase.offset(0, 0, 3), ModBlocks.SORTER.get().defaultBlockState().setValue(com.tycooncraft.automation.SorterBlock.FACING, net.minecraft.core.Direction.EAST));
-        ((com.tycooncraft.automation.SorterBlockEntity) sl.getBlockEntity(armBase.offset(0, 0, 3))).setFilter(new ItemStack(net.minecraft.world.item.Items.IRON_INGOT));
-        put(sl, armBase.offset(1, 0, 3), ModBlocks.CONVEYOR.get().defaultBlockState().setValue(com.tycooncraft.block.ConveyorBlock.FACING, net.minecraft.core.Direction.EAST));
-        // v0.24.1 화로 라인: 상자(원철·석탄) → 팔 → 화로 → 팔 → 상자
-        BlockPos fb = armBase.offset(20, 0, 0);
-        sl.setChunkForced(fb.getX() >> 4, fb.getZ() >> 4, true);   // 마을 시험하러 멀리 가도 계속 돌게
-        sl.setChunkForced((fb.getX() + 3) >> 4, fb.getZ() >> 4, true);
-        sl.setChunkForced((fb.getX() - 1) >> 4, fb.getZ() >> 4, true);
-        for (int x = -2; x <= 5; x++) for (int y = 0; y <= 3; y++) for (int z = -1; z <= 3; z++)
-            put(sl, fb.offset(x, y, z), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
-        var E = net.minecraft.core.Direction.EAST;
-        put(sl, fb.offset(-1, 0, 0), net.minecraft.world.level.block.Blocks.CHEST.defaultBlockState());
-        var ca = (net.minecraft.world.level.block.entity.ChestBlockEntity) sl.getBlockEntity(fb.offset(-1, 0, 0));
-        ca.setItem(0, new ItemStack(net.minecraft.world.item.Items.RAW_IRON, 16));
-        ca.setItem(1, new ItemStack(net.minecraft.world.item.Items.COAL, 4));
-        put(sl, fb, ModBlocks.ROBOT_ARM.get().defaultBlockState().setValue(com.tycooncraft.automation.RobotArmBlock.FACING, E));
-        put(sl, fb.offset(1, 0, 0), net.minecraft.world.level.block.Blocks.FURNACE.defaultBlockState()
-                .setValue(net.minecraft.world.level.block.AbstractFurnaceBlock.FACING, net.minecraft.core.Direction.SOUTH));
-        put(sl, fb.offset(2, 0, 0), ModBlocks.ROBOT_ARM.get().defaultBlockState().setValue(com.tycooncraft.automation.RobotArmBlock.FACING, E));
-        put(sl, fb.offset(3, 0, 0), net.minecraft.world.level.block.Blocks.BARREL.defaultBlockState()
-                .setValue(net.minecraft.world.level.block.BarrelBlock.FACING, net.minecraft.core.Direction.UP));
-        put(sl, fb.offset(0, 0, 1), ModBlocks.ACCUMULATOR.get().defaultBlockState());
-        ((com.tycooncraft.power.elec.AccumulatorBlockEntity) sl.getBlockEntity(fb.offset(0, 0, 1))).stored = 200_000;
-        put(sl, fb.offset(1, 0, 1), ModBlocks.POWER_CABLE.get().defaultBlockState());
-        put(sl, fb.offset(2, 0, 1), ModBlocks.POWER_CABLE.get().defaultBlockState());
-        sp.teleportTo(sl, fb.getX() + 1.0, fb.getY() + 1.6, fb.getZ() - 2.6, 0f, 28f);
-    }
-
-    static void furnaceLog(ServerPlayer sp) {
-        if (armBase == null) return;
-        var sl = sp.serverLevel();
-        BlockPos fb = armBase.offset(20, 0, 0);
-        var ca = (net.minecraft.world.level.block.entity.ChestBlockEntity) sl.getBlockEntity(fb.offset(-1, 0, 0));
-        var fu = (net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity) sl.getBlockEntity(fb.offset(1, 0, 0));
-        var bo = (net.minecraft.world.level.block.entity.BarrelBlockEntity) sl.getBlockEntity(fb.offset(3, 0, 0));
-        int ingots = 0;
-        for (int i = 0; i < bo.getContainerSize(); i++) if (bo.getItem(i).is(net.minecraft.world.item.Items.IRON_INGOT)) ingots += bo.getItem(i).getCount();
-        System.out.println("[AUTOTEST] v241 furnaceLine chestRaw=" + ca.getItem(0).getCount() + " chestCoal=" + ca.getItem(1).getCount()
-                + " furnaceIn=" + fu.getItem(0) + " fuel=" + fu.getItem(1) + " out=" + fu.getItem(2) + " barrelIngots=" + ingots
-                + " lit=" + sl.getBlockState(fb.offset(1, 0, 0)).getValue(net.minecraft.world.level.block.AbstractFurnaceBlock.LIT));
     }
 
     static void villageGo(ServerPlayer sp) {

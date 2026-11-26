@@ -31,7 +31,7 @@ public final class GunCrafting {
         if (recipes == null) {
             Item rec = ModItems.GUN_RECEIVER.get(), bar = ModItems.GUN_BARREL.get(), stock = ModItems.GUN_STOCK.get();
             List<Recipe> l = new ArrayList<>();
-            // 총기 부품 (조립기·선반에서도 만들 수 있음)
+            // 총기 부품
             l.add(r(rec, 1, ModItems.STEEL_PLATE.get(), 2, ModItems.MECHANISM.get(), 1, ModItems.IRON_GEAR.get(), 1));
             l.add(r(bar, 1, ModItems.STEEL_ROD.get(), 1));
             l.add(r(stock, 1, Items.OAK_PLANKS, 3, Items.LEATHER, 1));
@@ -48,16 +48,16 @@ public final class GunCrafting {
             l.add(r(ModItems.RPG.get(), 1, rec, 1, ModItems.STEEL_PLATE.get(), 4, ModItems.STEEL_ROD.get(), 2, stock, 1, Items.SPYGLASS, 1));
             l.add(r(ModItems.JUDGE.get(), 1, Items.BEACON, 2, Items.NETHERITE_INGOT, 5, Items.DRAGON_EGG, 1, ModItems.PISTOL.get(), 1));
             // 총기 파츠 (총기 제작대 전용, 한 칸 = 1개라 9칸 안에 들어가게)
-            l.add(r(part(GunPart.SCOPE), 1, ModItems.ALUMINUM_PLATE.get(), 2, Items.GLASS_PANE, 2, ModItems.STEEL_ROD.get(), 1, ModItems.CIRCUIT.get(), 1));
-            l.add(r(part(GunPart.RED_DOT), 1, ModItems.ALUMINUM_PLATE.get(), 1, Items.GLASS_PANE, 1, Items.REDSTONE, 1, ModItems.BATTERY_CELL.get(), 1, ModItems.CIRCUIT.get(), 1));
-            l.add(r(part(GunPart.HEAVY_BARREL), 1, bar, 1, ModItems.STEEL_PLATE.get(), 2, ModItems.ALUMINUM_PLATE.get(), 1));
+            l.add(r(part(GunPart.SCOPE), 1, ModItems.IRON_PLATE.get(), 2, Items.GLASS_PANE, 2, ModItems.STEEL_ROD.get(), 1, ModItems.CIRCUIT.get(), 1));
+            l.add(r(part(GunPart.RED_DOT), 1, ModItems.IRON_PLATE.get(), 1, Items.GLASS_PANE, 1, Items.REDSTONE, 2, Items.GLOWSTONE_DUST, 1, ModItems.CIRCUIT.get(), 1));
+            l.add(r(part(GunPart.HEAVY_BARREL), 1, bar, 1, ModItems.STEEL_PLATE.get(), 3));
             l.add(r(part(GunPart.RAPID_TRIGGER), 1, ModItems.STEEL_ROD.get(), 1, ModItems.MECHANISM.get(), 1, Items.GOLD_INGOT, 1));
-            l.add(r(part(GunPart.EXTENDED_MAG), 1, ModItems.STEEL_PLATE.get(), 2, ModItems.PLASTIC_PELLET.get(), 3));
-            l.add(r(part(GunPart.MAG_COUPLER), 1, ModItems.PLASTIC_PELLET.get(), 2, ModItems.RUBBER.get(), 2, ModItems.STEEL_PLATE.get(), 1));
-            l.add(r(part(GunPart.VERTICAL_GRIP), 1, ModItems.PLASTIC_PELLET.get(), 4, ModItems.ALUMINUM_PLATE.get(), 1, ModItems.RUBBER.get(), 1));
-            l.add(r(part(GunPart.AP_ROUNDS), 1, ModItems.HEAVY_AMMO.get(), 4, ModItems.STEEL_INGOT.get(), 2, ModItems.COKE.get(), 1));
-            l.add(r(part(GunPart.INCENDIARY_ROUNDS), 1, ModItems.LIGHT_AMMO.get(), 4, ModItems.SULFUR.get(), 2, Items.BLAZE_POWDER, 1));
-            l.add(r(part(GunPart.BRASS_CATCHER), 1, Items.LEATHER, 3, ModItems.ALUMINUM_PLATE.get(), 1, Items.STRING, 2));
+            l.add(r(part(GunPart.EXTENDED_MAG), 1, ModItems.STEEL_PLATE.get(), 2, ModItems.RUBBER.get(), 1, ModItems.IRON_ROD.get(), 2));
+            l.add(r(part(GunPart.MAG_COUPLER), 1, ModItems.IRON_PLATE.get(), 2, ModItems.RUBBER.get(), 2, ModItems.STEEL_PLATE.get(), 1));
+            l.add(r(part(GunPart.VERTICAL_GRIP), 1, ModItems.IRON_PLATE.get(), 2, ModItems.RUBBER.get(), 2, Items.LEATHER, 1));
+            l.add(r(part(GunPart.AP_ROUNDS), 1, ModItems.HEAVY_AMMO.get(), 4, ModItems.STEEL_INGOT.get(), 2, Items.COAL, 1));
+            l.add(r(part(GunPart.INCENDIARY_ROUNDS), 1, ModItems.LIGHT_AMMO.get(), 4, Items.GUNPOWDER, 2, Items.BLAZE_POWDER, 1));
+            l.add(r(part(GunPart.BRASS_CATCHER), 1, Items.LEATHER, 3, ModItems.COPPER_PLATE.get(), 1, Items.STRING, 2));
             l.add(r(ModItems.SILENCER_ADVANCED.get(), 1, ModItems.SILENCER.get(), 1, ModItems.STEEL_PLATE.get(), 2, Items.BLACK_WOOL, 2, ModItems.GOLD_PLATE.get(), 1));
             // 탄약 (가공 재료로 만들면 더 많이 나옴)
             l.add(r(ModItems.LIGHT_AMMO.get(), 16, ModItems.COPPER_PLATE.get(), 1, Items.GUNPOWDER, 1, ModItems.IRON_ROD.get(), 1));
@@ -65,7 +65,7 @@ public final class GunCrafting {
             l.add(r(ModItems.HEAVY_AMMO.get(), 8, ModItems.COPPER_PLATE.get(), 1, Items.GUNPOWDER, 2, ModItems.STEEL_ROD.get(), 1));
             l.add(r(ModItems.HEAVY_AMMO.get(), 4, Items.COPPER_INGOT, 1, Items.GUNPOWDER, 2, Items.IRON_INGOT, 1));
             l.add(r(ModItems.HISPANO_AMMO.get(), 2, Items.GUNPOWDER, 5, ModItems.HEAVY_AMMO.get(), 1, ModItems.STEEL_INGOT.get(), 3));   // RT-20 전용 20mm
-            l.add(r(ModItems.SHOTGUN_SHELL.get(), 8, ModItems.COPPER_PLATE.get(), 1, Items.GUNPOWDER, 1, ModItems.IRON_DUST.get(), 2));
+            l.add(r(ModItems.SHOTGUN_SHELL.get(), 8, ModItems.COPPER_PLATE.get(), 1, Items.GUNPOWDER, 1, Items.IRON_NUGGET, 4));
             l.add(r(ModItems.SHOTGUN_SHELL.get(), 4, Items.PAPER, 1, Items.GUNPOWDER, 1, Items.IRON_NUGGET, 2));
             l.add(r(ModItems.ROCKET.get(), 2, ModItems.IRON_PLATE.get(), 2, Items.GUNPOWDER, 4, Items.TNT, 1, ModItems.COPPER_WIRE.get(), 1));
             recipes = List.copyOf(l);

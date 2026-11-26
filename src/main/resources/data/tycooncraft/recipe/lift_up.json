@@ -2,15 +2,15 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "C",
     "P",
-    "C"
+    "O",
+    "P"
   ],
   "key": {
-    "C": {
-      "item": "tycooncraft:conveyor"
-    },
     "P": {
+      "item": "tycooncraft:iron_plate"
+    },
+    "O": {
       "item": "minecraft:piston"
     }
   },

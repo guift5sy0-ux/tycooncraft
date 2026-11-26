@@ -53,30 +53,6 @@ public final class AutoTestClient {
         KeyMapping.set(k.getKey(), down);
     }
 
-    static boolean lidShot;
-
-    /** 화로 라인 첫 상자의 뚜껑이 열려 있나 (클라이언트) */
-    private static boolean lidOpen(Minecraft mc) {
-        return mc.level != null && V185Test.armBase != null
-                && mc.level.getBlockEntity(V185Test.armBase.offset(19, 0, 0)) instanceof net.minecraft.world.level.block.entity.ChestBlockEntity c && c.getOpenNess(1f) > 0.3f;
-    }
-
-    /** 로봇 팔·분류기 애니메이션을 원하는 단계에 멈춰 둠 (클라이언트) */
-    private static void armFreeze(Minecraft mc, float[] phases) {
-        if (mc.level == null || V185Test.armBase == null) return;
-        long now = mc.level.getGameTime();
-        for (int i = 0; i < phases.length; i++) {
-            if (mc.level.getBlockEntity(V185Test.armBase.offset(i * 3, 0, 0)) instanceof com.tycooncraft.automation.RobotArmBlockEntity a) {
-                a.swingAt = now - (long) phases[i];
-                a.carried = net.minecraft.world.item.Items.IRON_INGOT;
-            }
-        }
-        if (mc.level.getBlockEntity(V185Test.armBase.offset(0, 0, 3)) instanceof com.tycooncraft.automation.SorterBlockEntity so) {
-            so.flapAt = now - 4;
-            so.flapLeft = true;
-        }
-    }
-
     private static void shot(Minecraft mc, String name) {
         Screenshot.grab(mc.gameDirectory, name + ".png", mc.getMainRenderTarget(), msg -> {});
         Entity v = mc.player.getVehicle();
@@ -358,12 +334,6 @@ public final class AutoTestClient {
             case 708 -> KeyMapping.click(o.keyUse.getKey());
             case 713 -> shot(mc, "29_rpg_fire");
             // ── v0.12: 자동 굴착기, 연막탄, 섬광탄 (통합 서버에서 직접 순간이동·지급) ──
-            case 740 -> serverDo(mc, sp -> {
-                var m = AutoTest.miner;
-                double mx = m != null ? m.getX() : -12, mz = m != null ? m.getZ() : 22.5;
-                System.out.println("[AUTOTEST] miner final" + (m == null ? " none" : String.format(" x=%.1f running=%s mined=%d", m.getX(), m.isRunning(), m.minedBlocks)));
-                sp.teleportTo(sp.serverLevel(), mx + 3, g + 3.0, mz - 5, 31f, 26f);
-            });
             case 775 -> shot(mc, "30_miner");
             case 780 -> serverDo(mc, sp -> {
                 sp.getInventory().setItem(4, new net.minecraft.world.item.ItemStack(com.tycooncraft.registry.ModItems.SMOKE_GRENADE.get(), 4));
@@ -604,37 +574,6 @@ public final class AutoTestClient {
             case 2292 -> serverDo(mc, sp -> sp.teleportTo(sp.serverLevel(), -54.5, g + 6, 33.5, 180f, 14f));
             case 2325 -> shot(mc, "59b_gang_hideout_gate");
             // ── v0.16: 산업 (신규 기계·광석 + 아이템 액자) ──
-            case 2330 -> serverDo(mc, sp -> {
-                var sl = sp.serverLevel();
-                int y = (int) g, z = -40;
-                net.minecraft.world.level.block.state.BlockState[] row = {
-                        com.tycooncraft.registry.ModBlocks.machine(com.tycooncraft.machine.MachineType.CHEMICAL_REACTOR).defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, net.minecraft.core.Direction.SOUTH),
-                        com.tycooncraft.registry.ModBlocks.machine(com.tycooncraft.machine.MachineType.ELECTROLYZER).defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, net.minecraft.core.Direction.SOUTH),
-                        com.tycooncraft.registry.ModBlocks.BAUXITE_ORE.get().defaultBlockState(),
-                        com.tycooncraft.registry.ModBlocks.DEEPSLATE_BAUXITE_ORE.get().defaultBlockState(),
-                        com.tycooncraft.registry.ModBlocks.ROCK_SALT_ORE.get().defaultBlockState()};
-                for (int i = 0; i < row.length; i++) sl.setBlockAndUpdate(new net.minecraft.core.BlockPos(-24 + i * 2, y, z), row[i]);
-                // 아이템 액자 벽 (10×3)
-                net.minecraft.world.item.Item[] show = {
-                        com.tycooncraft.registry.ModItems.RAW_BAUXITE.get(), com.tycooncraft.registry.ModItems.ALUMINA.get(), com.tycooncraft.registry.ModItems.ALUMINUM_INGOT.get(),
-                        com.tycooncraft.registry.ModItems.ALUMINUM_FOIL.get(), com.tycooncraft.registry.ModItems.COKE.get(), com.tycooncraft.registry.ModItems.GRAPHITE.get(),
-                        com.tycooncraft.registry.ModItems.SULFURIC_ACID.get(), com.tycooncraft.registry.ModItems.CHLORINE_CYLINDER.get(), com.tycooncraft.registry.ModItems.EPOXY_RESIN.get(),
-                        com.tycooncraft.registry.ModItems.RUBBER.get(), com.tycooncraft.registry.ModItems.BALL_BEARING.get(), com.tycooncraft.registry.ModItems.VALVE.get(),
-                        com.tycooncraft.registry.ModItems.HYDRAULIC_CYLINDER.get(), com.tycooncraft.registry.ModItems.COPPER_COIL.get(), com.tycooncraft.registry.ModItems.ELECTRIC_MOTOR.get(),
-                        com.tycooncraft.registry.ModItems.GEARBOX.get(), com.tycooncraft.registry.ModItems.SILICON_WAFER.get(), com.tycooncraft.registry.ModItems.MICROCHIP.get(),
-                        com.tycooncraft.registry.ModItems.PCB.get(), com.tycooncraft.registry.ModItems.CONTROL_BOARD.get(), com.tycooncraft.registry.ModItems.BATTERY_CELL.get(),
-                        com.tycooncraft.registry.ModItems.SOLAR_PANEL.get(), com.tycooncraft.registry.ModItems.TRANSFORMER.get(), com.tycooncraft.registry.ModItems.INDUSTRIAL_ROBOT_ARM.get(),
-                        com.tycooncraft.registry.ModItems.H_BEAM.get(), com.tycooncraft.registry.ModItems.PRECAST_PANEL.get(), com.tycooncraft.registry.ModItems.CEMENT.get(),
-                        com.tycooncraft.registry.ModItems.STEEL_PIPE.get(), com.tycooncraft.registry.ModItems.INSULATED_CABLE.get(), com.tycooncraft.registry.ModItems.GAS_CYLINDER.get()};
-                for (int i = 0; i < show.length; i++) {
-                    var wall = new net.minecraft.core.BlockPos(-24 + i % 10, y + 3 - i / 10, z - 3);
-                    sl.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.SMOOTH_STONE.defaultBlockState());
-                    var frame = new net.minecraft.world.entity.decoration.ItemFrame(sl, wall.south(), net.minecraft.core.Direction.SOUTH);
-                    frame.setItem(new net.minecraft.world.item.ItemStack(show[i]), false);
-                    sl.addFreshEntity(frame);
-                }
-                sp.teleportTo(sl, -19.5, g + 2.2, z + 5.5, 180f, 12f);
-            });
             case 2350 -> shot(mc, "60_industry_items");
             case 2352 -> serverDo(mc, sp -> sp.teleportTo(sp.serverLevel(), -19.5, g + 1.6, -36.5, 180f, 10f));
             case 2370 -> shot(mc, "61_industry_machines");
@@ -810,9 +749,6 @@ public final class AutoTestClient {
             // ── v0.18.7: 공장 키트 ──
             case 2978 -> serverDo(mc, V185Test::kit);
             case 2990 -> mc.getToasts().clear();
-            case 2994 -> shot(mc, "87_factory_kit_inside");
-            case 3200 -> serverDo(mc, V185Test::kitCheck);
-            case 3212 -> shot(mc, "88_factory_kit_outside");
             case 3216 -> serverDo(mc, V185Test::bash);
             case 3220 -> serverDo(mc, V185Test::bashCheck);
             case 3226 -> serverDo(mc, V185Test::dragonRest);
@@ -909,59 +845,30 @@ public final class AutoTestClient {
             case 4072 -> fxFire(mc, 30f);
             case 4076 -> shot(mc, "fx10_rt20_tp_aim");
             // ── v0.21.0 산업혁명 1단계: 증기 동력 ──
-            case 4078 -> { o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::powerSetup); }
-            case 4140 -> serverKeep(mc, V185Test::powerMid);
-            case 4200 -> shot(mc, "pw1_steam_running");
-            case 4204 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), V185Test.pwBase.getX() + 2.0, V185Test.pwBase.getY() + 5.0, V185Test.pwBase.getZ() + 0.5, 180f, 90f));
-            case 4210 -> shot(mc, "pw1b_close");
-            case 4340 -> serverKeep(mc, V185Test::powerEnd);
-            case 4346 -> shot(mc, "pw2_kit_power");
             // ── v0.22.0 산업혁명 2단계: 전기 ──
-            case 4350 -> { o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::elecSetup); }
-            case 4500 -> serverKeep(mc, V185Test::elecMid);
-            case 4506 -> shot(mc, "el1_grid");
-            case 4520 -> serverKeep(mc, V185Test::elecView2);
-            case 4526 -> shot(mc, "el2_cables");
-            case 4650 -> serverKeep(mc, V185Test::elecEnd);
             // ── v0.23.0 산업혁명 3단계: 자동화 ──
-            case 4656 -> { o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::autoSetup); }
-            case 4760 -> serverKeep(mc, V185Test::autoMid);
-            case 4763 -> shot(mc, "au1_line");
-            case 4767 -> shot(mc, "au2_line_b");
-            case 4771 -> shot(mc, "au3_line_c");
-            case 4990 -> serverKeep(mc, V185Test::autoEnd);
-            case 4996 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(25); }
+            case 4996 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(0); }
             case 4999 -> shot(mc, "gb0");
             case 5002 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(1); }
             case 5005 -> shot(mc, "gb1");
-            case 5008 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(33); }
+            case 5008 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(2); }
             case 5011 -> shot(mc, "gb2");
-            case 5014 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(34); }
+            case 5014 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(6); }
             case 5017 -> shot(mc, "gb3");
-            case 5020 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(35); }
+            case 5020 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(7); }
             case 5023 -> shot(mc, "gb4");
-            case 5026 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(36); }
+            case 5026 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(11); }
             case 5029 -> shot(mc, "gb5");
-            case 5032 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(37); }
+            case 5032 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(16); }
             case 5035 -> shot(mc, "gb6");
-            case 5038 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(41); }
+            case 5038 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(18); }
             case 5041 -> shot(mc, "gb7");
-            case 5044 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(43); }
+            case 5044 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(28); }
             case 5047 -> shot(mc, "gb8");
-            case 5048 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(32); }
+            case 5048 -> { var bs = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess.fromItem(com.tycooncraft.event.StarterKit.guideBook())); mc.setScreen(bs); bs.setPage(29); }
             case 5050 -> shot(mc, "gb9");
-            case 5052 -> { mc.setScreen(null); o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::armShowSetup); }
+            case 5052 -> mc.setScreen(null);
             // ── v0.24.0 로봇 팔 관절 모션 / 분류기 가림판 (클라이언트에서 동작 단계를 고정해 찍음) ──
-            case 5056, 5060, 5064, 5068, 5072, 5076, 5080, 5084, 5088, 5092, 5096, 5100, 5104, 5108, 5112, 5116, 5120 -> { if (lidOpen(mc) && !lidShot) { lidShot = true; shot(mc, "ar4_chest_lid"); } }
-            case 5126 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), V185Test.armBase.getX() + 6.5, V185Test.armBase.getY() + 2.2, V185Test.armBase.getZ() + 6.8, 180f, 16f));
-            case 5130, 5131, 5132, 5133 -> armFreeze(mc, new float[]{1.5f, 4.5f, 11f, 16.5f, 21f});
-            case 5134 -> shot(mc, "ar1_phases");
-            case 5136 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), V185Test.armBase.getX() + 6.5, V185Test.armBase.getY() + 0.9, V185Test.armBase.getZ() + 3.9, 180f, 4f));
-            case 5140, 5141, 5142, 5143 -> armFreeze(mc, new float[]{1.5f, 4.5f, 11f, 16.5f, 21f});
-            case 5144 -> shot(mc, "ar2_close");
-            case 5145 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), V185Test.armBase.getX() + 0.5, V185Test.armBase.getY() + 1.6, V185Test.armBase.getZ() + 5.3, 180f, 38f));
-            case 5147, 5148 -> armFreeze(mc, new float[]{1.5f, 4.5f, 11f, 16.5f, 21f});
-            case 5149 -> shot(mc, "ar3_sorter");
             // ── v0.24.0 산업 마을 ──
             case 5150 -> { o.setCameraType(CameraType.FIRST_PERSON); serverDo(mc, V185Test::villageGo); }
             case 5230 -> serverKeep(mc, V185Test::villageBuild);
@@ -977,7 +884,6 @@ public final class AutoTestClient {
             case 5452 -> shot(mc, "vl5_factory_inside");
             case 5456 -> serverKeep(mc, sp -> V185Test.villageView(sp, 31.5, 18.5, -14.5, 0f, 30f));
             case 5476 -> shot(mc, "vl6_gate");
-            case 5480 -> serverKeep(mc, V185Test::furnaceLog);
             // ── v0.25.0 마을 경비병 ──
             case 5486 -> serverKeep(mc, V185Test::guardZombie);
             case 5520 -> shot(mc, "gd1_zombie");

@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "L L",
+    "RPR"
+  ],
+  "key": {
+    "P": {
+      "item": "tycooncraft:iron_plate"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "R": {
+      "item": "tycooncraft:rubber"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:boots_1",
+    "count": 1
+  }
+}

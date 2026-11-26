@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "RRR",
+    "GEG",
+    "SMS"
+  ],
+  "key": {
+    "R": {
+      "item": "tycooncraft:steel_rod"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "E": {
+      "item": "tycooncraft:engine"
+    },
+    "S": {
+      "item": "tycooncraft:steel_plate"
+    },
+    "M": {
+      "item": "tycooncraft:mechanism"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:helicopter",
+    "count": 1
+  }
+}

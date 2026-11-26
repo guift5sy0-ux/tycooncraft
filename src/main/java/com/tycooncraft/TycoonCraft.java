@@ -121,11 +121,6 @@ public class TycoonCraft {
     private void registerCapabilities(RegisterCapabilitiesEvent event) {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.SELL_STATION.get(),
                 (be, side) -> be.getItemHandler());
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.BOILER.get(), (be, side) -> be.fuel());
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.WAREHOUSE.get(), (be, side) -> be.handler);
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.SORTER.get(), (be, side) -> be.handler);   // 컨베이어·호퍼로 연료
-        event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.MACHINE.get(),
-                (be, side) -> be.getItemHandler());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.SHIP_MOTOR.get(),
                 (be, side) -> be.getItemHandler());
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, ModBlockEntities.SETTER.get(),

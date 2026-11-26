@@ -102,8 +102,7 @@ public final class TycoonEvents {
     @SubscribeEvent
     public static void onTooltip(ItemTooltipEvent event) {
         var item = event.getItemStack().getItem();
-        if (item instanceof net.minecraft.world.item.BlockItem bi && (bi.getBlock() instanceof com.tycooncraft.block.TransmissionBlock
-                || bi.getBlock() instanceof com.tycooncraft.machine.EmpGeneratorBlock || bi.getBlock() instanceof com.tycooncraft.ship.ShipMotorBlock || bi.getBlock() instanceof com.tycooncraft.ship.ShipHelmBlock
+        if (item instanceof net.minecraft.world.item.BlockItem bi && (bi.getBlock() instanceof com.tycooncraft.machine.EmpGeneratorBlock || bi.getBlock() instanceof com.tycooncraft.ship.ShipMotorBlock || bi.getBlock() instanceof com.tycooncraft.ship.ShipHelmBlock
                 || bi.getBlock() instanceof com.tycooncraft.ship.ShipFloatBlock
                 || bi.getBlock() instanceof com.tycooncraft.ship.ShipBoosterBlock
                 || bi.getBlock() instanceof com.tycooncraft.setter.SetterBlock

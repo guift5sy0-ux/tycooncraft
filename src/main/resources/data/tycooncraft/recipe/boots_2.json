@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SXR"
+  ],
+  "key": {
+    "S": {
+      "item": "tycooncraft:steel_plate"
+    },
+    "X": {
+      "item": "tycooncraft:boots_1"
+    },
+    "R": {
+      "item": "tycooncraft:rubber"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:boots_2",
+    "count": 1
+  }
+}

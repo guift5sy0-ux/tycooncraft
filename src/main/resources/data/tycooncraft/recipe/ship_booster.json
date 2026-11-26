@@ -8,7 +8,7 @@
   ],
   "key": {
     "P": {
-      "item": "tycooncraft:aluminum_plate"
+      "item": "tycooncraft:steel_plate"
     },
     "E": {
       "item": "tycooncraft:engine"
@@ -20,7 +20,7 @@
       "item": "minecraft:blaze_powder"
     },
     "C": {
-      "item": "tycooncraft:control_board"
+      "item": "tycooncraft:advanced_circuit"
     }
   },
   "result": {

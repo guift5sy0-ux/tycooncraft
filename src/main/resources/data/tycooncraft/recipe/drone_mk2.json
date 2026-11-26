@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "TAT",
+    "SDS",
+    " M "
+  ],
+  "key": {
+    "T": {
+      "item": "minecraft:tnt"
+    },
+    "A": {
+      "item": "tycooncraft:advanced_circuit"
+    },
+    "S": {
+      "item": "tycooncraft:steel_plate"
+    },
+    "D": {
+      "item": "tycooncraft:drone"
+    },
+    "M": {
+      "item": "tycooncraft:mechanism"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:drone_mk2",
+    "count": 1
+  }
+}

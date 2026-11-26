@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SNS",
+    "GXG",
+    "SSS"
+  ],
+  "key": {
+    "S": {
+      "item": "tycooncraft:steel_plate"
+    },
+    "N": {
+      "item": "minecraft:netherite_scrap"
+    },
+    "X": {
+      "item": "tycooncraft:helmet_3"
+    },
+    "G": {
+      "item": "minecraft:glowstone_dust"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:helmet_4",
+    "count": 1
+  }
+}

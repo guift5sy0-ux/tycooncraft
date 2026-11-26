@@ -70,7 +70,6 @@ public final class VehicleClient {
         event.registerEntityRenderer(ModEntities.TANK.get(), TankRenderer::new);
         event.registerEntityRenderer(ModEntities.FIGHTER_JET.get(), JetRenderer::new);
         event.registerEntityRenderer(ModEntities.ROCKET.get(), RocketRenderer::new);
-        event.registerEntityRenderer(ModEntities.AUTO_MINER.get(), AutoMinerRenderer::new);
         event.registerEntityRenderer(ModEntities.DESTROYER_GOLEM.get(), com.tycooncraft.client.mob.BossRenderers.Golem::new);
         event.registerEntityRenderer(ModEntities.PROTO_DESTROYER.get(), com.tycooncraft.client.mech.ProtoClient.Renderer::new);
         event.registerEntityRenderer(ModEntities.PROTO_SCOUT.get(), com.tycooncraft.client.mob.CarrierModels.ProtoScoutRenderer::new);
@@ -99,10 +98,6 @@ public final class VehicleClient {
         event.registerBlockEntityRenderer(com.tycooncraft.registry.ModBlockEntities.TURRET.get(), TurretRenderer::new);
         event.registerBlockEntityRenderer(com.tycooncraft.registry.ModBlockEntities.CIWS.get(), CiwsRenderer::new);
         event.registerBlockEntityRenderer(com.tycooncraft.registry.ModBlockEntities.CCTV.get(), com.tycooncraft.client.cctv.CctvRenderer::new);
-        event.registerBlockEntityRenderer(com.tycooncraft.registry.ModBlockEntities.SHAFT.get(), com.tycooncraft.client.power.PowerRenderers.Shaft::new);
-        event.registerBlockEntityRenderer(com.tycooncraft.registry.ModBlockEntities.ROBOT_ARM.get(), com.tycooncraft.client.power.PowerRenderers.Arm::new);
-        event.registerBlockEntityRenderer(com.tycooncraft.registry.ModBlockEntities.SORTER.get(), com.tycooncraft.client.power.PowerRenderers.Sorter::new);
-        event.registerBlockEntityRenderer(com.tycooncraft.registry.ModBlockEntities.STEAM_ENGINE.get(), com.tycooncraft.client.power.PowerRenderers.Engine::new);
     }
 
     @SubscribeEvent

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " S ",
+    "GTG",
+    " S "
+  ],
+  "key": {
+    "S": {
+      "item": "tycooncraft:steel_plate"
+    },
+    "G": {
+      "item": "minecraft:gunpowder"
+    },
+    "T": {
+      "item": "minecraft:tnt"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:tank_shell",
+    "count": 2
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " G ",
+    "RPR",
+    " G "
+  ],
+  "key": {
+    "G": {
+      "item": "tycooncraft:iron_gear"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "P": {
+      "item": "tycooncraft:iron_plate"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:mechanism",
+    "count": 1
+  }
+}

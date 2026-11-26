@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "P P",
+    "CMC",
+    "P P"
+  ],
+  "key": {
+    "P": {
+      "item": "tycooncraft:iron_plate"
+    },
+    "C": {
+      "item": "tycooncraft:circuit"
+    },
+    "M": {
+      "item": "tycooncraft:mechanism"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:drone",
+    "count": 1
+  }
+}

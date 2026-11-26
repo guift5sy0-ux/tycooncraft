@@ -70,36 +70,6 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "tycooncraft:iron_dust",
-          "weight": 8,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 2,
-                "max": 10
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "tycooncraft:coal_dust",
-          "weight": 7,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 2,
-                "max": 10
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
           "name": "tycooncraft:copper_wire",
           "weight": 6,
           "functions": [
@@ -210,21 +180,6 @@
         },
         {
           "type": "minecraft:item",
-          "name": "tycooncraft:conveyor",
-          "weight": 4,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 2,
-                "max": 8
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
           "name": "minecraft:redstone",
           "weight": 5,
           "functions": [
@@ -237,16 +192,6 @@
               }
             }
           ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "tycooncraft:crusher",
-          "weight": 1
-        },
-        {
-          "type": "minecraft:item",
-          "name": "tycooncraft:smelter",
-          "weight": 1
         }
       ]
     }

@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "C",
+    "P",
     "H",
-    "C"
+    "P"
   ],
   "key": {
-    "C": {
-      "item": "tycooncraft:conveyor"
+    "P": {
+      "item": "tycooncraft:iron_plate"
     },
     "H": {
       "item": "minecraft:hopper"

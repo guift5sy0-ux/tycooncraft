@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SXS",
+    "SLS"
+  ],
+  "key": {
+    "S": {
+      "item": "tycooncraft:steel_plate"
+    },
+    "X": {
+      "item": "tycooncraft:pants_1"
+    },
+    "L": {
+      "item": "tycooncraft:rubber"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:pants_2",
+    "count": 1
+  }
+}

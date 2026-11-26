@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:copper_ingot"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:copper_wire",
+    "count": 6
+  }
+}

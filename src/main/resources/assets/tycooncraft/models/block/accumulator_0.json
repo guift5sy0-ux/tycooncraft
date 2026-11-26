@@ -1,8 +1,0 @@
-{
- "parent": "minecraft:block/cube_bottom_top",
- "textures": {
-  "side": "tycooncraft:block/accumulator_side_0",
-  "top": "tycooncraft:block/accumulator_top",
-  "bottom": "tycooncraft:block/accumulator_top"
- }
-}

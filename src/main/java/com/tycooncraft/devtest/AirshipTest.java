@@ -101,8 +101,6 @@ public final class AirshipTest {
         int x0 = 148, z0 = 112;
         if (t == 1240) {
             build(level, x0, gy, z0, 2);
-            var east = ModBlocks.CONVEYOR.get().defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, Direction.EAST);
-            for (int x = x0 + 1; x <= x0 + 3; x++) level.setBlockAndUpdate(new BlockPos(x, gy + 1, z0 + 1), east);
             level.setBlockAndUpdate(new BlockPos(x0 + 4, gy + 1, z0 + 1), ModBlocks.TURRET.get().defaultBlockState());
             BlockPos helm = new BlockPos(x0 + 2, gy + 1, z0 + 3);
             war = ShipAssembler.assemble(level, helm, null);
@@ -121,20 +119,13 @@ public final class AirshipTest {
             war.breakWhere(c -> c.state().getBlock() instanceof com.tycooncraft.ship.ShipFloatBlock);
             System.out.println("[AUTOTEST] v16 war floats cut canFly=" + war.canFly());
         }
-        if (t == 1265) {   // 컨베이어 첫 칸에 중탄약 → 포탑으로 굴러가 장전
-            var c0 = war.cellCenter(war.cells().stream().filter(c -> c.state().getBlock() instanceof com.tycooncraft.block.ConveyorBlock)
-                    .min(java.util.Comparator.comparingInt(ShipEntity.Cell::x)).orElseThrow());
-            var it = new net.minecraft.world.entity.item.ItemEntity(level, c0.x, c0.y + 0.2, c0.z, new ItemStack(com.tycooncraft.registry.ModItems.HEAVY_AMMO.get(), 20));
-            it.setDeltaMovement(0, 0, 0);
-            level.addFreshEntity(it);
-            foe = AutoTest.dummyAt(level, x0 + 14.5, z0 + 2.5);
-        }
+        if (t == 1265) foe = AutoTest.dummyAt(level, x0 + 14.5, z0 + 2.5);   // v0.30: 컨베이어 삭제
         if (t == 1330) {
             // 바깥에서 쏜 총알은 선체에 막혀야 함
             var from = war.position().add(-12, 1.2, 0);
             Vec3 stop = com.tycooncraft.gun.Ballistics.shoot(level, null, from, new Vec3(1, 0, 0), 40, 1f, 0, 1f, false, false, level.damageSources().generic(), e -> false);
             System.out.printf("[AUTOTEST] v16 war t=1330 y+%.2f conveyorPushes=%d turretShots=%d foeHp=%.0f bulletStop=%.1f (hull ~%.1f)%n",
-                    war.getY() - gy, ShipEntity.CONVEYOR_PUSHES, ShipEntity.TURRET_SHOTS, foe == null ? -1 : foe.getHealth(), stop.x - from.x, war.worldBounds().minX - from.x);
+                    war.getY() - gy, 0, ShipEntity.TURRET_SHOTS, foe == null ? -1 : foe.getHealth(), stop.x - from.x, war.worldBounds().minX - from.x);
         }
         if (t == 1335) {
             int before = war.cells().size();

@@ -41,19 +41,10 @@ public final class AutoTest {
     private static LocomotiveEntity loco;
     private static boolean droneGiven;
 
-    static com.tycooncraft.miner.AutoMinerEntity miner;
     private static net.minecraft.world.entity.LivingEntity fragHusk, flashHusk, villager;
     private static com.tycooncraft.entity.GrenadeEntity smoke;
     private static com.tycooncraft.mob.MutantSpider queen;
 
-    private static String storageSummary() {
-        StringBuilder b = new StringBuilder();
-        for (int i = 0; i < miner.storage.getContainerSize(); i++) {
-            var st = miner.storage.getItem(i);
-            if (!st.isEmpty()) b.append(st.getItem().toString().replace("minecraft:", "").replace("tycooncraft:", "")).append('x').append(st.getCount()).append(',');
-        }
-        return b.toString();
-    }
 
     static com.tycooncraft.mob.DestroyerGolem golem;
     static net.minecraft.world.entity.LivingEntity golemDummy, beastDummy;
@@ -146,14 +137,7 @@ public final class AutoTest {
             level.setBlockAndUpdate(new BlockPos(x, gy + y, z), (x > -14 ? Blocks.DEEPSLATE : Blocks.STONE).defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(-20, gy + 1, 22), Blocks.DIAMOND_ORE.defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(-18, gy + 2, 21), Blocks.IRON_ORE.defaultBlockState());
-        level.setBlockAndUpdate(new BlockPos(-16, gy, 23), ModBlocks.SULFUR_ORE.get().defaultBlockState());
-        level.setBlockAndUpdate(new BlockPos(-10, gy + 1, 22), ModBlocks.DEEPSLATE_SULFUR_ORE.get().defaultBlockState());
         level.setBlockAndUpdate(new BlockPos(-5, gy + 1, 22), Blocks.OBSIDIAN.defaultBlockState());
-        miner = ModEntities.AUTO_MINER.get().create(level);
-        miner.moveTo(-26.5, gy, 22.5, -90, 0);
-        miner.setFuel(8000);
-        miner.setRunning(true);
-        level.addFreshEntity(miner);
         // 수류탄: 파편(허스크 옆), 섬광(허스크를 향해), 연막
         fragHusk = net.minecraft.world.entity.EntityType.HUSK.create(level);
         fragHusk.moveTo(-10, gy, -30, 0, 0);
@@ -261,7 +245,6 @@ public final class AutoTest {
         if (t == 1500) v14Setup(level);
         V15Test.tick(level, t, gy);
         V16Test.tick(level, t, gy);
-        IndustryTest.tick(level, t, gy);
         AirshipTest.tick(level, t, gy);
         AirshipTest.tick2(level, t, gy);
         AirshipTest.tick3(level, t, gy);
@@ -292,10 +275,6 @@ public final class AutoTest {
                     + " slams=" + com.tycooncraft.mob.DestroyerGolem.slams + " dummyHp=" + golemDummy.getHealth());
         }
         if (t >= 40 && t <= 600 && t % 20 == 0 && queen != null && villager != null && villager.isAlive()) queen.setTarget(villager);
-        if (t == 100 || t == 300 || t == 700 || t == 1400) {
-            System.out.println("[AUTOTEST] miner t=" + t + (miner == null ? " none" : String.format(" x=%.1f fuel=%d running=%s mined=%d items=%s",
-                    miner.getX(), miner.getFuel(), miner.isRunning(), miner.minedBlocks, storageSummary())));
-        }
         if (t == 100) System.out.println("[AUTOTEST] grenades t=100 det=" + com.tycooncraft.entity.GrenadeEntity.detonations
                 + " fragHusk=" + (fragHusk.isAlive() ? fragHusk.getHealth() : -1f) + " flashHusk=" + flashHusk.hasEffect(com.tycooncraft.registry.ModEffects.FLASHED)
                 + " smoke=" + (smoke.isAlive() ? smoke.smokeTicks() : -1));

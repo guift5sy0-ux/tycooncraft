@@ -25,7 +25,7 @@ import java.util.Map;
 
 /**
  * /sell, /sell all, /price, /prices, /guide, /starter
- * /tycoon factory|village|ruin|nearest (관리자)
+ * /tycoon village|ruin|nearest (관리자)
  */
 public final class TycoonCommands {
 
@@ -55,7 +55,6 @@ public final class TycoonCommands {
 
         d.register(Commands.literal("tycoon")
                 .requires(src -> src.hasPermission(2))
-                .then(Commands.literal("factory").executes(ctx -> build(ctx, "factory")))
                 .then(Commands.literal("village").executes(ctx -> build(ctx, "village")))
                 .then(Commands.literal("ruin").executes(ctx -> build(ctx, "ruin")))
                 .then(Commands.literal("nearest").executes(TycoonCommands::nearest)));
@@ -134,7 +133,6 @@ public final class TycoonCommands {
         ServerPlayer p = ctx.getSource().getPlayerOrException();
         BlockPos pos = p.blockPosition();
         switch (type) {
-            case "factory" -> StructureBuilder.factory(p.serverLevel(), pos.offset(2, 0, -7), true);
             case "village" -> StructureBuilder.village(p.serverLevel(), pos.offset(4, 0, -16));
             default -> StructureBuilder.ruin(p.serverLevel(), pos.offset(2, 0, -7));
         }

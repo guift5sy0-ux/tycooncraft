@@ -11,7 +11,6 @@ import net.minecraft.world.item.ArmorItem;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import com.tycooncraft.vehicle.DroneItem;
 import com.tycooncraft.gun.GunStats;
-import com.tycooncraft.machine.MachineType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -36,11 +35,6 @@ public final class ModItems {
     public static final DeferredItem<CoinItem> GOLD_BAR_1M = coin("gold_bar_1m", 1_000_000);
 
     // ── 1차: 가루 ──
-    public static final DeferredItem<Item> IRON_DUST = ITEMS.registerSimpleItem("iron_dust");
-    public static final DeferredItem<Item> COPPER_DUST = ITEMS.registerSimpleItem("copper_dust");
-    public static final DeferredItem<Item> GOLD_DUST = ITEMS.registerSimpleItem("gold_dust");
-    public static final DeferredItem<Item> COAL_DUST = ITEMS.registerSimpleItem("coal_dust");
-    public static final DeferredItem<Item> FLOUR = ITEMS.registerSimpleItem("flour");
     // ── 2차: 합금 ──
     public static final DeferredItem<Item> STEEL_INGOT = ITEMS.registerSimpleItem("steel_ingot");
     // ── 3차: 판 / 선 / 봉 ──
@@ -60,7 +54,6 @@ public final class ModItems {
     public static final DeferredItem<Item> ADVANCED_CIRCUIT = ITEMS.registerSimpleItem("advanced_circuit");
     public static final DeferredItem<Item> MECHANISM = ITEMS.registerSimpleItem("mechanism");
     public static final DeferredItem<Item> ENGINE = ITEMS.registerSimpleItem("engine");
-    public static final DeferredItem<Item> WOODEN_CRATE = ITEMS.registerSimpleItem("wooden_crate");
 
     // ── 총기 부품 & 탄약 ──
     public static final DeferredItem<Item> GUN_BARREL = ITEMS.registerSimpleItem("gun_barrel");
@@ -134,8 +127,6 @@ public final class ModItems {
     public static final DeferredItem<GearItem> BOOTS_2 = gear("boots_2", ModArmorMaterials.TACTICAL_MEDIUM, ArmorItem.Type.BOOTS, 25, "tooltip.tycooncraft.boots", 3, 20);
     public static final DeferredItem<GearItem> BOOTS_3 = gear("boots_3", ModArmorMaterials.TACTICAL_HEAVY, ArmorItem.Type.BOOTS, 35, "tooltip.tycooncraft.boots", 4, 25);
     // 중장갑 세트 (4종)
-    public static final DeferredItem<com.tycooncraft.item.FactoryKitItem> FACTORY_KIT = ITEMS.register("factory_kit",
-            () -> new com.tycooncraft.item.FactoryKitItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON)));
     public static final DeferredItem<com.tycooncraft.gear.PoliceShieldItem> POLICE_SHIELD = ITEMS.register("police_shield",
             () -> new com.tycooncraft.gear.PoliceShieldItem(new Item.Properties().durability(1200).attributes(com.tycooncraft.gear.PoliceShieldItem.attributes())));
     public static final DeferredItem<GearItem> HELMET_4 = gear("helmet_4", ModArmorMaterials.JUGGERNAUT, ArmorItem.Type.HELMET, 45, "tooltip.tycooncraft.helmet", 54);
@@ -147,9 +138,6 @@ public final class ModItems {
 
     // ── 보스 소환 & 스폰알 ──
     // v0.12: 유황, 수류탄, 자동 굴착기
-    public static final DeferredItem<Item> SULFUR = ITEMS.registerSimpleItem("sulfur");
-    public static final DeferredItem<BlockItem> SULFUR_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.SULFUR_ORE);
-    public static final DeferredItem<BlockItem> DEEPSLATE_SULFUR_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.DEEPSLATE_SULFUR_ORE);
     public static final DeferredItem<com.tycooncraft.gun.GrenadeItem> FRAG_GRENADE = ITEMS.register("frag_grenade",
             () -> new com.tycooncraft.gun.GrenadeItem(new Item.Properties(), "tooltip.tycooncraft.frag_grenade"));
     public static final DeferredItem<com.tycooncraft.gun.GrenadeItem> FLASH_GRENADE = ITEMS.register("flash_grenade",
@@ -157,10 +145,7 @@ public final class ModItems {
     public static final DeferredItem<com.tycooncraft.gun.GrenadeItem> SMOKE_GRENADE = ITEMS.register("smoke_grenade",
             () -> new com.tycooncraft.gun.GrenadeItem(new Item.Properties(), "tooltip.tycooncraft.smoke_grenade"));
     public static final DeferredItem<Item> VENOM_SPIT = ITEMS.registerSimpleItem("venom_spit");
-    public static final DeferredItem<Item> DRILL_HEAD = ITEMS.registerSimpleItem("drill_head");
     public static final DeferredItem<Item> WHEEL = ITEMS.registerSimpleItem("wheel");
-    public static final DeferredItem<com.tycooncraft.miner.AutoMinerItem> AUTO_MINER = ITEMS.register("auto_miner",
-            () -> new com.tycooncraft.miner.AutoMinerItem(new Item.Properties()));
 
     public static final DeferredItem<FlareItem> CARTEL_FLARE = ITEMS.register("cartel_flare", () -> new FlareItem(new Item.Properties()));
     public static final DeferredItem<DeferredSpawnEggItem> ENFORCER_EGG = ITEMS.register("gang_enforcer_spawn_egg",
@@ -200,59 +185,7 @@ public final class ModItems {
 
     // ── 탈것 & 연료 ──
     // ── v0.16 산업 아이템 50종 ──
-    public static final DeferredItem<Item> RAW_BAUXITE = ITEMS.registerSimpleItem("raw_bauxite");
-    public static final DeferredItem<Item> ROCK_SALT = ITEMS.registerSimpleItem("rock_salt");
-    public static final DeferredItem<Item> BAUXITE_DUST = ITEMS.registerSimpleItem("bauxite_dust");
-    public static final DeferredItem<Item> SALT = ITEMS.registerSimpleItem("salt");
-    public static final DeferredItem<Item> LIMESTONE_DUST = ITEMS.registerSimpleItem("limestone_dust");
-    public static final DeferredItem<Item> QUICKLIME = ITEMS.registerSimpleItem("quicklime");
-    public static final DeferredItem<Item> SILICA_DUST = ITEMS.registerSimpleItem("silica_dust");
-    public static final DeferredItem<Item> COKE = ITEMS.registerSimpleItem("coke");
-    public static final DeferredItem<Item> GRAPHITE = ITEMS.registerSimpleItem("graphite");
-    public static final DeferredItem<Item> SULFURIC_ACID = ITEMS.registerSimpleItem("sulfuric_acid");
-    public static final DeferredItem<Item> CAUSTIC_SODA = ITEMS.registerSimpleItem("caustic_soda");
-    public static final DeferredItem<Item> GAS_CYLINDER = ITEMS.registerSimpleItem("gas_cylinder");
-    public static final DeferredItem<Item> CHLORINE_CYLINDER = ITEMS.registerSimpleItem("chlorine_cylinder");
-    public static final DeferredItem<Item> PLASTIC_PELLET = ITEMS.registerSimpleItem("plastic_pellet");
-    public static final DeferredItem<Item> EPOXY_RESIN = ITEMS.registerSimpleItem("epoxy_resin");
-    public static final DeferredItem<Item> ALUMINA = ITEMS.registerSimpleItem("alumina");
-    public static final DeferredItem<Item> ALUMINUM_INGOT = ITEMS.registerSimpleItem("aluminum_ingot");
-    public static final DeferredItem<Item> ALUMINUM_PLATE = ITEMS.registerSimpleItem("aluminum_plate");
-    public static final DeferredItem<Item> ALUMINUM_FOIL = ITEMS.registerSimpleItem("aluminum_foil");
-    public static final DeferredItem<Item> COPPER_FOIL = ITEMS.registerSimpleItem("copper_foil");
-    public static final DeferredItem<Item> LATEX = ITEMS.registerSimpleItem("latex");
     public static final DeferredItem<Item> RUBBER = ITEMS.registerSimpleItem("rubber");
-    public static final DeferredItem<Item> GASKET = ITEMS.registerSimpleItem("gasket");
-    public static final DeferredItem<Item> FIBERGLASS = ITEMS.registerSimpleItem("fiberglass");
-    public static final DeferredItem<Item> CEMENT = ITEMS.registerSimpleItem("cement");
-    public static final DeferredItem<Item> REBAR = ITEMS.registerSimpleItem("rebar");
-    public static final DeferredItem<Item> H_BEAM = ITEMS.registerSimpleItem("h_beam");
-    public static final DeferredItem<Item> PRECAST_PANEL = ITEMS.registerSimpleItem("precast_panel");
-    public static final DeferredItem<Item> BOLT = ITEMS.registerSimpleItem("bolt");
-    public static final DeferredItem<Item> BALL_BEARING = ITEMS.registerSimpleItem("ball_bearing");
-    public static final DeferredItem<Item> DRIVE_SHAFT = ITEMS.registerSimpleItem("drive_shaft");
-    public static final DeferredItem<Item> STEEL_PIPE = ITEMS.registerSimpleItem("steel_pipe");
-    public static final DeferredItem<Item> VALVE = ITEMS.registerSimpleItem("valve");
-    public static final DeferredItem<Item> PISTON = ITEMS.registerSimpleItem("piston");
-    public static final DeferredItem<Item> HYDRAULIC_CYLINDER = ITEMS.registerSimpleItem("hydraulic_cylinder");
-    public static final DeferredItem<Item> COPPER_COIL = ITEMS.registerSimpleItem("copper_coil");
-    public static final DeferredItem<Item> ELECTRIC_MOTOR = ITEMS.registerSimpleItem("electric_motor");
-    public static final DeferredItem<Item> GEARBOX = ITEMS.registerSimpleItem("gearbox");
-    public static final DeferredItem<Item> SILICON = ITEMS.registerSimpleItem("silicon");
-    public static final DeferredItem<Item> SILICON_WAFER = ITEMS.registerSimpleItem("silicon_wafer");
-    public static final DeferredItem<Item> MICROCHIP = ITEMS.registerSimpleItem("microchip");
-    public static final DeferredItem<Item> PCB = ITEMS.registerSimpleItem("pcb");
-    public static final DeferredItem<Item> RESISTOR = ITEMS.registerSimpleItem("resistor");
-    public static final DeferredItem<Item> CAPACITOR = ITEMS.registerSimpleItem("capacitor");
-    public static final DeferredItem<Item> CONTROL_BOARD = ITEMS.registerSimpleItem("control_board");
-    public static final DeferredItem<Item> INSULATED_CABLE = ITEMS.registerSimpleItem("insulated_cable");
-    public static final DeferredItem<Item> BATTERY_CELL = ITEMS.registerSimpleItem("battery_cell");
-    public static final DeferredItem<Item> SOLAR_PANEL = ITEMS.registerSimpleItem("solar_panel");
-    public static final DeferredItem<Item> TRANSFORMER = ITEMS.registerSimpleItem("transformer");
-    public static final DeferredItem<Item> INDUSTRIAL_ROBOT_ARM = ITEMS.registerSimpleItem("industrial_robot_arm");
-    public static final DeferredItem<BlockItem> BAUXITE_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.BAUXITE_ORE);
-    public static final DeferredItem<BlockItem> DEEPSLATE_BAUXITE_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.DEEPSLATE_BAUXITE_ORE);
-    public static final DeferredItem<BlockItem> ROCK_SALT_ORE = ITEMS.registerSimpleBlockItem(ModBlocks.ROCK_SALT_ORE);
 
     public static final DeferredItem<Item> FUEL_CANISTER = ITEMS.registerSimpleItem("fuel_canister");
     public static final DeferredItem<VehicleItem> CAR = ITEMS.register("car",
@@ -270,8 +203,6 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> SELL_STATION = ITEMS.registerSimpleBlockItem(ModBlocks.SELL_STATION);
     public static final DeferredItem<BlockItem> EXCHANGE = ITEMS.registerSimpleBlockItem(ModBlocks.EXCHANGE);
     public static final DeferredItem<BlockItem> GUN_WORKBENCH = ITEMS.registerSimpleBlockItem(ModBlocks.GUN_WORKBENCH);
-    public static final DeferredItem<BlockItem> CONVEYOR = ITEMS.registerSimpleBlockItem(ModBlocks.CONVEYOR);
-    public static final DeferredItem<BlockItem> TRANSMISSION = ITEMS.registerSimpleBlockItem(ModBlocks.TRANSMISSION);
     public static final DeferredItem<BlockItem> SHIP_MOTOR = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_MOTOR);
     public static final DeferredItem<BlockItem> SHIP_CORE_ENGINE = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_CORE_ENGINE);
     public static final DeferredItem<BlockItem> SHIP_BOOSTER = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_BOOSTER);
@@ -284,18 +215,6 @@ public final class ModItems {
     public static final DeferredItem<BlockItem> BROKEN_MACHINE = ITEMS.registerSimpleBlockItem(ModBlocks.BROKEN_MACHINE);
     public static final DeferredItem<BlockItem> TURRET = ITEMS.registerSimpleBlockItem(ModBlocks.TURRET);
     public static final DeferredItem<BlockItem> CIWS = ITEMS.registerSimpleBlockItem(ModBlocks.CIWS);
-    public static final DeferredItem<BlockItem> BOILER = ITEMS.registerSimpleBlockItem(ModBlocks.BOILER);
-    public static final DeferredItem<BlockItem> STEAM_ENGINE = ITEMS.registerSimpleBlockItem(ModBlocks.STEAM_ENGINE);
-    public static final DeferredItem<BlockItem> SHAFT = ITEMS.registerSimpleBlockItem(ModBlocks.SHAFT);
-    public static final DeferredItem<BlockItem> POWER_GEARBOX = ITEMS.registerSimpleBlockItem(ModBlocks.POWER_GEARBOX);
-    public static final DeferredItem<BlockItem> GENERATOR = ITEMS.registerSimpleBlockItem(ModBlocks.GENERATOR);
-    public static final DeferredItem<BlockItem> POWER_MOTOR = ITEMS.registerSimpleBlockItem(ModBlocks.ELECTRIC_MOTOR);
-    public static final DeferredItem<BlockItem> POWER_CABLE = ITEMS.registerSimpleBlockItem(ModBlocks.POWER_CABLE);
-    public static final DeferredItem<BlockItem> SOLAR_GENERATOR = ITEMS.registerSimpleBlockItem(ModBlocks.SOLAR_GENERATOR);
-    public static final DeferredItem<BlockItem> ACCUMULATOR = ITEMS.registerSimpleBlockItem(ModBlocks.ACCUMULATOR);
-    public static final DeferredItem<BlockItem> ROBOT_ARM = ITEMS.registerSimpleBlockItem(ModBlocks.ROBOT_ARM);
-    public static final DeferredItem<BlockItem> SORTER = ITEMS.registerSimpleBlockItem(ModBlocks.SORTER);
-    public static final DeferredItem<BlockItem> WAREHOUSE = ITEMS.registerSimpleBlockItem(ModBlocks.WAREHOUSE);
     public static final DeferredItem<Item> BLACK_MARKET_PASS = ITEMS.register("black_market_pass",
             () -> new Item(new Item.Properties().stacksTo(16).rarity(net.minecraft.world.item.Rarity.RARE)));
     public static final DeferredItem<BlockItem> MANHOLE = ITEMS.registerSimpleBlockItem(ModBlocks.MANHOLE);
@@ -315,16 +234,6 @@ public final class ModItems {
             () -> new net.neoforged.neoforge.common.DeferredSpawnEggItem(ModEntities.AERIAL_DESTROYER, 0x4A4F58, 0x30C0FF, new Item.Properties()));
     public static final DeferredItem<BlockItem> CCTV = ITEMS.registerSimpleBlockItem(ModBlocks.CCTV);
     public static final DeferredItem<BlockItem> CCTV_SCREEN = ITEMS.registerSimpleBlockItem(ModBlocks.CCTV_SCREEN);
-    public static final List<DeferredItem<BlockItem>> MACHINE_ITEMS = new ArrayList<>();
-    static {
-        for (MachineType type : MachineType.values()) {
-            MACHINE_ITEMS.add(ITEMS.registerSimpleBlockItem(ModBlocks.MACHINES.get(type)));
-        }
-    }
-
-    public static Item machineItem(MachineType type) {
-        return ModBlocks.machine(type).asItem();
-    }
 
     private static DeferredItem<GearItem> gear(String name, net.minecraft.core.Holder<net.minecraft.world.item.ArmorMaterial> mat, ArmorItem.Type type,
                                                int durability, String tip, Object... pct) {

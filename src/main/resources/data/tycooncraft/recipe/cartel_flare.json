@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GPG",
+    "RCR"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gunpowder"
+    },
+    "P": {
+      "item": "tycooncraft:gold_plate"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "C": {
+      "item": "tycooncraft:coin_gold"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:cartel_flare",
+    "count": 1
+  }
+}

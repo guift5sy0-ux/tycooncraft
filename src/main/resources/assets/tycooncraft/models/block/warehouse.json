@@ -1,8 +1,0 @@
-{
- "parent": "minecraft:block/cube_bottom_top",
- "textures": {
-  "side": "tycooncraft:block/warehouse_side",
-  "top": "tycooncraft:block/warehouse_top",
-  "bottom": "tycooncraft:block/warehouse_top"
- }
-}

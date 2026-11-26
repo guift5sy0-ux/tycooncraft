@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SDS",
+    "SXS",
+    "SDS"
+  ],
+  "key": {
+    "S": {
+      "item": "tycooncraft:steel_plate"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    },
+    "X": {
+      "item": "tycooncraft:helmet_2"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:helmet_3",
+    "count": 1
+  }
+}

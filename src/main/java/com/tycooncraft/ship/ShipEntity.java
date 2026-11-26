@@ -88,7 +88,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     private float inF, inT, inV, rudder;
     /** 셀 위치 → 번호 */
     private final Map<Long, Integer> index = new HashMap<>();
-    private boolean hasConveyor, hasTurret, falling;
+    private boolean hasTurret, falling;
     /** 실려 있는 포탑의 상태 (셀 위치 키) */
     public static final class Turret {
         int target = -1, cooldown, search, lock;
@@ -97,7 +97,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     final Map<Long, Turret> turrets = new HashMap<>();
     final Map<Long, com.tycooncraft.turret.Interceptor.State> ciws = new HashMap<>();
     public static int DOCK_CARRIED;
-    public static int TURRET_SHOTS, BLAST_CELLS, CONVEYOR_PUSHES, CRASHES;
+    public static int TURRET_SHOTS, BLAST_CELLS, CRASHES;
     private double vspeed, fuelAcc;
     private int fuel, floats, boosters, coreEngines;
     private boolean air;
@@ -213,7 +213,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     void rebuild(boolean keepPivot) {
         int mx = 0, mz = 0, my = 0;
         index.clear();
-        hasConveyor = hasTurret = false;
+        hasTurret = false;
         motors = 0;
         boosters = 0;
         floats = 0;
@@ -228,7 +228,6 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             if (c.state.getBlock() instanceof ShipBoosterBlock) boosters++;
             if (c.state.getBlock() instanceof ShipFloatBlock) floats++;
             if (c.state.is(com.tycooncraft.registry.ModBlocks.SHIP_CORE_ENGINE.get())) coreEngines++;
-            if (c.state.getBlock() instanceof com.tycooncraft.block.ConveyorBlock) hasConveyor = true;
             if (c.state.getBlock() instanceof com.tycooncraft.turret.TurretBlock || c.state.getBlock() instanceof com.tycooncraft.turret.CiwsBlock) hasTurret = true;
             index.put(key(c.x, c.y, c.z), i);
             if (c.state.getBlock() instanceof ShipHelmBlock) helm = i;
@@ -650,9 +649,6 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         entityData.set(SPEED, (float) speed);
         if (Math.abs(entityData.get(WHEEL) - rudder) > 0.01f) entityData.set(WHEEL, rudder);
         if (hasTurret && level() instanceof ServerLevel tl) tickTurrets(tl, emp == 0);
-        if (hasConveyor && emp == 0)
-            for (Entity e : level().getEntities(this, bounds.inflate(0.5, 2, 0.5), e -> !(e instanceof Player) && !(e instanceof ShipEntity) && !e.isPassenger()))
-                if (conveyorPush(e)) CONVEYOR_PUSHES++;
         // 서 있는 플레이어가 '공중에 떠 있다'고 쫓겨나지 않도록 + 낙하 피해 방지
         for (Player p : level().players())
             if (p instanceof ServerPlayer sp && standingOn(sp, 0.6)) {
@@ -735,27 +731,6 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     }
 
     // ── 컨베이어: 실린 컨베이어도 위의 물건을 민다 (방향은 운송기와 함께 돈다) ──
-    public boolean conveyorPush(Entity e) {
-        if (e.isShiftKeyDown() || e.isSpectator()) return false;
-        Vec3 l = toLocal(e.position());
-        int lx = Mth.floor(l.x), lz = Mth.floor(l.z), ly = Mth.floor(l.y - 0.3);
-        Cell c = cellAt(lx, ly, lz);
-        if (c == null || !(c.state.getBlock() instanceof com.tycooncraft.block.ConveyorBlock)) return false;
-        if (l.y < c.y + 0.4 || l.y > c.y + 0.9) return false;
-        Direction dir = c.state.getValue(HorizontalDirectionalBlock.FACING);
-        double sp = com.tycooncraft.block.ConveyorBlock.pushSpeed(c.state);
-        double vx, vz;
-        if (dir.getAxis() == Direction.Axis.X) {
-            vx = dir.getStepX() * sp;
-            vz = (lz + 0.5 - l.z) * 0.2;
-        } else {
-            vz = dir.getStepZ() * sp;
-            vx = (lx + 0.5 - l.x) * 0.2;
-        }
-        Vec3 w = new Vec3(vx, 0, vz).yRot(-(yaw - yaw0) * Mth.DEG_TO_RAD);
-        e.setDeltaMovement(w.x, e.getDeltaMovement().y, w.z);
-        return true;
-    }
 
     // ── 포탑: 실린 포탑도 적을 찾아 쏜다 (탄약은 그 포탑 블록에 들어 있던 것 + 위로 굴러온 탄약) ──
     private Vec3 turretMuzzle(Cell c) {

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PLP",
+    "L L",
+    "R R"
+  ],
+  "key": {
+    "P": {
+      "item": "tycooncraft:iron_plate"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "R": {
+      "item": "tycooncraft:rubber"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:pants_1",
+    "count": 1
+  }
+}

@@ -12,7 +12,6 @@ public final class ShipFuel {
     public static int value(ItemStack s) {
         if (s.isEmpty()) return 0;
         if (s.is(ModItems.FUEL_CANISTER.get())) return 12_000;
-        if (s.is(ModItems.COKE.get())) return 2_400;
         if (s.hasCraftingRemainingItem()) return 0;
         return Math.max(0, s.getBurnTime(RecipeType.SMELTING));
     }

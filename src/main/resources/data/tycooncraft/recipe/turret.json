@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " B ",
+    "SMS",
+    "CSC"
+  ],
+  "key": {
+    "B": {
+      "item": "tycooncraft:gun_barrel"
+    },
+    "S": {
+      "item": "tycooncraft:steel_plate"
+    },
+    "M": {
+      "item": "tycooncraft:mechanism"
+    },
+    "C": {
+      "item": "tycooncraft:circuit"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:turret",
+    "count": 1
+  }
+}

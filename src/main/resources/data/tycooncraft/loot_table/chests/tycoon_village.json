@@ -150,21 +150,6 @@
         },
         {
           "type": "minecraft:item",
-          "name": "tycooncraft:conveyor",
-          "weight": 3,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 2,
-                "max": 6
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
           "name": "tycooncraft:iron_plate",
           "weight": 2,
           "functions": [

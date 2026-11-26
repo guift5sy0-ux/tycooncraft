@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " G ",
+    "PEP",
+    "W W"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:glass_pane"
+    },
+    "P": {
+      "item": "tycooncraft:iron_plate"
+    },
+    "E": {
+      "item": "tycooncraft:engine"
+    },
+    "W": {
+      "item": "tycooncraft:wheel"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:car",
+    "count": 1
+  }
+}

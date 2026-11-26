@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SBS",
+    "AEM",
+    "WWW"
+  ],
+  "key": {
+    "S": {
+      "item": "tycooncraft:steel_plate"
+    },
+    "B": {
+      "item": "tycooncraft:gun_barrel"
+    },
+    "A": {
+      "item": "tycooncraft:advanced_circuit"
+    },
+    "E": {
+      "item": "tycooncraft:engine"
+    },
+    "M": {
+      "item": "tycooncraft:mechanism"
+    },
+    "W": {
+      "item": "tycooncraft:wheel"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:tank",
+    "count": 1
+  }
+}

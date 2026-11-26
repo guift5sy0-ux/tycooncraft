@@ -1,9 +1,6 @@
 package com.tycooncraft.devtest;
 
-import com.tycooncraft.block.ConveyorBlock;
-import com.tycooncraft.block.TransmissionBlock;
 import com.tycooncraft.entity.GrenadeEntity;
-import com.tycooncraft.machine.MachineType;
 import com.tycooncraft.registry.ModBlocks;
 import com.tycooncraft.registry.ModEntities;
 import com.tycooncraft.registry.ModItems;
@@ -25,7 +22,7 @@ import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
-/** v0.15 자동 테스트: 높인 컨베이어 + 변속기 + 분쇄기, EMP, 블록 배 */
+/** v0.15 자동 테스트: 판매소, EMP, 블록 배 (v0.30: 컨베이어·기계 삭제) */
 public final class V15Test {
     static int gy;
     static ItemEntity ore;
@@ -39,30 +36,9 @@ public final class V15Test {
         gy = groundY;
         if (t == 20)
             for (int cx = 6; cx <= 7; cx++) for (int cz = 6; cz <= 10; cz++) level.setChunkForced(cx, cz, true);
-        if (t == 45) factory(level);
-        if (t == 50) {
-            BlockPos tp = new BlockPos(101, gy, 139);
-            level.setBlock(tp, ModBlocks.TRANSMISSION.get().defaultBlockState().setValue(TransmissionBlock.SPEED, 5), 3);
-            int n = TransmissionBlock.apply(level, tp, 5);
-            System.out.println("[AUTOTEST] v15 transmission chain=" + n + " speeds=" + speeds(level));
-        }
-        if (t == 52) {
-            ore = new ItemEntity(level, 98.5, gy + 0.6, 138.5, new ItemStack(Items.RAW_IRON, 3));
-            ore.setDeltaMovement(0, 0, 0);
-            level.addFreshEntity(ore);
-        }
-        if (t == 54) oreX0 = ore.getX();
-        if (t == 58) System.out.printf("[AUTOTEST] v15 belt speed5 dx/4t=%.2f (target 3.0) oreY=%.3f (belt top %.3f)%n", ore.getX() - oreX0, ore.getY(), gy + ConveyorBlock.BELT_TOP);
-        if (t == 260) {
-            int dust = 0;
-            double y = 0;
-            for (ItemEntity e : level.getEntitiesOfClass(ItemEntity.class, new AABB(105.5, gy - 1, 136, 112, gy + 2, 141))) {
-                if (e.getItem().is(ModItems.IRON_DUST.get())) {
-                    dust += e.getItem().getCount();
-                    y = e.getY() - gy;
-                }
-            }
-            System.out.printf("[AUTOTEST] v15 crusher out iron_dust=%d itemY=%.3f oreAlive=%s%n", dust, y, ore.isAlive());
+        if (t == 45) {   // v0.30: 공장 라인 삭제 → 판매소만 설치
+            for (int x = 106; x <= 112; x++) for (int z = 136; z <= 140; z++) level.setBlockAndUpdate(new BlockPos(x, gy - 1, z), Blocks.SMOOTH_STONE.defaultBlockState());
+            level.setBlockAndUpdate(new BlockPos(110, gy, 138), ModBlocks.SELL_STATION.get().defaultBlockState());
         }
         if (t == 270) {   // 판매소: 빈손 우클릭 → 창 열기로 넘어가는지, 판매 후 인출되는지
             BlockPos sp = new BlockPos(110, gy, 138);
@@ -71,7 +47,7 @@ public final class V15Test {
             var hit = new net.minecraft.world.phys.BlockHitResult(sp.getCenter(), Direction.SOUTH, sp, false);
             fp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
             var empty = level.getBlockState(sp).useItemOn(ItemStack.EMPTY, level, fp, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
-            fp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.IRON_DUST.get(), 20));
+            fp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.IRON_PLATE.get(), 20));
             var sell = level.getBlockState(sp).useItemOn(fp.getMainHandItem(), level, fp, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
             long bal = 0;
             int coins = 0;
@@ -153,33 +129,6 @@ public final class V15Test {
             System.out.println("[AUTOTEST] v15 ship docked placed=" + n + " chests=" + chests + " diamonds=" + diamonds + " helms=" + helms);
             ship = null;
         }
-    }
-
-    static String speeds(ServerLevel level) {
-        StringBuilder sb = new StringBuilder();
-        for (int x = 98; x <= 109; x++) {
-            BlockState s = level.getBlockState(new BlockPos(x, gy, 138));
-            sb.append(s.getBlock() instanceof ConveyorBlock ? String.valueOf(s.getValue(ConveyorBlock.SPEED_LEVEL)) : "M");
-        }
-        return sb.toString();
-    }
-
-    static void factory(ServerLevel level) {
-        for (int x = 96; x <= 112; x++) for (int z = 134; z <= 142; z++) {
-            level.setBlockAndUpdate(new BlockPos(x, gy - 1, z), Blocks.SMOOTH_STONE.defaultBlockState());
-            for (int y = 0; y < 4; y++) level.setBlockAndUpdate(new BlockPos(x, gy + y, z), Blocks.AIR.defaultBlockState());
-        }
-        BlockState c = ModBlocks.CONVEYOR.get().defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, Direction.EAST);
-        for (int x = 98; x <= 104; x++) level.setBlockAndUpdate(new BlockPos(x, gy, 138), c);
-        level.setBlockAndUpdate(new BlockPos(105, gy, 138), ModBlocks.machine(MachineType.CRUSHER).defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, Direction.EAST));
-        for (int x = 106; x <= 109; x++) level.setBlockAndUpdate(new BlockPos(x, gy, 138), c);
-        level.setBlockAndUpdate(new BlockPos(110, gy, 138), ModBlocks.SELL_STATION.get().defaultBlockState());
-        // 옆 줄: 제련기 → 리프트 구성 (외형 확인용)
-        for (int x = 98; x <= 102; x++) level.setBlockAndUpdate(new BlockPos(x, gy, 136), c);
-        level.setBlockAndUpdate(new BlockPos(103, gy, 136), ModBlocks.machine(MachineType.SMELTER).defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, Direction.EAST));
-        level.setBlockAndUpdate(new BlockPos(104, gy, 136), c);
-        level.setBlockAndUpdate(new BlockPos(105, gy, 136), ModBlocks.machine(MachineType.PRESS).defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, Direction.EAST));
-        System.out.println("[AUTOTEST] v15 factory speeds=" + speeds(level));
     }
 
     static void buildShip(ServerLevel level) {

@@ -47,9 +47,6 @@ public final class ModEntities {
             () -> EntityType.Builder.<RocketEntity>of(RocketEntity::new, MobCategory.MISC)
                     .sized(0.4f, 0.4f).clientTrackingRange(10).updateInterval(1).build("rocket"));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.miner.AutoMinerEntity>> AUTO_MINER = ENTITIES.register("auto_miner",
-            () -> EntityType.Builder.<com.tycooncraft.miner.AutoMinerEntity>of(com.tycooncraft.miner.AutoMinerEntity::new, MobCategory.MISC)
-                    .sized(1.9f, 1.9f).fireImmune().clientTrackingRange(10).build("auto_miner"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.entity.GrenadeEntity>> GRENADE = ENTITIES.register("grenade",
             () -> EntityType.Builder.<com.tycooncraft.entity.GrenadeEntity>of(com.tycooncraft.entity.GrenadeEntity::new, MobCategory.MISC)

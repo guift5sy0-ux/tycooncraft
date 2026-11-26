@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PLP",
+    "L L"
+  ],
+  "key": {
+    "P": {
+      "item": "tycooncraft:iron_plate"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:helmet_1",
+    "count": 1
+  }
+}

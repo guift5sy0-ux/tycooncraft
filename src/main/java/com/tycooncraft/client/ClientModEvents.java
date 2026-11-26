@@ -13,7 +13,6 @@ public final class ClientModEvents {
 
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
-        event.register(ModMenus.MACHINE.get(), MachineScreen::new);
         event.register(ModMenus.SELL.get(), SellScreen::new);
         event.register(ModMenus.GUN_WORKBENCH.get(), GunWorkbenchScreen::new);
     }

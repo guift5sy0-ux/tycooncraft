@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "GAG",
+    "EBE",
+    "S S"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "A": {
+      "item": "tycooncraft:advanced_circuit"
+    },
+    "E": {
+      "item": "tycooncraft:engine"
+    },
+    "B": {
+      "item": "tycooncraft:gun_barrel"
+    },
+    "S": {
+      "item": "tycooncraft:steel_plate"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:fighter_jet",
+    "count": 1
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "SGS",
+    "CEM",
+    "WWW"
+  ],
+  "key": {
+    "S": {
+      "item": "tycooncraft:steel_plate"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "C": {
+      "item": "tycooncraft:circuit"
+    },
+    "E": {
+      "item": "tycooncraft:engine"
+    },
+    "M": {
+      "item": "tycooncraft:mechanism"
+    },
+    "W": {
+      "item": "tycooncraft:wheel"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:locomotive",
+    "count": 1
+  }
+}

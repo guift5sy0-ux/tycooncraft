@@ -2,19 +2,19 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "ARA",
-    "RGR",
-    "ARA"
+    "PRP",
+    "RBR",
+    "PRP"
   ],
   "key": {
-    "A": {
-      "item": "tycooncraft:aluminum_plate"
+    "P": {
+      "item": "tycooncraft:iron_plate"
     },
     "R": {
       "item": "tycooncraft:rubber"
     },
-    "G": {
-      "item": "tycooncraft:gas_cylinder"
+    "B": {
+      "item": "minecraft:phantom_membrane"
     }
   },
   "result": {

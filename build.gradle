@@ -207,3 +207,5 @@ idea {
         downloadJavadoc = true
     }
 }
+
+tasks.withType(JavaCompile).configureEach { options.compilerArgs << '-Xmaxerrs' << '5000' }

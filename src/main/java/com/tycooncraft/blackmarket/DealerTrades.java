@@ -59,15 +59,15 @@ public final class DealerTrades {
     static List<E> fenceSalePool() {
         return List.of(new E(Items.DIAMOND, 8), new E(Items.ENDER_PEARL, 16, 4_000), new E(Items.GOLDEN_APPLE, 4, 6_000), new E(ModItems.STEEL_INGOT.get(), 64),
                 new E(ModItems.ADVANCED_CIRCUIT.get(), 8), new E(ModItems.ENGINE.get(), 2), new E(Items.EXPERIENCE_BOTTLE, 32, 4_000), new E(ModItems.GUN_RECEIVER.get(), 2, 3_000),
-                new E(Items.NETHERITE_SCRAP, 1, 7_000), new E(ModItems.MICROCHIP.get(), 16), new E(Items.OBSIDIAN, 32, 2_500), new E(ModItems.BATTERY_CELL.get(), 8));
+                new E(Items.NETHERITE_SCRAP, 1, 7_000), new E(ModItems.GUN_BARREL.get(), 4), new E(Items.OBSIDIAN, 32, 2_500), new E(ModItems.STEEL_GEAR.get(), 16));
     }
 
     static List<E> fenceBuyPool() {
         return List.of(new E(ModItems.IRON_PLATE.get(), 32), new E(ModItems.COPPER_PLATE.get(), 32), new E(ModItems.IRON_GEAR.get(), 16), new E(ModItems.STEEL_INGOT.get(), 16),
                 new E(ModItems.STEEL_PLATE.get(), 16), new E(ModItems.CIRCUIT.get(), 8), new E(ModItems.MECHANISM.get(), 4), new E(ModItems.ENGINE.get(), 1),
-                new E(ModItems.COPPER_WIRE.get(), 64), new E(ModItems.STEEL_ROD.get(), 32), new E(ModItems.IRON_DUST.get(), 64), new E(Items.IRON_INGOT, 32),
-                new E(Items.GOLD_INGOT, 16), new E(ModItems.PLASTIC_PELLET.get(), 32), new E(ModItems.ALUMINUM_INGOT.get(), 16), new E(ModItems.CEMENT.get(), 32),
-                new E(ModItems.ADVANCED_CIRCUIT.get(), 4), new E(ModItems.BALL_BEARING.get(), 16), new E(ModItems.REBAR.get(), 32), new E(Items.BREAD, 32));
+                new E(ModItems.COPPER_WIRE.get(), 64), new E(ModItems.STEEL_ROD.get(), 32), new E(ModItems.RUBBER.get(), 32), new E(Items.IRON_INGOT, 32),
+                new E(Items.GOLD_INGOT, 16), new E(ModItems.GOLD_WIRE.get(), 32), new E(ModItems.STEEL_GEAR.get(), 16), new E(ModItems.IRON_ROD.get(), 32),
+                new E(ModItems.ADVANCED_CIRCUIT.get(), 4), new E(ModItems.FUEL_CANISTER.get(), 8), new E(ModItems.GOLD_PLATE.get(), 16), new E(Items.BREAD, 32));
     }
 
     /** 보스 전리품 (늘 매입) */
