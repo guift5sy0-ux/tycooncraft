@@ -32,6 +32,7 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 
 /**
+ * v0.28.1: 정찰 디스트로이어와 같은 크기 · 타지 않고 드론처럼 원격 조종 (최대 80블록, 빈손 우클릭 시작 · Shift 끝)
  * v0.27.1 프로토 디스트로이어-정찰: 정찰 코어로 만드는 탑승형 사족 기계. 저글링처럼 빠르고 변칙적.
  * 조작: WASD (빠름, 즉각 반응) · 좌클릭(누르고 있기) 양날 베기 · 우클릭 덮치기(앞으로 크게 도약, 착지 시 주변 피해)
  *       · 스페이스 높은 점프 · 걷는 중 A/D 를 짧게 두 번 = 옆 회피 대시 (클라이언트) · Shift 내리기
@@ -41,7 +42,13 @@ public class ProtoScout extends PathfinderMob {
     public static final int ACT_SLASH = 1, ACT_POUNCE = 2, ACT_JUMP = 4, ACT_DASH = 5;
     public static final int MAX_HP = 120, SLASH_CD = 7, POUNCE_CD = 50, DASH_CD = 24;
     public static final float SLASH_DMG = 7f, POUNCE_DMG = 10f;
-    public static final double JUMP_VEL = 0.82;
+    public static final double JUMP_VEL = 0.62, RANGE = 80;
+    private static final EntityDataAccessor<Integer> PILOT = SynchedEntityData.defineId(ProtoScout.class, EntityDataSerializers.INT);
+    /** 원격 조종자 */
+    @Nullable private ServerPlayer pilot;
+    private float inFwd, inStrafe, inYaw, inPitch;
+    private boolean inJump, inSlash, jumpWas;
+    private int lastInput;
     private static final EntityDataAccessor<Integer> POUNCE_T = SynchedEntityData.defineId(ProtoScout.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> SLASH_AT = SynchedEntityData.defineId(ProtoScout.class, EntityDataSerializers.INT);
     @Nullable private UUID owner;
@@ -52,6 +59,13 @@ public class ProtoScout extends PathfinderMob {
     public ProtoScout(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
         setPersistenceRequired();
+        // 조종 중에는 기본 이동 제어가 입력(zza)을 지우지 않게
+        moveControl = new net.minecraft.world.entity.ai.control.MoveControl(this) {
+            @Override
+            public void tick() {
+                if (pilot == null) super.tick();
+            }
+        };
     }
 
     public static AttributeSupplier.Builder attributes() {
@@ -66,7 +80,7 @@ public class ProtoScout extends PathfinderMob {
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder b) {
         super.defineSynchedData(b);
-        b.define(POUNCE_T, 0).define(SLASH_AT, -100);
+        b.define(POUNCE_T, 0).define(SLASH_AT, -100).define(PILOT, -1);
     }
 
     public int pounceCd() {
@@ -89,7 +103,6 @@ public class ProtoScout extends PathfinderMob {
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack st = player.getItemInHand(hand);
-        if (isVehicle()) return InteractionResult.PASS;
         if (st.is(net.minecraft.world.item.Items.IRON_INGOT) || st.is(ModItems.STEEL_INGOT.get())) {
             if (getHealth() >= getMaxHealth()) return InteractionResult.PASS;
             if (!level().isClientSide) {
@@ -110,7 +123,102 @@ public class ProtoScout extends PathfinderMob {
             discard();
             return InteractionResult.CONSUME;
         }
-        return player.startRiding(this) ? InteractionResult.CONSUME : InteractionResult.PASS;
+        startRemote((ServerPlayer) player);
+        return InteractionResult.CONSUME;
+    }
+
+    // ── 원격 조종 ──
+    public static int links;
+
+    public void startRemote(ServerPlayer sp) {
+        if (pilot != null && pilot != sp) stopRemote();
+        pilot = sp;
+        lastInput = tickCount;
+        entityData.set(PILOT, sp.getId());
+        links++;
+        ScoutRemote.link(sp, getId());
+        playSound(SoundEvents.BEACON_ACTIVATE, 0.8f, 1.8f);
+    }
+
+    public void stopRemote() {
+        if (pilot != null) ScoutRemote.link(pilot, -1);
+        pilot = null;
+        entityData.set(PILOT, -1);
+        inFwd = inStrafe = 0;
+        inJump = inSlash = false;
+        setZza(0);
+        setXxa(0);
+    }
+
+    @Nullable
+    public ServerPlayer pilot() {
+        return pilot;
+    }
+
+    /** 클라이언트: 조종자 엔티티 id */
+    public int pilotId() {
+        return entityData.get(PILOT);
+    }
+
+    public void remoteInput(ServerPlayer sp, ScoutRemote.Input in) {
+        if (sp != pilot) return;
+        if (in.act() == ScoutRemote.Input.STOP) {
+            stopRemote();
+            return;
+        }
+        lastInput = tickCount;
+        if (tickCount < testHold) return;
+        inFwd = Mth.clamp(in.fwd(), -1, 1);
+        inStrafe = Mth.clamp(in.strafe(), -1, 1);
+        inJump = in.jump();
+        inYaw = in.yaw();
+        inPitch = in.pitch();
+        inSlash = in.slash();
+        if (in.act() != 0) action(sp, in.act());
+    }
+
+    /** 테스트용: 입력 직접 넣기 */
+    private int testHold;
+
+    public void testInput(float fwd, float strafe, float yaw) {
+        lastInput = tickCount;
+        testHold = tickCount + 4;
+        inFwd = fwd;
+        inStrafe = strafe;
+        inYaw = yaw;
+    }
+
+    @Override
+    protected void customServerAiStep() {
+        super.customServerAiStep();
+        if (pilot == null) return;
+        if (!pilot.isAlive() || pilot.level() != level() || pilot.distanceTo(this) > RANGE || tickCount - lastInput > 40) {
+            if (pilot.isAlive() && pilot.distanceTo(this) > RANGE)
+                pilot.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.tycooncraft.proto_scout.signal_lost"), true);
+            stopRemote();
+            return;
+        }
+        float d = Mth.wrapDegrees(inYaw - getYRot());
+        setYRot(getYRot() + Mth.clamp(d, -18f, 18f));   // 날렵하게 돎
+        yBodyRot = yHeadRot = getYRot();
+        setXRot(inPitch * 0.5f);
+        setSpeed((float) getAttributeValue(Attributes.MOVEMENT_SPEED));
+        setZza(inFwd < 0 ? inFwd * 0.6f : inFwd);
+        setXxa(inStrafe * 0.8f);
+        if (inJump && !jumpWas && onGround()) {
+            Vec3 v = getDeltaMovement();
+            setDeltaMovement(v.x, JUMP_VEL, v.z);
+            hasImpulse = true;
+            playSound(SoundEvents.PISTON_EXTEND, 0.8f, 1.7f);
+        }
+        jumpWas = inJump;
+        if (inSlash) slash(pilot);
+    }
+
+    @Override
+    public void remove(RemovalReason r) {
+        if (pilot != null) ScoutRemote.link(pilot, -1);
+        super.remove(r);
     }
 
     public ItemStack toItem() {
@@ -125,37 +233,6 @@ public class ProtoScout extends PathfinderMob {
         return s;
     }
 
-    @Override
-    @Nullable
-    public LivingEntity getControllingPassenger() {
-        return getFirstPassenger() instanceof Player p ? p : null;
-    }
-
-    @Override
-    protected void tickRidden(Player rider, Vec3 input) {
-        super.tickRidden(rider, input);
-        float d = Mth.wrapDegrees(rider.getYRot() - getYRot());
-        setYRot(getYRot() + Mth.clamp(d, -16f, 16f));   // 날렵하게 돎
-        yRotO = getYRot();
-        yBodyRot = yHeadRot = getYRot();
-        setXRot(rider.getXRot() * 0.5f);
-    }
-
-    @Override
-    protected Vec3 getRiddenInput(Player rider, Vec3 travel) {
-        float fwd = rider.zza < 0 ? rider.zza * 0.6f : rider.zza;
-        return new Vec3(rider.xxa * 0.8f, 0, fwd);
-    }
-
-    @Override
-    protected float getRiddenSpeed(Player rider) {
-        return (float) getAttributeValue(Attributes.MOVEMENT_SPEED);
-    }
-
-    @Override
-    protected Vec3 getPassengerAttachmentPoint(Entity passenger, EntityDimensions dims, float scale) {
-        return new Vec3(0, 1.35, -0.2).yRot(-yBodyRot * Mth.DEG_TO_RAD);
-    }
 
     @Override
     public boolean canBeLeashed() { return false; }
@@ -169,20 +246,26 @@ public class ProtoScout extends PathfinderMob {
     }
 
     public void action(ServerPlayer rider, int act) {
-        if (getControllingPassenger() != rider || !isAlive()) return;
+        if (pilot != rider || !isAlive()) return;
         switch (act) {
             case ACT_SLASH -> slash(rider);
             case ACT_POUNCE -> {
                 if (pounceCd() > 0 || !onGround()) return;
+                Vec3 f = forward();
+                setDeltaMovement(f.x * 1.3, 0.55, f.z * 1.3);   // 바라보는 쪽으로 크게 도약
+                hasImpulse = true;
                 entityData.set(POUNCE_T, POUNCE_CD);
                 pouncing = true;
                 pounces++;
                 playSound(SoundEvents.RAVAGER_ROAR, 1.2f, 1.8f);
             }
-            case ACT_JUMP -> playSound(SoundEvents.PISTON_EXTEND, 1f, 1.6f);
-            case ACT_DASH -> {
-                if (dashCd > 0) return;
+            case ACT_DASH, ACT_DASH + 10 -> {
+                if (dashCd > 0 || !onGround()) return;
                 dashCd = DASH_CD;
+                int side = act == ACT_DASH ? 1 : -1;   // 5 = 왼쪽, 15 = 오른쪽
+                float yaw = getYRot() * Mth.DEG_TO_RAD;
+                setDeltaMovement(Mth.cos(yaw) * 1.3 * side, 0.22, Mth.sin(yaw) * 1.3 * side);
+                hasImpulse = true;
                 playSound(SoundEvents.ENDER_DRAGON_FLAP, 0.8f, 1.8f);
             }
             default -> {}
@@ -196,10 +279,10 @@ public class ProtoScout extends PathfinderMob {
         slashes++;
         entityData.set(SLASH_AT, tickCount);
         Vec3 f = forward();
-        AABB box = getBoundingBox().inflate(3.2, 1.0, 3.2);
+        AABB box = getBoundingBox().inflate(2.6, 1.0, 2.6);
         for (LivingEntity e : level().getEntitiesOfClass(LivingEntity.class, box, e -> e != this && e != rider && e.isAlive() && !e.isAlliedTo(rider))) {
             Vec3 to = e.position().subtract(position());
-            if (to.horizontalDistance() > 3.4 || to.normalize().dot(f) < 0.1) continue;
+            if (to.horizontalDistance() > 2.8 || to.normalize().dot(f) < 0.1) continue;
             e.invulnerableTime = 0;   // 연속 베기가 무적 시간에 막히지 않게
             if (e.hurt(damageSources().playerAttack(rider), SLASH_DMG)) {
                 hits++;
@@ -218,8 +301,8 @@ public class ProtoScout extends PathfinderMob {
 
     private void landPounce() {
         pouncing = false;
-        Player rider = getControllingPassenger() instanceof Player p ? p : null;
-        for (LivingEntity e : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(3.2, 1.5, 3.2),
+        Player rider = pilot;
+        for (LivingEntity e : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(2.6, 1.3, 2.6),
                 e -> e != this && e != rider && e.isAlive() && (rider == null || !e.isAlliedTo(rider)))) {
             e.invulnerableTime = 0;
             if (e.hurt(rider != null ? damageSources().playerAttack(rider) : damageSources().mobAttack(this), POUNCE_DMG)) {
@@ -245,11 +328,7 @@ public class ProtoScout extends PathfinderMob {
 
     @Override
     public boolean hurt(DamageSource src, float amount) {
-        // 탑승자는 기체가 막아 줌 (일부만 전달)
-        boolean r = super.hurt(src, amount);
-        if (r && getControllingPassenger() instanceof Player p && !src.is(net.minecraft.tags.DamageTypeTags.IS_FALL))
-            p.hurt(src, amount * 0.15f);
-        return r;
+        return super.hurt(src, amount);
     }
 
     @Override

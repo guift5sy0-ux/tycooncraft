@@ -1305,6 +1305,7 @@ public final class V185Test {
         pscout = com.tycooncraft.mech.ProtoDestroyerItem.spawnScout(sl, p, sp, new ItemStack(ModItems.PROTO_SCOUT.get()), 0f);
         sp.teleportTo(sl, p.getX() + 0.5, p.getY(), p.getZ() - 2.5, 0f, 0f);
         var r = pscout.interact(sp, InteractionHand.MAIN_HAND);
+        pscoutPlayer0 = sp.position();
         sp.setYRot(0);
         sp.setXRot(15);
         pscoutTarget = EntityType.ZOMBIE.create(sl);
@@ -1314,7 +1315,8 @@ public final class V185Test {
         pscoutTarget.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(300);
         pscoutTarget.setHealth(300);
         sl.addFreshEntity(pscoutTarget);
-        System.out.println("[AUTOTEST] v271 pscout spawned=" + (pscout != null) + " mount=" + r + " riding=" + (sp.getVehicle() == pscout)
+        System.out.println("[AUTOTEST] v271 pscout spawned=" + (pscout != null) + " remote=" + r + " piloted=" + (pscout.pilot() == sp) + " riding=" + (sp.getVehicle() == pscout)
+                + " size=" + pscout.getBbWidth() + "x" + pscout.getBbHeight()
                 + " hp=" + pscout.getHealth() + " recipe=" + sl.getRecipeManager().byKey(com.tycooncraft.TycoonCraft.id("proto_scout")).isPresent());
     }
 
@@ -1332,12 +1334,35 @@ public final class V185Test {
         pscoutStart = pscout.position();
     }
 
+    static void pscoutPounceAct(ServerPlayer sp) {
+        pscout.action(sp, com.tycooncraft.mech.ProtoScout.ACT_POUNCE);
+    }
+
+    static Vec3 pscoutWalk0;
+
+    static void pscoutWalk(ServerPlayer sp) {
+        pscoutWalk0 = pscout.position();
+        pscout.testInput(1f, 0f, 0f);
+    }
+
+    static void pscoutWalkKeep(ServerPlayer sp) {
+        pscout.testInput(1f, 0f, 0f);
+    }
+
+    static void pscoutWalkCheck(ServerPlayer sp) {
+        pscout.testInput(0f, 0f, 0f);
+        System.out.println("[AUTOTEST] v281 pscout walked=" + String.format("%.1f", pscout.position().distanceTo(pscoutWalk0)) + " piloted=" + (pscout.pilot() == sp)
+                + " playerMoved=" + String.format("%.1f", sp.position().distanceTo(pscoutPlayer0)) + " links=" + com.tycooncraft.mech.ProtoScout.links);
+    }
+
+    static Vec3 pscoutPlayer0;
+
     static void pscoutCheck(ServerPlayer sp) {
         System.out.println("[AUTOTEST] v271 pscout slashes=" + com.tycooncraft.mech.ProtoScout.slashes + " pounces=" + com.tycooncraft.mech.ProtoScout.pounces
                 + " hits=" + com.tycooncraft.mech.ProtoScout.hits + " targetHp 300->" + Math.round(pscoutHpAfterSlash) + "->" + Math.round(pscoutTarget.getHealth())
-                + " riding=" + (sp.getVehicle() == pscout) + " leap=" + String.format("%.1f", pscout.position().distanceTo(pscoutStart))
+                + " piloted=" + (pscout.pilot() == sp) + " leap=" + String.format("%.1f", pscout.position().distanceTo(pscoutStart))
                 + " speedAttr=" + pscout.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED));
-        sp.stopRiding();
+        pscout.stopRemote();
         ItemStack back = pscout.toItem();
         pscout.discard();
         pscoutTarget.discard();
@@ -1425,10 +1450,11 @@ public final class V185Test {
         net.minecraft.server.level.ServerLevel ow = sp.server.overworld();
         for (var m : ow.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, sp.getBoundingBox().inflate(30), com.tycooncraft.mob.carrier.Destroyers::isDestroyer)) m.discard();
         var c = ModEntities.AERIAL_DESTROYER.get().create(ow);
-        c.moveTo(owBase.getX() + 0.5, owBase.getY() + 8, owBase.getZ() + 16, 150f, 0);
+        c.moveTo(owBase.getX() + 0.5, owBase.getY() + 6, owBase.getZ() + 15, 120f, 0);
         c.setNoAi(true);
         c.setPersistenceRequired();
-        c.setYBodyRot(150f);
+        c.setYBodyRot(120f);
+        c.setYHeadRot(120f);
         ow.addFreshEntity(c);
         sp.teleportTo(ow, owBase.getX() + 0.5, owBase.getY() + 6, owBase.getZ() - 4.5, 0f, 0f);
         sp.lookAt(net.minecraft.commands.arguments.EntityAnchorArgument.Anchor.EYES, c.position().add(0, 2, 0));

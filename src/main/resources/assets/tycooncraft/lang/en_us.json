@@ -780,12 +780,12 @@
   "message.tycooncraft.drone_swarm.launch": "Drone squadron of %s launched!",
   "tooltip.tycooncraft.drone_swarm": "Right-click: launch 6 mini drones (1 min) · each hunts targets · 90s cooldown",
   "tooltip.tycooncraft.ship_core_engine": "Upgraded ship engine: thrust of 6 engines · lift of 40 floats · higher top speed · 40% less fuel",
-  "tooltip.tycooncraft.proto_scout.1": "Right-click ground to deploy → right-click to ride · no ammo needed",
-  "tooltip.tycooncraft.proto_scout.2": "Hold LMB twin-blade slash · RMB pounce (leap + landing impact) · Space high jump",
-  "tooltip.tycooncraft.proto_scout.3": "Double-tap A/D: side dash · very fast and agile",
+  "tooltip.tycooncraft.proto_scout.1": "Right-click ground to deploy → empty-hand right-click to remote-control (80 blocks)",
+  "tooltip.tycooncraft.proto_scout.2": "Hold LMB slash · RMB pounce · Space jump",
+  "tooltip.tycooncraft.proto_scout.3": "Double-tap A/D: side dash · Shift: stop (your body stays put)",
   "tooltip.tycooncraft.proto_scout.4": "Sneak + empty hand: pick up · iron/steel ingot: repair",
   "hud.tycooncraft.proto_scout.pounce": "Pounce %s",
-  "hud.tycooncraft.proto_scout.keys": "LMB slash · RMB pounce · A/D×2 dash",
+  "hud.tycooncraft.proto_scout.keys": "LMB slash · RMB pounce · Space jump · A/D×2 dash · Shift exit",
   "block.tycooncraft.mission_board": "Job Board",
   "block.tycooncraft.slot_machine": "Slot Machine",
   "block.tycooncraft.roulette_table": "Roulette Table",
@@ -875,5 +875,7 @@
   "message.tycooncraft.mods.already": "Already installed",
   "message.tycooncraft.mods.tier": "Reputation too low (%s+)",
   "message.tycooncraft.mods.done": "🔧 %s installed",
-  "message.tycooncraft.rep.rebate": "🕶 Reputation discount: ₩%s refunded"
+  "message.tycooncraft.rep.rebate": "🕶 Reputation discount: ₩%s refunded",
+  "hud.tycooncraft.proto_scout.remote": "REMOTE · PROTO-SCOUT",
+  "message.tycooncraft.proto_scout.signal_lost": "📡 Signal lost (over 80 blocks)"
 }

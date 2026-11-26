@@ -1025,11 +1025,14 @@ public final class AutoTestClient {
             case 6884 -> serverKeep(mc, V185Test::swarmGone);
             case 6890 -> serverKeep(mc, V185Test::pscoutSetup);
             case 6896, 6904, 6912, 6920 -> serverKeep(mc, V185Test::pscoutSlash);
-            case 6899 -> { o.setCameraType(CameraType.THIRD_PERSON_BACK); }
             case 6906 -> shot(mc, "vr9_pscout_slash");
             case 6926 -> serverKeep(mc, V185Test::pscoutPounce);
-            case 6927, 6928, 6929, 6930 -> { if (mc.player.getVehicle() instanceof com.tycooncraft.mech.ProtoScout ps && ps.pounceCd() == 0) com.tycooncraft.client.mech.ProtoClient.pounce(ps); }
+            case 6927 -> serverKeep(mc, V185Test::pscoutPounceAct);
             case 6931 -> shot(mc, "vr10_pscout_pounce");
+            case 6940 -> serverKeep(mc, V185Test::pscoutWalk);
+            case 6942, 6944, 6946 -> serverKeep(mc, V185Test::pscoutWalkKeep);
+            case 6945 -> shot(mc, "vr11_pscout_remote");
+            case 6948 -> serverKeep(mc, V185Test::pscoutWalkCheck);
             case 6950 -> serverKeep(mc, V185Test::pscoutCheck);
             case 6954 -> o.setCameraType(CameraType.FIRST_PERSON);
             case 6960 -> serverKeep(mc, V185Test::v28Targets);

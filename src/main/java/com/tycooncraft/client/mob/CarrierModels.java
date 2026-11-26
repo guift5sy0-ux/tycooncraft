@@ -117,31 +117,21 @@ public final class CarrierModels {
         }
     }
 
-    /** v0.27.1 프로토 디스트로이어-정찰: 정찰 디스트로이어 모델을 2.3배로, 강철·금색 도장 */
+    /** 프로토 디스트로이어-정찰: 정찰 디스트로이어와 같은 모델·크기, 강철·금색 도장 (v0.28.1 원본 크기) */
     public static class ProtoScoutRenderer extends MobRenderer<com.tycooncraft.mech.ProtoScout, ScoutModel<com.tycooncraft.mech.ProtoScout>> {
         private static final ResourceLocation TEX = TycoonCraft.id("textures/entity/proto_scout.png");
 
         public ProtoScoutRenderer(EntityRendererProvider.Context ctx) {
-            super(ctx, new ScoutModel<>(ctx.bakeLayer(SCOUT)), 1.1f);
+            super(ctx, new ScoutModel<>(ctx.bakeLayer(SCOUT)), 0.5f);
             addLayer(new GlowLayer<>(this, TycoonCraft.id("textures/entity/proto_scout_glow.png")));
         }
 
-        @Override
-        protected void scale(com.tycooncraft.mech.ProtoScout e, com.mojang.blaze3d.vertex.PoseStack ps, float pt) {
-            ps.scale(2.3f, 2.3f, 2.3f);
-        }
 
         @Override
         public ResourceLocation getTextureLocation(com.tycooncraft.mech.ProtoScout e) {
             return TEX;
         }
 
-        @Override
-        public void render(com.tycooncraft.mech.ProtoScout e, float yaw, float pt, com.mojang.blaze3d.vertex.PoseStack ps, net.minecraft.client.renderer.MultiBufferSource buf, int light) {
-            net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
-            if (mc.options.getCameraType().isFirstPerson() && mc.player != null && mc.player.getVehicle() == e) return;
-            super.render(e, yaw, pt, ps, buf, light);
-        }
     }
 
     // ═════════ 공중 디스트로이어 (모체) ═════════
@@ -171,11 +161,14 @@ public final class CarrierModels {
             root.getAllParts().forEach(ModelPart::resetPose);
             hull.y += Mth.sin(age * 0.05f) * 0.6f;   // 둥실둥실
             hull.zRot += Mth.sin(age * 0.031f) * 0.02f;
+            // 주포탑이 천천히 좌우를 훑음
+            hull.getChild("turret0").yRot = Mth.sin(age * 0.021f) * 0.35f;
+            hull.getChild("turret1").yRot = Mth.sin(age * 0.021f + 1.3f) * 0.35f;
             for (int i = 0; i < 3; i++) if (e.core(i) > 0) pods[i].xRot += Mth.sin(age * 0.07f + i) * 0.04f;   // 엔진 미세 조향
             for (int i = 0; i < 3; i++) {
                 boolean alive = e.core(i) > 0;
                 ModelPart rotor = pods[i].getChild("rotor");
-                rotor.yRot = alive ? age * 1.4f * (i == 1 ? -1 : 1) : 0.4f * i;
+                rotor.zRot = alive ? age * 1.4f * (i == 1 ? -1 : 1) : 0.4f * i;   // v0.28.1 터빈: 앞뒤 축으로 회전
                 pods[i].getChild("glow").visible = alive;
                 if (!alive) pods[i].xRot = 0.35f;   // 부서진 동력원은 처짐
             }
