@@ -1,0 +1,10 @@
+{
+  "parent": "tycooncraft:vehicle/helm_body",
+  "textures": {
+    "particle": "minecraft:block/polished_blackstone",
+    "wood": "minecraft:block/polished_blackstone",
+    "dark": "minecraft:block/iron_block",
+    "brass": "minecraft:block/light_blue_concrete",
+    "leather": "minecraft:block/black_wool"
+  }
+}

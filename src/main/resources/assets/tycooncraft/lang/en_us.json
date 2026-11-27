@@ -812,5 +812,7 @@
   "message.tycooncraft.drone_bay.need_ship": "The drone bay can only be placed on a ship hull (a structure with a ship motor)",
   "message.tycooncraft.drone_bay.full": "Bay is full (max %s)",
   "message.tycooncraft.drone_bay.built": "Drone built! %s / %s",
-  "message.tycooncraft.drone_bay.status": "Drones %s / %s · refill with Drone items"
+  "message.tycooncraft.drone_bay.status": "Drones %s / %s · refill with Drone items",
+  "block.tycooncraft.advanced_helm": "Advanced Helm",
+  "tooltip.tycooncraft.advanced_helm": "Upgraded helm · rudder responds 3x faster · 1.8x turn rate · turns well at low speed and on big ships"
 }

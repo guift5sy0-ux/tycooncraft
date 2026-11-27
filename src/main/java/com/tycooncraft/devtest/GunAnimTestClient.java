@@ -157,6 +157,7 @@ public final class GunAnimTestClient {
     static void live(Minecraft mc, int phaseT) {
         var o = mc.options;
         liveT++;
+        if (liveT > 316 && liveT < 376) AutoTestClient.serverKeepPub(mc, sp -> helmDrive());
         switch (liveT) {
             case 1 -> AutoTestClient.serverKeepPub(mc, sp -> {
                 ItemStack s = new ItemStack(ModItems.PISTOL.get());
@@ -227,7 +228,10 @@ public final class GunAnimTestClient {
             case 200 -> o.setCameraType(CameraType.FIRST_PERSON);
             case 206 -> AutoTestClient.serverKeepPub(mc, sp -> hdxSetup(sp));
             case 310 -> AutoTestClient.serverKeepPub(mc, sp -> hdxCheck(sp));
-            case 316 -> liveDone = true;
+            case 316 -> AutoTestClient.serverKeepPub(mc, sp -> helmSetup(sp));
+            case 330 -> AutoTestClient.shotPub(mc, "helm_adv");
+            case 376 -> AutoTestClient.serverKeepPub(mc, sp -> helmCheck(sp));
+            case 380 -> liveDone = true;
             default -> {}
         }
     }
@@ -266,6 +270,43 @@ public final class GunAnimTestClient {
         }
         System.out.println("[AUTOTEST] v330 hdx tntHole=" + n[0] + " hdxHole=" + n[1] + " ratio=" + String.format("%.2f", n[1] / (float) Math.max(1, n[0]))
                 + " hdxExploded=" + com.tycooncraft.explosive.HdxBlock.PrimedHdx.EXPLODED);
+    }
+
+    // v0.35: 상위 조종간 — 같은 배 두 척에 같은 조작(약하게 전진 + 오른쪽 끝까지)을 2초간 → 선회 각도 비교
+    static com.tycooncraft.ship.ShipEntity normalShip, advShip;
+    static float yaw0N, yaw0A;
+
+    static void helmSetup(net.minecraft.server.level.ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        var b = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, sp.blockPosition().offset(0, 0, -50));
+        net.minecraft.core.BlockPos hN = AirshipTest.build(sl, b.getX(), b.getY() + 1, b.getZ(), 2);
+        net.minecraft.core.BlockPos hA = AirshipTest.build(sl, b.getX() + 14, b.getY() + 1, b.getZ(), 2);
+        sl.setBlockAndUpdate(hA, com.tycooncraft.registry.ModBlocks.ADVANCED_HELM.get().defaultBlockState()
+                .setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, net.minecraft.core.Direction.SOUTH));
+        normalShip = com.tycooncraft.ship.ShipAssembler.assemble(sl, hN, null);
+        advShip = com.tycooncraft.ship.ShipAssembler.assemble(sl, hA, null);
+        for (var s : new com.tycooncraft.ship.ShipEntity[]{normalShip, advShip}) {
+            if (s == null) continue;
+            s.autopilot = true;
+            s.setFuel(5000);
+        }
+        if (normalShip != null) yaw0N = normalShip.yaw;
+        if (advShip != null) yaw0A = advShip.yaw;
+        sp.teleportTo(sl, b.getX() + 7, b.getY() + 6, b.getZ() - 8, 0f, 30f);
+    }
+
+    static int helmT;
+
+    static void helmDrive() {
+        for (var s : new com.tycooncraft.ship.ShipEntity[]{normalShip, advShip}) if (s != null) s.testInput(0.3f, 1f, 0f);
+    }
+
+    static void helmCheck(net.minecraft.server.level.ServerPlayer sp) {
+        float dN = normalShip == null ? -1 : Math.abs(net.minecraft.util.Mth.wrapDegrees(normalShip.yaw - yaw0N));
+        float dA = advShip == null ? -1 : Math.abs(net.minecraft.util.Mth.wrapDegrees(advShip.yaw - yaw0A));
+        System.out.println(String.format("[AUTOTEST] v350 helm normalTurn=%.1f advTurn=%.1f ratio=%.2f advFlag=%s recipe=%s", dN, dA, dA / Math.max(0.1f, dN),
+                advShip != null && advShip.advancedHelm(), sp.serverLevel().getRecipeManager().byKey(com.tycooncraft.TycoonCraft.id("advanced_helm")).isPresent()));
+        for (var s : new com.tycooncraft.ship.ShipEntity[]{normalShip, advShip}) if (s != null) s.discard();
     }
 
     static int countCasings(Minecraft mc) {

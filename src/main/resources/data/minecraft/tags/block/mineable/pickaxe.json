@@ -16,6 +16,7 @@
     "tycooncraft:cctv",
     "tycooncraft:cctv_screen",
     "tycooncraft:ship_core_engine",
-    "tycooncraft:drone_swarm"
+    "tycooncraft:drone_swarm",
+    "tycooncraft:advanced_helm"
   ]
 }

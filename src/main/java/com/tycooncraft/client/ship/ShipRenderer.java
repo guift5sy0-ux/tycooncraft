@@ -81,13 +81,13 @@ public class ShipRenderer extends EntityRenderer<ShipEntity> {
         pose.translate(0.5, 0, 0.5);
         pose.mulPose(Axis.YP.rotationDegrees(-f.toYRot()));    // 블록스테이트 y 회전과 같게
         pose.translate(-0.5, 0, -0.5);
-        mr.renderModel(pose.last(), vc, null, mc.getModelManager().getModel(com.tycooncraft.client.vehicle.VehicleModels.HELM_BODY), 1, 1, 1, light, OverlayTexture.NO_OVERLAY);
+        mr.renderModel(pose.last(), vc, null, mc.getModelManager().getModel(ship.advancedHelm() ? com.tycooncraft.client.vehicle.VehicleModels.HELM_BODY_ADV : com.tycooncraft.client.vehicle.VehicleModels.HELM_BODY), 1, 1, 1, light, OverlayTexture.NO_OVERLAY);
         float wa = Mth.lerp(pt, ship.wheelAngleO, ship.wheelAngle);
         pose.pushPose();
         pose.translate(HUB_X / 16f, HUB_Y / 16f, HUB_Z / 16f);
         pose.mulPose(Axis.ZP.rotationDegrees(wa));
         pose.translate(-0.5, -0.5, -0.5);
-        mr.renderModel(pose.last(), vc, null, mc.getModelManager().getModel(com.tycooncraft.client.vehicle.VehicleModels.HELM_WHEEL), 1, 1, 1, light, OverlayTexture.NO_OVERLAY);
+        mr.renderModel(pose.last(), vc, null, mc.getModelManager().getModel(ship.advancedHelm() ? com.tycooncraft.client.vehicle.VehicleModels.HELM_WHEEL_ADV : com.tycooncraft.client.vehicle.VehicleModels.HELM_WHEEL), 1, 1, 1, light, OverlayTexture.NO_OVERLAY);
         pose.popPose();
         // 1인칭 조종사: 양손이 타륜 테(9시·3시)를 잡고 함께 돈다
         if (mc.player != null && ship.getControllingPassengerForRender() == mc.player && mc.options.getCameraType().isFirstPerson()) {

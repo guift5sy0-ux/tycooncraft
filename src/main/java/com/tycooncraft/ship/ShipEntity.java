@@ -76,6 +76,13 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     private AABB bounds = new AABB(0, 0, 0, 0, 0, 0);
     double pivotX, pivotZ, radius;
     boolean hasBay;
+    /** v0.35 상위 조종간: 방향타 3배 빠름, 선회 1.8배, 저속·대형 선박 감쇠 완화 */
+    boolean advancedHelm;
+    public static final float ADV_RUDDER = 3f, ADV_TURN = 1.8f;
+
+    public boolean advancedHelm() {
+        return advancedHelm;
+    }
     int sizeY, motors, helm = -1;
     float yaw0;
     /** 렌더/클라이언트용 현재·이전 방향, 서버도 yaw 를 씀 */
@@ -221,6 +228,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         floats = 0;
         coreEngines = 0;
         helm = -1;
+        advancedHelm = false;
         for (int i = 0; i < cells.size(); i++) {
             Cell c = cells.get(i);
             mx = Math.max(mx, c.x);
@@ -233,7 +241,10 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             if (c.state.getBlock() instanceof com.tycooncraft.turret.TurretBlock || c.state.getBlock() instanceof com.tycooncraft.turret.CiwsBlock) hasTurret = true;
             if (c.state.getBlock() instanceof DroneBayBlock) hasBay = true;
             index.put(key(c.x, c.y, c.z), i);
-            if (c.state.getBlock() instanceof ShipHelmBlock) helm = i;
+            if (c.state.getBlock() instanceof ShipHelmBlock) {
+                helm = i;
+                advancedHelm = c.state.is(com.tycooncraft.registry.ModBlocks.ADVANCED_HELM.get());
+            }
         }
         // v0.27.1: 비행 코어 엔진 1개 = 부유체 40개분 부양
         int lift = floats * ShipFuel.LIFT_PER_FLOAT + coreEngines * CORE_LIFT * ShipFuel.LIFT_PER_FLOAT;
@@ -563,12 +574,15 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         if (Math.abs(speed) < 1e-4) speed = 0;
         // 방향타: 키를 누르면 타륜이 천천히 감기고(약 2초에 끝까지), 놓으면 더 천천히 풀림 → 배처럼 묵직한 조향
         float rTarget = powered ? inT : 0;
-        rudder += Mth.clamp(rTarget - rudder, -0.025f, 0.025f) * (rTarget == 0 ? 0.6f : 1f);
+        float rStep = 0.025f * (advancedHelm ? ADV_RUDDER : 1f);
+        rudder += Mth.clamp(rTarget - rudder, -rStep, rStep) * (rTarget == 0 ? (advancedHelm ? 1f : 0.6f) : 1f);
         if (Math.abs(rudder) < 0.005f && rTarget == 0) rudder = 0;
         float turn = 0;
         if (powered && rudder != 0) {
             double flow = Math.min(1, Math.abs(speed) / Math.max(vmax, 0.01));
-            turn = (float) (rudder * (0.25 + 1.1 * flow) * Math.sqrt(60.0 / Math.max(60, n)));
+            if (advancedHelm)   // 느려도 잘 꺾이고, 배가 커도 덜 둔해짐
+                turn = (float) (rudder * (0.6 + 1.1 * flow) * ADV_TURN * Math.pow(60.0 / Math.max(60, n), 0.25));
+            else turn = (float) (rudder * (0.25 + 1.1 * flow) * Math.sqrt(60.0 / Math.max(60, n)));
         }
         // 부유체: 위(Space)/아래(Ctrl). 연료가 없거나 EMP 면 천천히 가라앉는다
         boolean airborne = air && !resting();

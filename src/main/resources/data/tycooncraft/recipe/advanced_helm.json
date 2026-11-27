@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    " A ",
+    "GHG",
+    " M "
+  ],
+  "key": {
+    "A": {
+      "item": "tycooncraft:advanced_circuit"
+    },
+    "G": {
+      "item": "tycooncraft:steel_gear"
+    },
+    "H": {
+      "item": "tycooncraft:ship_helm"
+    },
+    "M": {
+      "item": "tycooncraft:mechanism"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:advanced_helm",
+    "count": 1
+  }
+}

@@ -812,5 +812,7 @@
   "message.tycooncraft.drone_bay.need_ship": "드론 편대 격납고는 운송기 선체(이동 모터가 이어진 구조물)에만 설치할 수 있어요",
   "message.tycooncraft.drone_bay.full": "격납고가 가득 찼어요 (최대 %s기)",
   "message.tycooncraft.drone_bay.built": "드론 보충! %s / %s",
-  "message.tycooncraft.drone_bay.status": "보유 드론 %s / %s · 드론(아이템)으로 보충"
+  "message.tycooncraft.drone_bay.status": "보유 드론 %s / %s · 드론(아이템)으로 보충",
+  "block.tycooncraft.advanced_helm": "상위 조종간",
+  "tooltip.tycooncraft.advanced_helm": "일반 조종기 대신 쓰는 고급 조종간 · 방향타가 3배 빨리 감기고 풀림 · 선회 속도 1.8배 · 느릴 때·큰 배도 잘 꺾임"
 }

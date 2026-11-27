@@ -60,6 +60,7 @@ public final class ModCreativeTabs {
                         out.accept(ModItems.SMOKE_GRENADE.get());
                         out.accept(ModItems.EMP_GENERATOR.get());
                         out.accept(ModItems.SHIP_HELM.get());
+                        out.accept(ModItems.ADVANCED_HELM.get());
                         out.accept(ModItems.SHIP_MOTOR.get());
                         out.accept(ModItems.SHIP_BOOSTER.get());
                         out.accept(ModItems.SETTER.get());

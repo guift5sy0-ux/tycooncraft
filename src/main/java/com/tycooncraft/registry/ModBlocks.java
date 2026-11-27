@@ -67,6 +67,9 @@ public final class ModBlocks {
     /** v0.27.1 비행 코어 엔진: 운송기 엔진의 상위호환 (엔진 6개분 추진 + 부유체 40개분 부양 + 연료 40% 절약) */
     public static final DeferredBlock<com.tycooncraft.ship.ShipMotorBlock> SHIP_CORE_ENGINE = BLOCKS.register("ship_core_engine",
             () -> new com.tycooncraft.ship.ShipMotorBlock(machineProps().strength(3.0f, 12.0f).lightLevel(s -> 10)));
+    // v0.35: 상위 조종간 (조향이 빠름)
+    public static final DeferredBlock<com.tycooncraft.ship.ShipHelmBlock> ADVANCED_HELM = BLOCKS.register("advanced_helm",
+            () -> new com.tycooncraft.ship.ShipHelmBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).sound(SoundType.METAL).strength(2.5f).noOcclusion()));
     public static final DeferredBlock<com.tycooncraft.ship.ShipHelmBlock> SHIP_HELM = BLOCKS.register("ship_helm",
             () -> new com.tycooncraft.ship.ShipHelmBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).sound(SoundType.WOOD).strength(1.5f).noOcclusion()));
     public static final DeferredBlock<com.tycooncraft.setter.SetterBlock> SETTER = BLOCKS.register("setter",
