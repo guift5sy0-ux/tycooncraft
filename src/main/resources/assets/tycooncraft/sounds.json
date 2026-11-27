@@ -1,20 +1,11 @@
 {
   "gun.pistol.fire": {
     "sounds": [
-      {
-        "name": "tycooncraft:gun/pistol_fire_1",
-        "attenuation_distance": 96
-      },
-      {
-        "name": "tycooncraft:gun/pistol_fire_2",
-        "attenuation_distance": 96
-      },
-      {
-        "name": "tycooncraft:gun/pistol_fire_3",
-        "attenuation_distance": 96
-      }
-    ],
-    "subtitle": "subtitles.tycooncraft.gun.fire"
+      "tycooncraft:gun/pistol_fire_1",
+      "tycooncraft:gun/pistol_fire_2",
+      "tycooncraft:gun/pistol_fire_3",
+      "tycooncraft:gun/pistol_fire_4"
+    ]
   },
   "gun.pistol.reload": {
     "sounds": [
@@ -24,20 +15,11 @@
   },
   "gun.smg.fire": {
     "sounds": [
-      {
-        "name": "tycooncraft:gun/smg_fire_1",
-        "attenuation_distance": 96
-      },
-      {
-        "name": "tycooncraft:gun/smg_fire_2",
-        "attenuation_distance": 96
-      },
-      {
-        "name": "tycooncraft:gun/smg_fire_3",
-        "attenuation_distance": 96
-      }
-    ],
-    "subtitle": "subtitles.tycooncraft.gun.fire"
+      "tycooncraft:gun/smg_fire_1",
+      "tycooncraft:gun/smg_fire_2",
+      "tycooncraft:gun/smg_fire_3",
+      "tycooncraft:gun/smg_fire_4"
+    ]
   },
   "gun.smg.reload": {
     "sounds": [
@@ -47,20 +29,11 @@
   },
   "gun.rifle.fire": {
     "sounds": [
-      {
-        "name": "tycooncraft:gun/rifle_fire_1",
-        "attenuation_distance": 96
-      },
-      {
-        "name": "tycooncraft:gun/rifle_fire_2",
-        "attenuation_distance": 96
-      },
-      {
-        "name": "tycooncraft:gun/rifle_fire_3",
-        "attenuation_distance": 96
-      }
-    ],
-    "subtitle": "subtitles.tycooncraft.gun.fire"
+      "tycooncraft:gun/rifle_fire_1",
+      "tycooncraft:gun/rifle_fire_2",
+      "tycooncraft:gun/rifle_fire_3",
+      "tycooncraft:gun/rifle_fire_4"
+    ]
   },
   "gun.rifle.reload": {
     "sounds": [
@@ -70,20 +43,11 @@
   },
   "gun.shotgun.fire": {
     "sounds": [
-      {
-        "name": "tycooncraft:gun/shotgun_fire_1",
-        "attenuation_distance": 96
-      },
-      {
-        "name": "tycooncraft:gun/shotgun_fire_2",
-        "attenuation_distance": 96
-      },
-      {
-        "name": "tycooncraft:gun/shotgun_fire_3",
-        "attenuation_distance": 96
-      }
-    ],
-    "subtitle": "subtitles.tycooncraft.gun.fire"
+      "tycooncraft:gun/shotgun_fire_1",
+      "tycooncraft:gun/shotgun_fire_2",
+      "tycooncraft:gun/shotgun_fire_3",
+      "tycooncraft:gun/shotgun_fire_4"
+    ]
   },
   "gun.shotgun.reload": {
     "sounds": [
@@ -93,20 +57,11 @@
   },
   "gun.sniper.fire": {
     "sounds": [
-      {
-        "name": "tycooncraft:gun/sniper_fire_1",
-        "attenuation_distance": 96
-      },
-      {
-        "name": "tycooncraft:gun/sniper_fire_2",
-        "attenuation_distance": 96
-      },
-      {
-        "name": "tycooncraft:gun/sniper_fire_3",
-        "attenuation_distance": 96
-      }
-    ],
-    "subtitle": "subtitles.tycooncraft.gun.fire"
+      "tycooncraft:gun/sniper_fire_1",
+      "tycooncraft:gun/sniper_fire_2",
+      "tycooncraft:gun/sniper_fire_3",
+      "tycooncraft:gun/sniper_fire_4"
+    ]
   },
   "gun.sniper.reload": {
     "sounds": [
@@ -303,10 +258,10 @@
   },
   "gun.judge.fire": {
     "sounds": [
-      {
-        "name": "tycooncraft:gun/judge_fire",
-        "attenuation_distance": 96
-      }
+      "tycooncraft:gun/judge_fire_1",
+      "tycooncraft:gun/judge_fire_2",
+      "tycooncraft:gun/judge_fire_3",
+      "tycooncraft:gun/judge_fire_4"
     ]
   },
   "mob.destroyer.minigun_spin": {
@@ -367,6 +322,228 @@
         "name": "tycooncraft:gun/emp_blast",
         "attenuation_distance": 64
       }
+    ]
+  },
+  "gun.pistol.far": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/pistol_far_1",
+        "attenuation_distance": 16
+      },
+      {
+        "name": "tycooncraft:gun/pistol_far_2",
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "gun.smg.far": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/smg_far_1",
+        "attenuation_distance": 16
+      },
+      {
+        "name": "tycooncraft:gun/smg_far_2",
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "gun.rifle.far": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/rifle_far_1",
+        "attenuation_distance": 16
+      },
+      {
+        "name": "tycooncraft:gun/rifle_far_2",
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "gun.shotgun.far": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/shotgun_far_1",
+        "attenuation_distance": 16
+      },
+      {
+        "name": "tycooncraft:gun/shotgun_far_2",
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "gun.sniper.far": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/sniper_far_1",
+        "attenuation_distance": 16
+      },
+      {
+        "name": "tycooncraft:gun/sniper_far_2",
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "gun.rt20.fire": {
+    "sounds": [
+      "tycooncraft:gun/rt20_fire_1",
+      "tycooncraft:gun/rt20_fire_2",
+      "tycooncraft:gun/rt20_fire_3",
+      "tycooncraft:gun/rt20_fire_4"
+    ]
+  },
+  "gun.rt20.far": {
+    "sounds": [
+      {
+        "name": "tycooncraft:gun/rt20_far_1",
+        "attenuation_distance": 16
+      },
+      {
+        "name": "tycooncraft:gun/rt20_far_2",
+        "attenuation_distance": 16
+      }
+    ]
+  },
+  "gun.mag_out": {
+    "sounds": [
+      "tycooncraft:gun/mag_out_1",
+      "tycooncraft:gun/mag_out_2"
+    ]
+  },
+  "gun.mag_in": {
+    "sounds": [
+      "tycooncraft:gun/mag_in_1",
+      "tycooncraft:gun/mag_in_2"
+    ]
+  },
+  "gun.mag_drop": {
+    "sounds": [
+      "tycooncraft:gun/mag_drop_1",
+      "tycooncraft:gun/mag_drop_2"
+    ]
+  },
+  "gun.slide_back": {
+    "sounds": [
+      "tycooncraft:gun/slide_back_1",
+      "tycooncraft:gun/slide_back_2"
+    ]
+  },
+  "gun.slide_release": {
+    "sounds": [
+      "tycooncraft:gun/slide_release_1",
+      "tycooncraft:gun/slide_release_2"
+    ]
+  },
+  "gun.charge_back": {
+    "sounds": [
+      "tycooncraft:gun/charge_back_1",
+      "tycooncraft:gun/charge_back_2"
+    ]
+  },
+  "gun.charge_release": {
+    "sounds": [
+      "tycooncraft:gun/charge_release_1",
+      "tycooncraft:gun/charge_release_2"
+    ]
+  },
+  "gun.hk_slap": {
+    "sounds": [
+      "tycooncraft:gun/hk_slap_1",
+      "tycooncraft:gun/hk_slap_2"
+    ]
+  },
+  "gun.bolt_up": {
+    "sounds": [
+      "tycooncraft:gun/bolt_up_1",
+      "tycooncraft:gun/bolt_up_2"
+    ]
+  },
+  "gun.bolt_back": {
+    "sounds": [
+      "tycooncraft:gun/bolt_back_1",
+      "tycooncraft:gun/bolt_back_2"
+    ]
+  },
+  "gun.bolt_fwd": {
+    "sounds": [
+      "tycooncraft:gun/bolt_fwd_1",
+      "tycooncraft:gun/bolt_fwd_2"
+    ]
+  },
+  "gun.bolt_down": {
+    "sounds": [
+      "tycooncraft:gun/bolt_down_1",
+      "tycooncraft:gun/bolt_down_2"
+    ]
+  },
+  "gun.pump_back": {
+    "sounds": [
+      "tycooncraft:gun/pump_back_1",
+      "tycooncraft:gun/pump_back_2"
+    ]
+  },
+  "gun.pump_fwd": {
+    "sounds": [
+      "tycooncraft:gun/pump_fwd_1",
+      "tycooncraft:gun/pump_fwd_2"
+    ]
+  },
+  "gun.shell_insert": {
+    "sounds": [
+      "tycooncraft:gun/shell_insert_1",
+      "tycooncraft:gun/shell_insert_2"
+    ]
+  },
+  "gun.round_insert": {
+    "sounds": [
+      "tycooncraft:gun/round_insert_1",
+      "tycooncraft:gun/round_insert_2"
+    ]
+  },
+  "gun.rocket_load": {
+    "sounds": [
+      "tycooncraft:gun/rocket_load_1",
+      "tycooncraft:gun/rocket_load_2"
+    ]
+  },
+  "gun.rocket_lock": {
+    "sounds": [
+      "tycooncraft:gun/rocket_lock_1",
+      "tycooncraft:gun/rocket_lock_2"
+    ]
+  },
+  "gun.equip": {
+    "sounds": [
+      "tycooncraft:gun/equip_1",
+      "tycooncraft:gun/equip_2"
+    ]
+  },
+  "gun.grab": {
+    "sounds": [
+      "tycooncraft:gun/grab_1",
+      "tycooncraft:gun/grab_2"
+    ]
+  },
+  "gun.casing.brass": {
+    "sounds": [
+      "tycooncraft:gun/casing_brass_1",
+      "tycooncraft:gun/casing_brass_2",
+      "tycooncraft:gun/casing_brass_3",
+      "tycooncraft:gun/casing_brass_4"
+    ]
+  },
+  "gun.casing.big": {
+    "sounds": [
+      "tycooncraft:gun/casing_big_1",
+      "tycooncraft:gun/casing_big_2",
+      "tycooncraft:gun/casing_big_3"
+    ]
+  },
+  "gun.casing.shotgun": {
+    "sounds": [
+      "tycooncraft:gun/casing_shotgun_1",
+      "tycooncraft:gun/casing_shotgun_2",
+      "tycooncraft:gun/casing_shotgun_3"
     ]
   }
 }

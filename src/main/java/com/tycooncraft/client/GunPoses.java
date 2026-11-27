@@ -60,6 +60,27 @@ public final class GunPoses {
         s.xRot = Mth.lerp(a, bsx, asx) - k * 0.8f;
         s.yRot = Mth.lerp(a, bsy, asy);
         s.zRot = csx == 0f ? Mth.lerp(a, s.zRot, 0f) : 0;
+        // v0.32: 재장전 - 총을 가슴 앞으로 끌어와 기울이고, 받치는 손이 허리 파우치로 내려갔다 올라와 탄창을 꽂음
+        float u = GunAnim.reloadProgress(e);
+        if (u >= 0) {
+            float c = smooth(seg(u, 0f, 0.12f)) * (1 - smooth(seg(u, 0.86f, 1f)));
+            g.xRot = Mth.lerp(c, g.xRot, -1.05f + pitch * 0.3f);
+            g.yRot = Mth.lerp(c, g.yRot, (main + 0.25f) * side + yaw * 0.5f);
+            g.zRot = -0.15f * c * side;
+            float down = smooth(seg(u, 0.08f, 0.29f)) * (1 - smooth(seg(u, 0.37f, 0.53f)));
+            float sx = Mth.lerp(c, s.xRot, -1.0f + pitch * 0.3f), sy = Mth.lerp(c, s.yRot, (support - 0.1f) * side + yaw * 0.5f);
+            s.xRot = Mth.lerp(down, sx, 0.15f);
+            s.yRot = Mth.lerp(down, sy, 0.1f * side);
+            s.zRot = Mth.lerp(down, 0f, -0.12f * side);
+        }
+    }
+
+    private static float seg(float u, float a, float b) {
+        return Mth.clamp((u - a) / (b - a), 0f, 1f);
+    }
+
+    private static float smooth(float f) {
+        return f * f * (3 - 2 * f);
     }
 
     public static HumanoidModel.ArmPose poseFor(ItemStack stack) {

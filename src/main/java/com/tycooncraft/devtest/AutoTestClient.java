@@ -72,6 +72,7 @@ public final class AutoTestClient {
         var o = mc.options;
         phaseT++;
         var held = mc.player.getMainHandItem();
+        if (System.getenv("TC_ANIMONLY") != null && phase < 11) next(12);
         switch (phase) {
             case 0 -> { if (held.getItem() instanceof com.tycooncraft.gun.GunItem) next(1); }
             case 1 -> {
@@ -115,6 +116,9 @@ public final class AutoTestClient {
                 if (phaseT == 10) next(10);
             }
             case 10 -> later(mc);
+            case 12 -> {
+                if (GunAnimTestClient.tick(mc, phaseT) || phaseT > 2400) next(11);
+            }
             case 11 -> {
                 if (phaseT == 10) {
                     System.out.println("[AUTOTEST] finished");
@@ -158,6 +162,14 @@ public final class AutoTestClient {
                 f.accept(sp);
             }
         });
+    }
+
+    static void shotPub(Minecraft mc, String name) {
+        shot(mc, name);
+    }
+
+    static void serverKeepPub(Minecraft mc, java.util.function.Consumer<net.minecraft.server.level.ServerPlayer> f) {
+        serverKeep(mc, f);
     }
 
     /** serverDo 와 같지만 탑승 상태를 유지 */
@@ -1039,7 +1051,7 @@ public final class AutoTestClient {
             case 7682 -> serverKeep(mc, sp -> sp.teleportTo(sp.serverLevel(), -36.5, 64, 0.5, 90f, -6f));
             case 7710 -> shot(mc, "v29_1_street");
             case 7712 -> serverKeep(mc, V185Test::ucLeave);
-            case 7722 -> next(11);
+            case 7722 -> next(12);
             default -> {
             }
         }
@@ -1047,6 +1059,10 @@ public final class AutoTestClient {
 
     private static void step(Minecraft mc) {
         var o = mc.options;
+        if (System.getenv("TC_ANIMONLY") != null) {
+            if (t >= 60) phases(mc);
+            return;
+        }
         if (t >= 1080) phases(mc);
         Entity v = mc.player.getVehicle();
         switch (t) {

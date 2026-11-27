@@ -24,6 +24,7 @@ public final class GunAnim {
     private static final class S {
         float v, vO;
         long lastShot = -1000;
+        double reloadStart = -99, reloadDur;
     }
 
     private static final Map<Integer, S> STATE = new HashMap<>();
@@ -41,9 +42,31 @@ public final class GunAnim {
         s.lastShot = mc.level.getGameTime();
     }
 
+    /** v0.32: 재장전 (3인칭 자세용) */
+    public static void startReload(int id, int ticks) {
+        S s = STATE.computeIfAbsent(id, k -> new S());
+        s.reloadStart = com.tycooncraft.client.gun.GunCues.now();
+        s.reloadDur = ticks / 20.0;
+    }
+
+    public static void stopReload(int id) {
+        S s = STATE.get(id);
+        if (s != null) s.reloadStart = -99;
+    }
+
+    /** 재장전 진행도 0~1, 안 하면 -1 */
+    public static float reloadProgress(Entity e) {
+        S s = STATE.get(e.getId());
+        if (s == null || s.reloadStart < 0) return -1f;
+        double u = (com.tycooncraft.client.gun.GunCues.now() - s.reloadStart) / Math.max(0.05, s.reloadDur);
+        if (u > 1 || u < 0) return -1f;
+        return (float) u;
+    }
+
     private static boolean wantsAim(Entity e, S s, long now) {
         Minecraft mc = Minecraft.getInstance();
         if (now - s.lastShot < HOLD_TICKS) return true;
+        if (s.reloadStart >= 0 && com.tycooncraft.client.gun.GunCues.now() - s.reloadStart < s.reloadDur) return true;
         if (e instanceof LivingEntity le && le.isUsingItem()) return true;
         if (e == mc.player && mc.screen == null && (mc.options.keyAttack.isDown() || GunClient.isScoping())) return true;
         return e instanceof Mob m && m.isAggressive();
@@ -57,7 +80,7 @@ public final class GunAnim {
             return;
         }
         long now = mc.level.getGameTime();
-        STATE.entrySet().removeIf(en -> mc.level.getEntity(en.getKey()) == null && now - en.getValue().lastShot > 200);
+        STATE.entrySet().removeIf(en -> mc.level.getEntity(en.getKey()) == null && now - en.getValue().lastShot > 200 && reloadProgress(en.getKey()) < 0);
         for (var en : STATE.entrySet()) {
             Entity e = mc.level.getEntity(en.getKey());
             S s = en.getValue();
@@ -65,6 +88,13 @@ public final class GunAnim {
             boolean up = e != null && wantsAim(e, s, now);
             s.v += ((up ? 1f : 0f) - s.v) * (up ? 0.5f : 0.12f);   // 올릴 땐 빠르게, 내릴 땐 천천히
         }
+    }
+
+    private static float reloadProgress(int id) {
+        S s = STATE.get(id);
+        if (s == null || s.reloadStart < 0) return -1f;
+        double u = (com.tycooncraft.client.gun.GunCues.now() - s.reloadStart) / Math.max(0.05, s.reloadDur);
+        return u > 1 || u < 0 ? -1f : (float) u;
     }
 
     /** 0 = 들고 다니는 자세, 1 = 조준 자세 */

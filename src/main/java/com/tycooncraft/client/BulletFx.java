@@ -60,16 +60,56 @@ public final class BulletFx {
         } else {   // 소음기: 옅은 김만
             mc.particleEngine.add(new Smoke(mc.level, p.from(), dir.scale(0.03), 0.04f, 0.2f, 0.12f, 12, 0.8f));
         }
-        // 탄피 배출: 사람이 든 총만 (포탑·차량·전투기 제외)
+        // 탄피 배출: 사람이 든 총만 (포탑·차량·전투기 제외). v0.32: 입체 탄피, 펌프·노리쇠 총은 손으로 당길 때
         var shooter = mc.level.getEntity(p.shooter());
-        if (shooter instanceof net.minecraft.world.entity.LivingEntity && !(shooter.getVehicle() != null && !(shooter.getVehicle() instanceof net.minecraft.world.entity.LivingEntity))
-                && p.kind() != 3 && !(shooter instanceof com.tycooncraft.mech.ProtoDestroyer) && !(shooter instanceof com.tycooncraft.mob.DestroyerGolem)) {
-            Vec3 right = dir.cross(new Vec3(0, 1, 0));
-            right = right.lengthSqr() < 1e-6 ? new Vec3(1, 0, 0) : right.normalize();
-            Vec3 at = fp ? p.from().subtract(dir.scale(1.0)).add(right.scale(0.12)).add(0, -0.05, 0) : p.from().subtract(dir.scale(0.6)).add(right.scale(0.05));
-            mc.particleEngine.add(new Shell(mc.level, at, right.scale(0.09 + 0.04 * mc.level.random.nextFloat()).add(0, 0.11, 0).add(dir.scale(-0.02))));
+        if (shooter instanceof net.minecraft.world.entity.LivingEntity le && !(shooter.getVehicle() != null && !(shooter.getVehicle() instanceof net.minecraft.world.entity.LivingEntity))
+                && p.kind() != 3 && !(shooter instanceof com.tycooncraft.mech.ProtoDestroyer) && !(shooter instanceof com.tycooncraft.mob.DestroyerGolem)
+                && mc.level.getGameTime() != lastShellTick.getOrDefault(p.shooter(), -1L)) {
+            lastShellTick.put(p.shooter(), mc.level.getGameTime());
+            var kind = com.tycooncraft.client.gun.GunKind.of(le.getMainHandItem());
+            if (!mine) {
+                // 다른 사람: 펌프·노리쇠 소리를 그 사람 손동작 시각에 맞춰
+                if (kind != null) com.tycooncraft.client.gun.GunCues.schedule(p.shooter(), com.tycooncraft.client.gun.GunCues.now(), com.tycooncraft.client.gun.GunCues.afterShot(kind));
+            }
+            if (!fp) {   // 1인칭 내 총은 GunViewModel 이 배출구에서 직접 뱉음
+                var casing = kind != null ? kind.casing : com.tycooncraft.client.gun.GunKind.Casing.PISTOL;
+                float delay = kind != null ? kind.ejectDelay() : 0.02f;
+                if (casing != null && delay >= 0) {
+                    Vec3 right = dir.cross(new Vec3(0, 1, 0));
+                    right = right.lengthSqr() < 1e-6 ? new Vec3(1, 0, 0) : right.normalize();
+                    Vec3 at = p.from().subtract(dir.scale(0.6)).add(right.scale(0.05));
+                    Vec3 v = right.scale(0.1 + 0.04 * mc.level.random.nextFloat()).add(0, 0.1, 0).add(dir.scale(-0.02)).add(shooter.getDeltaMovement());
+                    org.joml.Vector3f vel = new org.joml.Vector3f((float) v.x, (float) v.y, (float) v.z);
+                    org.joml.Vector3f bore = new org.joml.Vector3f((float) dir.x, (float) dir.y, (float) dir.z);
+                    var ent = shooter;
+                    Vec3 offset = at.subtract(shooter.position());
+                    Runnable spawn = () -> {
+                        if (mc.level == null) return;
+                        mc.particleEngine.add(new com.tycooncraft.client.gun.CasingParticle(mc.level, ent.position().add(offset), vel, casing, bore, new org.joml.Vector3f(0, 1, 0)));
+                    };
+                    if (delay < 0.05f) spawn.run();
+                    else DELAYED.add(new Object[]{com.tycooncraft.client.gun.GunCues.now() + delay, spawn});
+                }
+            }
         }
         spawned++;
+    }
+
+    private static final java.util.Map<Integer, Long> lastShellTick = new java.util.HashMap<>();
+    private static final java.util.List<Object[]> DELAYED = new java.util.ArrayList<>();
+
+    /** 늦게 나오는 탄피 (펌프·노리쇠) */
+    public static void tickDelayed() {
+        if (DELAYED.isEmpty()) return;
+        double t = com.tycooncraft.client.gun.GunCues.now();
+        for (var it = DELAYED.iterator(); it.hasNext(); ) {
+            Object[] o = it.next();
+            if ((double) o[0] <= t) {
+                it.remove();
+                ((Runnable) o[1]).run();
+            }
+        }
+        if (lastShellTick.size() > 256) lastShellTick.clear();
     }
 
     static Vec3 gauss(ClientLevel l, double s) {
@@ -192,51 +232,6 @@ public final class BulletFx {
             Vec3 tail = p.subtract(xd * 1.4, yd * 1.4, zd * 1.4);
             float t = Mth.clamp((age + pt) / lifetime, 0f, 1f);
             quad(vc, tail, p, cam.getPosition(), 0.018f, 1f, 0.85f - 0.4f * t, Math.max(0f, 0.45f - 0.4f * t), Math.max(0f, 1f - t * t), sp, 0.3f, 0.7f);
-        }
-
-        @Override
-        public ParticleRenderType getRenderType() {
-            return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
-        }
-    }
-
-    /** 탄피: 오른쪽 위로 튀어 나가 빙글빙글 돌며 떨어지고, 바닥에 '팅' 소리 */
-    static final class Shell extends Particle {
-        final TextureAtlasSprite sp = fx("tc_shell");
-        float rot, spinV;
-        boolean clinked;
-
-        Shell(ClientLevel level, Vec3 at, Vec3 vel) {
-            super(level, at.x, at.y, at.z);
-            xd = vel.x;
-            yd = vel.y;
-            zd = vel.z;
-            gravity = 0.9f;
-            lifetime = 45;
-            hasPhysics = true;
-            setSize(0.05f, 0.05f);
-            spinV = 0.6f + random.nextFloat() * 0.5f;
-        }
-
-        @Override
-        public void tick() {
-            super.tick();
-            rot += spinV;
-            if (onGround) {
-                spinV *= 0.6f;
-                if (!clinked) {
-                    clinked = true;
-                    level.playLocalSound(x, y, z, net.minecraft.sounds.SoundEvents.CHAIN_FALL, SoundSource.PLAYERS, 0.25f, 1.9f + random.nextFloat() * 0.2f, false);
-                    yd = 0.06;
-                }
-            }
-        }
-
-        @Override
-        public void render(VertexConsumer vc, Camera cam, float pt) {
-            Vec3 c = new Vec3(Mth.lerp(pt, xo, x), Mth.lerp(pt, yo, y), Mth.lerp(pt, zo, z));
-            float a = age > lifetime - 10 ? (lifetime - age - pt) / 10f : 1f;
-            billboard(vc, cam, c, 0.035f, rot + spinV * pt, sp, 1, 1, 1, Math.max(0, a), getLightColor(pt));
         }
 
         @Override

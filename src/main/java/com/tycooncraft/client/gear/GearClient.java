@@ -38,13 +38,8 @@ public final class GearClient {
                 r.addLayer(new DualPistolLayer(r));
             }
         }
-        if (!handHooked) {
-            handHooked = true;
-            NeoForge.EVENT_BUS.addListener(GearClient::onHand);
-        }
     }
 
-    private static boolean handHooked;
 
     /** 원격 플레이어: 땅에서 떨어져 천천히 내려오면 펼친 것으로 보고 그림 */
     public static boolean chuteOpen(Player p) {
@@ -105,21 +100,7 @@ public final class GearClient {
         return new ItemStack(ModItems.PISTOL.get());
     }
 
-    /** 1인칭: 빈 왼손 자리에 권총 */
-    static void onHand(RenderHandEvent event) {
-        Player p = Minecraft.getInstance().player;
-        if (p == null || event.getHand() != InteractionHand.OFF_HAND || !p.getMainHandItem().is(ModItems.DUAL_PISTOLS.get()) || !p.getOffhandItem().isEmpty()) return;
-        event.setCanceled(true);
-        PoseStack ps = event.getPoseStack();
-        boolean leftHand = p.getMainArm() == HumanoidArm.RIGHT;
-        ps.pushPose();
-        float side = leftHand ? -1f : 1f;
-        ps.translate(side * 0.56f, -0.52f + event.getEquipProgress() * -0.6f, -0.72f);
-        Minecraft.getInstance().getEntityRenderDispatcher().getItemInHandRenderer().renderItem(p, pistol(p),
-                leftHand ? ItemDisplayContext.FIRST_PERSON_LEFT_HAND : ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, leftHand,
-                ps, event.getMultiBufferSource(), event.getPackedLight());
-        ps.popPose();
-    }
+    // v0.32: 1인칭 쌍권총은 GunViewModel 이 두 자루 모두 그림
 
     private GearClient() {}
 }

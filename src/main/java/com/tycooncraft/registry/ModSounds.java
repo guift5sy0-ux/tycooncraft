@@ -28,6 +28,38 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> SNIPER_RELOAD = sound("gun.sniper.reload");
     public static final DeferredHolder<SoundEvent, SoundEvent> DRY_FIRE = sound("gun.dry_fire");
 
+    // v0.32: 총 동작 소리 (애니메이션에 맞춰 클라이언트가 재생) · 탄피 · 원거리 총성
+    public static final DeferredHolder<SoundEvent, SoundEvent> RT20_FIRE = sound("gun.rt20.fire");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PISTOL_FAR = sound("gun.pistol.far");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SMG_FAR = sound("gun.smg.far");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RIFLE_FAR = sound("gun.rifle.far");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SHOTGUN_FAR = sound("gun.shotgun.far");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SNIPER_FAR = sound("gun.sniper.far");
+    public static final DeferredHolder<SoundEvent, SoundEvent> RT20_FAR = sound("gun.rt20.far");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MAG_OUT = sound("gun.mag_out");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MAG_IN = sound("gun.mag_in");
+    public static final DeferredHolder<SoundEvent, SoundEvent> MAG_DROP = sound("gun.mag_drop");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SLIDE_RELEASE = sound("gun.slide_release");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SLIDE_BACK = sound("gun.slide_back");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHARGE_BACK = sound("gun.charge_back");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHARGE_RELEASE = sound("gun.charge_release");
+    public static final DeferredHolder<SoundEvent, SoundEvent> HK_SLAP = sound("gun.hk_slap");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BOLT_UP = sound("gun.bolt_up");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BOLT_BACK = sound("gun.bolt_back");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BOLT_FWD = sound("gun.bolt_fwd");
+    public static final DeferredHolder<SoundEvent, SoundEvent> BOLT_DOWN = sound("gun.bolt_down");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PUMP_BACK = sound("gun.pump_back");
+    public static final DeferredHolder<SoundEvent, SoundEvent> PUMP_FWD = sound("gun.pump_fwd");
+    public static final DeferredHolder<SoundEvent, SoundEvent> SHELL_INSERT = sound("gun.shell_insert");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ROUND_INSERT = sound("gun.round_insert");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ROCKET_LOAD = sound("gun.rocket_load");
+    public static final DeferredHolder<SoundEvent, SoundEvent> ROCKET_LOCK = sound("gun.rocket_lock");
+    public static final DeferredHolder<SoundEvent, SoundEvent> GUN_EQUIP = sound("gun.equip");
+    public static final DeferredHolder<SoundEvent, SoundEvent> GUN_GRAB = sound("gun.grab");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CASING_BRASS = sound("gun.casing.brass");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CASING_BIG = sound("gun.casing.big");
+    public static final DeferredHolder<SoundEvent, SoundEvent> CASING_SHOTGUN = sound("gun.casing.shotgun");
+
     // 탈것
     public static final DeferredHolder<SoundEvent, SoundEvent> CAR_ENGINE = sound("vehicle.car.engine");
     public static final DeferredHolder<SoundEvent, SoundEvent> CAR_HORN = sound("vehicle.car.horn");

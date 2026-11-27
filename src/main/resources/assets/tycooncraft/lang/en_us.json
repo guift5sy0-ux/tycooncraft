@@ -804,5 +804,6 @@
   "message.tycooncraft.locked_chest.locked": "🔒 Locked — you need an Undercity Stash Key",
   "message.tycooncraft.locked_chest.unlocked": "🔓 You opened the stash (the key snapped)",
   "message.tycooncraft.undercity.enter": "🏚 The Undercity — gang territory. Dealers won't protect you outside the alley",
-  "enchantment.tycooncraft.bullet_protection": "Bullet Protection"
+  "enchantment.tycooncraft.bullet_protection": "Bullet Protection",
+  "message.tycooncraft.dual_no_shield": "You can't hold a shield while dual-wielding pistols"
 }

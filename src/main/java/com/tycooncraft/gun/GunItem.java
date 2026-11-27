@@ -89,6 +89,13 @@ public class GunItem extends Item {
         return Math.max(1, Math.round(stats.fireDelay() * (1 - 0.15f * GunEnchants.level(stack, GunEnchants.RAPID_FIRE)) * com.tycooncraft.blackmarket.IllegalMods.delayMult(stack)));
     }
 
+    /** v0.32: 클라이언트 총 동작 훅 (ClientModEvents 가 채움; 서버에선 아무것도 안 함) */
+    public static java.util.function.Consumer<ItemStack> CLIENT_SHOT = s -> {};
+    public interface ReloadHook {
+        void start(ItemStack stack, int ticks, int shells, boolean wasEmpty);
+    }
+    public static ReloadHook CLIENT_RELOAD = (a, b, c, d) -> {};
+
     public static final int RT20_RELOAD = 280;   // 14초 고정 (인챈트·파츠 무시)
     public static final float RT20_RECOIL_DMG = 4f;
 
@@ -190,6 +197,7 @@ public class GunItem extends Item {
         int tier = silencerTier(stack);
         float recoil = stats.recoil() * (1 - 0.2f * GunEnchants.level(stack, GunEnchants.PRECISION)) * (tier == 2 ? 0.75f : tier == 1 ? 0.85f : 1f) * GunParts.recoilMult(stack) * com.tycooncraft.blackmarket.IllegalMods.recoilMult(stack);
         if (level.isClientSide) {
+            CLIENT_SHOT.accept(stack);
             // 반동: 화면이 살짝 위로
             player.setXRot(player.getXRot() - recoil);
             player.setYRot(player.getYRot() + (player.getRandom().nextFloat() - 0.5f) * recoil * 0.5f);
@@ -225,6 +233,7 @@ public class GunItem extends Item {
             level.playSound(player, player.getX(), player.getY(), player.getZ(), ModSounds.SILENCED_FIRE.get(), SoundSource.PLAYERS, 2.0f, pitch * 0.92f);
         } else {
             level.playSound(player, player.getX(), player.getY(), player.getZ(), stats.fireSound().get(), SoundSource.PLAYERS, 4.0f, pitch);
+            farSound(server, player, stack);
         }
         // 총구 화염 + 연기 (소음기면 화염 없음). 쌍권총은 좌우 번갈아
         Vec3 look = player.getViewVector(1f);
@@ -232,6 +241,32 @@ public class GunItem extends Item {
         double side = isDual() ? (player.getPersistentData().getBoolean("tycooncraft_dual_left") ? 0.32 : -0.32) : 0.25;
         Vec3 muzzle = player.getEyePosition().add(look.scale(tier > 0 ? 1.7 : 1.3)).add(right.scale(side)).add(0, -0.18, 0);
         // v0.20.0: 총구 연기·섬광·탄피는 클라이언트(BulletFx)가 현실적으로 그림
+    }
+
+    /** v0.32: 멀리 있는 사람(40블록 밖)에겐 둔탁하게 울리는 원거리 총성 */
+    public static void farSound(ServerLevel level, Entity src, ItemStack stack) {
+        net.minecraft.sounds.SoundEvent far = farSoundFor(stack);
+        if (far == null) return;
+        float range = stack.is(ModItems.RT20.get()) ? 320f : stack.is(ModItems.SNIPER.get()) ? 240f : stack.is(ModItems.PISTOL.get()) || stack.is(ModItems.DUAL_PISTOLS.get()) ? 140f : 190f;
+        var holder = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(far);
+        long seed = level.random.nextLong();
+        for (var sp : level.players()) {
+            double d = sp.distanceTo(src);
+            if (d < 40 || d > range || sp == src) continue;
+            sp.connection.send(new net.minecraft.network.protocol.game.ClientboundSoundPacket(holder, SoundSource.PLAYERS,
+                    src.getX(), src.getY(), src.getZ(), range / 16f, 0.95f + level.random.nextFloat() * 0.1f, seed));
+        }
+    }
+
+    private static net.minecraft.sounds.SoundEvent farSoundFor(ItemStack s) {
+        if (s.is(ModItems.PISTOL.get()) || s.is(ModItems.DUAL_PISTOLS.get()) || s.is(ModItems.JUDGE.get())) return ModSounds.PISTOL_FAR.get();
+        if (s.is(ModItems.SMG.get())) return ModSounds.SMG_FAR.get();
+        if (s.is(ModItems.RIFLE.get())) return ModSounds.RIFLE_FAR.get();
+        if (s.is(ModItems.SHOTGUN.get())) return ModSounds.SHOTGUN_FAR.get();
+        if (s.is(ModItems.SNIPER.get())) return ModSounds.SNIPER_FAR.get();
+        if (s.is(ModItems.RT20.get())) return ModSounds.RT20_FAR.get();
+        if (s.is(ModItems.RPG.get())) return ModSounds.RIFLE_FAR.get();
+        return null;
     }
 
     /** VSS: F 로 바꾸는 사격 모드 (0 = 단발·조준, 1 = 연사·조준 없음) */
@@ -306,7 +341,12 @@ public class GunItem extends Item {
         int current = ammo(stack);
         int need = magazine(stack) - current;
         if (need <= 0) return;
-        if (level.isClientSide) return;
+        if (level.isClientSide) {
+            // v0.32: 재장전 동작은 서버 응답을 기다리지 않고 바로 시작 (서버가 확정값을 다시 보냄)
+            int avail = player.getAbilities().instabuild ? need : countAmmo(player.getInventory(), stats.ammo().get());
+            if (avail > 0) CLIENT_RELOAD.start(stack, reloadTicks(stack), Math.min(need, avail), current == 0);
+            return;
+        }
 
         int loaded;
         if (player.getAbilities().instabuild) {
@@ -320,9 +360,18 @@ public class GunItem extends Item {
             return;
         }
         setAmmo(stack, current + loaded);
-        player.getCooldowns().addCooldown(this, com.tycooncraft.blackmarket.BlackMarket.reloadTicks(player, reloadTicks(stack)));
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), stats.reloadSound().get(), SoundSource.PLAYERS, 1.0f, 1.0f);
+        int rt = com.tycooncraft.blackmarket.BlackMarket.reloadTicks(player, reloadTicks(stack));
+        player.getCooldowns().addCooldown(this, rt);
+        // v0.32: 재장전 소리는 각 클라이언트가 손동작에 맞춰 낸다 (탄창 빠짐·꽂힘·장전)
+        net.neoforged.neoforge.network.PacketDistributor.sendToPlayersTrackingEntityAndSelf(player,
+                new com.tycooncraft.network.ReloadAnimPayload(player.getId(), rt, loaded, current == 0));
         {} /* v0.18.9: 전투 안내 문구 제거 */
+    }
+
+    private static int countAmmo(Inventory inv, Item ammo) {
+        int n = 0;
+        for (int i = 0; i < inv.getContainerSize(); i++) if (inv.getItem(i).is(ammo)) n += inv.getItem(i).getCount();
+        return n;
     }
 
     private static int takeAmmo(Inventory inv, Item ammo, int need) {

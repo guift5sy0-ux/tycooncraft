@@ -50,7 +50,7 @@ public final class GunEvents {
         }
     }
 
-    public static int OFFHAND_BLOCKED, MIGRATED;
+    public static int OFFHAND_BLOCKED, MIGRATED, DUAL_SHIELD_BLOCKED;
 
     /** 예전 총 인챈트 → 같은 효과의 파츠로 바꿔 달아 줌 (같은 부위가 겹치면 남는 파츠는 가방으로) */
     public static void migrate(Player p, ItemStack gun) {
@@ -101,6 +101,17 @@ public final class GunEvents {
                 if (s.getItem() instanceof GunItem) migrate(p, s);
             }
         ItemStack off = p.getOffhandItem();
+        // v0.32: 쌍권총을 든 채로는 왼손에 방패를 들 수 없음 (가방으로 옮김)
+        if (p.getMainHandItem().is(ModItems.DUAL_PISTOLS.get()) && !off.isEmpty()
+                && (off.canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SHIELD_BLOCK) || off.getItem() instanceof net.minecraft.world.item.ShieldItem)) {
+            ItemStack moved = off.copy();
+            p.setItemSlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+            if (p.isUsingItem() && p.getUsedItemHand() == net.minecraft.world.InteractionHand.OFF_HAND) p.stopUsingItem();
+            if (!p.getInventory().add(moved)) p.drop(moved, false);
+            p.displayClientMessage(Component.translatable("message.tycooncraft.dual_no_shield").withStyle(ChatFormatting.RED), true);
+            DUAL_SHIELD_BLOCKED++;
+            return;
+        }
         if (!(off.getItem() instanceof GunItem)) return;
         ItemStack moved = off.copy();
         p.setItemSlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND, ItemStack.EMPTY);

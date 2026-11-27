@@ -804,5 +804,6 @@
   "message.tycooncraft.locked_chest.locked": "🔒 잠겨 있다 — 언더시티 금고 열쇠가 필요하다",
   "message.tycooncraft.locked_chest.unlocked": "🔓 열쇠로 금고를 열었다 (열쇠는 부러졌다)",
   "message.tycooncraft.undercity.enter": "🏚 언더시티 — 갱단의 영역이다. 골목 밖에선 상인들이 지켜주지 않는다",
-  "enchantment.tycooncraft.bullet_protection": "총알 보호"
+  "enchantment.tycooncraft.bullet_protection": "총알 보호",
+  "message.tycooncraft.dual_no_shield": "쌍권총을 든 채로는 방패를 들 수 없어요"
 }
