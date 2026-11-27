@@ -1042,7 +1042,7 @@ public final class V185Test {
     static Zombie swarmTarget;
 
     static com.tycooncraft.ship.ShipEntity bayShip;
-    static Zombie farTarget;
+    static Zombie farTarget, midTarget;
 
     /** v0.34: 드론 편대 격납고 — 운송기 선체에만 설치, 선체 주위를 돌며 적 사격, 격추되면 보유 수 감소, 드론 아이템으로 보충 */
     static void swarmLaunch(ServerPlayer sp) {
@@ -1072,6 +1072,17 @@ public final class V185Test {
         farTarget.setNoAi(true);
         farTarget.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
         sl.addFreshEntity(farTarget);
+        if (bayShip != null) {   // 선체 끝에서 27칸 (중심에선 30칸 넘음) — 노려야 함
+            double d = bayShip.hullRadius() + 27;
+            BlockPos mt = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, BlockPos.containing(bayShip.getX() + d, gy, bayShip.getZ()));
+            midTarget = EntityType.ZOMBIE.create(sl);
+            midTarget.moveTo(mt.getX() + 0.5, mt.getY(), mt.getZ() + 0.5, 0, 0);
+            midTarget.setNoAi(true);
+            midTarget.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
+            midTarget.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(300);
+            midTarget.setHealth(300);
+            sl.addFreshEntity(midTarget);
+        }
         System.out.println("[AUTOTEST] v340 bay onHull=" + onHull + " onGround=" + onGround + " assembled=" + (bayShip != null)
                 + " stock=" + (bayShip == null ? -1 : com.tycooncraft.ship.DroneBays.stock(bayShip))
                 + " recipe=" + sl.getRecipeManager().byKey(com.tycooncraft.TycoonCraft.id("drone_swarm")).isPresent());
@@ -1086,9 +1097,17 @@ public final class V185Test {
                 + " targetHp=" + Math.round(swarmTarget.getHealth()) + "/300 playerHp=" + sp.getHealth() + String.format(" maxFromHull=%.1f", maxFromHull)
                 + " seenAsEnemy=" + (!ds.isEmpty() && ds.get(0).canBeSeenAsEnemy())
                 + " targeting=" + ds.stream().filter(d -> d.getTarget() == swarmTarget).count() + " los=" + ds.stream().filter(d -> d.hasLineOfSight(swarmTarget)).count());
+        System.out.println("[AUTOTEST] v342 bay farEdgeDist=" + (bayShip == null ? -1 : String.format("%.1f", bayShip.distToHull(farTarget.position())))
+                + " nearEdgeDist=" + (bayShip == null ? -1 : String.format("%.1f", bayShip.distToHull(swarmTarget.position()))));
         System.out.println("[AUTOTEST] v341 bay farTarget hp=" + farTarget.getHealth() + "/" + farTarget.getMaxHealth() + " targetedFar=" + ds.stream().filter(d -> d.getTarget() == farTarget).count());
+        if (midTarget != null) {
+            System.out.println("[AUTOTEST] v342 bay midTarget edgeDist=" + String.format("%.1f", bayShip.distToHull(midTarget.position()))
+                    + String.format(" centerDist=%.1f", midTarget.position().distanceTo(bayShip.hullCenter())) + " hp=" + Math.round(midTarget.getHealth()) + "/300");
+        }
         farTarget.discard();
         swarmTarget.discard();
+        for (var m : sl.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, swarmTarget.getBoundingBox().inflate(90),
+                m -> m instanceof net.minecraft.world.entity.monster.Enemy && m != midTarget && !(m instanceof com.tycooncraft.mob.carrier.MiniDrone))) m.discard();   // 주변 슬라임 등 치움 → 남은 목표는 27칸 좀비
         // 한 대 격추 → 보유 수 -1, 드론 아이템을 격납고 위로 → 다시 +1
         if (!ds.isEmpty()) ds.get(0).hurt(sl.damageSources().generic(), 100);
         if (bayShip != null) {
@@ -1101,6 +1120,14 @@ public final class V185Test {
 
     static void swarmGone(ServerPlayer sp) {
         var sl = sp.serverLevel();
+        if (midTarget != null) {
+            long n = sl.getEntitiesOfClass(com.tycooncraft.mob.carrier.MiniDrone.class, midTarget.getBoundingBox().inflate(80), d -> d.shipDrone() && d.getTarget() == midTarget).size();
+            StringBuilder tg = new StringBuilder();
+            for (var d : sl.getEntitiesOfClass(com.tycooncraft.mob.carrier.MiniDrone.class, midTarget.getBoundingBox().inflate(80), d -> d.shipDrone()))
+                tg.append(d.getTarget() == null ? "none" : d.getTarget().getType().toShortString()).append(',');
+            System.out.println("[AUTOTEST] v342 bay midTargeted=" + n + " targets=" + tg + " midAlive=" + midTarget.isAlive());
+            midTarget.discard();
+        }
         int stock = bayShip == null ? -1 : com.tycooncraft.ship.DroneBays.stock(bayShip);
         System.out.println("[AUTOTEST] v341 bay range=" + com.tycooncraft.mob.carrier.MiniDrone.SHIP_RANGE + String.format(" maxDist=%.1f", com.tycooncraft.mob.carrier.MiniDrone.shipMaxDist));
         System.out.println("[AUTOTEST] v340 bay afterLoss lost=" + com.tycooncraft.ship.DroneBays.lost + " rebuilt=" + com.tycooncraft.ship.DroneBays.rebuilt + " stock=" + stock);

@@ -735,6 +735,13 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         return position().add(0, sizeY * 0.5, 0);
     }
 
+    /** v0.34.2: 점에서 선체 바깥면(원기둥: 반경 radius, 높이 sizeY)까지 거리 — 안쪽이면 0 */
+    public double distToHull(Vec3 p) {
+        double h = Math.max(0, Math.hypot(p.x - getX(), p.z - getZ()) - radius);
+        double v = p.y < getY() ? getY() - p.y : p.y > getY() + sizeY ? p.y - getY() - sizeY : 0;
+        return Math.sqrt(h * h + v * v);
+    }
+
     public double hullRadius() {
         return radius;
     }

@@ -65,7 +65,7 @@ public class MiniDrone extends Monster {
     private java.util.UUID bayOwner;
     private int slot;
     public static int shipShots;
-    /** v0.34.1: 격납고 드론은 선체 중심에서 30블록 밖으로 못 나감 (목표도 그 안에서만, 사거리도 30) */
+    /** v0.34.2: 격납고 드론은 선체 바깥면에서 30블록 밖으로 못 나감 (목표도 그 안에서만, 사거리도 30) */
     public static final double SHIP_RANGE = 30;
     public static double shipMaxDist;
 
@@ -103,17 +103,19 @@ public class MiniDrone extends Monster {
         }
         Vec3 hull = ship.hullCenter();
         double guard = SHIP_RANGE;
+        double box = ship.hullRadius() + guard;
         LivingEntity t = getTarget();
-        if (tickCount % 10 == 0 || t == null || !t.isAlive() || t.distanceToSqr(hull) > guard * guard) {
+        if (tickCount % 10 == 0 || t == null || !t.isAlive() || ship.distToHull(t.position()) > guard) {
             t = null;
             // 탑승자를 때린 것 먼저
             for (Entity p : ship.getPassengers())
                 if (p instanceof LivingEntity lp && lp.getLastHurtByMob() != null && lp.getLastHurtByMob().isAlive()
-                        && shipHostile(sl, lp.getLastHurtByMob(), ship) && lp.getLastHurtByMob().distanceToSqr(hull) < guard * guard) t = lp.getLastHurtByMob();
+                        && shipHostile(sl, lp.getLastHurtByMob(), ship) && ship.distToHull(lp.getLastHurtByMob().position()) <= guard) t = lp.getLastHurtByMob();
             if (t == null) {
-                double best = guard * guard;
-                for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, new net.minecraft.world.phys.AABB(hull, hull).inflate(guard), e -> shipHostile(sl, e, ship))) {
-                    double d = e.distanceToSqr(hull);
+                double best = Double.MAX_VALUE;
+                for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, new net.minecraft.world.phys.AABB(hull, hull).inflate(box),
+                        e -> shipHostile(sl, e, ship) && ship.distToHull(e.position()) <= guard)) {
+                    double d = ship.distToHull(e.position());
                     if (d < best) {
                         best = d;
                         t = e;
@@ -140,11 +142,10 @@ public class MiniDrone extends Monster {
             goal = new Vec3(hull.x + Math.cos(a) * r, ship.getY() + ship.hullHeight() + 1.5 + (slot % 3) * 0.8 + Math.sin(orbit * 2 + slot) * 0.3, hull.z + Math.sin(a) * r);
             setYRot((float) (a * 180 / Math.PI));
         }
-        // 목표점은 선체 30블록 안으로, 넘어가 있으면 강하게 끌려 돌아옴
-        Vec3 off = goal.subtract(hull);
-        if (off.length() > guard - 2) goal = hull.add(off.normalize().scale(guard - 2));
-        if (distanceToSqr(hull) > guard * guard) setDeltaMovement(hull.subtract(position()).normalize().scale(0.6));
-        shipMaxDist = Math.max(shipMaxDist, Math.sqrt(distanceToSqr(hull)));
+        // 목표점은 선체 바깥면에서 30블록 안으로, 넘어가 있으면 강하게 끌려 돌아옴
+        for (int i = 0; i < 8 && ship.distToHull(goal) > guard - 2; i++) goal = goal.lerp(hull, 0.25);
+        if (ship.distToHull(position()) > guard) setDeltaMovement(hull.subtract(position()).normalize().scale(0.6));
+        shipMaxDist = Math.max(shipMaxDist, ship.distToHull(position()));
         Vec3 v = goal.subtract(position()).add(ship.getDeltaMovement().scale(4));
         double d = v.length();
         Vec3 want = d > 0.01 ? v.scale(Math.min(0.7, d * 0.15) / d) : Vec3.ZERO;
