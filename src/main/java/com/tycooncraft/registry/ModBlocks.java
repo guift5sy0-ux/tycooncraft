@@ -17,6 +17,10 @@ import java.util.Map;
 public final class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(TycoonCraft.MODID);
 
+    // v0.33: 강화 폭약
+    public static final DeferredBlock<com.tycooncraft.explosive.HdxBlock> HDX = BLOCKS.register("hdx",
+            () -> new com.tycooncraft.explosive.HdxBlock(net.minecraft.world.level.block.state.BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.TNT)));
+
     // ── 판매 & 화폐 ──
     public static final DeferredBlock<SellStationBlock> SELL_STATION = BLOCKS.register("sell_station",
             () -> new SellStationBlock(machineProps().strength(3.0f, 6.0f).requiresCorrectToolForDrops().noOcclusion()));

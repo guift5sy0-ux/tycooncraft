@@ -225,9 +225,47 @@ public final class GunAnimTestClient {
             case 186 -> AutoTestClient.shotPub(mc, "anim_live_7tp_casing");
             case 188 -> AutoTestClient.shotPub(mc, "anim_live_8tp_casing");
             case 200 -> o.setCameraType(CameraType.FIRST_PERSON);
-            case 206 -> liveDone = true;
+            case 206 -> AutoTestClient.serverKeepPub(mc, sp -> hdxSetup(sp));
+            case 310 -> AutoTestClient.serverKeepPub(mc, sp -> hdxCheck(sp));
+            case 316 -> liveDone = true;
             default -> {}
         }
+    }
+
+    // v0.33: HDX 위력 비교 — 돌 정육면체 두 개 속에 TNT / HDX 를 넣고 터뜨린 뒤 파인 블록 수
+    static net.minecraft.core.BlockPos tntC, hdxC;
+
+    static void hdxSetup(net.minecraft.server.level.ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        var base = sp.blockPosition().offset(0, 40, 60);
+        tntC = base;
+        hdxC = base.offset(40, 0, 0);
+        for (var c : new net.minecraft.core.BlockPos[]{tntC, hdxC})
+            for (int x = -7; x <= 7; x++) for (int y = -7; y <= 7; y++) for (int z = -7; z <= 7; z++)
+                sl.setBlock(c.offset(x, y, z), net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState(), 2);
+        sl.setBlock(tntC, net.minecraft.world.level.block.Blocks.TNT.defaultBlockState(), 3);
+        sl.setBlock(hdxC, ModBlocks_HDX(), 3);
+        net.minecraft.world.level.block.Blocks.TNT.defaultBlockState().onCaughtFire(sl, tntC, null, null);
+        sl.removeBlock(tntC, false);
+        ModBlocks_HDX().onCaughtFire(sl, hdxC, null, null);
+        sl.removeBlock(hdxC, false);
+    }
+
+    static net.minecraft.world.level.block.state.BlockState ModBlocks_HDX() {
+        return com.tycooncraft.registry.ModBlocks.HDX.get().defaultBlockState();
+    }
+
+    static void hdxCheck(net.minecraft.server.level.ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        int[] n = new int[2];
+        int i = 0;
+        for (var c : new net.minecraft.core.BlockPos[]{tntC, hdxC}) {
+            for (int x = -7; x <= 7; x++) for (int y = -7; y <= 7; y++) for (int z = -7; z <= 7; z++)
+                if (sl.getBlockState(c.offset(x, y, z)).isAir()) n[i]++;
+            i++;
+        }
+        System.out.println("[AUTOTEST] v330 hdx tntHole=" + n[0] + " hdxHole=" + n[1] + " ratio=" + String.format("%.2f", n[1] / (float) Math.max(1, n[0]))
+                + " hdxExploded=" + com.tycooncraft.explosive.HdxBlock.PrimedHdx.EXPLODED);
     }
 
     static int countCasings(Minecraft mc) {

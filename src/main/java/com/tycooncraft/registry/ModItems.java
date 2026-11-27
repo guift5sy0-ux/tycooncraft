@@ -201,6 +201,7 @@ public final class ModItems {
 
     // ── 블록 아이템 ──
     public static final DeferredItem<BlockItem> SELL_STATION = ITEMS.registerSimpleBlockItem(ModBlocks.SELL_STATION);
+    public static final DeferredItem<BlockItem> HDX = ITEMS.registerSimpleBlockItem(ModBlocks.HDX);
     public static final DeferredItem<BlockItem> EXCHANGE = ITEMS.registerSimpleBlockItem(ModBlocks.EXCHANGE);
     public static final DeferredItem<BlockItem> GUN_WORKBENCH = ITEMS.registerSimpleBlockItem(ModBlocks.GUN_WORKBENCH);
     public static final DeferredItem<BlockItem> SHIP_MOTOR = ITEMS.registerSimpleBlockItem(ModBlocks.SHIP_MOTOR);

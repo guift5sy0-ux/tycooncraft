@@ -48,6 +48,20 @@ public class TycoonCraft {
         modBus.addListener(HornPayload::register);
         modBus.addListener(this::attributes);
         modBus.addListener(this::spawnPlacements);
+        // v0.33: 발사기에 HDX → 점화된 HDX 가 튀어나옴 (TNT 처럼)
+        modBus.addListener((net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent e) -> e.enqueueWork(() ->
+                net.minecraft.world.level.block.DispenserBlock.registerBehavior(ModItems.HDX.get(), new net.minecraft.core.dispenser.DefaultDispenseItemBehavior() {
+                    @Override
+                    protected net.minecraft.world.item.ItemStack execute(net.minecraft.core.dispenser.BlockSource src, net.minecraft.world.item.ItemStack stack) {
+                        var level = src.level();
+                        var pos = src.pos().relative(src.state().getValue(net.minecraft.world.level.block.DispenserBlock.FACING));
+                        var p = com.tycooncraft.explosive.HdxBlock.PrimedHdx.at(level, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, null, ModBlocks.HDX.get().defaultBlockState());
+                        level.addFreshEntity(p);
+                        level.playSound(null, p.getX(), p.getY(), p.getZ(), net.minecraft.sounds.SoundEvents.TNT_PRIMED, net.minecraft.sounds.SoundSource.BLOCKS, 1f, 0.85f);
+                        stack.shrink(1);
+                        return stack;
+                    }
+                })));
 
         NeoForge.EVENT_BUS.register(TycoonEvents.class);
         NeoForge.EVENT_BUS.register(com.tycooncraft.economy.VillagerCoins.class);

@@ -805,5 +805,7 @@
   "message.tycooncraft.locked_chest.unlocked": "🔓 You opened the stash (the key snapped)",
   "message.tycooncraft.undercity.enter": "🏚 The Undercity — gang territory. Dealers won't protect you outside the alley",
   "enchantment.tycooncraft.bullet_protection": "Bullet Protection",
-  "message.tycooncraft.dual_no_shield": "You can't hold a shield while dual-wielding pistols"
+  "message.tycooncraft.dual_no_shield": "You can't hold a shield while dual-wielding pistols",
+  "block.tycooncraft.hdx": "HDX (High Explosive)",
+  "tooltip.tycooncraft.hdx": "Stronger than TNT · power 4.8 (TNT 4)"
 }

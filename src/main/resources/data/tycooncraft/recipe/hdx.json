@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "GBG",
+    "TPT",
+    "GBG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gunpowder"
+    },
+    "B": {
+      "item": "minecraft:blaze_powder"
+    },
+    "T": {
+      "item": "minecraft:tnt"
+    },
+    "P": {
+      "item": "tycooncraft:steel_plate"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:hdx",
+    "count": 2
+  }
+}
