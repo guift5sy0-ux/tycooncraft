@@ -15,6 +15,7 @@
     "tycooncraft:setter",
     "tycooncraft:cctv",
     "tycooncraft:cctv_screen",
-    "tycooncraft:ship_core_engine"
+    "tycooncraft:ship_core_engine",
+    "tycooncraft:drone_swarm"
   ]
 }

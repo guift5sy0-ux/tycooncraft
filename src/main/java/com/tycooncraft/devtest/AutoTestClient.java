@@ -967,7 +967,8 @@ public final class AutoTestClient {
             case 6790 -> serverKeep(mc, V185Test::swarmLaunch);
             case 6830 -> shot(mc, "vr8_drone_swarm");
             case 6880 -> serverKeep(mc, V185Test::swarmCheck);
-            case 6884 -> serverKeep(mc, V185Test::swarmGone);
+            case 6886 -> serverKeep(mc, V185Test::swarmGone);
+            case 6889 -> serverKeep(mc, V185Test::swarmGone2);
             case 6890 -> serverKeep(mc, V185Test::pscoutSetup);
             case 6896, 6904, 6912, 6920 -> serverKeep(mc, V185Test::pscoutSlash);
             case 6906 -> shot(mc, "vr9_pscout_slash");

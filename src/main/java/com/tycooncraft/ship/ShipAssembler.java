@@ -33,7 +33,7 @@ public final class ShipAssembler {
     public static final int MAX_BLOCKS = 2048;
 
     /** 자연 지형·물풀 등은 배에 붙지 않는다 (해저·해안과 붙어도 조립 가능) */
-    static boolean partOfShip(BlockState s) {
+    public static boolean partOfShip(BlockState s) {
         if (s.isAir() || s.getBlock() instanceof LiquidBlock || s.is(Blocks.BUBBLE_COLUMN) || s.canBeReplaced()) return false;
         return !(s.is(BlockTags.DIRT) || s.is(BlockTags.SAND) || s.is(BlockTags.BASE_STONE_OVERWORLD) || s.is(BlockTags.BASE_STONE_NETHER)
                 || s.is(Blocks.GRAVEL) || s.is(Blocks.CLAY) || s.is(Blocks.KELP) || s.is(Blocks.KELP_PLANT) || s.is(Blocks.SEAGRASS)

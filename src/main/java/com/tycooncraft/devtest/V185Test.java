@@ -1041,31 +1041,66 @@ public final class V185Test {
 
     static Zombie swarmTarget;
 
+    static com.tycooncraft.ship.ShipEntity bayShip;
+
+    /** v0.34: 드론 편대 격납고 — 운송기 선체에만 설치, 선체 주위를 돌며 적 사격, 격추되면 보유 수 감소, 드론 아이템으로 보충 */
     static void swarmLaunch(ServerPlayer sp) {
         var sl = sp.serverLevel();
-        sp.teleportTo(sl, varBase.getX() + 0.5, varBase.getY(), varBase.getZ() + 0.5, 0f, -10f);
+        BlockPos b = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, varBase.offset(12, 0, 0));
+        int x0 = b.getX(), gy = b.getY() + 1, z0 = b.getZ();
+        BlockPos helm = AirshipTest.build(sl, x0, gy, z0, 2);
+        BlockPos bay = new BlockPos(x0 + 2, gy + 1, z0 + 1);
+        boolean onHull = com.tycooncraft.ship.DroneBayBlock.onShipStructure(sl, bay);
+        boolean onGround = com.tycooncraft.ship.DroneBayBlock.onShipStructure(sl, new BlockPos(x0 - 6, gy, z0 - 6));
+        sl.setBlockAndUpdate(bay, ModBlocks.DRONE_SWARM.get().defaultBlockState());
+        if (sl.getBlockEntity(bay) instanceof com.tycooncraft.ship.DroneBayBlockEntity be) be.setOwner(sp.getUUID());
+        bayShip = com.tycooncraft.ship.ShipAssembler.assemble(sl, helm, null);
+        if (bayShip != null) bayShip.autopilot = true;
+        sp.teleportTo(sl, x0 - 8.5, gy + 3, z0 - 6.5, -40f, 10f);
         swarmTarget = EntityType.ZOMBIE.create(sl);
-        swarmTarget.moveTo(varBase.getX() + 0.5, varBase.getY(), varBase.getZ() + 10.5, 180, 0);
+        BlockPos zt = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, new BlockPos(x0 + 2, gy, z0 + 14));
+        swarmTarget.moveTo(zt.getX() + 0.5, zt.getY(), zt.getZ() + 0.5, 180, 0);
         swarmTarget.setNoAi(true);
         swarmTarget.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(Items.LEATHER_HELMET));
         swarmTarget.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(300);
         swarmTarget.setHealth(300);
         sl.addFreshEntity(swarmTarget);
-        int n = com.tycooncraft.mob.carrier.DroneSwarmItem.launch(sl, sp);
-        System.out.println("[AUTOTEST] v271 swarm launched=" + n + " recipe=" + sl.getRecipeManager().byKey(com.tycooncraft.TycoonCraft.id("drone_swarm")).isPresent());
+        System.out.println("[AUTOTEST] v340 bay onHull=" + onHull + " onGround=" + onGround + " assembled=" + (bayShip != null)
+                + " stock=" + (bayShip == null ? -1 : com.tycooncraft.ship.DroneBays.stock(bayShip))
+                + " recipe=" + sl.getRecipeManager().byKey(com.tycooncraft.TycoonCraft.id("drone_swarm")).isPresent());
     }
 
     static void swarmCheck(ServerPlayer sp) {
         var sl = sp.serverLevel();
-        var ds = sl.getEntitiesOfClass(com.tycooncraft.mob.carrier.MiniDrone.class, sp.getBoundingBox().inflate(40), d -> d.ally());
-        System.out.println("[AUTOTEST] v271 swarm drones=" + ds.size() + " allyShots=" + com.tycooncraft.mob.carrier.MiniDrone.allyShots
-                + " targetHp=" + Math.round(swarmTarget.getHealth()) + "/300 playerHp=" + sp.getHealth() + " seenAsEnemy=" + (!ds.isEmpty() && ds.get(0).canBeSeenAsEnemy()));
+        var ds = sl.getEntitiesOfClass(com.tycooncraft.mob.carrier.MiniDrone.class, swarmTarget.getBoundingBox().inflate(60), d -> d.shipDrone());
+        double maxFromHull = 0;
+        if (bayShip != null) for (var d : ds) maxFromHull = Math.max(maxFromHull, d.distanceTo(bayShip));
+        System.out.println("[AUTOTEST] v340 bay drones=" + ds.size() + " launched=" + com.tycooncraft.ship.DroneBays.launched + " shipShots=" + com.tycooncraft.mob.carrier.MiniDrone.shipShots
+                + " targetHp=" + Math.round(swarmTarget.getHealth()) + "/300 playerHp=" + sp.getHealth() + String.format(" maxFromHull=%.1f", maxFromHull)
+                + " seenAsEnemy=" + (!ds.isEmpty() && ds.get(0).canBeSeenAsEnemy())
+                + " targeting=" + ds.stream().filter(d -> d.getTarget() == swarmTarget).count() + " los=" + ds.stream().filter(d -> d.hasLineOfSight(swarmTarget)).count());
         swarmTarget.discard();
+        // 한 대 격추 → 보유 수 -1, 드론 아이템을 격납고 위로 → 다시 +1
+        if (!ds.isEmpty()) ds.get(0).hurt(sl.damageSources().generic(), 100);
+        if (bayShip != null) {
+            for (var c : bayShip.cells()) if (c.state().getBlock() instanceof com.tycooncraft.ship.DroneBayBlock) {
+                var w = bayShip.cellCenter(c);
+                sl.addFreshEntity(new net.minecraft.world.entity.item.ItemEntity(sl, w.x, w.y + 0.6, w.z, new ItemStack(ModItems.DRONE.get(), 3)));
+            }
+        }
     }
 
     static void swarmGone(ServerPlayer sp) {
         var sl = sp.serverLevel();
-        for (var d : sl.getEntitiesOfClass(com.tycooncraft.mob.carrier.MiniDrone.class, sp.getBoundingBox().inflate(60), d -> d.ally())) d.discard();
+        int stock = bayShip == null ? -1 : com.tycooncraft.ship.DroneBays.stock(bayShip);
+        System.out.println("[AUTOTEST] v340 bay afterLoss lost=" + com.tycooncraft.ship.DroneBays.lost + " rebuilt=" + com.tycooncraft.ship.DroneBays.rebuilt + " stock=" + stock);
+        if (bayShip != null) bayShip.discard();
+    }
+
+    static void swarmGone2(ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        int left = sl.getEntitiesOfClass(com.tycooncraft.mob.carrier.MiniDrone.class, sp.getBoundingBox().inflate(80), d -> d.shipDrone()).size();
+        System.out.println("[AUTOTEST] v340 bay shipGone dronesLeft=" + left);
     }
 
     static com.tycooncraft.mech.ProtoScout pscout;

@@ -24,6 +24,9 @@ public final class ModBlockEntities {
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.cctv.ScreenBlockEntity>> CCTV_SCREEN =
             BLOCK_ENTITY_TYPES.register("cctv_screen",
                     () -> BlockEntityType.Builder.of(com.tycooncraft.cctv.ScreenBlockEntity::new, ModBlocks.CCTV_SCREEN.get()).build(null));
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.ship.DroneBayBlockEntity>> DRONE_BAY =
+            BLOCK_ENTITY_TYPES.register("drone_bay",
+                    () -> BlockEntityType.Builder.of(com.tycooncraft.ship.DroneBayBlockEntity::new, ModBlocks.DRONE_SWARM.get()).build(null));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<com.tycooncraft.turret.TurretBlockEntity>> TURRET =
             BLOCK_ENTITY_TYPES.register("turret",
                     () -> BlockEntityType.Builder.of(com.tycooncraft.turret.TurretBlockEntity::new, ModBlocks.TURRET.get()).build(null));

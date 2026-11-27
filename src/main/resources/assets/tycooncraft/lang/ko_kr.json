@@ -682,12 +682,11 @@
   "tooltip.tycooncraft.scout_core": "정찰 디스트로이어의 코어. 판매 ₩2,000 · 프로토 디스트로이어-정찰 재료",
   "tooltip.tycooncraft.flight_core": "플라잉 디스트로이어의 비행 코어. 판매 ₩25,000 · 비행 코어 엔진·드론 편대 재료",
   "block.tycooncraft.ship_core_engine": "비행 코어 엔진",
-  "item.tycooncraft.drone_swarm": "드론 편대 발사기",
+  "item.tycooncraft.drone_swarm": "드론 편대 격납고",
   "item.tycooncraft.proto_scout": "프로토 디스트로이어-정찰",
   "entity.tycooncraft.proto_scout": "프로토 디스트로이어-정찰",
   "entity.tycooncraft.mini_drone.ally": "%s의 편대 드론",
-  "message.tycooncraft.drone_swarm.launch": "드론 편대 %s기 발진!",
-  "tooltip.tycooncraft.drone_swarm": "우클릭: 미니 드론 6기 동시 발진 (1분) · 각자 적을 찾아 사격 · 재사용 90초",
+  "tooltip.tycooncraft.drone_swarm": "운송기 선체(이동 모터가 이어진 구조물)에만 설치 · 운송기가 되면 드론이 선체 주위를 돌며 적을 쏨 · 격추되면 드론(아이템)을 넣어 보충",
   "tooltip.tycooncraft.ship_core_engine": "운송기 엔진 상위호환: 엔진 6개분 추진 · 부유체 40개분 부양 · 최고속도↑ · 연료 40% 절약",
   "tooltip.tycooncraft.proto_scout.1": "땅에 우클릭해 배치 → 빈손 우클릭으로 원격 조종 (최대 300블록)",
   "tooltip.tycooncraft.proto_scout.2": "좌클릭(누르기) 베기 · 우클릭 덮치기 · 스페이스 점프",
@@ -807,5 +806,11 @@
   "enchantment.tycooncraft.bullet_protection": "총알 보호",
   "message.tycooncraft.dual_no_shield": "쌍권총을 든 채로는 방패를 들 수 없어요",
   "block.tycooncraft.hdx": "HDX (강화 폭약)",
-  "tooltip.tycooncraft.hdx": "TNT보다 강한 폭약 · 위력 4.8 (TNT 4)"
+  "tooltip.tycooncraft.hdx": "TNT보다 강한 폭약 · 위력 4.8 (TNT 4)",
+  "block.tycooncraft.drone_swarm": "드론 편대 격납고",
+  "tooltip.tycooncraft.drone_bay.count": "보유 드론: %s / %s",
+  "message.tycooncraft.drone_bay.need_ship": "드론 편대 격납고는 운송기 선체(이동 모터가 이어진 구조물)에만 설치할 수 있어요",
+  "message.tycooncraft.drone_bay.full": "격납고가 가득 찼어요 (최대 %s기)",
+  "message.tycooncraft.drone_bay.built": "드론 보충! %s / %s",
+  "message.tycooncraft.drone_bay.status": "보유 드론 %s / %s · 드론(아이템)으로 보충"
 }

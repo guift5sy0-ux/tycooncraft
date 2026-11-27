@@ -56,7 +56,111 @@ public class MiniDrone extends Monster {
     }
 
     public boolean ally() {
-        return owner != null;
+        return owner != null || shipId != null;
+    }
+
+    // ── v0.34: 운송기 격납고 드론 (선체 주위를 돌며 지킴) ──
+    private java.util.UUID shipId;
+    private long bayKey;
+    private java.util.UUID bayOwner;
+    private int slot;
+    public static int shipShots;
+
+    public void setShip(Entity ship, long key, @org.jetbrains.annotations.Nullable java.util.UUID owner, int slot) {
+        shipId = ship.getUUID();
+        bayKey = key;
+        bayOwner = owner;
+        this.slot = slot;
+        entityData.set(ALLY, true);
+    }
+
+    public boolean shipDrone() {
+        return shipId != null;
+    }
+
+    @org.jetbrains.annotations.Nullable
+    private com.tycooncraft.ship.ShipEntity ship() {
+        return shipId != null && level() instanceof ServerLevel sl && sl.getEntity(shipId) instanceof com.tycooncraft.ship.ShipEntity s && s.isAlive() ? s : null;
+    }
+
+    /** 배를 지키는 적: 적대 몹 + (주인이 있으면) 동맹 아닌 플레이어 + 탑승자를 때린 것 */
+    private boolean shipHostile(ServerLevel sl, Entity e, com.tycooncraft.ship.ShipEntity ship) {
+        if (!e.isAlive() || e instanceof MiniDrone md && md.ally() || ship.getPassengers().contains(e)) return false;
+        if (e instanceof com.tycooncraft.ship.ShipEntity) return false;
+        return com.tycooncraft.turret.TurretAI.targetable(sl, e, bayOwner, true);
+    }
+
+    private void shipTick() {
+        com.tycooncraft.ship.ShipEntity ship = ship();
+        if (ship == null || !(level() instanceof ServerLevel sl)) {
+            // 배가 해체됐거나 사라짐 → 격납고로 돌아간 셈 (보유 수는 그대로)
+            if (level() instanceof ServerLevel sl2) sl2.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, getX(), getY(), getZ(), 4, 0.2, 0.2, 0.2, 0.02);
+            discard();
+            return;
+        }
+        Vec3 hull = ship.hullCenter();
+        double guard = ship.hullRadius() + 22;
+        LivingEntity t = getTarget();
+        if (tickCount % 10 == 0 || t == null || !t.isAlive() || t.distanceToSqr(hull) > (guard + 6) * (guard + 6)) {
+            t = null;
+            // 탑승자를 때린 것 먼저
+            for (Entity p : ship.getPassengers())
+                if (p instanceof LivingEntity lp && lp.getLastHurtByMob() != null && lp.getLastHurtByMob().isAlive()
+                        && shipHostile(sl, lp.getLastHurtByMob(), ship) && lp.getLastHurtByMob().distanceToSqr(hull) < guard * guard) t = lp.getLastHurtByMob();
+            if (t == null) {
+                double best = guard * guard;
+                for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, new net.minecraft.world.phys.AABB(hull, hull).inflate(guard), e -> shipHostile(sl, e, ship))) {
+                    double d = e.distanceToSqr(hull);
+                    if (d < best) {
+                        best = d;
+                        t = e;
+                    }
+                }
+            }
+            setTarget(t);
+        }
+        orbit += 0.04f;
+        Vec3 goal;
+        if (t != null) {
+            double r = 6 + 2 * Math.sin(orbit * 0.7 + getId());
+            goal = t.position().add(Math.cos(orbit + slot) * r, 3.5 + Math.sin(orbit * 1.3), Math.sin(orbit + slot) * r);
+            getLookControl().setLookAt(t);
+            if (--fireCd <= 0 && hasLineOfSight(t)) {
+                fireCd = FIRE_EVERY + random.nextInt(10);
+                shootShip(sl, t, ship);
+            }
+            setYRot((float) (Math.atan2(t.getZ() - getZ(), t.getX() - getX()) * 180 / Math.PI) - 90f);
+        } else {
+            // 선체 둘레를 원으로 돎 (드론마다 높이·위상 다르게)
+            double r = ship.hullRadius() + 2.5 + (slot % 2) * 1.2;
+            double a = orbit * 0.6 + slot * (Math.PI * 2 / 8);
+            goal = new Vec3(hull.x + Math.cos(a) * r, ship.getY() + ship.hullHeight() + 1.5 + (slot % 3) * 0.8 + Math.sin(orbit * 2 + slot) * 0.3, hull.z + Math.sin(a) * r);
+            setYRot((float) (a * 180 / Math.PI));
+        }
+        // 선체에서 너무 멀어지면 끌려 돌아옴
+        if (distanceToSqr(hull) > (guard + 10) * (guard + 10)) goal = hull.add(0, ship.hullHeight() + 2, 0);
+        Vec3 v = goal.subtract(position()).add(ship.getDeltaMovement().scale(4));
+        double d = v.length();
+        Vec3 want = d > 0.01 ? v.scale(Math.min(0.7, d * 0.15) / d) : Vec3.ZERO;
+        setDeltaMovement(getDeltaMovement().scale(0.75).add(want.scale(0.4)));
+        yBodyRot = getYRot();
+    }
+
+    private void shootShip(ServerLevel sl, LivingEntity t, com.tycooncraft.ship.ShipEntity ship) {
+        Vec3 from = position().add(0, getBbHeight() * 0.5, 0);
+        Vec3 dir = t.getBoundingBox().getCenter().subtract(from).normalize()
+                .add(random.nextGaussian() * 0.03, random.nextGaussian() * 0.03, random.nextGaussian() * 0.03).normalize();
+        Entity shooter = bayOwner != null ? sl.getPlayerByUUID(bayOwner) : null;
+        com.tycooncraft.ship.ShipCollisions.IGNORE.set(ship);
+        try {
+            Ballistics.shoot(sl, shooter != null ? shooter : this, from.add(dir.scale(0.5)), dir, 32, ALLY_DAMAGE, 0, 1.2f, false, true, damageSources().mobAttack(this),
+                    e -> e != shooter && !(e instanceof MiniDrone md && md.ally()) && !ship.getPassengers().contains(e)
+                            && com.tycooncraft.turret.TurretAI.canHit(sl, e, bayOwner));
+        } finally {
+            com.tycooncraft.ship.ShipCollisions.IGNORE.remove();
+        }
+        sl.playSound(null, getX(), getY(), getZ(), ModSounds.PISTOL_FIRE.get(), SoundSource.PLAYERS, 1.0f, 1.7f);
+        shipShots++;
     }
 
     public java.util.UUID ownerId() {
@@ -90,6 +194,10 @@ public class MiniDrone extends Monster {
     public void tick() {
         super.tick();
         if (level().isClientSide) return;
+        if (shipId != null) {
+            shipTick();
+            return;
+        }
         if (owner != null) {
             allyTick();
             return;
@@ -219,12 +327,24 @@ public class MiniDrone extends Monster {
 
     @Override
     public boolean removeWhenFarAway(double d) {
-        return carrier == null && owner == null;
+        return carrier == null && owner == null && shipId == null;
+    }
+
+    /** 격납고 드론은 저장하지 않음 (배가 다시 불러올 때 격납고가 새로 띄움) */
+    @Override
+    public boolean shouldBeSaved() {
+        return shipId == null && super.shouldBeSaved();
+    }
+
+    @Override
+    public void die(DamageSource src) {
+        if (shipId != null && level() instanceof ServerLevel sl) com.tycooncraft.ship.DroneBays.lost(sl.getEntity(shipId), bayKey);
+        super.die(src);
     }
 
     @Override
     public boolean canBeSeenAsEnemy() {
-        return owner == null && super.canBeSeenAsEnemy();   // 편대 드론은 골렘·경비병이 노리지 않음
+        return owner == null && shipId == null && super.canBeSeenAsEnemy();   // 편대 드론은 골렘·경비병이 노리지 않음
     }
 
     @Override
@@ -235,6 +355,13 @@ public class MiniDrone extends Monster {
     @Override
     public boolean hurt(DamageSource src, float amount) {
         if (owner != null && src.getEntity() != null && owner.equals(src.getEntity().getUUID())) return false;   // 주인 총에 안 맞음
+        if (shipId != null && src.getEntity() != null) {   // 격납고 드론: 주인·동맹·탑승자 총에 안 맞음
+            Entity a = src.getEntity();
+            if (a instanceof MiniDrone md && md.ally()) return false;
+            if (a instanceof net.minecraft.world.entity.player.Player pl && bayOwner != null && a.getServer() != null
+                    && (pl.getUUID().equals(bayOwner) || com.tycooncraft.alliance.Alliances.friendly(a.getServer(), bayOwner, pl.getUUID()))) return false;
+            if (a.getVehicle() instanceof com.tycooncraft.ship.ShipEntity s2 && s2.getUUID().equals(shipId)) return false;
+        }
         return super.hurt(src, amount);
     }
 

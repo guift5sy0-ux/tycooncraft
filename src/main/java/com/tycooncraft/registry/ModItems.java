@@ -223,8 +223,8 @@ public final class ModItems {
             () -> new com.tycooncraft.blackmarket.MissionItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON), true));
     public static final DeferredItem<com.tycooncraft.blackmarket.MissionItem> STOLEN_CARGO = ITEMS.register("stolen_cargo",
             () -> new com.tycooncraft.blackmarket.MissionItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON), false));
-    public static final DeferredItem<com.tycooncraft.mob.carrier.DroneSwarmItem> DRONE_SWARM = ITEMS.register("drone_swarm",
-            () -> new com.tycooncraft.mob.carrier.DroneSwarmItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.EPIC)));
+    public static final DeferredItem<com.tycooncraft.ship.DroneBayItem> DRONE_SWARM = ITEMS.register("drone_swarm",
+            () -> new com.tycooncraft.ship.DroneBayItem(ModBlocks.DRONE_SWARM.get(), new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.EPIC)));
     public static final DeferredItem<com.tycooncraft.mech.ProtoDestroyerItem> PROTO_SCOUT = ITEMS.register("proto_scout",
             () -> new com.tycooncraft.mech.ProtoDestroyerItem(new Item.Properties().stacksTo(1).fireResistant().rarity(net.minecraft.world.item.Rarity.EPIC), true));
     public static final DeferredItem<Item> SCOUT_CORE = ITEMS.register("scout_core", () -> new Item(new Item.Properties().rarity(net.minecraft.world.item.Rarity.UNCOMMON)));

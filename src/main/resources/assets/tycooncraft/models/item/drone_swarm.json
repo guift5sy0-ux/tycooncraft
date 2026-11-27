@@ -1,1 +1,3 @@
-{"parent": "minecraft:item/generated", "textures": {"layer0": "tycooncraft:item/drone_swarm"}}
+{
+  "parent": "tycooncraft:block/drone_swarm"
+}

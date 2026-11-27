@@ -682,12 +682,11 @@
   "tooltip.tycooncraft.scout_core": "Scout Destroyer core",
   "tooltip.tycooncraft.flight_core": "Flying Destroyer flight core",
   "block.tycooncraft.ship_core_engine": "Flight Core Engine",
-  "item.tycooncraft.drone_swarm": "Drone Swarm Launcher",
+  "item.tycooncraft.drone_swarm": "Drone Squadron Bay",
   "item.tycooncraft.proto_scout": "Proto Destroyer-Scout",
   "entity.tycooncraft.proto_scout": "Proto Destroyer-Scout",
   "entity.tycooncraft.mini_drone.ally": "%s's Squadron Drone",
-  "message.tycooncraft.drone_swarm.launch": "Drone squadron of %s launched!",
-  "tooltip.tycooncraft.drone_swarm": "Right-click: launch 6 mini drones (1 min) · each hunts targets · 90s cooldown",
+  "tooltip.tycooncraft.drone_swarm": "Only on ship hulls (structures with a ship motor) · once assembled, drones circle the hull and shoot enemies · refill with Drone items",
   "tooltip.tycooncraft.ship_core_engine": "Upgraded ship engine: thrust of 6 engines · lift of 40 floats · higher top speed · 40% less fuel",
   "tooltip.tycooncraft.proto_scout.1": "Right-click ground to deploy → empty-hand right-click to remote-control (300 blocks)",
   "tooltip.tycooncraft.proto_scout.2": "Hold LMB slash · RMB pounce · Space jump",
@@ -807,5 +806,11 @@
   "enchantment.tycooncraft.bullet_protection": "Bullet Protection",
   "message.tycooncraft.dual_no_shield": "You can't hold a shield while dual-wielding pistols",
   "block.tycooncraft.hdx": "HDX (High Explosive)",
-  "tooltip.tycooncraft.hdx": "Stronger than TNT · power 4.8 (TNT 4)"
+  "tooltip.tycooncraft.hdx": "Stronger than TNT · power 4.8 (TNT 4)",
+  "block.tycooncraft.drone_swarm": "Drone Squadron Bay",
+  "tooltip.tycooncraft.drone_bay.count": "Drones: %s / %s",
+  "message.tycooncraft.drone_bay.need_ship": "The drone bay can only be placed on a ship hull (a structure with a ship motor)",
+  "message.tycooncraft.drone_bay.full": "Bay is full (max %s)",
+  "message.tycooncraft.drone_bay.built": "Drone built! %s / %s",
+  "message.tycooncraft.drone_bay.status": "Drones %s / %s · refill with Drone items"
 }

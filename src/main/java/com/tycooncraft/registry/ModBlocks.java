@@ -17,6 +17,10 @@ import java.util.Map;
 public final class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(TycoonCraft.MODID);
 
+    // v0.34: 드론 편대 격납고 (운송기 전용)
+    public static final DeferredBlock<com.tycooncraft.ship.DroneBayBlock> DRONE_SWARM = BLOCKS.register("drone_swarm",
+            () -> new com.tycooncraft.ship.DroneBayBlock(machineProps().strength(3.5f, 6.0f).requiresCorrectToolForDrops()));
+
     // v0.33: 강화 폭약
     public static final DeferredBlock<com.tycooncraft.explosive.HdxBlock> HDX = BLOCKS.register("hdx",
             () -> new com.tycooncraft.explosive.HdxBlock(net.minecraft.world.level.block.state.BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.TNT)));

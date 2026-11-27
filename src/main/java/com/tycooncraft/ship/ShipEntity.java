@@ -75,6 +75,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     private AABB[] boxes = new AABB[0];
     private AABB bounds = new AABB(0, 0, 0, 0, 0, 0);
     double pivotX, pivotZ, radius;
+    boolean hasBay;
     int sizeY, motors, helm = -1;
     float yaw0;
     /** 렌더/클라이언트용 현재·이전 방향, 서버도 yaw 를 씀 */
@@ -214,6 +215,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         int mx = 0, mz = 0, my = 0;
         index.clear();
         hasTurret = false;
+        hasBay = false;
         motors = 0;
         boosters = 0;
         floats = 0;
@@ -229,6 +231,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
             if (c.state.getBlock() instanceof ShipFloatBlock) floats++;
             if (c.state.is(com.tycooncraft.registry.ModBlocks.SHIP_CORE_ENGINE.get())) coreEngines++;
             if (c.state.getBlock() instanceof com.tycooncraft.turret.TurretBlock || c.state.getBlock() instanceof com.tycooncraft.turret.CiwsBlock) hasTurret = true;
+            if (c.state.getBlock() instanceof DroneBayBlock) hasBay = true;
             index.put(key(c.x, c.y, c.z), i);
             if (c.state.getBlock() instanceof ShipHelmBlock) helm = i;
         }
@@ -649,6 +652,7 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
         entityData.set(SPEED, (float) speed);
         if (Math.abs(entityData.get(WHEEL) - rudder) > 0.01f) entityData.set(WHEEL, rudder);
         if (hasTurret && level() instanceof ServerLevel tl) tickTurrets(tl, emp == 0);
+        if (hasBay && level() instanceof ServerLevel bl) DroneBays.tick(this, bl);
         // 서 있는 플레이어가 '공중에 떠 있다'고 쫓겨나지 않도록 + 낙하 피해 방지
         for (Player p : level().players())
             if (p instanceof ServerPlayer sp && standingOn(sp, 0.6)) {
@@ -724,6 +728,19 @@ public class ShipEntity extends Entity implements IEntityWithComplexSpawn {
     public Vec3 toLocal(Vec3 w) {
         Vec3 v = new Vec3(w.x - getX(), 0, w.z - getZ()).yRot((yaw - yaw0) * Mth.DEG_TO_RAD);
         return new Vec3(v.x + pivotX, w.y - getY(), v.z + pivotZ);
+    }
+
+    /** v0.34 드론: 선체 중심과 크기 */
+    public Vec3 hullCenter() {
+        return position().add(0, sizeY * 0.5, 0);
+    }
+
+    public double hullRadius() {
+        return radius;
+    }
+
+    public int hullHeight() {
+        return sizeY;
     }
 
     public Vec3 cellCenter(Cell c) {

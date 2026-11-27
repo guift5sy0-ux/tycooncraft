@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "tycooncraft:block/drone_bay_top",
+    "bottom": "tycooncraft:block/drone_bay_bottom",
+    "side": "tycooncraft:block/drone_bay_side"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "tycooncraft:block/drone_swarm"
+    }
+  }
+}
