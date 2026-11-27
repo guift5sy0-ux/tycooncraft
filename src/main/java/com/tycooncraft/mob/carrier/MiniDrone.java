@@ -65,6 +65,9 @@ public class MiniDrone extends Monster {
     private java.util.UUID bayOwner;
     private int slot;
     public static int shipShots;
+    /** v0.34.1: 격납고 드론은 선체 중심에서 30블록 밖으로 못 나감 (목표도 그 안에서만, 사거리도 30) */
+    public static final double SHIP_RANGE = 30;
+    public static double shipMaxDist;
 
     public void setShip(Entity ship, long key, @org.jetbrains.annotations.Nullable java.util.UUID owner, int slot) {
         shipId = ship.getUUID();
@@ -99,9 +102,9 @@ public class MiniDrone extends Monster {
             return;
         }
         Vec3 hull = ship.hullCenter();
-        double guard = ship.hullRadius() + 22;
+        double guard = SHIP_RANGE;
         LivingEntity t = getTarget();
-        if (tickCount % 10 == 0 || t == null || !t.isAlive() || t.distanceToSqr(hull) > (guard + 6) * (guard + 6)) {
+        if (tickCount % 10 == 0 || t == null || !t.isAlive() || t.distanceToSqr(hull) > guard * guard) {
             t = null;
             // 탑승자를 때린 것 먼저
             for (Entity p : ship.getPassengers())
@@ -125,7 +128,7 @@ public class MiniDrone extends Monster {
             double r = 6 + 2 * Math.sin(orbit * 0.7 + getId());
             goal = t.position().add(Math.cos(orbit + slot) * r, 3.5 + Math.sin(orbit * 1.3), Math.sin(orbit + slot) * r);
             getLookControl().setLookAt(t);
-            if (--fireCd <= 0 && hasLineOfSight(t)) {
+            if (--fireCd <= 0 && hasLineOfSight(t) && distanceToSqr(t) < SHIP_RANGE * SHIP_RANGE) {
                 fireCd = FIRE_EVERY + random.nextInt(10);
                 shootShip(sl, t, ship);
             }
@@ -137,8 +140,11 @@ public class MiniDrone extends Monster {
             goal = new Vec3(hull.x + Math.cos(a) * r, ship.getY() + ship.hullHeight() + 1.5 + (slot % 3) * 0.8 + Math.sin(orbit * 2 + slot) * 0.3, hull.z + Math.sin(a) * r);
             setYRot((float) (a * 180 / Math.PI));
         }
-        // 선체에서 너무 멀어지면 끌려 돌아옴
-        if (distanceToSqr(hull) > (guard + 10) * (guard + 10)) goal = hull.add(0, ship.hullHeight() + 2, 0);
+        // 목표점은 선체 30블록 안으로, 넘어가 있으면 강하게 끌려 돌아옴
+        Vec3 off = goal.subtract(hull);
+        if (off.length() > guard - 2) goal = hull.add(off.normalize().scale(guard - 2));
+        if (distanceToSqr(hull) > guard * guard) setDeltaMovement(hull.subtract(position()).normalize().scale(0.6));
+        shipMaxDist = Math.max(shipMaxDist, Math.sqrt(distanceToSqr(hull)));
         Vec3 v = goal.subtract(position()).add(ship.getDeltaMovement().scale(4));
         double d = v.length();
         Vec3 want = d > 0.01 ? v.scale(Math.min(0.7, d * 0.15) / d) : Vec3.ZERO;
@@ -153,7 +159,7 @@ public class MiniDrone extends Monster {
         Entity shooter = bayOwner != null ? sl.getPlayerByUUID(bayOwner) : null;
         com.tycooncraft.ship.ShipCollisions.IGNORE.set(ship);
         try {
-            Ballistics.shoot(sl, shooter != null ? shooter : this, from.add(dir.scale(0.5)), dir, 32, ALLY_DAMAGE, 0, 1.2f, false, true, damageSources().mobAttack(this),
+            Ballistics.shoot(sl, shooter != null ? shooter : this, from.add(dir.scale(0.5)), dir, (int) SHIP_RANGE, ALLY_DAMAGE, 0, 1.2f, false, true, damageSources().mobAttack(this),
                     e -> e != shooter && !(e instanceof MiniDrone md && md.ally()) && !ship.getPassengers().contains(e)
                             && com.tycooncraft.turret.TurretAI.canHit(sl, e, bayOwner));
         } finally {
