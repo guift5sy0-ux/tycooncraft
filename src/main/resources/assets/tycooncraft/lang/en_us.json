@@ -818,5 +818,6 @@
   "item.tycooncraft.hell_bike": "Hellfire Bike",
   "entity.tycooncraft.hell_bike": "Hellfire Bike",
   "hud.tycooncraft.name.hell_bike": "Hellfire Bike",
-  "tooltip.tycooncraft.hell_bike": "Hellfire chopper · 2 seats · faster than a car · fireproof, rides over lava · sets rammed foes ablaze"
+  "tooltip.tycooncraft.hell_bike": "Hellfire chopper · 2 seats · faster than a car · fireproof, rides over lava · sets rammed foes ablaze · Space: exhaust flame roar",
+  "subtitles.tycooncraft.vehicle.hell_bike.rev": "Hellfire bike roars"
 }

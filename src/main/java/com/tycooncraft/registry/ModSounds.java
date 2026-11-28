@@ -64,6 +64,9 @@ public final class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> CAR_ENGINE = sound("vehicle.car.engine");
     public static final DeferredHolder<SoundEvent, SoundEvent> CAR_HORN = sound("vehicle.car.horn");
     public static final DeferredHolder<SoundEvent, SoundEvent> ENGINE_START = sound("vehicle.engine_start");
+    public static final DeferredHolder<SoundEvent, SoundEvent> HELL_BIKE_ENGINE = sound("vehicle.hell_bike.engine");
+    public static final DeferredHolder<SoundEvent, SoundEvent> HELL_BIKE_START = sound("vehicle.hell_bike.start");
+    public static final DeferredHolder<SoundEvent, SoundEvent> HELL_BIKE_REV = sound("vehicle.hell_bike.rev");
     public static final DeferredHolder<SoundEvent, SoundEvent> HELI_ROTOR = sound("vehicle.heli.rotor");
     public static final DeferredHolder<SoundEvent, SoundEvent> TRAIN_ENGINE = sound("vehicle.train.engine");
     public static final DeferredHolder<SoundEvent, SoundEvent> TRAIN_HORN = sound("vehicle.train.horn");

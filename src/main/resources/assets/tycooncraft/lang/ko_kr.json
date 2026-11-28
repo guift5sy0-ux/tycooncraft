@@ -818,5 +818,6 @@
   "item.tycooncraft.hell_bike": "헬파이어 바이크",
   "entity.tycooncraft.hell_bike": "헬파이어 바이크",
   "hud.tycooncraft.name.hell_bike": "헬파이어 바이크",
-  "tooltip.tycooncraft.hell_bike": "지옥불 초퍼 · 2인승 · 자동차보다 빠름 · 불에 안 타고 용암 위를 달림 · 들이받은 적에게 불을 붙임"
+  "tooltip.tycooncraft.hell_bike": "지옥불 초퍼 · 2인승 · 자동차보다 빠름 · 불에 안 타고 용암 위를 달림 · 들이받은 적에게 불을 붙임 · 스페이스: 배기 화염 포효",
+  "subtitles.tycooncraft.vehicle.hell_bike.rev": "지옥불 바이크가 포효함"
 }

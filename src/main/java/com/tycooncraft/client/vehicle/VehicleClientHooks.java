@@ -166,12 +166,13 @@ public final class VehicleClientHooks implements VehicleHooks.Client {
         VehicleSound s = sounds.get(v);
         Minecraft mc = Minecraft.getInstance();
         if (s == null || s.isStopped()) {
-            SoundEvent ev = v instanceof CarEntity ? ModSounds.CAR_ENGINE.get()
+            boolean hell = v instanceof com.tycooncraft.vehicle.HellBikeEntity;
+            SoundEvent ev = hell ? ModSounds.HELL_BIKE_ENGINE.get() : v instanceof CarEntity ? ModSounds.CAR_ENGINE.get()
                     : v instanceof HelicopterEntity ? ModSounds.HELI_ROTOR.get()
                     : v instanceof DroneEntity ? ModSounds.DRONE_BUZZ.get()
                     : v instanceof com.tycooncraft.vehicle.JetEntity ? ModSounds.JET_ENGINE.get() : ModSounds.TRAIN_ENGINE.get();
             if (!(v instanceof HelicopterEntity) && !(v instanceof DroneEntity) && !(v instanceof com.tycooncraft.vehicle.JetEntity)) {
-                v.level().playLocalSound(v.getX(), v.getY(), v.getZ(), ModSounds.ENGINE_START.get(), SoundSource.NEUTRAL, 1.0f, 1.0f, false);
+                v.level().playLocalSound(v.getX(), v.getY(), v.getZ(), hell ? ModSounds.HELL_BIKE_START.get() : ModSounds.ENGINE_START.get(), SoundSource.NEUTRAL, hell ? 1.4f : 1.0f, 1.0f, false);
             }
             s = new VehicleSound(v, ev);
             sounds.put(v, s);

@@ -52,7 +52,12 @@ public class VehicleSound extends AbstractTickableSoundInstance {
             return;
         }
         double speed = Math.sqrt(Math.pow(vehicle.getX() - vehicle.xo, 2) + Math.pow(vehicle.getZ() - vehicle.zo, 2));
-        if (vehicle instanceof CarEntity) {
+        if (vehicle instanceof com.tycooncraft.vehicle.HellBikeEntity b) {
+            // V트윈: 낮게 시작해 속도·스로틀(가속)에 따라 회전수가 오름
+            float accel = Math.max(0f, b.forwardSpeed - b.forwardSpeedO);
+            pitch = (float) Mth.clamp(0.82 + speed * 0.85 + accel * 9.0, 0.75, 1.95);
+            volume = level * (float) (0.85 + Math.min(0.6, speed * 0.6 + accel * 6));
+        } else if (vehicle instanceof CarEntity) {
             pitch = (float) Mth.clamp(0.75 + speed * 1.35, 0.6, 2.0);
             volume = level * (float) (0.55 + Math.min(0.45, speed));
         } else if (vehicle instanceof com.tycooncraft.vehicle.JetEntity) {

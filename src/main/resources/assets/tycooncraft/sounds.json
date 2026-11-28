@@ -545,5 +545,32 @@
       "tycooncraft:gun/casing_shotgun_2",
       "tycooncraft:gun/casing_shotgun_3"
     ]
+  },
+  "vehicle.hell_bike.engine": {
+    "sounds": [
+      {
+        "name": "tycooncraft:vehicle/hell_bike_engine",
+        "attenuation_distance": 40
+      }
+    ],
+    "subtitle": "subtitles.tycooncraft.vehicle.engine"
+  },
+  "vehicle.hell_bike.start": {
+    "sounds": [
+      {
+        "name": "tycooncraft:vehicle/hell_bike_start",
+        "attenuation_distance": 40
+      }
+    ],
+    "subtitle": "subtitles.tycooncraft.vehicle.engine"
+  },
+  "vehicle.hell_bike.rev": {
+    "sounds": [
+      {
+        "name": "tycooncraft:vehicle/hell_bike_rev",
+        "attenuation_distance": 48
+      }
+    ],
+    "subtitle": "subtitles.tycooncraft.vehicle.hell_bike.rev"
   }
 }

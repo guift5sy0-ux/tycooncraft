@@ -75,6 +75,11 @@ public final class GunAnimTestClient {
             gi = 0;
             si = -2;
             wait = 0;
+            if (System.getenv("TC_BIKEONLY") != null) {   // 바이크 컷만 빠르게
+                gi = KINDS.length;
+                liveT = 530;
+                wait = 40;
+            }
             o.setCameraType(CameraType.FIRST_PERSON);
             o.hideGui = false;
             AutoTestClient.serverKeepPub(mc, sp -> {
@@ -319,46 +324,141 @@ public final class GunAnimTestClient {
                 key(o.keyAttack, false);
                 o.setCameraType(CameraType.FIRST_PERSON);
             }
-            case 536 -> AutoTestClient.serverKeepPub(mc, sp -> {   // v0.36 헬파이어 바이크
+            case 536 -> AutoTestClient.serverKeepPub(mc, sp -> {   // v0.36 헬파이어 바이크: 고정 연출 컷
                 var sl = sp.serverLevel();
-                sl.setDayTime(18000);
+                sl.setDayTime(6000);
+                com.tycooncraft.vehicle.HellBikeEntity.demo = true;
+                var base = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, sp.blockPosition().offset(40, 0, 44));
                 var b = com.tycooncraft.registry.ModEntities.HELL_BIKE.get().create(sl);
-                b.moveTo(sp.getX() + 3, sp.getY(), sp.getZ() + 3, 90f, 0);
+                b.moveTo(base.getX() + 0.5, base.getY(), base.getZ() + 0.5, 90f, 0);
                 b.setFuel(5000);
                 sl.addFreshEntity(b);
                 bike = b;
+                var g = com.tycooncraft.registry.ModEntities.GANGSTER.get().create(sl);
+                g.moveTo(b.getX(), b.getY(), b.getZ(), 90f, 0);
+                g.setNoAi(true);
+                g.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+                sl.addFreshEntity(g);
+                g.startRiding(b, true);
+                demoRider = g;
                 var b2 = com.tycooncraft.registry.ModEntities.HELL_BIKE.get().create(sl);
-                b2.moveTo(sp.getX() + 3, sp.getY(), sp.getZ() - 1, 0f, 0);
+                b2.moveTo(base.getX() + 0.5, base.getY(), base.getZ() + 4.5, 90f, 0);
                 sl.addFreshEntity(b2);
                 bike2 = b2;
-                sp.teleportTo(sl, sp.getX() + 6.5, sp.getY() + 1.6, sp.getZ() + 1.5, 120f, 20f);
+                sp.setGameMode(net.minecraft.world.level.GameType.SPECTATOR);
+                cam(sp, b, 4.6, 1.0, 0.3, 0, 0.75, 0.3);
             });
-            case 546 -> AutoTestClient.shotPub(mc, "hellbike_park");
-            case 548 -> AutoTestClient.serverKeepPub(mc, sp -> sp.startRiding(bike, true));
-            case 552 -> {
+            case 546 -> AutoTestClient.shotPub(mc, "hb_side");
+            case 548 -> AutoTestClient.serverKeepPub(mc, sp -> cam(sp, bike, -3.0, 1.4, -3.3, 0, 0.8, 0.2));
+            case 554 -> AutoTestClient.shotPub(mc, "hb_34");
+            case 556 -> AutoTestClient.serverKeepPub(mc, sp -> {
+                com.tycooncraft.vehicle.HellBikeEntity.demoLean = 26f;
+                cam(sp, bike, 0.6, 1.1, -4.8, 0, 0.8, 0);
+            });
+            case 562 -> AutoTestClient.shotPub(mc, "hb_lean");
+            case 564 -> AutoTestClient.serverKeepPub(mc, sp -> {
+                com.tycooncraft.vehicle.HellBikeEntity.demoLean = 0f;
+                com.tycooncraft.vehicle.HellBikeEntity.demoWheelie = 15f;
+                cam(sp, bike, 4.6, 1.0, 0.3, 0, 0.8, 0.3);
+            });
+            case 570 -> AutoTestClient.shotPub(mc, "hb_wheelie");
+            case 572 -> AutoTestClient.serverKeepPub(mc, sp -> {
+                com.tycooncraft.vehicle.HellBikeEntity.demoWheelie = 0f;
+                sp.serverLevel().setDayTime(18000);
+                cam(sp, bike, 2.9, 1.3, -3.9, 0, 0.7, 0);
+            });
+            case 580 -> AutoTestClient.shotPub(mc, "hb_night");
+            case 582 -> AutoTestClient.serverKeepPub(mc, sp -> cam(sp, bike, 1.7, 0.9, 0.1, 0, 0.6, 0.15));
+            case 588 -> AutoTestClient.shotPub(mc, "hb_close");
+            case 590 -> AutoTestClient.serverKeepPub(mc, sp -> {
+                sp.serverLevel().setDayTime(6000);
+                cam(sp, bike, 2.6, 1.6, 4.0, 0, 0.8, 0.3);
+            });
+            case 596 -> AutoTestClient.shotPub(mc, "hb_rear");
+            case 598 -> AutoTestClient.serverKeepPub(mc, sp -> {   // 직접 타고 달리기
+                com.tycooncraft.vehicle.HellBikeEntity.demo = false;
+                com.tycooncraft.vehicle.HellBikeEntity.demoLean = Float.NaN;
+                com.tycooncraft.vehicle.HellBikeEntity.demoWheelie = Float.NaN;
+                demoRider.discard();
+                bike2.discard();
+                sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+                sp.getInventory().setItem(sp.getInventory().selected, new ItemStack(ModItems.HELL_BIKE.get()));
+                bike.setYRot(bike.getYRot() + 180f);   // 탁 트인 쪽으로
+                bike.yRotO = bike.getYRot();
+                sp.serverLevel().setDayTime(6000);
+                sp.teleportTo(sp.serverLevel(), bike.getX(), bike.getY() + 1, bike.getZ(), bike.getYRot(), 10f);
+                sp.getAbilities().flying = false;
+                sp.onUpdateAbilities();
+            });
+            case 600 -> AutoTestClient.serverKeepPub(mc, sp -> {
+                boolean ok = sp.startRiding(bike, true);
+                System.out.println("[AUTOTEST] v360 mount ok=" + ok + " mode=" + sp.gameMode.getGameModeForPlayer() + " pass=" + bike.getPassengers().size() + " alive=" + bike.isAlive());
+                sp.setYRot(bike.getYRot());
+                sp.setYHeadRot(bike.getYRot());
+            });
+            case 603 -> {
+                mc.options.hideGui = false;
                 o.setCameraType(CameraType.THIRD_PERSON_BACK);
                 key(o.keyUp, true);
             }
-            case 580 -> key(o.keyLeft, true);
-            case 592 -> AutoTestClient.shotPub(mc, "hellbike_lean");
-            case 596 -> {
-                key(o.keyLeft, false);
-                o.setCameraType(CameraType.THIRD_PERSON_FRONT);
-            }
-            case 606 -> AutoTestClient.shotPub(mc, "hellbike_front");
-            case 610 -> {
+            case 610 -> AutoTestClient.shotPub(mc, "hb_launch");
+            case 605, 608 -> AutoTestClient.serverKeepPub(mc, sp -> {
+                if (sp.getVehicle() != bike) {
+                    System.out.println("[AUTOTEST] v360 remount");
+                    sp.startRiding(bike, true);
+                }
+            });
+            case 612 -> AutoTestClient.serverKeepPub(mc, sp -> System.out.println("[AUTOTEST] v360 riding@612 " + (sp.getVehicle() == bike) + " client=" + (mc.player.getVehicle() != null) + " sp=" + String.format("%.2f", bike.getDeltaMovement().horizontalDistance()) + " fuel=" + bike.getFuel()));
+            case 616 -> o.setCameraType(CameraType.THIRD_PERSON_FRONT);
+            case 622 -> AutoTestClient.shotPub(mc, "hb_ride_front");
+            case 624 -> o.setCameraType(CameraType.THIRD_PERSON_BACK);
+            case 626 -> key(o.keyJump, true);
+            case 628 -> key(o.keyJump, false);
+            case 634 -> AutoTestClient.shotPub(mc, "hb_rev");
+            case 636 -> key(o.keyRight, true);
+            case 644 -> AutoTestClient.shotPub(mc, "hb_ride_turn");
+            case 648 -> key(o.keyRight, false);
+            case 650 -> o.setCameraType(CameraType.FIRST_PERSON);
+            case 656 -> AutoTestClient.shotPub(mc, "hb_ride_fp");
+            case 660 -> {
                 key(o.keyUp, false);
                 o.setCameraType(CameraType.FIRST_PERSON);
                 AutoTestClient.serverKeepPub(mc, sp -> {
                     System.out.println("[AUTOTEST] v360 hellbike speed=" + String.format("%.2f", bike.getDeltaMovement().horizontalDistance()) + " rider=" + (sp.getVehicle() == bike)
-                            + " fireRes=" + sp.hasEffect(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE) + " recipe=" + sp.server.getRecipeManager().byKey(com.tycooncraft.TycoonCraft.id("hell_bike")).isPresent());
+                            + " fireRes=" + sp.hasEffect(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE) + " recipe=" + sp.server.getRecipeManager().byKey(com.tycooncraft.TycoonCraft.id("hell_bike")).isPresent()
+                            + " lean=" + String.format("%.1f", bike.lean) + " trail=" + bike.trail.size());
                     sp.stopRiding();
                     bike.discard();
-                    bike2.discard();
-                    sp.serverLevel().setDayTime(6000);
                 });
             }
-            case 616 -> liveDone = true;
+            case 662 -> AutoTestClient.serverKeepPub(mc, sp -> {   // 용암 위 주행 확인
+                var sl = sp.serverLevel();
+                var c = sp.blockPosition().offset(0, 30, 0);
+                for (int dx = -2; dx <= 2; dx++)
+                    for (int dz = -2; dz <= 2; dz++) {
+                        sl.setBlockAndUpdate(c.offset(dx, -1, dz), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+                        sl.setBlockAndUpdate(c.offset(dx, 0, dz), net.minecraft.world.level.block.Blocks.LAVA.defaultBlockState());
+                    }
+                lavaC = c;
+                var b = com.tycooncraft.registry.ModEntities.HELL_BIKE.get().create(sl);
+                b.moveTo(c.getX() + 0.5, c.getY() + 0.5, c.getZ() + 0.5, 0, 0);
+                sl.addFreshEntity(b);
+                bike = b;
+            });
+            case 700 -> AutoTestClient.serverKeepPub(mc, sp -> {
+                System.out.println(String.format("[AUTOTEST] v360 lava y=%.2f surface=%d alive=%s onFire=%s hp=%.1f", bike.getY(), lavaC.getY(), bike.isAlive(), bike.isOnFire(), bike.maxHealth() - bike.getDamage()));
+                var sl = sp.serverLevel();
+                for (int dx = -2; dx <= 2; dx++)
+                    for (int dz = -2; dz <= 2; dz++) {
+                        sl.setBlockAndUpdate(lavaC.offset(dx, -1, dz), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+                        sl.setBlockAndUpdate(lavaC.offset(dx, 0, dz), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+                    }
+                bike.discard();
+            });
+            case 704 -> {
+                mc.options.hideGui = true;
+                liveDone = true;
+            }
             default -> {}
         }
     }
@@ -453,6 +553,19 @@ public final class GunAnimTestClient {
     }
 
     static com.tycooncraft.vehicle.HellBikeEntity bike, bike2;
+    static net.minecraft.world.entity.Entity demoRider;
+    static net.minecraft.core.BlockPos lavaC;
+
+    /** 바이크 기준 로컬 위치(+x 오른쪽, +z 뒤)에 카메라를 두고 로컬 목표점을 바라봄 */
+    static void cam(net.minecraft.server.level.ServerPlayer sp, net.minecraft.world.entity.Entity b, double lx, double ly, double lz, double tx, double ty, double tz) {
+        var v = (com.tycooncraft.vehicle.VehicleEntity) b;
+        var c = b.position().add(v.toWorld(new net.minecraft.world.phys.Vec3(lx, 0, lz))).add(0, ly, 0);
+        var t = b.position().add(v.toWorld(new net.minecraft.world.phys.Vec3(tx, 0, tz))).add(0, ty, 0);
+        var d = t.subtract(c);
+        float yaw = (float) (Math.atan2(-d.x, d.z) * 180 / Math.PI);
+        float pitch = (float) (-Math.atan2(d.y, d.horizontalDistance()) * 180 / Math.PI);
+        sp.teleportTo(sp.serverLevel(), c.x, c.y - sp.getEyeHeight(), c.z, yaw, pitch);
+    }
     static java.util.List<net.minecraft.world.entity.Mob> aimMobs = new java.util.ArrayList<>();
 
     static void mobAimSetup(net.minecraft.server.level.ServerPlayer sp) {

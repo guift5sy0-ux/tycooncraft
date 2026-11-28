@@ -45,7 +45,9 @@ public record HornPayload() implements CustomPacketPayload {
     private static void handle(HornPayload payload, IPayloadContext ctx) {
         ctx.enqueueWork(() -> {
             Entity v = ctx.player().getVehicle();
-            if (v instanceof CarEntity) {
+            if (v instanceof com.tycooncraft.vehicle.HellBikeEntity bike) {
+                bike.rev(ctx.player());
+            } else if (v instanceof CarEntity) {
                 v.level().playSound(null, v.getX(), v.getY(), v.getZ(), ModSounds.CAR_HORN.get(), SoundSource.NEUTRAL, 3.0f, 1.0f);
             } else if (v instanceof LocomotiveEntity) {
                 v.level().playSound(null, v.getX(), v.getY(), v.getZ(), ModSounds.TRAIN_HORN.get(), SoundSource.NEUTRAL, 6.0f, 1.0f);
