@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "BNB",
+    "CEC",
+    "W W"
+  ],
+  "key": {
+    "B": {
+      "item": "minecraft:blaze_rod"
+    },
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "C": {
+      "item": "minecraft:magma_cream"
+    },
+    "E": {
+      "item": "tycooncraft:engine"
+    },
+    "W": {
+      "item": "tycooncraft:wheel"
+    }
+  },
+  "result": {
+    "id": "tycooncraft:hell_bike",
+    "count": 1
+  }
+}

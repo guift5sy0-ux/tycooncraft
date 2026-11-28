@@ -190,6 +190,8 @@ public final class ModItems {
     public static final DeferredItem<Item> FUEL_CANISTER = ITEMS.registerSimpleItem("fuel_canister");
     public static final DeferredItem<VehicleItem> CAR = ITEMS.register("car",
             () -> new VehicleItem(new Item.Properties(), ModEntities.CAR, false, "tooltip.tycooncraft.car"));
+    public static final DeferredItem<VehicleItem> HELL_BIKE = ITEMS.register("hell_bike",
+            () -> new VehicleItem(new Item.Properties().fireResistant(), ModEntities.HELL_BIKE, false, "tooltip.tycooncraft.hell_bike"));
     public static final DeferredItem<VehicleItem> LOCOMOTIVE = ITEMS.register("locomotive",
             () -> new VehicleItem(new Item.Properties(), ModEntities.LOCOMOTIVE, true, "tooltip.tycooncraft.locomotive"));
     public static final DeferredItem<VehicleItem> TANK = ITEMS.register("tank",

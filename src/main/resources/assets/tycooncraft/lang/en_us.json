@@ -814,5 +814,9 @@
   "message.tycooncraft.drone_bay.built": "Drone built! %s / %s",
   "message.tycooncraft.drone_bay.status": "Drones %s / %s · refill with Drone items",
   "block.tycooncraft.advanced_helm": "Advanced Helm",
-  "tooltip.tycooncraft.advanced_helm": "Upgraded helm · rudder responds 3x faster · 1.8x turn rate · turns well at low speed and on big ships"
+  "tooltip.tycooncraft.advanced_helm": "Upgraded helm · rudder responds 3x faster · 1.8x turn rate · turns well at low speed and on big ships",
+  "item.tycooncraft.hell_bike": "Hellfire Bike",
+  "entity.tycooncraft.hell_bike": "Hellfire Bike",
+  "hud.tycooncraft.name.hell_bike": "Hellfire Bike",
+  "tooltip.tycooncraft.hell_bike": "Hellfire chopper · 2 seats · faster than a car · fireproof, rides over lava · sets rammed foes ablaze"
 }

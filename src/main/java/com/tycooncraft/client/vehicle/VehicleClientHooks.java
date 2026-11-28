@@ -58,7 +58,8 @@ public final class VehicleClientHooks implements VehicleHooks.Client {
             car.steerO = car.steer;
             float target = Mth.clamp(car.yawRate * 7f * (car.forwardSpeed >= 0 ? 1 : -1), -28f, 28f);
             car.steer += (target - car.steer) * 0.35f;
-            if (car.engineRunning() && r.nextInt(3) == 0) {
+            if (car instanceof com.tycooncraft.vehicle.HellBikeEntity) HellBikeRenderer.fx(car, r);
+            else if (car.engineRunning() && r.nextInt(3) == 0) {
                 for (int s = -1; s <= 1; s += 2) {
                     Vec3 p = v.position().add(car.toWorld(new Vec3(s * 24 / 32.0, 8 / 32.0, 73 / 32.0)));
                     Vec3 back = car.forward().scale(-0.04);

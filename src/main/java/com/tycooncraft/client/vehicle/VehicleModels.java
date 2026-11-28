@@ -49,7 +49,8 @@ public final class VehicleModels {
     public static final ModelResourceLocation GANG_TRUCK_WHEEL = id("gang_truck_wheel");
     public static final ModelResourceLocation GANG_MG = id("gang_mg");
     public static final ModelResourceLocation CCTV_HEAD = id("cctv_head");
-    public static final ModelResourceLocation[] ALL = {CCTV_HEAD, GANG_TRUCK_BODY, GANG_TRUCK_WHEEL, GANG_MG, CAR_BODY, CAR_WHEEL, LOCO_BODY, LOCO_WHEELS, HELI_BODY, HELI_ROTOR, HELI_TAIL_ROTOR, DRONE_BODY, DRONE_PROP,
+    public static final ModelResourceLocation HELL_BODY = id("hell_bike_body"), HELL_BODY_GLOW = id("hell_bike_body_glow"), HELL_WHEEL = id("hell_bike_wheel"), HELL_GLOW = id("hell_bike_glow");
+    public static final ModelResourceLocation[] ALL = {HELL_BODY, HELL_BODY_GLOW, HELL_WHEEL, HELL_GLOW, CCTV_HEAD, GANG_TRUCK_BODY, GANG_TRUCK_WHEEL, GANG_MG, CAR_BODY, CAR_WHEEL, LOCO_BODY, LOCO_WHEELS, HELI_BODY, HELI_ROTOR, HELI_TAIL_ROTOR, DRONE_BODY, DRONE_PROP,
             DRONE2_BODY, DRONE_PROP2, TANK_HULL, TANK_WHEEL, TANK_TURRET, TANK_BARREL, JET_BODY, ROCKET, SHELL, TURRET_HEAD, TURRET_GUN, CIWS_HEAD, CIWS_GUN, HELM_BODY, HELM_WHEEL, HELM_BODY_ADV, HELM_WHEEL_ADV, CHUTE_CANOPY, CHUTE_PACK};
 
     private static ModelResourceLocation id(String name) {

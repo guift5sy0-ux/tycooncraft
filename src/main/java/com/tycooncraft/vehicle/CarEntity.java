@@ -62,17 +62,18 @@ public class CarEntity extends VehicleEntity {
         double speed = dm.x * fwd.x + dm.z * fwd.z;
         float throttle = hasFuel ? in.forward() : 0;
         if (throttle > 0) {
-            speed = speed < 0 ? Math.min(0, speed + 0.06) : speed + ACCEL * (1 - speed / MAX_SPEED);
+            speed = speed < 0 ? Math.min(0, speed + 0.06) : speed + accel() * (1 - speed / maxSpeed());
         } else if (throttle < 0) {
             speed = speed > 0 ? Math.max(0, speed - 0.06) : speed - ACCEL * 0.6 * (1 + speed / MAX_REVERSE);
         } else {
             speed *= onGround() ? 0.975 : 0.995;
         }
         if (isInWater()) speed *= 0.85;
+        speed = Math.min(speed, maxSpeed() * 1.05);
         if (Math.abs(speed) < 0.003) speed = 0;
 
         float grip = (float) Math.min(1.0, Math.abs(speed) / 0.05);
-        float turnRate = 6.8f - 2.6f * (float) Math.min(1.0, Math.abs(speed) / MAX_SPEED);
+        float turnRate = turnBase() - 2.6f * (float) Math.min(1.0, Math.abs(speed) / maxSpeed());
         float turn = onGround() ? -in.strafe() * turnRate * grip * (speed >= 0 ? 1 : -1) : 0;
         deltaRotation = turn;
         setYRot(getYRot() + turn);
@@ -80,10 +81,30 @@ public class CarEntity extends VehicleEntity {
         Vec3 nf = forward();
         double vy = (dm.y - 0.08) * 0.98;
         if (isInWater()) vy = Math.max(vy, -0.06);
+        vy = liftY(vy);
         // 약간의 미끄러짐: 옆 방향 속도를 조금 남긴다
         double along = dm.x * fwd.x + dm.z * fwd.z;
         double latX = (dm.x - fwd.x * along) * 0.25, latZ = (dm.z - fwd.z * along) * 0.25;
         setDeltaMovement(nf.x * speed + latX, vy, nf.z * speed + latZ);
+    }
+
+    protected void onRam(Entity e) {
+    }
+
+    protected double maxSpeed() {
+        return MAX_SPEED;
+    }
+
+    protected double accel() {
+        return ACCEL;
+    }
+
+    protected float turnBase() {
+        return 6.8f;
+    }
+
+    protected double liftY(double vy) {
+        return vy;
     }
 
     /** 빠르게 달리다 부딪힌 생명체에게 피해 */
@@ -95,6 +116,7 @@ public class CarEntity extends VehicleEntity {
         Vec3 dir = new Vec3(moved.x, 0, moved.z).normalize();
         for (Entity e : level().getEntities(this, getBoundingBox().inflate(0.3), e -> e instanceof LivingEntity && e.isAlive() && !hasPassenger(e))) {
             if (e.hurt(damageSources().mobAttack(driver), (float) (sp * 14))) {
+                onRam(e);
                 e.push(dir.x * sp * 1.6, 0.35, dir.z * sp * 1.6);
             }
         }

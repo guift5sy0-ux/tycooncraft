@@ -319,7 +319,46 @@ public final class GunAnimTestClient {
                 key(o.keyAttack, false);
                 o.setCameraType(CameraType.FIRST_PERSON);
             }
-            case 536 -> liveDone = true;
+            case 536 -> AutoTestClient.serverKeepPub(mc, sp -> {   // v0.36 헬파이어 바이크
+                var sl = sp.serverLevel();
+                sl.setDayTime(18000);
+                var b = com.tycooncraft.registry.ModEntities.HELL_BIKE.get().create(sl);
+                b.moveTo(sp.getX() + 3, sp.getY(), sp.getZ() + 3, 90f, 0);
+                b.setFuel(5000);
+                sl.addFreshEntity(b);
+                bike = b;
+                var b2 = com.tycooncraft.registry.ModEntities.HELL_BIKE.get().create(sl);
+                b2.moveTo(sp.getX() + 3, sp.getY(), sp.getZ() - 1, 0f, 0);
+                sl.addFreshEntity(b2);
+                bike2 = b2;
+                sp.teleportTo(sl, sp.getX() + 6.5, sp.getY() + 1.6, sp.getZ() + 1.5, 120f, 20f);
+            });
+            case 546 -> AutoTestClient.shotPub(mc, "hellbike_park");
+            case 548 -> AutoTestClient.serverKeepPub(mc, sp -> sp.startRiding(bike, true));
+            case 552 -> {
+                o.setCameraType(CameraType.THIRD_PERSON_BACK);
+                key(o.keyUp, true);
+            }
+            case 580 -> key(o.keyLeft, true);
+            case 592 -> AutoTestClient.shotPub(mc, "hellbike_lean");
+            case 596 -> {
+                key(o.keyLeft, false);
+                o.setCameraType(CameraType.THIRD_PERSON_FRONT);
+            }
+            case 606 -> AutoTestClient.shotPub(mc, "hellbike_front");
+            case 610 -> {
+                key(o.keyUp, false);
+                o.setCameraType(CameraType.FIRST_PERSON);
+                AutoTestClient.serverKeepPub(mc, sp -> {
+                    System.out.println("[AUTOTEST] v360 hellbike speed=" + String.format("%.2f", bike.getDeltaMovement().horizontalDistance()) + " rider=" + (sp.getVehicle() == bike)
+                            + " fireRes=" + sp.hasEffect(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE) + " recipe=" + sp.server.getRecipeManager().byKey(com.tycooncraft.TycoonCraft.id("hell_bike")).isPresent());
+                    sp.stopRiding();
+                    bike.discard();
+                    bike2.discard();
+                    sp.serverLevel().setDayTime(6000);
+                });
+            }
+            case 616 -> liveDone = true;
             default -> {}
         }
     }
@@ -413,6 +452,7 @@ public final class GunAnimTestClient {
         System.out.println("[AUTOTEST] v351 mobArms " + tag + " " + b);
     }
 
+    static com.tycooncraft.vehicle.HellBikeEntity bike, bike2;
     static java.util.List<net.minecraft.world.entity.Mob> aimMobs = new java.util.ArrayList<>();
 
     static void mobAimSetup(net.minecraft.server.level.ServerPlayer sp) {

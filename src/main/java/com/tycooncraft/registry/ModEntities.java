@@ -25,6 +25,10 @@ public final class ModEntities {
             () -> EntityType.Builder.<CarEntity>of(CarEntity::new, MobCategory.MISC)
                     .sized(2.4f, 1.8f).clientTrackingRange(10).updateInterval(1).build("car"));
 
+    public static final DeferredHolder<EntityType<?>, EntityType<com.tycooncraft.vehicle.HellBikeEntity>> HELL_BIKE = ENTITIES.register("hell_bike",
+            () -> EntityType.Builder.<com.tycooncraft.vehicle.HellBikeEntity>of(com.tycooncraft.vehicle.HellBikeEntity::new, MobCategory.MISC)
+                    .sized(1.1f, 1.4f).fireImmune().clientTrackingRange(10).updateInterval(1).build("hell_bike"));
+
     public static final DeferredHolder<EntityType<?>, EntityType<HelicopterEntity>> HELICOPTER = ENTITIES.register("helicopter",
             () -> EntityType.Builder.<HelicopterEntity>of(HelicopterEntity::new, MobCategory.MISC)
                     .sized(2.2f, 2.8f).clientTrackingRange(16).updateInterval(1).build("helicopter"));

@@ -27,6 +27,7 @@ public final class ModCreativeTabs {
                     .withTabsBefore(MAIN.getId())
                     .displayItems((params, out) -> {
                         out.accept(ModItems.CAR.get());
+                        out.accept(ModItems.HELL_BIKE.get());
                         out.accept(ModItems.HELICOPTER.get());
                         out.accept(ModItems.LOCOMOTIVE.get());
                         out.accept(ModItems.FUEL_CANISTER.get());

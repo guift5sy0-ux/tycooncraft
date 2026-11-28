@@ -64,6 +64,7 @@ public final class VehicleClient {
     @SubscribeEvent
     public static void renderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.CAR.get(), CarRenderer::new);
+        event.registerEntityRenderer(ModEntities.HELL_BIKE.get(), HellBikeRenderer::new);
         event.registerEntityRenderer(ModEntities.HELICOPTER.get(), HelicopterRenderer::new);
         event.registerEntityRenderer(ModEntities.LOCOMOTIVE.get(), LocomotiveRenderer::new);
         event.registerEntityRenderer(ModEntities.DRONE.get(), DroneRenderer::new);

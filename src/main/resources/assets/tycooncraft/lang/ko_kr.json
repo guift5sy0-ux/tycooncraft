@@ -814,5 +814,9 @@
   "message.tycooncraft.drone_bay.built": "드론 보충! %s / %s",
   "message.tycooncraft.drone_bay.status": "보유 드론 %s / %s · 드론(아이템)으로 보충",
   "block.tycooncraft.advanced_helm": "상위 조종간",
-  "tooltip.tycooncraft.advanced_helm": "일반 조종기 대신 쓰는 고급 조종간 · 방향타가 3배 빨리 감기고 풀림 · 선회 속도 1.8배 · 느릴 때·큰 배도 잘 꺾임"
+  "tooltip.tycooncraft.advanced_helm": "일반 조종기 대신 쓰는 고급 조종간 · 방향타가 3배 빨리 감기고 풀림 · 선회 속도 1.8배 · 느릴 때·큰 배도 잘 꺾임",
+  "item.tycooncraft.hell_bike": "헬파이어 바이크",
+  "entity.tycooncraft.hell_bike": "헬파이어 바이크",
+  "hud.tycooncraft.name.hell_bike": "헬파이어 바이크",
+  "tooltip.tycooncraft.hell_bike": "지옥불 초퍼 · 2인승 · 자동차보다 빠름 · 불에 안 타고 용암 위를 달림 · 들이받은 적에게 불을 붙임"
 }
