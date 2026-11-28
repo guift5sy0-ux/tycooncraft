@@ -39,11 +39,7 @@ public class DealerRenderer extends HumanoidMobRenderer<com.tycooncraft.blackmar
         @Override
         public void prepareMobModel(com.tycooncraft.blackmarket.BlackMarketDealer e, float limbSwing, float amount, float pt) {
             super.prepareMobModel(e, limbSwing, amount, pt);
-            if (e.isAggressive()) {
-                rightArmPose = e.getMainHandItem().getItem() instanceof com.tycooncraft.gun.GunItem
-                        ? com.tycooncraft.client.GunPoses.poseFor(e.getMainHandItem()) : ArmPose.BOW_AND_ARROW;
-            } else rightArmPose = e.getMainHandItem().isEmpty() ? ArmPose.EMPTY : ArmPose.ITEM;
-            leftArmPose = ArmPose.EMPTY;
+            com.tycooncraft.client.GunPoses.mobArms(this, e);
         }
     }
 }

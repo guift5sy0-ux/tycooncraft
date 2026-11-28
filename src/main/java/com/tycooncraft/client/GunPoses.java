@@ -83,6 +83,20 @@ public final class GunPoses {
         return f * f * (3 - 2 * f);
     }
 
+    /** v0.35.1: 총 든 몹 - 총을 쥔 손(주 손)에 자세를 주고, 평소엔 로우 레디, 적을 노리면 조준 (GunAnim 이 섞음) */
+    public static void mobArms(HumanoidModel<?> m, net.minecraft.world.entity.Mob e) {
+        ItemStack st = e.getMainHandItem();
+        HumanoidModel.ArmPose gp = st.getItem() instanceof GunItem ? poseFor(st)
+                : e.isAggressive() ? HumanoidModel.ArmPose.BOW_AND_ARROW : st.isEmpty() ? HumanoidModel.ArmPose.EMPTY : HumanoidModel.ArmPose.ITEM;
+        if (e.getMainArm() == HumanoidArm.LEFT) {
+            m.leftArmPose = gp;
+            m.rightArmPose = HumanoidModel.ArmPose.EMPTY;
+        } else {
+            m.rightArmPose = gp;
+            m.leftArmPose = HumanoidModel.ArmPose.EMPTY;
+        }
+    }
+
     public static HumanoidModel.ArmPose poseFor(ItemStack stack) {
         if (stack.is(ModItems.DUAL_PISTOLS.get())) return DUAL_PROXY.getValue();
         if (stack.is(ModItems.PISTOL.get()) || stack.is(ModItems.JUDGE.get())) return PISTOL_PROXY.getValue();

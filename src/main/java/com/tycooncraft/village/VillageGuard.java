@@ -115,9 +115,13 @@ public class VillageGuard extends PathfinderMob implements RangedAttackMob {
         setAggressive(getTarget() != null);
     }
 
+    private final com.tycooncraft.gun.MobMag mag = new com.tycooncraft.gun.MobMag();
+
     @Override
     public void performRangedAttack(LivingEntity target, float pull) {
         if (!(level() instanceof ServerLevel sl)) return;
+        if (mag.busy(this)) return;
+        mag.fired(this);
         Vec3 from = getEyePosition();
         Vec3 aim = target.getBoundingBox().getCenter().add(0, target.getBbHeight() * 0.1, 0);
         Vec3 dir = aim.subtract(from).normalize().add(random.nextGaussian() * SPREAD, random.nextGaussian() * SPREAD, random.nextGaussian() * SPREAD).normalize();

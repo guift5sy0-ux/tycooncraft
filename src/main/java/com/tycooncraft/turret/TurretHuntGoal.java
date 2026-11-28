@@ -78,6 +78,11 @@ public class TurretHuntGoal extends Goal {
         mob.getNavigation().stop();
     }
 
+    /** v0.35.1: 포탑을 노리는 중 (대상이 없어도 총을 겨눔) */
+    public boolean hunting() {
+        return turret != null;
+    }
+
     @Override
     public boolean requiresUpdateEveryTick() {
         return true;

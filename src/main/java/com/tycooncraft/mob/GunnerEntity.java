@@ -77,7 +77,7 @@ public class GunnerEntity extends Monster implements RangedAttackMob {
         this.xpReward = kind == Kind.BOSS ? 200 : 8;
         // registerGoals() 는 부모 생성자에서 먼저 불리므로(kind 가 아직 null) 사격 목표는 여기서 추가
         goalSelector.addGoal(2, new RangedAttackGoal(this, 1.0, kind.interval, kind.interval + 10, kind.range));
-        goalSelector.addGoal(1, com.tycooncraft.turret.TurretHuntGoal.ranged(this, kind.damage * kind.pellets, kind.range, kind.interval, this::fireSound));   // 포탑 먼저
+        goalSelector.addGoal(1, turretGoal = com.tycooncraft.turret.TurretHuntGoal.ranged(this, kind.damage * kind.pellets, kind.range, kind.interval, this::fireSound));   // 포탑 먼저
     }
 
     public Kind kind() {
@@ -152,8 +152,10 @@ public class GunnerEntity extends Monster implements RangedAttackMob {
     protected void customServerAiStep() {
         super.customServerAiStep();
         if (kind == Kind.MARKSMAN) tickAim();
-        setAggressive(getTarget() != null);
+        setAggressive(getTarget() != null || (turretGoal != null && turretGoal.hunting()));   // v0.35.1: 포탑 공격 중에도 조준 자세
     }
+
+    private com.tycooncraft.turret.TurretHuntGoal turretGoal;
 
     // ── 저격수 조준선: 쏘기 전에 AIM_TICKS 동안 붉은 선을 보여 주고 쏨 ──
     public static final int AIM_TICKS = 20;
@@ -211,8 +213,12 @@ public class GunnerEntity extends Monster implements RangedAttackMob {
         }
     }
 
+    private final com.tycooncraft.gun.MobMag mag = new com.tycooncraft.gun.MobMag();
+
     private void fire(LivingEntity target) {
         if (!(level() instanceof ServerLevel sl)) return;
+        if (mag.busy(this)) return;
+        mag.fired(this);
         Vec3 from = getEyePosition();
         Vec3 aim = target.getBoundingBox().getCenter().add(0, target.getBbHeight() * (random.nextFloat() < 0.15f ? 0.35 : 0.05), 0);
         Vec3 base = aim.subtract(from).normalize();

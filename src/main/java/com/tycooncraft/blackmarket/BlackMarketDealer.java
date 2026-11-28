@@ -152,9 +152,13 @@ public class BlackMarketDealer extends AbstractVillager implements RangedAttackM
         return false;
     }
 
+    private final com.tycooncraft.gun.MobMag mag = new com.tycooncraft.gun.MobMag();
+
     @Override
     public void performRangedAttack(LivingEntity target, float pull) {
         if (!(level() instanceof ServerLevel sl)) return;
+        if (mag.busy(this)) return;
+        mag.fired(this);
         Vec3 from = getEyePosition();
         Vec3 base = target.getBoundingBox().getCenter().subtract(from).normalize();
         int pellets = kind() == 1 ? 6 : 1;

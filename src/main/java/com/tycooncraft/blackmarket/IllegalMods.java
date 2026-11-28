@@ -24,7 +24,7 @@ public final class IllegalMods {
     public static final String TAG = "tycooncraft_illegal_mods";
     public static final String[] IDS = {"overpressure", "drum", "hammer", "recoil", "bore", "scrub"};
     public static final int[] TIER = {1, 1, 2, 2, 3, 4};
-    public static final long[] PRICE = {20_000, 15_000, 30_000, 25_000, 40_000, 80_000};
+    public static final long[] PRICE = {160_000, 120_000, 240_000, 200_000, 320_000, 640_000};
     public static final int OVERPRESSURE = 0, DRUM = 1, HAMMER = 2, RECOIL = 3, BORE = 4, SCRUB = 5;
     public static int installs;
 

@@ -231,7 +231,95 @@ public final class GunAnimTestClient {
             case 316 -> AutoTestClient.serverKeepPub(mc, sp -> helmSetup(sp));
             case 330 -> AutoTestClient.shotPub(mc, "helm_adv");
             case 376 -> AutoTestClient.serverKeepPub(mc, sp -> helmCheck(sp));
-            case 380 -> liveDone = true;
+            case 380 -> AutoTestClient.serverKeepPub(mc, sp -> mobAimSetup(sp));
+            case 384 -> mc.options.hideGui = true;
+            case 514 -> mc.options.hideGui = false;
+            case 392 -> AutoTestClient.shotPub(mc, "mob_aim_0");
+            case 400 -> AutoTestClient.serverKeepPub(mc, sp -> {
+                for (var m : aimMobs) if (!(m instanceof net.minecraft.world.entity.monster.Zombie)) m.getNavigation().stop();
+            });
+            case 404 -> AutoTestClient.shotPub(mc, "mob_aim_0b");
+            case 420 -> AutoTestClient.shotPub(mc, "mob_aim_1");
+            case 432 -> AutoTestClient.shotPub(mc, "mob_aim_2");
+            case 436 -> {
+                AutoTestClient.serverKeepPub(mc, sp -> mobAimCheck(sp));
+            }
+            case 440 -> AutoTestClient.serverKeepPub(mc, sp -> {   // 플레이어를 노리는 갱단 (정면)
+                var sl = sp.serverLevel();
+                sp.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+                sp.setInvulnerable(true);
+                var base = sp.blockPosition();
+                aimMobs.clear();
+                for (int i = 0; i < 3; i++) {
+                    var g = (i == 0 ? com.tycooncraft.registry.ModEntities.GANGSTER.get() : i == 1 ? com.tycooncraft.registry.ModEntities.MARKSMAN.get() : com.tycooncraft.registry.ModEntities.ENFORCER.get()).create(sl);
+                    g.moveTo(base.getX() + 0.5 + (i - 1) * 3, base.getY(), base.getZ() - 7.5, 0, 0);
+                    g.finalizeSpawn(sl, sl.getCurrentDifficultyAt(g.blockPosition()), net.minecraft.world.entity.MobSpawnType.MOB_SUMMONED, null);
+                    sl.addFreshEntity(g);
+                    g.setTarget(sp);
+                    aimMobs.add(g);
+                }
+                sp.teleportTo(sl, base.getX() + 0.5, base.getY(), base.getZ() + 0.5, 180f, 5f);
+            });
+            case 470 -> AutoTestClient.shotPub(mc, "mob_aim_p1");
+            case 478 -> {
+                AutoTestClient.shotPub(mc, "mob_aim_p2");
+                logArms("live");
+            }
+            case 486 -> AutoTestClient.shotPub(mc, "mob_aim_p3");
+            case 490 -> AutoTestClient.serverKeepPub(mc, sp -> {
+                System.out.println("[AUTOTEST] v351 mobAimPlayer clientAim=" + clientAimInfo() + " agg=" + aimMobs.stream().map(m -> m.isAggressive() + "").toList());
+                for (var m : aimMobs) m.discard();
+                sp.setInvulnerable(false);
+            });
+            case 494 -> AutoTestClient.serverKeepPub(mc, sp -> {   // 가까이서 고정 (정면 4칸)
+                var sl = sp.serverLevel();
+                var base = sp.blockPosition();
+                aimMobs.clear();
+                net.minecraft.world.entity.EntityType<?>[] types = {com.tycooncraft.registry.ModEntities.GANGSTER.get(), com.tycooncraft.registry.ModEntities.MARKSMAN.get(),
+                        com.tycooncraft.registry.ModEntities.ENFORCER.get(), com.tycooncraft.registry.ModEntities.VILLAGE_GUARD.get()};
+                for (int i = 0; i < types.length; i++) {
+                    var g = (net.minecraft.world.entity.Mob) types[i].create(sl);
+                    g.moveTo(base.getX() + 0.5 + (i - 1.5) * 1.6, base.getY(), base.getZ() - 4.5, 0, 0);
+                    g.finalizeSpawn(sl, sl.getCurrentDifficultyAt(g.blockPosition()), net.minecraft.world.entity.MobSpawnType.MOB_SUMMONED, null);
+                    g.setNoAi(true);
+                    g.setAggressive(true);
+                    if (i == 1) g.setLeftHanded(true);   // 왼손잡이도 총을 쥔 손으로 겨누는지
+                    g.setYRot(0);
+                    g.setYHeadRot(0);
+                    g.yBodyRot = 0;
+                    sl.addFreshEntity(g);
+                    aimMobs.add(g);
+                }
+                sp.teleportTo(sl, base.getX() + 0.5, base.getY(), base.getZ() + 0.5, 180f, 8f);
+            });
+            case 502 -> {   // 오른쪽 경비병: 재장전 동작 중 모습
+                if (aimMobs.size() == 4) com.tycooncraft.client.GunAnim.startReload(aimMobs.get(3).getId(), 40);
+            }
+            case 510 -> {
+                AutoTestClient.shotPub(mc, "mob_aim_close");
+                logArms("close");
+            }
+            case 512 -> AutoTestClient.serverKeepPub(mc, sp -> {
+                for (var m : aimMobs) m.discard();
+                sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+            });
+            case 516 -> {
+                o.setCameraType(CameraType.THIRD_PERSON_FRONT);
+                key(o.keyAttack, true);
+            }
+            case 530 -> {
+                AutoTestClient.shotPub(mc, "player_aim_front");
+                if (mc.getEntityRenderDispatcher().getRenderer(mc.player) instanceof net.minecraft.client.renderer.entity.player.PlayerRenderer pr) {
+                    var hm = pr.getModel();
+                    System.out.println(String.format("[AUTOTEST] v351 playerArms R %.2f %.2f %.2f | L %.2f %.2f %.2f | head %.2f %.2f", hm.rightArm.xRot, hm.rightArm.yRot, hm.rightArm.zRot,
+                            hm.leftArm.xRot, hm.leftArm.yRot, hm.leftArm.zRot, hm.head.xRot, hm.head.yRot));
+                }
+            }
+            case 532 -> {
+                key(o.keyAttack, false);
+                o.setCameraType(CameraType.FIRST_PERSON);
+            }
+            case 536 -> liveDone = true;
             default -> {}
         }
     }
@@ -307,6 +395,74 @@ public final class GunAnimTestClient {
         System.out.println(String.format("[AUTOTEST] v350 helm normalTurn=%.1f advTurn=%.1f ratio=%.2f advFlag=%s recipe=%s", dN, dA, dA / Math.max(0.1f, dN),
                 advShip != null && advShip.advancedHelm(), sp.serverLevel().getRecipeManager().byKey(com.tycooncraft.TycoonCraft.id("advanced_helm")).isPresent()));
         for (var s : new com.tycooncraft.ship.ShipEntity[]{normalShip, advShip}) if (s != null) s.discard();
+    }
+
+    // v0.35.1: 총 든 몹이 적을 노리면 조준 자세 + 쏠 때 반동
+    static void logArms(String tag) {
+        Minecraft mc = Minecraft.getInstance();
+                StringBuilder b = new StringBuilder();
+                for (var m : aimMobs) {
+                    var ce = mc.level.getEntity(m.getId());
+                    if (ce == null) continue;
+                    var r = mc.getEntityRenderDispatcher().getRenderer(ce);
+                    if (r instanceof net.minecraft.client.renderer.entity.LivingEntityRenderer<?, ?> lr && lr.getModel() instanceof net.minecraft.client.model.HumanoidModel<?> hm)
+                        b.append(String.format("%s[R %.2f %.2f %.2f | L %.2f %.2f %.2f | head %.2f %.2f | pose %s aim %.2f agg %s main %s] ", ce.getType().toShortString(),
+                                hm.rightArm.xRot, hm.rightArm.yRot, hm.rightArm.zRot, hm.leftArm.xRot, hm.leftArm.yRot, hm.leftArm.zRot, hm.head.xRot, hm.head.yRot,
+                                hm.rightArmPose, com.tycooncraft.client.GunAnim.aim(ce), ((net.minecraft.world.entity.Mob) ce).isAggressive(), ((net.minecraft.world.entity.Mob) ce).getMainArm()));
+                }
+        System.out.println("[AUTOTEST] v351 mobArms " + tag + " " + b);
+    }
+
+    static java.util.List<net.minecraft.world.entity.Mob> aimMobs = new java.util.ArrayList<>();
+
+    static void mobAimSetup(net.minecraft.server.level.ServerPlayer sp) {
+        var sl = sp.serverLevel();
+        var base = sl.getHeightmapPos(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING, sp.blockPosition().offset(-40, 0, 0));
+        sp.stopRiding();
+        sp.teleportTo(sl, base.getX() - 8.5, base.getY() + 1, base.getZ() - 1.5, 160f, 20f);
+        sp.getAbilities().flying = false;
+        aimMobs.clear();
+        com.tycooncraft.gun.MobMag.testMag = 2;   // 두 발마다 재장전 (재장전 동작 확인용)
+        net.minecraft.world.entity.EntityType<?>[] types = {com.tycooncraft.registry.ModEntities.GANGSTER.get(), com.tycooncraft.registry.ModEntities.ENFORCER.get(),
+                com.tycooncraft.registry.ModEntities.MARKSMAN.get(), com.tycooncraft.registry.ModEntities.MERCENARY.get(), com.tycooncraft.registry.ModEntities.VILLAGE_GUARD.get()};
+        for (int i = 0; i < types.length; i++) {
+            var e = types[i].create(sl);
+            if (!(e instanceof net.minecraft.world.entity.Mob m)) continue;
+            m.moveTo(base.getX() - 6.5, base.getY(), base.getZ() - 4.5 - i * 3.0, -90f, 0);
+            m.finalizeSpawn(sl, sl.getCurrentDifficultyAt(m.blockPosition()), net.minecraft.world.entity.MobSpawnType.MOB_SUMMONED, null);
+            m.setPersistenceRequired();
+            sl.addFreshEntity(m);
+            var z = net.minecraft.world.entity.EntityType.ZOMBIE.create(sl);
+            z.moveTo(base.getX() - 20.5, base.getY(), base.getZ() - 4.5 - i * 3.0, 90f, 0);
+            z.setNoAi(true);
+            z.setInvulnerable(true);
+            z.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(net.minecraft.world.item.Items.LEATHER_HELMET));
+            sl.addFreshEntity(z);
+            m.setTarget(z);
+            aimMobs.add(m);
+            aimMobs.add(z);
+        }
+    }
+
+    static void mobAimCheck(net.minecraft.server.level.ServerPlayer sp) {
+        StringBuilder b = new StringBuilder();
+        for (var m : aimMobs)
+            if (!(m instanceof net.minecraft.world.entity.monster.Zombie))
+                b.append(m.getType().toShortString()).append(":agg=").append(m.isAggressive()).append(",tgt=").append(m.getTarget() != null).append(' ');
+        System.out.println("[AUTOTEST] v351 mobAim " + b + " clientAim=" + clientAimInfo() + " mobReloads=" + com.tycooncraft.gun.MobMag.reloads);
+        for (var m : aimMobs) m.discard();
+        com.tycooncraft.gun.MobMag.testMag = 0;
+    }
+
+    static String clientAimInfo() {
+        Minecraft mc = Minecraft.getInstance();
+        StringBuilder b = new StringBuilder();
+        for (var m : aimMobs) {
+            var ce = mc.level.getEntity(m.getId());
+            if (ce instanceof net.minecraft.world.entity.Mob cm && !(cm instanceof net.minecraft.world.entity.monster.Zombie))
+                b.append(String.format("%.2f", com.tycooncraft.client.GunAnim.aim(cm))).append(cm.isAggressive() ? "A" : "-").append(',');
+        }
+        return b.toString();
     }
 
     static int countCasings(Minecraft mc) {
