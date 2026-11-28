@@ -1,0 +1,81 @@
+server-latest.log:		TycoonCraft 0.36.0 (tycooncraft)
+server-latest.log:[28Nov2026 15:39:24.066] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/home/runner/work/tycooncraft/tycooncraft/build/moddev/artifacts/neoforge-21.1.266.jar%23125!/assets/.mcassetsroot' uses unexpected schema
+server-latest.log:[28Nov2026 15:39:24.067] [main/WARN] [net.minecraft.server.packs.VanillaPackResourcesBuilder/]: Assets URL 'union:/home/runner/work/tycooncraft/tycooncraft/build/moddev/artifacts/neoforge-21.1.266.jar%23125!/data/.mcassetsroot' uses unexpected schema
+server-latest.log:[28Nov2026 15:39:24.807] [main/ERROR] [net.minecraft.server.dedicated.DedicatedServerProperties/]: No key layers in MapLike[{}]
+server-latest.log:[28Nov2026 15:39:25.177] [Worker-Main-3/ERROR] [net.minecraft.tags.TagLoader/]: Couldn't load tag c:ores as it is missing following references: 
+server-latest.log:	tycooncraft:sulfur_ore (from mod/tycooncraft)
+server-latest.log:	tycooncraft:deepslate_sulfur_ore (from mod/tycooncraft)
+server-latest.log:	tycooncraft:bauxite_ore (from mod/tycooncraft)
+server-latest.log:	tycooncraft:deepslate_bauxite_ore (from mod/tycooncraft)
+server-latest.log:	tycooncraft:rock_salt_ore (from mod/tycooncraft)
+server-latest.log:[28Nov2026 15:39:27.591] [Server thread/INFO] [net.neoforged.neoforge.gametest.GameTestHooks/]: Enabled Gametest Namespaces: [tycooncraft]
+server-latest.log:[28Nov2026 15:39:45.941] [Server thread/INFO] [net.minecraft.server.MinecraftServer/]: Saving chunks for level 'ServerLevel[world]'/tycooncraft:black_market
+server-log.txt:Loaded 131 artifacts from /home/runner/work/tycooncraft/tycooncraft/build/tmp/downloadAssets/nfrt_artifact_manifest.properties
+server-log.txt:[15:39:13] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path GAMEDIR is /home/runner/work/tycooncraft/tycooncraft/run
+server-log.txt:[15:39:13] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path MODSDIR is /home/runner/work/tycooncraft/tycooncraft/run/mods
+server-log.txt:[15:39:13] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path CONFIGDIR is /home/runner/work/tycooncraft/tycooncraft/run/config
+server-log.txt:[15:39:13] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path FMLCONFIG is /home/runner/work/tycooncraft/tycooncraft/run/config/fml.toml
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.ta.CommonLaunchHandler/CORE]: Got mod coordinates tycooncraft%%/home/runner/work/tycooncraft/tycooncraft/build/classes/java/main:tycooncraft%%/home/runner/work/tycooncraft/tycooncraft/build/resources/main from env
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.ta.CommonLaunchHandler/CORE]: Found supplied mod coordinates [{tycooncraft=[/home/runner/work/tycooncraft/tycooncraft/build/classes/java/main, /home/runner/work/tycooncraft/tycooncraft/build/resources/main]}]
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path GAMEDIR is /home/runner/work/tycooncraft/tycooncraft/run
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path MODSDIR is /home/runner/work/tycooncraft/tycooncraft/run/mods
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path CONFIGDIR is /home/runner/work/tycooncraft/tycooncraft/run/config
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.FMLPaths/CORE]: Path FMLCONFIG is /home/runner/work/tycooncraft/tycooncraft/run/config/fml.toml
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.ta.CommonLaunchHandler/CORE]: Got mod coordinates tycooncraft%%/home/runner/work/tycooncraft/tycooncraft/build/classes/java/main:tycooncraft%%/home/runner/work/tycooncraft/tycooncraft/build/resources/main from env
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.ta.CommonLaunchHandler/CORE]: Found supplied mod coordinates [{tycooncraft=[/home/runner/work/tycooncraft/tycooncraft/build/classes/java/main, /home/runner/work/tycooncraft/tycooncraft/build/resources/main]}]
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.ta.CommonDevLaunchHandler/]: Launching with NeoForge from /home/runner/work/tycooncraft/tycooncraft/build/moddev/artifacts/neoforge-21.1.266.jar
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate /home/runner/work/tycooncraft/tycooncraft/build/moddev/artifacts/neoforge-21.1.266.jar
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate /home/runner/work/tycooncraft/tycooncraft/build/classes/java/main
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file main with {tycooncraft} mods - versions {0.36.0}
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate /home/runner/work/tycooncraft/tycooncraft/build/moddev/artifacts/neoforge-21.1.266.jar
+server-log.txt:		TycoonCraft 0.36.0 (tycooncraft)
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file /home/runner/work/tycooncraft/tycooncraft/build/moddev/artifacts/neoforge-21.1.266.jar with languages [LanguageSpec[languageName=minecraft, acceptedVersions=1]]
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate /home/runner/work/tycooncraft/tycooncraft/build/classes/java/main
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file main with {tycooncraft} mods - versions {0.36.0}
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file /home/runner/work/tycooncraft/tycooncraft/build/classes/java/main with languages [LanguageSpec[languageName=javafml, acceptedVersions=[1,)]]
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Found mixin config MixinConfig[config=tycooncraft.mixins.json, requiredMods=[]]
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate /home/runner/work/tycooncraft/tycooncraft/build/moddev/artifacts/neoforge-21.1.266.jar
+server-log.txt:[15:39:14] [main/DEBUG] [ne.ne.fm.lo.mo.ModFile/LOADING]: Loading mod file /home/runner/work/tycooncraft/tycooncraft/build/moddev/artifacts/neoforge-21.1.266.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[3,]]]
+server-log.txt:[15:39:15] [main/DEBUG] [mixin/]: Compatibility level JAVA_21 specified by tycooncraft.mixins.json is higher than the maximum level supported by this version of mixin (JAVA_13).
+server-log.txt:[15:39:15] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(tycooncraft)
+server-log.txt:[15:39:15] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(tycooncraft)
+server-log.txt:[15:39:15] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(tycooncraft)
+server-log.txt:[15:39:15] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(tycooncraft)
+server-log.txt:[15:39:15] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(tycooncraft)
+server-log.txt:[15:39:15] [main/DEBUG] [mixin/]: Instancing new FMLMixinPlatformAgent for SecureJarResource(tycooncraft)
+server-log.txt:[15:39:15] [main/DEBUG] [mixin/]: FMLMixinPlatformAgent rejected container SecureJarResource(tycooncraft)
+server-log.txt:[15:39:15] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(tycooncraft)]
+server-log.txt:[15:39:15] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(tycooncraft)]
+server-log.txt:[15:39:15] [main/DEBUG] [mixin/]: Selecting config tycooncraft.mixins.json
+server-log.txt:[15:39:15] [main/DEBUG] [mixin/]: Preparing tycooncraft.mixins.json (3)
+server-log.txt:[15:39:17] [main/DEBUG] [mixin/]: Mixing RangedAttributeMixin from tycooncraft.mixins.json into net.minecraft.world.entity.ai.attributes.RangedAttribute
+server-log.txt:[15:39:17] [main/DEBUG] [mixin/]: tycooncraft.mixins.json:RangedAttributeMixin from mod tycooncraft->@Inject::tycooncraft$armorCap(DLorg/spongepowered/asm/mixin/injection/callback/CallbackInfoReturnable;)V does use it's CallbackInfoReturnable
+server-log.txt:[15:39:17] [main/DEBUG] [mixin/]: Mixing EntityCollideMixin from tycooncraft.mixins.json into net.minecraft.world.entity.Entity
+server-log.txt:[15:39:23] [main/DEBUG] [ne.ne.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for [com.tycooncraft.TycoonCraft]
+server-log.txt:[15:39:23] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for tycooncraft
+server-log.txt:[15:39:23] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class com.tycooncraft.gear.ExtendedArmor for @SubscribeEvent-annotated methods
+server-log.txt:[15:39:23] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lcom/tycooncraft/gear/ExtendedArmor; to the game event bus
+server-log.txt:[15:39:23] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class com.tycooncraft.blackmarket.BlackMarket for @SubscribeEvent-annotated methods
+server-log.txt:[15:39:23] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lcom/tycooncraft/blackmarket/BlackMarket; to the game event bus
+server-log.txt:[15:39:23] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class com.tycooncraft.blackmarket.BountyEvents for @SubscribeEvent-annotated methods
+server-log.txt:[15:39:23] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lcom/tycooncraft/blackmarket/BountyEvents; to the game event bus
+server-log.txt:[15:39:23] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class com.tycooncraft.mech.PilotEvents for @SubscribeEvent-annotated methods
+server-log.txt:[15:39:23] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lcom/tycooncraft/mech/PilotEvents; to the game event bus
+server-log.txt:[15:39:23] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class com.tycooncraft.village.GuardAlert for @SubscribeEvent-annotated methods
+server-log.txt:[15:39:23] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lcom/tycooncraft/village/GuardAlert; to the game event bus
+server-log.txt:[15:39:23] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/LOADING]: Scanning class com.tycooncraft.mob.carrier.CarrierSpawner for @SubscribeEvent-annotated methods
+server-log.txt:[15:39:23] [modloading-worker-0/DEBUG] [ne.ne.fm.ja.AutomaticEventSubscriber/]: Subscribing @EventBusSubscriber class Lcom/tycooncraft/mob/carrier/CarrierSpawner; to the game event bus
+server-log.txt:[15:39:23] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loaded TOML config file /home/runner/work/tycooncraft/tycooncraft/run/config/neoforge-common.toml
+server-log.txt:[15:39:23] [modloading-sync-worker/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Watching TOML config file /home/runner/work/tycooncraft/tycooncraft/run/config/neoforge-common.toml for changes
+server-log.txt:[15:39:24] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/work/tycooncraft/tycooncraft/build/moddev/artifacts/neoforge-21.1.266.jar%23125!/assets/.mcassetsroot' uses unexpected schema
+server-log.txt:[15:39:24] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/work/tycooncraft/tycooncraft/build/moddev/artifacts/neoforge-21.1.266.jar%23125!/data/.mcassetsroot' uses unexpected schema
+server-log.txt:[15:39:24] [main/ERROR] [minecraft/DedicatedServerProperties]: No key layers in MapLike[{}]
+server-log.txt:[15:39:25] [Worker-Main-3/ERROR] [minecraft/TagLoader]: Couldn't load tag c:ores as it is missing following references: 
+server-log.txt:	tycooncraft:sulfur_ore (from mod/tycooncraft)
+server-log.txt:	tycooncraft:deepslate_sulfur_ore (from mod/tycooncraft)
+server-log.txt:	tycooncraft:bauxite_ore (from mod/tycooncraft)
+server-log.txt:	tycooncraft:deepslate_bauxite_ore (from mod/tycooncraft)
+server-log.txt:	tycooncraft:rock_salt_ore (from mod/tycooncraft)
+server-log.txt:[15:39:26] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Loaded TOML config file /home/runner/work/tycooncraft/tycooncraft/run/config/neoforge-server.toml
+server-log.txt:[15:39:26] [Server thread/DEBUG] [ne.ne.fm.co.ConfigTracker/CONFIG]: Watching TOML config file /home/runner/work/tycooncraft/tycooncraft/run/config/neoforge-server.toml for changes
+server-log.txt:[15:39:27] [Server thread/INFO] [ne.ne.ne.ga.GameTestHooks/]: Enabled Gametest Namespaces: [tycooncraft]

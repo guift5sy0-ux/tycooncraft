@@ -1,0 +1,10 @@
+/home/runner/work/tycooncraft/tycooncraft/src/main/java/com/tycooncraft/client/gear/GearClient.java:30: warning: [removal] bus() in EventBusSubscriber has been deprecated and marked for removal
+/home/runner/work/tycooncraft/tycooncraft/src/main/java/com/tycooncraft/client/gear/GearClient.java:30: warning: [removal] Bus in EventBusSubscriber has been deprecated and marked for removal
+/home/runner/work/tycooncraft/tycooncraft/src/main/java/com/tycooncraft/client/vehicle/VehicleClient.java:27: warning: [removal] bus() in EventBusSubscriber has been deprecated and marked for removal
+/home/runner/work/tycooncraft/tycooncraft/src/main/java/com/tycooncraft/client/vehicle/VehicleClient.java:27: warning: [removal] Bus in EventBusSubscriber has been deprecated and marked for removal
+/home/runner/work/tycooncraft/tycooncraft/src/main/java/com/tycooncraft/client/ClientModEvents.java:11: warning: [removal] bus() in EventBusSubscriber has been deprecated and marked for removal
+/home/runner/work/tycooncraft/tycooncraft/src/main/java/com/tycooncraft/client/ClientModEvents.java:11: warning: [removal] Bus in EventBusSubscriber has been deprecated and marked for removal
+/home/runner/work/tycooncraft/tycooncraft/src/main/java/com/tycooncraft/client/GunPartModels.java:33: warning: [removal] bus() in EventBusSubscriber has been deprecated and marked for removal
+/home/runner/work/tycooncraft/tycooncraft/src/main/java/com/tycooncraft/client/GunPartModels.java:33: warning: [removal] Bus in EventBusSubscriber has been deprecated and marked for removal
+/home/runner/work/tycooncraft/tycooncraft/src/main/java/com/tycooncraft/client/GunClient.java:24: warning: [removal] bus() in EventBusSubscriber has been deprecated and marked for removal
+/home/runner/work/tycooncraft/tycooncraft/src/main/java/com/tycooncraft/client/GunClient.java:24: warning: [removal] Bus in EventBusSubscriber has been deprecated and marked for removal
